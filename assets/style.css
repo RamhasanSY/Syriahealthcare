@@ -1,15 +1,19 @@
 :root {
-  --ink: #14241f;
-  --paper: #fbfbf8;
+  --ink: #0f1419;
+  --paper: #f8f9fa;
   --surface: #ffffff;
-  --rule: #d8ded7;
-  --green: #1f5b47;
-  --green-deep: #143a2d;
-  --ochre: #8a6415;
-  --muted: #5d6b64;
+  --rule: #e5e7eb;
+  --accent: #2563eb;
+  --accent-light: #dbeafe;
+  --success: #10b981;
+  --success-light: #d1fae5;
+  --orange: #f97316;
+  --muted: #6b7280;
   --serif: "Newsreader", Georgia, serif;
   --sans: "Inter", system-ui, sans-serif;
   --arabic: "Noto Naskh Arabic", serif;
+  --shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
 }
 
 * { box-sizing: border-box; }
@@ -37,9 +41,10 @@ a { color: inherit; }
 /* ---- Masthead ---- */
 
 .masthead {
-  background: var(--green-deep);
-  color: #f2f5f1;
-  padding: 22px 0;
+  background: linear-gradient(135deg, var(--accent) 0%, #1e40af 100%);
+  color: #ffffff;
+  padding: 32px 0;
+  box-shadow: var(--shadow);
 }
 
 .masthead-inner {
@@ -55,9 +60,10 @@ a { color: inherit; }
 .wordmark-ar {
   display: block;
   font-family: var(--arabic);
-  font-size: 15px;
-  color: #8fb6a4;
-  margin-bottom: 2px;
+  font-size: 13px;
+  color: #93c5fd;
+  margin-bottom: 4px;
+  font-weight: 500;
 }
 
 .wordmark-en {
@@ -76,22 +82,26 @@ a { color: inherit; }
 
 .stamp {
   margin: 0;
-  font-size: 13px;
-  color: #9dbfae;
+  font-size: 12px;
+  color: #dbeafe;
 }
 
 .lang-toggle {
   background: transparent;
-  border: 1px solid #45705e;
-  color: #e6efe9;
-  border-radius: 2px;
-  padding: 6px 14px;
+  border: 1px solid rgba(255,255,255,0.3);
+  color: #ffffff;
+  border-radius: 6px;
+  padding: 8px 16px;
   font-family: var(--arabic);
-  font-size: 15px;
+  font-size: 13px;
   cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.lang-toggle:hover { background: #1c4a3a; }
+.lang-toggle:hover { 
+  background: rgba(255,255,255,0.15);
+  border-color: rgba(255,255,255,0.5);
+}
 
 body[dir="rtl"] .lang-toggle { font-family: var(--sans); font-size: 14px; }
 
@@ -112,16 +122,17 @@ body[dir="rtl"] .lang-toggle { font-family: var(--sans); font-size: 14px; }
 }
 
 .section-head {
-  border-bottom: 2px solid var(--ink);
-  padding-bottom: 8px;
-  margin-bottom: 22px;
+  border-bottom: 2px solid var(--accent);
+  padding-bottom: 12px;
+  margin-bottom: 24px;
 }
 
 .section-head h2 {
   font-family: var(--serif);
-  font-weight: 500;
-  font-size: 22px;
+  font-weight: 600;
+  font-size: 24px;
   margin: 0;
+  color: var(--ink);
 }
 
 .filters {
@@ -137,15 +148,22 @@ body[dir="rtl"] .lang-toggle { font-family: var(--sans); font-size: 14px; }
   color: var(--muted);
   font: inherit;
   font-size: 13px;
-  padding: 4px 11px;
-  border-radius: 999px;
+  padding: 6px 12px;
+  border-radius: 20px;
   cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filters button:hover {
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 .filters button[aria-pressed="true"] {
-  background: var(--green);
-  border-color: var(--green);
+  background: var(--accent);
+  border-color: var(--accent);
   color: #fff;
+  font-weight: 500;
 }
 
 /* ---- News ---- */
@@ -153,13 +171,36 @@ body[dir="rtl"] .lang-toggle { font-family: var(--sans); font-size: 14px; }
 .cards { list-style: none; margin: 0; padding: 0; }
 
 .cards li {
-  padding: 22px 0;
+  padding: 24px 0;
   border-bottom: 1px solid var(--rule);
+  transition: all 0.2s ease;
+}
+
+.cards li:hover {
+  border-bottom-color: var(--accent);
+  padding-left: 8px;
 }
 
 .cards li:first-child { padding-top: 0; }
 
 .card-meta {
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+.topic {
+  display: inline-block;
+  background: var(--accent-light);
+  color: var(--accent);
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+}
   display: flex;
   gap: 10px;
   align-items: baseline;
@@ -199,49 +240,84 @@ body[dir="rtl"] .card-summary, body[dir="rtl"] .card-title { max-width: 60ch; }
 .jobs li {
   background: var(--surface);
   border: 1px solid var(--rule);
-  border-left: 3px solid var(--ochre);
-  padding: 14px 16px;
-  margin-bottom: 10px;
+  border-left: 4px solid var(--success);
+  padding: 16px;
+  margin-bottom: 12px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow);
+}
+
+.jobs li:hover {
+  border-left-color: var(--accent);
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
 }
 
 body[dir="rtl"] .jobs li {
   border-left: 1px solid var(--rule);
-  border-right: 3px solid var(--ochre);
+  border-right: 4px solid var(--success);
 }
 
 .job-title {
-  font-size: 15.5px;
-  font-weight: 600;
-  margin: 0 0 4px;
-  line-height: 1.35;
+  font-size: 15px;
+  font-weight: 700;
+  margin: 0 0 6px;
+  line-height: 1.4;
+  color: var(--ink);
 }
 
-.job-title a { text-decoration: none; }
-.job-title a:hover { text-decoration: underline; }
+.job-title a { 
+  text-decoration: none;
+  color: var(--accent);
+  transition: color 0.2s;
+}
+.job-title a:hover { 
+  color: #1e40af;
+  text-decoration: underline;
+}
 
 .job-meta {
   margin: 0;
-  font-size: 13px;
+  font-size: 12px;
   color: var(--muted);
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
-.job-deadline { color: var(--ochre); font-weight: 500; }
+.job-deadline { 
+  color: var(--orange); 
+  font-weight: 600;
+}
 
 /* ---- Misc ---- */
 
 .empty {
   color: var(--muted);
-  font-size: 15px;
-  padding: 8px 0;
+  font-size: 14px;
+  padding: 16px 0;
+  text-align: center;
 }
 
 .colophon {
-  border-top: 1px solid var(--rule);
-  padding: 26px 0 44px;
-  font-size: 13.5px;
+  border-top: 2px solid var(--accent-light);
+  padding: 32px 0 48px;
+  font-size: 13px;
   color: var(--muted);
+  background: var(--paper);
 }
 
-.colophon p { margin: 0 0 8px; max-width: 70ch; }
+.colophon p { margin: 0 0 12px; max-width: 70ch; }
 
-.sources-line a { color: var(--green); }
+.sources-line a { 
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+.sources-line a:hover { 
+  color: #1e40af;
+  text-decoration: underline;
+}

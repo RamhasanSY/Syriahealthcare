@@ -15,12 +15,32 @@
       "name": "UN OCHA — Syria",
       "url": "https://www.unocha.org/syrian-arab-republic/rss.xml",
       "lang": "en"
+    },
+    {
+      "name": "Syrian Arab Red Crescent",
+      "url": "https://reliefweb.int/updates/rss.xml?advanced-search=%28O1076%29",
+      "lang": "en"
+    },
+    {
+      "name": "Doctors Without Borders — Syria",
+      "url": "https://reliefweb.int/updates/rss.xml?advanced-search=%28O19%29",
+      "lang": "en"
+    },
+    {
+      "name": "International Committee Red Cross — Syria",
+      "url": "https://reliefweb.int/updates/rss.xml?advanced-search=%28O48%29",
+      "lang": "en"
     }
   ],
   "jobs": [
     {
       "name": "ReliefWeb Jobs — Syria",
       "url": "https://reliefweb.int/jobs/rss.xml?advanced-search=%28C226%29",
+      "lang": "en"
+    },
+    {
+      "name": "NGO Jobs — Health Sector",
+      "url": "https://reliefweb.int/jobs/rss.xml?advanced-search=%28F34%29",
       "lang": "en"
     }
   ]
