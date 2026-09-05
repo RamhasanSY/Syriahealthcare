@@ -1,0 +1,27 @@
+{
+  "_comment": "Add or remove feeds here. type: 'news' or 'jobs'. Only public RSS/Atom feeds — no scraping of sites that forbid it in their terms.",
+  "news": [
+    {
+      "name": "ReliefWeb — Syria",
+      "url": "https://reliefweb.int/updates/rss.xml?advanced-search=%28C226%29",
+      "lang": "en"
+    },
+    {
+      "name": "WHO EMRO — Syria",
+      "url": "https://www.emro.who.int/syria/news/index.rss",
+      "lang": "en"
+    },
+    {
+      "name": "UN OCHA — Syria",
+      "url": "https://www.unocha.org/syrian-arab-republic/rss.xml",
+      "lang": "en"
+    }
+  ],
+  "jobs": [
+    {
+      "name": "ReliefWeb Jobs — Syria",
+      "url": "https://reliefweb.int/jobs/rss.xml?advanced-search=%28C226%29",
+      "lang": "en"
+    }
+  ]
+}

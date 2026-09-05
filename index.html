@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Syria Healthcare — news and jobs for the health sector</title>
+<meta name="description" content="Daily updated news and job openings across Syria's healthcare sector. Collected from public sources twice a day.">
+<meta property="og:title" content="Syria Healthcare">
+<meta property="og:description" content="News and job openings across Syria's healthcare sector, updated twice daily.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Inter:wght@400;500;600&family=Noto+Naskh+Arabic:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="masthead">
+  <div class="wrap masthead-inner">
+    <a class="wordmark" href="./">
+      <span class="wordmark-ar" lang="ar">الرعاية الصحية في سوريا</span>
+      <span class="wordmark-en">Syria Healthcare</span>
+    </a>
+    <div class="masthead-side">
+      <p class="stamp" id="stamp" data-en="Loading…" data-ar="…جارٍ التحميل">Loading…</p>
+      <button class="lang-toggle" id="langToggle" type="button" lang="ar">العربية</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap columns">
+
+  <section class="feed" aria-labelledby="news-heading">
+    <div class="section-head">
+      <h2 id="news-heading" data-en="News" data-ar="الأخبار">News</h2>
+      <div class="filters" id="newsFilters" role="group" aria-label="Filter news by topic"></div>
+    </div>
+    <ol class="cards" id="newsList"></ol>
+    <p class="empty" id="newsEmpty" hidden
+       data-en="No stories yet. The next collection run will fill this in."
+       data-ar="لا توجد أخبار بعد. سيتم التحديث في الدورة القادمة.">
+      No stories yet. The next collection run will fill this in.
+    </p>
+  </section>
+
+  <aside class="board" aria-labelledby="jobs-heading">
+    <div class="section-head">
+      <h2 id="jobs-heading" data-en="Open positions" data-ar="وظائف شاغرة">Open positions</h2>
+    </div>
+    <ol class="jobs" id="jobsList"></ol>
+    <p class="empty" id="jobsEmpty" hidden
+       data-en="No openings listed right now."
+       data-ar="لا توجد وظائف مدرجة حالياً.">
+      No openings listed right now.
+    </p>
+  </aside>
+
+</main>
+
+<footer class="colophon">
+  <div class="wrap">
+    <p data-en="Syria Healthcare collects publicly published articles and job listings and links back to the original source. Nothing here is medical advice."
+       data-ar="يجمع هذا الموقع مقالات وإعلانات وظائف منشورة علناً ويحيل إلى مصدرها الأصلي. لا يقدّم الموقع استشارات طبية.">
+      Syria Healthcare collects publicly published articles and job listings and links back to the original source. Nothing here is medical advice.
+    </p>
+    <p class="sources-line"><a href="sources.json" data-en="See the source list" data-ar="قائمة المصادر">See the source list</a></p>
+  </div>
+</footer>
+
+<script src="assets/app.js"></script>
+</body>
+</html>

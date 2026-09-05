@@ -1,0 +1,46 @@
+name: Update news and jobs
+
+on:
+  schedule:
+    # 06:00 and 18:00 UTC — GitHub cron is always UTC
+    - cron: "0 6,18 * * *"
+  workflow_dispatch:        # lets you run it by hand from the Actions tab
+
+permissions:
+  contents: write           # needed to commit the updated JSON files
+  models: read              # needed for GitHub Models
+
+concurrency:
+  group: update-data
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Collect and filter
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Optional — set either of these as a repository secret to use
+          # that provider instead of GitHub Models:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: python scripts/update.py
+
+      - name: Commit changes
+        run: |
+          git config user.name "syriahealthcare-bot"
+          git config user.email "actions@github.com"
+          git add data/news.json data/jobs.json
+          if git diff --staged --quiet; then
+            echo "Nothing changed."
+          else
+            git commit -m "Update news and jobs ($(date -u +'%Y-%m-%d %H:%M UTC'))"
+            git push
+          fi
