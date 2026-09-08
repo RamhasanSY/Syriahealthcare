@@ -1,5 +1,5 @@
 {
-  "_comment": "Add or remove feeds here. type: 'news' or 'jobs'. Only public RSS/Atom feeds — no scraping of sites that forbid it in their terms.",
+  "_comment": "Add or remove feeds here. type: 'news' or 'jobs'. Only public RSS/Atom feeds — no scraping of sites that forbid it in their terms. C226 = ReliefWeb country code for Syrian Arab Republic, T4595 = ReliefWeb theme code for Health. Every URL here has been fetch-tested directly (see chat history 2026-09-08) — the previous O1076/O19/O48/F34 codes and the old WHO EMRO/OCHA URLs were invalid or dead and were silently returning generic global content instead of Syria-specific items.",
   "news": [
     {
       "name": "ReliefWeb — Syria",
@@ -7,28 +7,13 @@
       "lang": "en"
     },
     {
-      "name": "WHO EMRO — Syria",
-      "url": "https://www.emro.who.int/syria/news/index.rss",
+      "name": "ReliefWeb — Syria Health & Nutrition",
+      "url": "https://reliefweb.int/updates/rss.xml?advanced-search=%28C226%29_%28T4595%29",
       "lang": "en"
     },
     {
-      "name": "UN OCHA — Syria",
-      "url": "https://www.unocha.org/syrian-arab-republic/rss.xml",
-      "lang": "en"
-    },
-    {
-      "name": "Syrian Arab Red Crescent",
-      "url": "https://reliefweb.int/updates/rss.xml?advanced-search=%28O1076%29",
-      "lang": "en"
-    },
-    {
-      "name": "Doctors Without Borders — Syria",
-      "url": "https://reliefweb.int/updates/rss.xml?advanced-search=%28O19%29",
-      "lang": "en"
-    },
-    {
-      "name": "International Committee Red Cross — Syria",
-      "url": "https://reliefweb.int/updates/rss.xml?advanced-search=%28O48%29",
+      "name": "Syrian American Medical Society (SAMS)",
+      "url": "https://sams-usa.net/feed/",
       "lang": "en"
     }
   ],
@@ -39,8 +24,8 @@
       "lang": "en"
     },
     {
-      "name": "NGO Jobs — Health Sector",
-      "url": "https://reliefweb.int/jobs/rss.xml?advanced-search=%28F34%29",
+      "name": "ReliefWeb Jobs — Syria Health",
+      "url": "https://reliefweb.int/jobs/rss.xml?advanced-search=%28C226%29_%28T4595%29",
       "lang": "en"
     }
   ]

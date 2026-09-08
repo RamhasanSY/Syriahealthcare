@@ -4,6 +4,7 @@
   var lang = localStorage.getItem("shc-lang") === "ar" ? "ar" : "en";
   var news = [];
   var jobs = [];
+  var sourceCount = null;
   var activeTopic = "all";
 
   var TOPIC_LABELS = {
@@ -58,6 +59,15 @@
     stamp.textContent = lang === "ar" ? "آخر تحديث: " + when : "Last updated " + when;
   }
 
+  function renderStats() {
+    var statNews = document.getElementById("statNews");
+    var statJobs = document.getElementById("statJobs");
+    var statSources = document.getElementById("statSources");
+    if (statNews) statNews.textContent = news.length ? String(news.length) : "0";
+    if (statJobs) statJobs.textContent = jobs.length ? String(jobs.length) : "0";
+    if (statSources) statSources.textContent = sourceCount != null ? String(sourceCount) : "–";
+  }
+
   function renderFilters() {
     var box = document.getElementById("newsFilters");
     box.textContent = "";
@@ -95,7 +105,7 @@
       var meta = el("div", "card-meta");
       if (n.topic) {
         var label = TOPIC_LABELS[n.topic] ? TOPIC_LABELS[n.topic][lang] : n.topic;
-        meta.appendChild(el("span", "topic", label));
+        meta.appendChild(el("span", "topic topic-" + n.topic, label));
       }
       if (n.source) meta.appendChild(el("span", null, n.source));
       if (n.published) meta.appendChild(el("span", null, formatDate(n.published)));
@@ -151,6 +161,7 @@
   function renderAll(updated) {
     applyStaticText();
     renderStamp(updated);
+    renderStats();
     renderFilters();
     renderNews();
     renderJobs();
@@ -160,11 +171,15 @@
     var updated = null;
     Promise.all([
       fetch("data/news.json?" + Date.now()).then(function (r) { return r.json(); }).catch(function () { return {}; }),
-      fetch("data/jobs.json?" + Date.now()).then(function (r) { return r.json(); }).catch(function () { return {}; })
+      fetch("data/jobs.json?" + Date.now()).then(function (r) { return r.json(); }).catch(function () { return {}; }),
+      fetch("sources.json?" + Date.now()).then(function (r) { return r.json(); }).catch(function () { return null; })
     ]).then(function (res) {
       news = (res[0] && res[0].items) || [];
       jobs = (res[1] && res[1].items) || [];
       updated = (res[0] && res[0].updated) || null;
+      if (res[2]) {
+        sourceCount = ((res[2].news || []).length) + ((res[2].jobs || []).length);
+      }
       renderAll(updated);
     });
 
