@@ -163,6 +163,13 @@ def original_fields(title):
     return {'title': title, 'title_' + language: title, 'language': language}
 
 
+def news_geography(item):
+    # Use the same location evidence for filtering and the published record.
+    text = item.get('title', '') + ' ' + (item.get('raw_summary') or '')[:1500]
+    text = re.sub(r'Syrian American Medical Society(?: Foundation)?|Syrian Arab Red Crescent', '', text, flags=re.I)
+    return SYRIA.search(text)
+
+
 def eligible_news(item):
     published = parse_date(item.get('published'))
     if not published or not now() - timedelta(days=MAX_NEWS_DAYS) <= published <= now() + timedelta(hours=1):
@@ -170,8 +177,7 @@ def eligible_news(item):
     title = item.get('title', '')
     lead = (item.get('raw_summary') or '')[:1500]
     # The publisher's name must never count as evidence of a Syrian location.
-    evidence = re.sub(r'Syrian American Medical Society(?: Foundation)?|Syrian Arab Red Crescent', '', title + ' ' + lead, flags=re.I)
-    if not SYRIA.search(evidence):
+    if not news_geography(item):
         return False
     # Require a healthcare headline, or an explicitly Syrian mission with health content.
     return bool(HEALTH.search(title) or (SYRIA.search(title) and re.search(r'mission|بعثة|حملة', title, re.I) and HEALTH.search(lead)))
@@ -193,7 +199,7 @@ def news_records(source):
         record = base_record(item, source)
         record['topic'] = classify(item['title'] + ' ' + item['raw_summary'][:700])
         # Original headlines only: no generated claims, summaries, or translations.
-        record['evidence'] = {'geography': SYRIA.search(re.sub(r'Syrian American Medical Society(?: Foundation)?', '', item['title'] + ' ' + item['raw_summary'][:1500], flags=re.I)).group(0), 'type': 'publisher-headline'}
+        record['evidence'] = {'geography': news_geography(item).group(0), 'type': 'publisher-headline'}
         accepted.append(record)
     return accepted, len(candidates)
 
@@ -201,7 +207,8 @@ def news_records(source):
 def job_valid(item):
     deadline, published = parse_date(item.get('deadline')), parse_date(item.get('published'))
     exact_deadline = item.get('deadline_at') or (item.get('deadline') if 'T' in str(item.get('deadline')) else None)
-    return bool(deadline and deadline.date() >= now().date() and (not exact_deadline or parse_date(exact_deadline) >= now()) and published and published <= now() + timedelta(hours=1)
+    exact = parse_date(exact_deadline) if exact_deadline else None
+    return bool(deadline and deadline.date() >= now().date() and (not exact_deadline or (exact and exact >= now())) and published and published <= now() + timedelta(hours=1)
                 and SYRIA.search(item.get('location', '')) and canonical_url(item.get('url', '')))
 
 
@@ -387,7 +394,7 @@ def retain_verified(item, kind, configured):
     published = parse_date(item.get('published'))
     if item.get('verification_version') != VERSION or item.get('source_id') not in configured or not canonical_url(item.get('url', '')):
         return False
-    if not verified or not published or published > now() + timedelta(hours=1):
+    if not verified or verified > now() + timedelta(hours=1) or not published or published > now() + timedelta(hours=1):
         return False
     if kind == 'jobs':
         return verified >= now() - timedelta(hours=CACHE_HOURS) and job_valid(item)

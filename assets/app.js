@@ -1,13 +1,14 @@
 (() => {
     'use strict';
     const $ = id => document.getElementById(id);
+    let canPersist = true;
     let lang = 'en',
         saved = new Set();
     try {
         lang = localStorage.getItem('shc-lang') === 'ar' ? 'ar' : 'en';
         const stored = JSON.parse(localStorage.getItem('shc-saved') || '[]');
         if (Array.isArray(stored)) saved = new Set(stored.filter(x => typeof x === 'string'));
-    } catch (_) {}
+    } catch (_) { canPersist = false; }
     let topic = 'all',
         location = '',
         organisation = '',
@@ -38,7 +39,7 @@
         other: ['Other', 'أخرى']
     };
     const tr = (en, ar) => lang === 'ar' ? ar : en;
-    const value = (item, key) => item[key + '_' + lang] || item[key + '_en'] || item[key] || '';
+    const value = (item, key) => item[key + '_' + lang] || item[key + '_en'] || item[key] || item[key + '_ar'] || '';
     const label = key => (topics[key] || topics.other)[lang === 'ar' ? 1 : 0];
     const key = item => item.id || item.url;
 
@@ -65,14 +66,58 @@
         return a;
     }
 
+    function timestamp(raw) {
+        if (typeof raw !== 'string' || !/^\d{4}-\d{2}-\d{2}(?:T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2}))?$/.test(raw)) return NaN;
+        const day = raw.slice(0, 10), calendar = new Date(day + 'T00:00:00Z');
+        if (isNaN(calendar) || calendar.toISOString().slice(0, 10) !== day) return NaN;
+        return Date.parse(raw);
+    }
+
     function date(raw) {
-        const d = new Date(raw);
-        return raw && !isNaN(d) ? d.toLocaleDateString(lang === 'ar' ? 'ar' : 'en-GB', {
+        const d = new Date(timestamp(raw));
+        return !isNaN(d) ? d.toLocaleDateString(lang === 'ar' ? 'ar' : 'en-GB', {
             day: 'numeric',
             month: 'short',
             year: 'numeric',
             timeZone: 'UTC'
         }) : '';
+    }
+
+    function checkedTime(raw) {
+        const d = new Date(timestamp(raw));
+        return !isNaN(d) ? d.toLocaleString(lang === 'ar' ? 'ar' : 'en-GB', {
+            day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'UTC'
+        }) + ' UTC' : '';
+    }
+
+    function deadlineTime(job) {
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(job.deadline || '') || !Number.isFinite(timestamp(job.deadline))) return NaN;
+        return job.deadline_at ? timestamp(job.deadline_at) : timestamp(job.deadline) + 86400000 - 1;
+    }
+
+    function validRecord(item, kind) {
+        if (!item || typeof item !== 'object' || item.verification_version !== 2 || !safeURL(item.url) || !value(item, 'title')) return false;
+        const now = Date.now(), published = timestamp(item.published), verified = timestamp(item.verified_at);
+        if (!Number.isFinite(published) || !Number.isFinite(verified) || published > now + 3600000 || verified > now + 3600000) return false;
+        return kind === 'news' ? now - published <= 45 * 86400000 : deadlineTime(item) >= now && now - verified <= 72 * 3600000;
+    }
+
+    function openNews() {
+        return feeds.news.items.filter(n => validRecord(n, 'news'));
+    }
+
+    function preserveFocus(render) {
+        const active = document.activeElement,
+            href = active?.tagName === 'A' ? active.href : '',
+            parentClass = active?.parentElement?.className;
+        render();
+        if (!active || active.isConnected) return;
+        let replacement = active.id ? $(active.id) : null;
+        if (href) replacement = [...document.querySelectorAll('a')].find(n => n.href === href && n.className === active.className && n.parentElement.className === parentClass);
+        if (active.dataset.key) replacement = [...document.querySelectorAll('.save-job')].find(n => n.dataset.key === active.dataset.key) || document.querySelector('[data-sector="saved"]');
+        if (active.dataset.topic) replacement = [...$('newsFilters').querySelectorAll('button')].find(n => n.dataset.topic === active.dataset.topic);
+        if (active.closest('.empty') || active.id === 'clearFilters') replacement = $('search');
+        (replacement || $('search')).focus({preventScroll: true});
     }
 
     function normalize(text) {
@@ -84,8 +129,7 @@
     }
 
     function openJobs() {
-        const today = new Date().toISOString().slice(0, 10);
-        return feeds.jobs.items.filter(j => /^\d{4}-\d{2}-\d{2}$/.test(j.deadline || '') && date(j.deadline) && j.deadline >= today && (!j.deadline_at || new Date(j.deadline_at).getTime() >= Date.now()) && Date.now() - new Date(j.verified_at).getTime() <= 72 * 3600000);
+        return feeds.jobs.items.filter(j => validRecord(j, 'jobs'));
     }
 
     function staticText() {
@@ -99,16 +143,23 @@
         $('langToggle').textContent = tr('العربية', 'English');
         $('langToggle').lang = tr('ar', 'en');
         $('langToggle').setAttribute('aria-label', tr('Switch to Arabic', 'التبديل إلى الإنجليزية'));
+        savedHint();
+    }
+
+    function savedHint() {
+        $('savedHint').textContent = canPersist ? tr('Save a role to revisit on this device.', 'احفظ الوظيفة للعودة إليها على هذا الجهاز.') : tr('Bookmarks last only while this page stays open.', 'تبقى الوظائف المحفوظة متاحة ما دامت هذه الصفحة مفتوحة.');
     }
 
     function stamp(kind) {
         const f = feeds[kind],
             n = $(kind + 'Stamp'),
-            checked = date(f.updated);
+            checked = checkedTime(f.updated);
         const stale = checked && Date.now() - new Date(f.updated).getTime() > 48 * 3600000;
         n.textContent = checked ? tr('Last checked: ', 'آخر فحص: ') + checked + (stale ? tr(' · Updates delayed', ' · التحديثات متأخرة') : '') : '';
         if (f.status === 'partial' || f.status === 'error') n.textContent += tr(' · Some sources unavailable', ' · بعض المصادر غير متاحة');
-        n.classList.toggle('stale', Boolean(stale || f.status === 'partial' || f.status === 'error'));
+        if (f.error) n.textContent += f.items.length ? tr(' · Refresh failed. Showing previously loaded results.', ' · تعذر التحديث. نعرض النتائج المحمّلة سابقاً.') : tr(' · Feed unavailable. Try again below.', ' · الخلاصة غير متاحة. حاول مجدداً أدناه.');
+        n.classList.toggle('stale', Boolean(stale || f.error || f.status === 'partial' || f.status === 'error'));
+        $(kind + 'List').setAttribute('aria-busy', String(f.loading));
     }
 
     function clearFilters() {
@@ -120,6 +171,7 @@
         newsLimit = 6;
         $('search').value = '';
         renderAll();
+        $('search').focus({preventScroll: true});
     }
 
     function emptyState(kind, hasResults, filtered) {
@@ -179,12 +231,13 @@
     }
 
     function filters() {
-        const present = ['all', ...new Set(feeds.news.items.map(n => n.topic || 'other'))];
+        const present = ['all', ...new Set(openNews().map(n => n.topic || 'other'))];
         if (!present.includes(topic)) topic = 'all';
         $('newsFilters').replaceChildren();
         present.forEach(t => {
             const b = node('button', '', label(t));
             b.type = 'button';
+            b.dataset.topic = t;
             b.setAttribute('aria-pressed', String(topic === t));
             b.onclick = () => {
                 topic = t;
@@ -201,7 +254,7 @@
     }
 
     function renderNews() {
-        const items = feeds.news.items.filter(n => (topic === 'all' || (n.topic || 'other') === topic) && matches(n));
+        const items = openNews().filter(n => (topic === 'all' || (n.topic || 'other') === topic) && matches(n));
         $('newsList').replaceChildren();
         $('newsCount').textContent = tr(`${items.length} stories`, `${items.length} أخبار`);
         items.slice(0, newsLimit).forEach(n => {
@@ -253,7 +306,8 @@
             saved.has(id) ? saved.delete(id) : saved.add(id);
             try {
                 localStorage.setItem('shc-saved', JSON.stringify([...saved]));
-            } catch (_) {}
+            } catch (_) { canPersist = false; }
+            savedHint();
             renderJobs();
             const again = Array.from(document.querySelectorAll('.save-job')).find(n => n.dataset.key === id);
             (again || document.querySelector('[data-sector="saved"]')).focus();
@@ -263,10 +317,12 @@
 
     function renderFeatured() {
         const all = openJobs(),
-            first = [...all].sort((a, b) => a.deadline.localeCompare(b.deadline))[0];
-        $('heroJobCount').textContent = all.length;
-        $('heroOrgCount').textContent = new Set(all.map(j => j.organisation)).size;
-        document.querySelector('.spotlight-top .pill').hidden = !first;
+            first = [...all].sort((a, b) => deadlineTime(a) - deadlineTime(b))[0],
+            pill = document.querySelector('.spotlight-top .pill');
+        $('heroJobCount').textContent = feeds.jobs.loading && !all.length ? '—' : all.length;
+        $('heroOrgCount').textContent = feeds.jobs.loading && !all.length ? '—' : new Set(all.map(j => j.organisation).filter(Boolean)).size;
+        pill.hidden = !first;
+        pill.textContent = first && deadlineTime(first) - Date.now() <= 3 * 86400000 ? tr('Closing soon', 'الموعد يقترب') : tr('Featured opportunity', 'فرصة مميزة');
         if (!first) {
             $('featuredOrg').textContent = tr('From original employers', 'من الجهات الموظفة الأصلية');
             $('featuredTitle').textContent = tr('Find work that matters.', 'ابحث عن عمل يصنع فرقاً.');
@@ -277,13 +333,13 @@
         $('featuredOrg').textContent = first.organisation;
         $('featuredTitle').textContent = value(first, 'title');
         $('featuredTitle').dir = 'auto';
-        $('featuredMeta').textContent = first.location + ' · ' + tr('Closes ', 'يغلق في ') + date(first.deadline);
+        $('featuredMeta').textContent = first.location + ' · ' + tr('Closes ', 'يغلق في ') + (first.deadline_at ? checkedTime(first.deadline_at) : date(first.deadline));
         $('featuredLink').href = safeURL(first.url);
     }
 
     function renderJobs() {
         let items = openJobs().filter(j => (!location || j.location === location) && (!organisation || j.organisation === organisation) && (sector === 'all' || (sector === 'saved' ? saved.has(key(j)) : (j.sector || 'healthcare') === sector)) && matches(j));
-        items.sort((a, b) => sort === 'deadline' ? a.deadline.localeCompare(b.deadline) : (b.published || '').localeCompare(a.published || ''));
+        items.sort((a, b) => sort === 'deadline' ? deadlineTime(a) - deadlineTime(b) : (b.published || '').localeCompare(a.published || ''));
         const filtered = Boolean(query || location || organisation || sector !== 'all');
         $('jobsList').replaceChildren();
         $('jobsCount').textContent = tr(`${items.length} opportunities found`, `${items.length} فرص متاحة`);
@@ -302,8 +358,8 @@
             li.append(top, title, node('p', 'job-location', j.location), tags);
             if (j.reference && j.listing_page) li.append(node('p', 'job-reference', tr('Opens the employer’s vacancy board. Find reference ', 'يفتح قائمة وظائف الجهة الموظفة. ابحث عن الرقم ') + j.reference + tr(' and select “Register to Apply”.', ' ثم اختر «Register to Apply».')));
             const bottom = node('div', 'job-card-bottom'),
-                deadline = node('p', 'job-deadline', tr('Closes ', 'يغلق في ') + date(j.deadline));
-            if (new Date(j.deadline).getTime() - Date.now() < 3 * 86400000) deadline.classList.add('urgent');
+                deadline = node('p', 'job-deadline', tr('Closes ', 'يغلق في ') + (j.deadline_at ? checkedTime(j.deadline_at) : date(j.deadline)));
+            if (deadlineTime(j) - Date.now() <= 3 * 86400000) deadline.classList.add('urgent');
             bottom.append(deadline, link(j.listing_page ? tr('View openings ↗', 'عرض الوظائف ↖') : tr('View role ↗', 'عرض الوظيفة ↖'), j.url, 'apply-link'));
             li.append(bottom);
             $('jobsList').append(li);
@@ -324,6 +380,11 @@
             li.append(a);
             const status = sourceStatus[s.id];
             li.append(node('p', 'source-status', status ? (status.state === 'ok' ? (status.accepted ? tr('Available · ', 'متاح · ') + status.accepted + tr(' matching items', ' مواد مطابقة') : tr('Available · no recent matching items', 'متاح · لا توجد مواد حديثة مطابقة')) : tr('Temporarily unavailable', 'غير متاح مؤقتاً')) : tr('Status not yet available', 'الحالة غير متاحة بعد')));
+            if (status && checkedTime(status.checked_at)) {
+                const checked = node('p', 'source-status', tr('Checked: ', 'آخر فحص: ') + checkedTime(status.checked_at));
+                if (Date.now() - timestamp(status.checked_at) > 48 * 3600000) checked.append(tr(' · Updates delayed', ' · التحديثات متأخرة'));
+                li.append(checked);
+            }
             $('sourceList').append(li);
         }));
         $('externalJobs').replaceChildren();
@@ -354,21 +415,26 @@
         renderEditor();
     }
     async function json(path) {
-        const r = await fetch(path, {
-            cache: 'no-cache'
-        });
-        if (!r.ok) throw new Error('HTTP ' + r.status);
-        return r.json();
+        const controller = new AbortController(), timer = setTimeout(() => controller.abort(), 15000);
+        try {
+            const r = await fetch(path, {cache: 'no-cache', signal: controller.signal});
+            if (!r.ok) throw new Error('HTTP ' + r.status);
+            return await r.json();
+        } finally {
+            clearTimeout(timer);
+        }
     }
     async function loadFeed(kind) {
+        if (feeds[kind].requestPending) return;
+        feeds[kind].requestPending = true;
         feeds[kind].loading = true;
         feeds[kind].error = false;
-        kind === 'news' ? renderNews() : renderJobs();
+        preserveFocus(() => kind === 'news' ? renderNews() : renderJobs());
         try {
             const data = await json(`data/${kind}.json`);
             if (!Array.isArray(data.items)) throw new Error('Invalid feed');
             feeds[kind] = {
-                items: data.items.filter(i => i && typeof i === 'object' && i.verification_version === 2 && safeURL(i.url) && value(i, 'title') && date(i.published) && new Date(i.published).getTime() <= Date.now() + 3600000 && (kind !== 'news' || Date.now() - new Date(i.published).getTime() <= 45 * 86400000)),
+                items: data.items.filter(i => validRecord(i, kind)),
                 updated: data.updated,
                 status: data.status,
                 loading: false
@@ -377,15 +443,18 @@
             feeds[kind].loading = false;
             feeds[kind].error = true;
         }
-        filters();
-        renderNews();
-        renderJobs();
+        feeds[kind].requestPending = false;
+        preserveFocus(() => {
+            filters();
+            renderNews();
+            renderJobs();
+        });
     }
     async function loadStatus() {
         try {
             const data = await json('data/status.json');
             sourceStatus = Object.fromEntries((data.sources || []).map(s => [s.id, s]));
-            renderSources();
+            preserveFocus(renderSources);
         } catch (_) {}
     }
     $('langToggle').onclick = () => {
@@ -420,8 +489,10 @@
     });
     $('clearFilters').onclick = clearFilters;
     $('moreNews').onclick = () => {
+        const next = newsLimit;
         newsLimit += 6;
         renderNews();
+        $('newsList').children[next]?.querySelector('.card-title a')?.focus({preventScroll: true});
     };
     renderAll();
     loadFeed('news');
@@ -442,4 +513,16 @@
         loadFeed('jobs');
         loadStatus();
     }, 15 * 60 * 1000);
+    // Expire loaded records even while the visitor leaves the tab open.
+    setInterval(() => {
+        const news = openNews(), jobs = openJobs();
+        if (news.length === feeds.news.items.length && jobs.length === feeds.jobs.items.length) return;
+        feeds.news.items = news;
+        feeds.jobs.items = jobs;
+        preserveFocus(() => {
+            filters();
+            renderNews();
+            renderJobs();
+        });
+    }, 60000);
 })();

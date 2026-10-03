@@ -146,6 +146,19 @@ class CollectorTests(unittest.TestCase):
     def test_exact_job_deadline_expires_within_day(self):
         self.assertFalse(u.job_valid(self.job(deadline=(u.now()-timedelta(minutes=1)).isoformat())))
 
+    def test_invalid_exact_deadline_is_rejected_without_crashing(self):
+        self.assertFalse(u.job_valid(self.job(deadline_at='not a timestamp')))
+
+    def test_future_verification_cannot_extend_cached_jobs(self):
+        item = {**self.verified(self.job()), 'verified_at': (u.now()+timedelta(days=2)).isoformat()}
+        self.assertEqual(u.merge_records([item], [], 'jobs', [{'id':'example', 'state':'error'}]), [])
+
+    def test_published_geography_uses_location_instead_of_publisher_name(self):
+        item = self.news(title='Syrian Arab Red Crescent opens clinic in Aleppo')
+        with patch.object(u, 'fetch', return_value=b'feed'), patch.object(u, 'parse_feed', return_value=[item]):
+            records, _ = u.news_records({'id':'example', 'name':'Example', 'url':'https://example.org/feed'})
+        self.assertEqual(records[0]['evidence']['geography'], 'Aleppo')
+
     def test_nrc_imports_only_public_syria_jobs(self):
         source = {'id':'nrc-jobs','name':'NRC','organisation':'Norwegian Refugee Council','sector':'ngo','adapter':'nrc_jobs','url':'https://example.org/jobs'}
         row = {'Id':'123','TenantId':'23109900','Heading':'Programme officer','IsInternet':True,'WorkPlaceFacet':'Syria','Workplace3':'Damascus','PublishedDate':u.now().strftime('%d/%m/%Y'),'ApplicationDeadline':(u.now()+timedelta(days=3)).isoformat(),'OpenAdvertUrl':'https://23109900.webcruiter.no/Main/Recruit/Public/123','JobType':'Contract'}

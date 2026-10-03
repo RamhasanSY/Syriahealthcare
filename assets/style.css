@@ -2,14 +2,14 @@
 
 :root {
     --ink: #173e36;
-    --muted: #65766f;
+    --muted: #53665c;
     --paper: #fafbf8;
     --white: #fff;
     --green: #21624d;
     --lime: #d7ed9f;
     --sage: #eaf1e8;
     --rule: #dfe6dd;
-    --orange: #bf6b40;
+    --orange: #a3532f;
     --sand: #f4eee2;
     --sans: 'DM Sans', system-ui, sans-serif;
     --serif: 'Newsreader', Georgia, serif;
@@ -449,7 +449,7 @@ h1 em {
 }
 
 .spotlight-org {
-    font-size: 10px;
+    font-size: 12px;
     color: var(--muted);
     margin-bottom: 7px
 }
@@ -463,7 +463,7 @@ h1 em {
 }
 
 .spotlight-meta {
-    font-size: 10px;
+    font-size: 12px;
     color: var(--muted);
     margin-bottom: 14px
 }
@@ -682,7 +682,7 @@ h1 em {
     background: transparent;
     font-size: 12px;
     color: var(--ink);
-    min-height: 33px;
+    min-height: 44px;
     padding-inline-end: 15px
 }
 
@@ -707,7 +707,7 @@ h1 em {
     background: transparent;
     color: var(--muted);
     font-size: 11px;
-    min-height: 37px;
+    min-height: 44px;
     border-radius: 5px;
     padding: 7px 13px
 }
@@ -724,7 +724,7 @@ h1 em {
     background: transparent;
     color: var(--muted);
     font-size: 11px;
-    min-height: 36px;
+    min-height: 44px;
     max-width: 145px
 }
 
@@ -810,21 +810,23 @@ h1 em {
 
 .org-avatar.ngo {
     background: #f5eadb;
-    color: #99613b
+    color: #85512d
 }
 
 .job-organisation {
-    font-size: 10px;
+    font-size: 12px;
     line-height: 1.5;
     color: var(--muted);
     margin: 0;
-    max-width: 170px
+    max-width: 170px;
+    min-width: 0;
+    overflow-wrap: anywhere
 }
 
 .save-job {
     margin-inline-start: auto;
-    width: 32px;
-    height: 34px;
+    width: 44px;
+    height: 44px;
     border: 0;
     background: transparent;
     border-radius: 5px;
@@ -870,7 +872,7 @@ h1 em {
 }
 
 .job-location {
-    font-size: 11px;
+    font-size: 12px;
     color: var(--muted);
     margin-bottom: 14px
 }
@@ -883,11 +885,11 @@ h1 em {
 }
 
 .job-tags .pill {
-    font-size: 9px
+    font-size: 11px
 }
 
 .job-reference {
-    font-size: 10px;
+    font-size: 12px;
     color: var(--muted);
     margin-bottom: 10px
 }
@@ -903,7 +905,7 @@ h1 em {
 }
 
 .job-deadline {
-    font-size: 10px;
+    font-size: 12px;
     color: var(--muted);
     margin: 0
 }
@@ -913,7 +915,7 @@ h1 em {
 }
 
 .apply-link {
-    font-size: 11px;
+    font-size: 13px;
     font-weight: 600;
     text-decoration: none;
     white-space: nowrap;
@@ -926,7 +928,7 @@ h1 em {
 }
 
 .board-note {
-    font-size: 10px;
+    font-size: 12px;
     color: var(--muted);
     margin-block: 20px 0
 }
@@ -1007,8 +1009,15 @@ h1 em {
     gap: 9px
 }
 
+#externalJobs li {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0
+}
+
 #externalJobs a {
-    height: 100%;
+    flex: 1;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -1082,7 +1091,7 @@ h1 em {
     flex-wrap: wrap;
     gap: 8px 12px;
     align-items: center;
-    font-size: 9px;
+    font-size: 11px;
     color: var(--muted);
     margin-bottom: 18px
 }
@@ -1113,13 +1122,13 @@ h1 em {
 }
 
 .card-summary {
-    font-size: 10px;
+    font-size: 12px;
     color: var(--muted);
     margin-bottom: 20px
 }
 
 .read-link {
-    font-size: 11px;
+    font-size: 13px;
     font-weight: 600;
     margin-top: auto;
     text-decoration: none;
@@ -1260,7 +1269,7 @@ h1 em {
 }
 
 .source-status {
-    font-size: 9px;
+    font-size: 11px;
     color: var(--muted);
     margin: 10px 0 0
 }
@@ -1554,6 +1563,10 @@ body[dir=rtl] .section-head h2 {
         padding: 12px
     }
 
+    .search-box input {
+        font-size: 16px
+    }
+
     .search-box {
         grid-column: 1/-1;
         border-bottom: 1px solid var(--rule);
@@ -1586,7 +1599,7 @@ body[dir=rtl] .section-head h2 {
 
     .sector-filters button {
         font-size: 10px;
-        min-height: 36px;
+        min-height: 44px;
         padding: 6px 9px
     }
 

@@ -18,7 +18,9 @@ There is no automatic LinkedIn import. LinkedIn, ReliefWeb and UOSSM vacancy pag
 
 Each record includes a source ID, original publication date, `verified_at`, and `verification_version: 2`. Legacy records without this provenance are removed even when a collection fails. Unknown dates are never guessed. Duplicates are removed by URL and matching title/location/employer.
 
-A successful employer collection replaces that employer's previous snapshot, removing withdrawn listings. During a source outage, only previously checked, unexpired jobs remain for up to 72 hours after verification. News remains for at most 45 days from original publication. The browser independently excludes old, undated or unverified records and refreshes loaded feeds every 15 minutes.
+A successful employer collection replaces that employer's previous snapshot, removing withdrawn listings. During a source outage, only previously checked, unexpired jobs remain for up to 72 hours after verification. News remains for at most 45 days from original publication. The browser independently excludes old, undated or unverified records and refreshes loaded feeds every 15 minutes. It also removes expired loaded records once per minute, rejects impossible calendar dates and future verification timestamps beyond a one-hour clock tolerance, and sorts exact deadlines by their closing time. Date-only deadlines remain open through the UTC date; exact closing times appear with a UTC label.
+
+Browser requests time out after 15 seconds. Failed background refreshes retain eligible loaded results and display a visible warning. Refreshing filters preserves keyboard focus; unavailable local storage uses temporary bookmarks with an explicit session-only notice. Feed and individual source checks show their UTC check time.
 
 `data/status.json` records each source's availability, checked time and accepted count. The website displays availability and clearly distinguishes an unavailable source from a reachable source with no matching items. Partial source failures generate workflow warnings; an entire unavailable news or jobs section fails the run. Valid data from reachable sources is still saved.
 
@@ -48,7 +50,9 @@ python -m playwright install chromium
 python tests/browser_check.py
 ```
 
-Browser checks cover desktop/mobile layouts, English/Arabic navigation, search, healthcare/NGO and organization filters, deadline sorting, saved-job persistence, expiration, rejected legacy records, safe links, retry behavior and restricted local storage. Screenshots are saved to ignored `.preview/`.
+Browser checks cover desktop/mobile layouts, English/Arabic navigation, search, healthcare/NGO and organization filters, exact deadline sorting, saved-job persistence, expiration, invalid verification records, safe links, retry behavior, background refresh failures, stalled request timeouts, keyboard focus, directory-note containment and restricted local storage. Screenshots are saved to ignored `.preview/`.
+
+The site uses a jasmine and courtyard arch SVG logo and a simplified matching favicon. Canonical and social metadata point to the production domain. `assets/social-card.png` is the 1200 × 630 sharing image; its editable template is `scripts/social-card.html`. To regenerate it, serve the repository, open that template in a browser at 1200 × 630 with device scale 1, and save a viewport screenshot over the PNG.
 
 Run `python scripts/update.py` to collect content locally. It writes public JSON files and makes no Git commits itself.
 
