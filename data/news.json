@@ -1,6 +1,6 @@
 {
-  "updated": "2026-10-03T18:29:36+00:00",
-  "checked_at": "2026-10-03T18:29:36+00:00",
+  "updated": "2026-10-03T18:31:40+00:00",
+  "checked_at": "2026-10-03T18:31:40+00:00",
   "status": "ok",
   "items": [
     {
@@ -12,7 +12,7 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-03T18:28:49+00:00",
+      "verified_at": "2026-10-03T18:31:13+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "Syria",
@@ -28,7 +28,7 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-03T18:28:49+00:00",
+      "verified_at": "2026-10-03T18:31:13+00:00",
       "topic": "policy",
       "evidence": {
         "geography": "Syria",
@@ -44,7 +44,7 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-03T18:28:49+00:00",
+      "verified_at": "2026-10-03T18:31:13+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "Syria",
@@ -60,7 +60,7 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-03T18:28:49+00:00",
+      "verified_at": "2026-10-03T18:31:13+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "Idlib",
@@ -76,7 +76,7 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-03T18:28:49+00:00",
+      "verified_at": "2026-10-03T18:31:13+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "Syria",
@@ -92,7 +92,7 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-03T18:28:49+00:00",
+      "verified_at": "2026-10-03T18:31:13+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "Syria",
@@ -108,7 +108,7 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-03T18:28:49+00:00",
+      "verified_at": "2026-10-03T18:31:13+00:00",
       "topic": "policy",
       "evidence": {
         "geography": "Syria",
@@ -124,7 +124,7 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-03T18:28:49+00:00",
+      "verified_at": "2026-10-03T18:31:13+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "Syrian",
@@ -140,7 +140,7 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-03T18:28:49+00:00",
+      "verified_at": "2026-10-03T18:31:13+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "Syria",

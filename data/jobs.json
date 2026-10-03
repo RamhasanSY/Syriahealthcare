@@ -1,6 +1,6 @@
 {
-  "updated": "2026-10-03T18:29:36+00:00",
-  "checked_at": "2026-10-03T18:29:36+00:00",
+  "updated": "2026-10-03T18:31:40+00:00",
+  "checked_at": "2026-10-03T18:31:40+00:00",
   "status": "ok",
   "items": [
     {
@@ -12,7 +12,7 @@
       "source": "IDA vacancies",
       "source_id": "ida-jobs",
       "verification_version": 2,
-      "verified_at": "2026-10-03T18:28:52+00:00",
+      "verified_at": "2026-10-03T18:31:17+00:00",
       "deadline": "2026-10-11",
       "organisation": "Independent Doctors Association",
       "location": "Syria - Aleppo City",
@@ -34,7 +34,7 @@
       "source": "SAMS recruitment",
       "source_id": "sams-jobs",
       "verification_version": 2,
-      "verified_at": "2026-10-03T18:29:36+00:00",
+      "verified_at": "2026-10-03T18:31:13+00:00",
       "deadline": "2026-10-13",
       "organisation": "Syrian American Medical Society (SAMS)",
       "location": "Syria / Damascus",
@@ -56,7 +56,7 @@
       "source": "SAMS recruitment",
       "source_id": "sams-jobs",
       "verification_version": 2,
-      "verified_at": "2026-10-03T18:29:36+00:00",
+      "verified_at": "2026-10-03T18:31:13+00:00",
       "deadline": "2026-10-07",
       "organisation": "Syrian American Medical Society (SAMS)",
       "location": "Syria / Damascus",
@@ -78,7 +78,7 @@
       "source": "SAMS recruitment",
       "source_id": "sams-jobs",
       "verification_version": 2,
-      "verified_at": "2026-10-03T18:29:36+00:00",
+      "verified_at": "2026-10-03T18:31:13+00:00",
       "deadline": "2026-10-10",
       "organisation": "Syrian American Medical Society (SAMS)",
       "location": "Syria / Aleppo",
@@ -92,6 +92,28 @@
       "id": "sams-jobs:1553"
     },
     {
+      "title": "Private Fund Projects Officer",
+      "title_en": "Private Fund Projects Officer",
+      "language": "en",
+      "url": "https://recruitment.sams-hr.com/PositionForCondidate/ApplyJob",
+      "published": "2026-09-27",
+      "source": "SAMS recruitment",
+      "source_id": "sams-jobs",
+      "verification_version": 2,
+      "verified_at": "2026-10-03T18:31:13+00:00",
+      "deadline": "2026-10-10",
+      "organisation": "Syrian American Medical Society (SAMS)",
+      "location": "Syria / Damascus",
+      "reference": "1552",
+      "role_type": "support",
+      "evidence": {
+        "type": "employer-listing",
+        "deadline": "2026-10-10",
+        "location": "Syria / Damascus"
+      },
+      "id": "sams-jobs:1552"
+    },
+    {
       "title": "(طبيبـ/ـة أخصائيـ/ـة (أطفال",
       "title_ar": "(طبيبـ/ـة أخصائيـ/ـة (أطفال",
       "language": "ar",
@@ -100,7 +122,7 @@
       "source": "IDA vacancies",
       "source_id": "ida-jobs",
       "verification_version": 2,
-      "verified_at": "2026-10-03T18:28:54+00:00",
+      "verified_at": "2026-10-03T18:31:20+00:00",
       "deadline": "2026-10-03",
       "organisation": "Independent Doctors Association",
       "location": "Northern Deir Alzoor Countryside : Abu Khashab PHC",
@@ -113,28 +135,6 @@
       },
       "id": "ida-jobs:https://ida-org.com/jobs/specialized-doctor-pediatrician-4",
       "title_en": "Specialized Doctor (Pediatrician)"
-    },
-    {
-      "title": "Private Fund Projects Officer",
-      "title_en": "Private Fund Projects Officer",
-      "language": "en",
-      "url": "https://recruitment.sams-hr.com/PositionForCondidate/ApplyJob",
-      "published": "2026-09-27",
-      "source": "SAMS recruitment",
-      "source_id": "sams-jobs",
-      "verification_version": 2,
-      "verified_at": "2026-10-03T18:29:36+00:00",
-      "deadline": "2026-10-10",
-      "organisation": "Syrian American Medical Society (SAMS)",
-      "location": "Syria / Damascus",
-      "reference": "1552",
-      "role_type": "support",
-      "evidence": {
-        "type": "employer-listing",
-        "deadline": "2026-10-10",
-        "location": "Syria / Damascus"
-      },
-      "id": "sams-jobs:1552"
     }
   ]
 }
