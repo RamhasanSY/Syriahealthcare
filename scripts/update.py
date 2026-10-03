@@ -11,7 +11,7 @@ import urllib.error
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timedelta, timezone
-from email.utils import parsedate_to_datetime
+from email.utils import parsedate_to_datetime, format_datetime
 from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import urlsplit, urlunsplit, parse_qsl, urlencode, urljoin
@@ -350,6 +350,38 @@ def write(path, payload):
     os.replace(temporary, path)
 
 
+def news_rss(items):
+    """Original headlines and attribution for readers and publishing integrations."""
+    rss = ElementTree.Element('rss', version='2.0')
+    channel = ElementTree.SubElement(rss, 'channel')
+    for tag, value in [('title', 'Syria Healthcare - source news'), ('link', 'https://syriahealthcare.com/#news'),
+                       ('description', 'Original healthcare headlines about Syria, with links to their publishers.')]:
+        ElementTree.SubElement(channel, tag).text = value
+    seen = set()
+    for item in items:
+        url = canonical_url(item.get('url', ''))
+        published = parse_date(item.get('published'))
+        title = item.get('title') or item.get('title_en') or item.get('title_ar')
+        if not url or url in seen or not title or item.get('verification_version') != VERSION or not published:
+            continue
+        if published < now() - timedelta(days=MAX_NEWS_DAYS) or published > now() + timedelta(hours=1):
+            continue
+        seen.add(url)
+        entry = ElementTree.SubElement(channel, 'item')
+        for tag, value in [('title', title), ('link', url), ('description', 'Source: ' + item.get('source', 'Original publisher')),
+                           ('pubDate', format_datetime(published.astimezone(timezone.utc), usegmt=True))]:
+            ElementTree.SubElement(entry, tag).text = value
+        ElementTree.SubElement(entry, 'guid', isPermaLink='true').text = url
+    ElementTree.indent(rss)
+    return ElementTree.tostring(rss, encoding='utf-8', xml_declaration=True)
+
+
+def write_news_rss(items):
+    temporary = DATA / 'news.xml.tmp'
+    temporary.write_bytes(news_rss(items))
+    os.replace(temporary, DATA / 'news.xml')
+
+
 def retain_verified(item, kind, configured):
     verified = parse_date(item.get('verified_at'))
     published = parse_date(item.get('published'))
@@ -401,6 +433,8 @@ def main():
         items = merge_records(old.get('items', []), fresh[kind], kind, statuses)
         write(DATA / (kind + '.json'), {'updated': checked if success else old.get('updated'), 'checked_at': checked,
               'status': 'ok' if all(s['state'] == 'ok' for s in statuses) and statuses else 'partial' if success else 'error', 'items': items})
+        if kind == 'news':
+            write_news_rss(items)
         if not success:
             failed = True
     write(DATA / 'status.json', {'checked_at': checked, 'sources': sorted(status_rows, key=lambda s: s['id']), 'version': VERSION})

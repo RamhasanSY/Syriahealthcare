@@ -1,0 +1,51 @@
+SYRIA HEALTHCARE - LINKEDIN PAGE SETUP
+
+1. Create the Page while signed in to your own LinkedIn account:
+   https://www.linkedin.com/company/setup/new/
+   Choose Company. Enter the real organization type, size and other required details.
+   Name: Syria Healthcare
+   Website: https://syriahealthcare.com/
+   Suggested public address: syriahealthcare (subject to availability)
+   Tagline: Healthcare news and NGO opportunities in Syria.
+
+About text:
+Syria Healthcare is an independent information platform connecting people with
+healthcare news and NGO opportunities in Syria. We collect original headlines
+and current vacancies from publishers and employers, with links to the source.
+Our website is available in English and Arabic. We do not represent the listed
+employers; applications are handled by each employer.
+
+First post draft (not published):
+Welcome to Syria Healthcare.
+Explore healthcare news and current healthcare and NGO opportunities in Syria,
+with original sources, closing dates and employer application links.
+Visit https://syriahealthcare.com/
+#Syria #Healthcare #NGOJobs
+
+2. Connect publishing:
+   In Zapier, add a LinkedIn connection and complete LinkedIn's sign-in and
+   authorization screen as an administrator of the Page.
+   Trigger: RSS by Zapier - New Item in Feed
+   Feed: https://syriahealthcare.com/data/news.xml
+   Action: LinkedIn - Create Company Update
+   Select the Syria Healthcare Page.
+   Post text: feed Title, then Description (publisher attribution).
+   Article URL: feed Link.
+   Check a sample before enabling. Start with future new items, not the archive.
+   The feed refreshes with the website's twice-daily collection. Zapier's polling
+   and any account limits determine how soon a new item is posted.
+   This is not connected yet; the account owner must authorize it in LinkedIn.
+   Do not send passwords, browser cookies or access tokens in chat.
+
+3. Keep your voice:
+   Add a personal introduction to selected stories, or manually schedule Page
+   posts inside LinkedIn. Automated posts should preserve publisher attribution.
+
+4. Send the actual Page URL back so it can be linked from the website.
+   Creating or connecting a Page does not enable importing LinkedIn jobs.
+
+Official instructions:
+https://www.linkedin.com/help/linkedin/answer/a544879
+https://help.zapier.com/hc/en-us/articles/8495987891853-How-to-get-started-with-LinkedIn-on-Zapier
+https://help.zapier.com/hc/en-us/articles/8496279482125-Trigger-Zap-workflows-from-new-RSS-feed-items
+https://www.linkedin.com/help/linkedin/answer/a548192/scheduled-posts-for-linkedin-pages

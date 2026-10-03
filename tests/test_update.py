@@ -10,6 +10,25 @@ from scripts import update as u
 
 
 class CollectorTests(unittest.TestCase):
+    def test_news_rss_preserves_headlines_and_stable_ids(self):
+        item = self.verified(self.news(title='Syria & health <news> أخبار', source='Publisher'))
+        root = u.ElementTree.fromstring(u.news_rss([item, item]))
+        entries = root.findall('./channel/item')
+        self.assertEqual(len(entries), 1)
+        self.assertEqual(entries[0].findtext('title'), item['title'])
+        self.assertEqual(entries[0].findtext('link'), item['url'])
+        self.assertEqual(entries[0].findtext('description'), 'Source: Publisher')
+        changed = {**item, 'verified_at': (u.now() + timedelta(hours=12)).isoformat()}
+        next_root = u.ElementTree.fromstring(u.news_rss([changed]))
+        self.assertEqual(entries[0].findtext('guid'), next_root.findtext('./channel/item/guid'))
+        self.assertEqual(entries[0].findtext('pubDate'), next_root.findtext('./channel/item/pubDate'))
+
+    def test_news_rss_rejects_unsafe_unverified_and_old_items(self):
+        items = [self.news(), self.verified(self.news(url='javascript:alert(1)')),
+                 self.verified(self.news(published=(u.now() - timedelta(days=46)).isoformat())),
+                 self.verified(self.news(published=(u.now() + timedelta(days=2)).isoformat()))]
+        self.assertEqual(u.ElementTree.fromstring(u.news_rss(items)).findall('./channel/item'), [])
+
     def news(self, **fields):
         return {'title': 'New cardiac services in Syria', 'url': 'https://example.org/clinic', 'published': u.now().isoformat(), 'raw_summary': 'Hospital teams in Damascus provide cardiac care.', **fields}
 

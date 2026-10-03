@@ -59,3 +59,11 @@ Edit `data/editor.json`, set `enabled` to `true`, and provide the English/Arabic
 ## Job discovery
 
 The job board supports keyword search, location and organization filters, healthcare/NGO categories, newest/deadline sorting and bookmarks saved on the visitor's device. Bookmarks require no account. Only eligible vacancies appear; a working integration with no matching Syria jobs stays visible in source status. LinkedIn searches remain clearly marked external discovery links.
+
+## LinkedIn publishing
+
+The public RSS feed at https://syriahealthcare.com/data/news.xml is rebuilt with each collection. It contains original headlines, publisher attribution, original article links, publication dates and stable URL identifiers. Refreshing source verification does not create a new feed item. No full article text is republished.
+
+A Page administrator can connect LinkedIn to Zapier using its sign-in authorization, then configure RSS by Zapier (New Item in Feed) to LinkedIn (Create Company Update). Map the title and description to the post text and the item link to its article URL. Enable only new items after setup; do not bulk-publish the existing archive. Test with a draft/sample before enabling publishing. This repository does not hold a LinkedIn password or token and no LinkedIn publishing connection is currently configured. Page creation and account authorization must be completed by the account owner.
+
+This publishing connection does not grant access to search or import LinkedIn jobs. See linkedin-setup.txt for Page copy and setup instructions.

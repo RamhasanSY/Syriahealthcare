@@ -300,7 +300,7 @@
             tags.append(node('span', 'pill' + (isNGO ? ' warm' : ''), isNGO ? tr('NGO & humanitarian', 'منظمات وعمل إنساني') : j.role_type === 'clinical' ? tr('Clinical / healthcare', 'طبي / صحي') : tr('Health-sector support', 'دعم القطاع الصحي')));
             if (j.contract) tags.append(node('span', 'pill', j.contract));
             li.append(top, title, node('p', 'job-location', j.location), tags);
-            if (j.reference && j.listing_page) li.append(node('p', 'job-reference', tr('Vacancy reference: ', 'رقم الوظيفة: ') + j.reference));
+            if (j.reference && j.listing_page) li.append(node('p', 'job-reference', tr('Opens the employer’s vacancy board. Find reference ', 'يفتح قائمة وظائف الجهة الموظفة. ابحث عن الرقم ') + j.reference + tr(' and select “Register to Apply”.', ' ثم اختر «Register to Apply».')));
             const bottom = node('div', 'job-card-bottom'),
                 deadline = node('p', 'job-deadline', tr('Closes ', 'يغلق في ') + date(j.deadline));
             if (new Date(j.deadline).getTime() - Date.now() < 3 * 86400000) deadline.classList.add('urgent');
@@ -331,6 +331,7 @@
             if (!safeURL(s.url)) return;
             const li = node('li');
             li.append(link(lang === 'ar' ? s.name_ar || s.name : s.name, s.url));
+            if (new URL(s.url).hostname === 'www.linkedin.com') li.append(node('p', 'source-status', tr('Opens LinkedIn jobs from the past week. LinkedIn may ask you to sign in; results can be empty.', 'يفتح وظائف لينكدإن من الأسبوع الماضي. قد يُطلب تسجيل الدخول وقد لا تظهر نتائج.')));
             $('externalJobs').append(li);
         });
     }
