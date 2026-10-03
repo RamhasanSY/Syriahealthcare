@@ -1,4 +1,4 @@
-﻿{
+{
   "news": [
     {"id":"sams-news","name":"Syrian American Medical Society (SAMS)","adapter":"rss","url":"https://sams-usa.net/feed/","website":"https://sams-usa.net/"},
     {"id":"uossm-news","name":"UOSSM","adapter":"rss","url":"https://uossm.org/feed/","website":"https://uossm.org/"},
