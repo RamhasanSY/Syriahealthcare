@@ -11,7 +11,8 @@
     {"id":"ida-jobs","name":"IDA vacancies","organisation":"Independent Doctors Association","adapter":"ida_jobs","url":"https://ida-org.com/feed/?post_type=jobs","website":"https://ida-org.com/jobs/"}
   ],
   "directories": [
-    {"name":"LinkedIn — healthcare jobs in Syria","name_ar":"لينكدإن — وظائف الرعاية الصحية في سوريا","url":"https://www.linkedin.com/jobs/search/?keywords=healthcare&location=Syria","mode":"external"},
+    {"name":"LinkedIn — new healthcare jobs in Syria","name_ar":"لينكدإن — وظائف صحية جديدة في سوريا","url":"https://www.linkedin.com/jobs/search/?keywords=healthcare&location=Syria&sortBy=DD&f_TPR=r604800","mode":"external"},
+    {"name":"LinkedIn — new NGO jobs in Syria","name_ar":"لينكدإن — وظائف منظمات جديدة في سوريا","url":"https://www.linkedin.com/jobs/search/?keywords=NGO&location=Syria&sortBy=DD&f_TPR=r604800","mode":"external"},
     {"name":"ReliefWeb — Syria vacancies","name_ar":"ريليف ويب — وظائف في سوريا","url":"https://reliefweb.int/jobs?advanced-search=%28C226%29","mode":"external"},
     {"name":"UOSSM — official vacancies","name_ar":"أوسوم — الوظائف الرسمية","url":"https://uossm.org/reach-us/job-vacancies/","mode":"external"}
   ]
