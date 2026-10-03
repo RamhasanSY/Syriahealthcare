@@ -13,6 +13,7 @@ If none is set, publishing fails safely and existing data is preserved.
 """
 
 import json
+import gzip
 import os
 import re
 import sys
@@ -46,7 +47,8 @@ USER_AGENT = "SyriaHealthcareBot/1.0 (+https://syriahealthcare.com)"
 def fetch(url, timeout=30):
     req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
     with urllib.request.urlopen(req, timeout=timeout) as r:
-        return r.read()
+        content = r.read()
+        return gzip.decompress(content) if content.startswith(b"\x1f\x8b") else content
 
 
 def strip_html(text):
@@ -84,7 +86,8 @@ def parse_feed(xml_bytes, source_name):
     try:
         root = ElementTree.fromstring(xml_bytes)
     except ElementTree.ParseError as exc:
-        raise ValueError(f"Invalid XML from {source_name}") from exc
+        preview = xml_bytes[:160].decode("utf-8", errors="replace").replace("\n", " ")
+        raise ValueError(f"Invalid XML from {source_name}: {exc}; response begins {preview!r}") from exc
 
     if root.tag not in ("rss", "{http://www.w3.org/2005/Atom}feed", "{http://www.w3.org/1999/02/22-rdf-syntax-ns#}RDF"):
         raise ValueError(f"Not an RSS/Atom feed: {source_name}")
@@ -156,7 +159,7 @@ def llm_config():
                 os.environ["GROQ_API_KEY"], "llama-3.3-70b-versatile")
     if os.environ.get("GEMINI_API_KEY"):
         return ("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
-                os.environ["GEMINI_API_KEY"], "gemini-2.0-flash")
+                os.environ["GEMINI_API_KEY"], os.environ.get("GEMINI_MODEL", "gemini-3.6-flash"))
     if os.environ.get("GITHUB_TOKEN"):
         return ("https://models.github.ai/inference/chat/completions",
                 os.environ["GITHUB_TOKEN"], "openai/gpt-4o-mini")
