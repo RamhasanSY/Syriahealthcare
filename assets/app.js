@@ -1,194 +1,310 @@
-(function () {
-  "use strict";
-
-  var lang = localStorage.getItem("shc-lang") === "ar" ? "ar" : "en";
-  var news = [];
-  var jobs = [];
-  var sourceCount = null;
-  var activeTopic = "all";
-
-  var TOPIC_LABELS = {
-    all: { en: "All", ar: "الكل" },
-    hospitals: { en: "Hospitals & clinics", ar: "المشافي والعيادات" },
-    "public-health": { en: "Public health", ar: "الصحة العامة" },
-    aid: { en: "Aid & funding", ar: "الإغاثة والتمويل" },
-    workforce: { en: "Workforce", ar: "الكوادر الصحية" },
-    policy: { en: "Policy", ar: "السياسات" },
-    other: { en: "Other", ar: "أخرى" }
+(() => {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  let lang = 'en';
+  try {
+    lang = localStorage.getItem('shc-lang') === 'ar' ? 'ar' : 'en';
+  } catch (_) {}
+  let topic = 'all',
+    location = '',
+    query = '',
+    sources = {},
+    editor = {};
+  const feeds = {
+    news: {
+      items: [],
+      loading: true
+    },
+    jobs: {
+      items: [],
+      loading: true
+    }
   };
+  const topics = {
+    all: ['All stories', 'كل الأخبار'],
+    hospitals: ['Hospitals & clinics', 'المشافي والعيادات'],
+    'public-health': ['Public health', 'الصحة العامة'],
+    aid: ['Aid & funding', 'الإغاثة والتمويل'],
+    workforce: ['Workforce', 'الكوادر الصحية'],
+    policy: ['Policy', 'السياسات'],
+    other: ['Other', 'أخرى']
+  };
+  const tr = (en, ar) => lang === 'ar' ? ar : en;
+  const value = (item, key) => item[key + '_' + lang] || item[key + '_en'] || item[key] || '';
+  const label = key => (topics[key] || topics.other)[lang === 'ar' ? 1 : 0];
 
-  function t(obj, key) {
-    if (!obj) return "";
-    return obj[key + "_" + lang] || obj[key + "_en"] || obj[key] || "";
-  }
-
-  function el(tag, cls, text) {
-    var n = document.createElement(tag);
+  function node(tag, cls, text) {
+    const n = document.createElement(tag);
     if (cls) n.className = cls;
     if (text !== undefined) n.textContent = text;
     return n;
   }
 
-  function formatDate(iso) {
-    if (!iso) return "";
-    var d = new Date(iso);
-    if (isNaN(d)) return "";
-    return d.toLocaleDateString(lang === "ar" ? "ar" : "en-GB", {
-      day: "numeric", month: "short", year: "numeric"
-    });
-  }
-
-  function applyStaticText() {
-    document.documentElement.lang = lang;
-    document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
-    document.body.dir = lang === "ar" ? "rtl" : "ltr";
-    var nodes = document.querySelectorAll("[data-en]");
-    for (var i = 0; i < nodes.length; i++) {
-      var v = nodes[i].getAttribute("data-" + lang);
-      if (v) nodes[i].textContent = v;
+  function safeURL(raw) {
+    try {
+      const u = new URL(raw);
+      return ['https:', 'http:'].includes(u.protocol) ? u.href : '';
+    } catch (_) {
+      return '';
     }
-    var btn = document.getElementById("langToggle");
-    btn.textContent = lang === "ar" ? "English" : "العربية";
-    btn.lang = lang === "ar" ? "en" : "ar";
   }
 
-  function renderStamp(updated) {
-    var stamp = document.getElementById("stamp");
-    if (!updated) { stamp.textContent = ""; return; }
-    var when = formatDate(updated);
-    stamp.textContent = lang === "ar" ? "آخر تحديث: " + when : "Last updated " + when;
+  function link(text, url, cls) {
+    const a = node('a', cls, text);
+    a.href = safeURL(url);
+    a.rel = 'noopener noreferrer';
+    return a;
   }
 
-  function renderStats() {
-    var statNews = document.getElementById("statNews");
-    var statJobs = document.getElementById("statJobs");
-    var statSources = document.getElementById("statSources");
-    if (statNews) statNews.textContent = news.length ? String(news.length) : "0";
-    if (statJobs) statJobs.textContent = jobs.length ? String(jobs.length) : "0";
-    if (statSources) statSources.textContent = sourceCount != null ? String(sourceCount) : "–";
+  function date(raw) {
+    const d = new Date(raw);
+    return raw && !isNaN(d) ? d.toLocaleDateString(lang === 'ar' ? 'ar' : 'en-GB', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+      timeZone: 'UTC'
+    }) : '';
   }
 
-  function renderFilters() {
-    var box = document.getElementById("newsFilters");
-    box.textContent = "";
-    var present = ["all"];
-    news.forEach(function (n) {
-      if (n.topic && present.indexOf(n.topic) === -1) present.push(n.topic);
+  function normalize(text) {
+    return String(text).normalize('NFKD').replace(/[\u0300-\u036f\u064b-\u065f\u0670]/g, '').toLocaleLowerCase();
+  }
+
+  function matches(item) {
+    return !query || normalize(['title_en', 'title_ar', 'summary_en', 'summary_ar', 'source', 'organisation', 'location'].map(k => item[k] || '').join(' ')).includes(query);
+  }
+
+  function openJobs() {
+    const today = new Date().toISOString().slice(0, 10);
+    return feeds.jobs.items.filter(j => !/^\d{4}-\d{2}-\d{2}$/.test(j.deadline || '') || j.deadline >= today);
+  }
+
+  function staticText() {
+    document.documentElement.lang = lang;
+    document.documentElement.dir = document.body.dir = lang === 'ar' ? 'rtl' : 'ltr';
+    document.querySelectorAll('[data-en]').forEach(n => {
+      n.textContent = n.dataset[lang] || n.dataset.en;
     });
-    if (present.length < 3) return;
-    present.forEach(function (topic) {
-      var label = TOPIC_LABELS[topic] ? TOPIC_LABELS[topic][lang] : topic;
-      var b = el("button", null, label);
-      b.type = "button";
-      b.setAttribute("aria-pressed", topic === activeTopic ? "true" : "false");
-      b.addEventListener("click", function () {
-        activeTopic = topic;
-        renderFilters();
+    document.querySelectorAll('[data-label-en]').forEach(n => n.setAttribute('aria-label', n.getAttribute('data-label-' + lang)));
+    document.querySelectorAll('[data-placeholder-en]').forEach(n => n.placeholder = n.getAttribute('data-placeholder-' + lang));
+    $('langToggle').textContent = tr('العربية', 'English');
+    $('langToggle').lang = tr('ar', 'en');
+    $('langToggle').setAttribute('aria-label', tr('Switch to Arabic', 'التبديل إلى الإنجليزية'));
+  }
+
+  function stamp(kind) {
+    const f = feeds[kind],
+      n = $(kind + 'Stamp');
+    const checked = date(f.updated);
+    const stale = checked && Date.now() - new Date(f.updated).getTime() > 48 * 3600000;
+    n.textContent = checked ? tr('Last successful collection: ', 'آخر جمع ناجح: ') + checked + (stale ? tr(' · Updates delayed', ' · التحديثات متأخرة') : '') : '';
+    n.classList.toggle('stale', Boolean(stale));
+  }
+
+  function emptyState(kind, hasResults, filtered) {
+    const box = $(kind + 'Empty'),
+      f = feeds[kind];
+    box.hidden = hasResults;
+    box.replaceChildren();
+    if (hasResults) return;
+    let heading, body;
+    if (f.loading) {
+      heading = tr('Loading…', 'جارٍ التحميل…');
+      body = tr('Fetching the latest available content.', 'جارٍ جلب أحدث المحتويات المتاحة.');
+    } else if (f.error) {
+      heading = tr('Unable to load this feed', 'تعذر تحميل هذه الخلاصة');
+      body = tr('Please try again. You can also explore the original sources below.', 'يرجى المحاولة مجدداً. يمكنك أيضاً تصفح المصادر الأصلية أدناه.');
+    } else if (filtered) {
+      heading = tr('No matching results', 'لا توجد نتائج مطابقة');
+      body = tr('Try a different search or clear your filters.', 'جرّب بحثاً آخر أو امسح عوامل التصفية.');
+    } else {
+      heading = kind === 'news' ? tr('The next stories belong here', 'الأخبار القادمة تجدها هنا') : tr('No current openings', 'لا توجد فرص حالية');
+      body = tr('Explore the original sources while we collect more relevant updates.', 'تصفح المصادر الأصلية ريثما نجمع المزيد من التحديثات ذات الصلة.');
+    }
+    const symbol = node('span', 'empty-symbol', '✳');
+    symbol.setAttribute('aria-hidden', 'true');
+    box.append(symbol, node('h3', '', heading), node('p', '', body));
+    if (f.error || filtered) {
+      const b = node('button', '', f.error ? tr('Try again', 'حاول مجدداً') : tr('Clear filters', 'مسح التصفية'));
+      b.type = 'button';
+      b.onclick = () => {
+        if (f.error) loadFeed(kind);
+        else {
+          query = '';
+          topic = 'all';
+          location = '';
+          $('search').value = '';
+          renderAll();
+        }
+      };
+      box.append(b);
+    } else if (!f.loading) {
+      const a = node('a', '', tr('Explore our sources →', 'تصفح مصادرنا ←'));
+      a.href = '#sources';
+      box.append(a);
+    }
+  }
+
+  function filters() {
+    const present = ['all', ...new Set(feeds.news.items.map(n => n.topic || 'other'))];
+    if (!present.includes(topic)) topic = 'all';
+    $('newsFilters').replaceChildren();
+    present.forEach(key => {
+      const b = node('button', '', label(key));
+      b.type = 'button';
+      b.setAttribute('aria-pressed', String(topic === key));
+      b.onclick = () => {
+        topic = key;
+        $('newsFilters').querySelectorAll('button').forEach(n => n.setAttribute('aria-pressed', String(n === b)));
         renderNews();
-      });
-      box.appendChild(b);
+      };
+      $('newsFilters').append(b);
     });
+    const select = $('location');
+    select.replaceChildren();
+    const all = node('option', '', tr('All locations', 'جميع المواقع'));
+    all.value = '';
+    select.append(all);
+    [...new Set(openJobs().map(j => j.location).filter(Boolean))].sort().forEach(loc => {
+      const o = node('option', '', loc);
+      o.value = loc;
+      select.append(o);
+    });
+    select.value = location;
+    if (select.selectedIndex < 0) {
+      location = '';
+      select.value = '';
+    }
   }
 
   function renderNews() {
-    var list = document.getElementById("newsList");
-    var empty = document.getElementById("newsEmpty");
-    list.textContent = "";
-    var items = news.filter(function (n) {
-      return activeTopic === "all" || n.topic === activeTopic;
-    });
-    empty.hidden = items.length > 0;
-
-    items.forEach(function (n) {
-      var li = el("li");
-
-      var meta = el("div", "card-meta");
-      if (n.topic) {
-        var label = TOPIC_LABELS[n.topic] ? TOPIC_LABELS[n.topic][lang] : n.topic;
-        meta.appendChild(el("span", "topic topic-" + n.topic, label));
+    const items = feeds.news.items.filter(n => (topic === 'all' || (n.topic || 'other') === topic) && matches(n));
+    $('newsList').replaceChildren();
+    $('newsCount').textContent = items.length;
+    items.forEach(n => {
+      const li = node('li'),
+        meta = node('div', 'card-meta');
+      meta.append(node('span', 'topic', label(n.topic)));
+      if (n.source) meta.append(node('span', '', n.source));
+      if (date(n.published)) {
+        const time = node('time', '', date(n.published));
+        time.dateTime = n.published;
+        meta.append(time);
       }
-      if (n.source) meta.appendChild(el("span", null, n.source));
-      if (n.published) meta.appendChild(el("span", null, formatDate(n.published)));
-      li.appendChild(meta);
-
-      var h3 = el("h3", "card-title");
-      var a = el("a", null, t(n, "title"));
-      a.href = n.url;
-      a.rel = "noopener noreferrer";
-      a.target = "_blank";
-      h3.appendChild(a);
-      li.appendChild(h3);
-
-      var summary = t(n, "summary");
-      if (summary) li.appendChild(el("p", "card-summary", summary));
-
-      list.appendChild(li);
+      const title = node('h3', 'card-title');
+      title.append(link(value(n, 'title'), n.url));
+      li.append(meta, title);
+      if (value(n, 'summary')) li.append(node('p', 'card-summary', value(n, 'summary')));
+      li.append(link(tr('Read original story ↗', 'اقرأ الخبر الأصلي ↖'), n.url, 'read-link'));
+      $('newsList').append(li);
     });
+    emptyState('news', items.length > 0, Boolean(query || topic !== 'all'));
+    stamp('news');
+    $('newsResult').textContent = tr(`${items.length} stories shown`, `عدد الأخبار المعروضة: ${items.length}`);
   }
 
   function renderJobs() {
-    var list = document.getElementById("jobsList");
-    var empty = document.getElementById("jobsEmpty");
-    list.textContent = "";
-    empty.hidden = jobs.length > 0;
-
-    jobs.forEach(function (j) {
-      var li = el("li");
-
-      var h3 = el("h3", "job-title");
-      var a = el("a", null, t(j, "title"));
-      a.href = j.url;
-      a.rel = "noopener noreferrer";
-      a.target = "_blank";
-      h3.appendChild(a);
-      li.appendChild(h3);
-
-      var bits = [];
-      if (j.organisation) bits.push(j.organisation);
-      if (j.location) bits.push(j.location);
-      var meta = el("p", "job-meta", bits.join(" · "));
-      if (j.deadline) {
-        var d = el("span", "job-deadline",
-          (lang === "ar" ? " — آخر موعد: " : " — closes ") + formatDate(j.deadline));
-        meta.appendChild(d);
-      }
-      li.appendChild(meta);
-
-      list.appendChild(li);
+    const items = openJobs().filter(j => (!location || j.location === location) && matches(j));
+    $('jobsList').replaceChildren();
+    $('jobsCount').textContent = items.length;
+    items.forEach(j => {
+      const li = node('li'),
+        title = node('h3', 'job-title');
+      title.append(link(value(j, 'title'), j.url));
+      li.append(title);
+      li.append(node('p', 'job-meta', [j.organisation || j.source, j.location].filter(Boolean).join(' · ')));
+      li.append(node('p', 'job-deadline', date(j.deadline) ? tr('Closes ', 'آخر موعد: ') + date(j.deadline) : tr('Closing date: check original listing', 'الموعد النهائي: راجع الإعلان الأصلي')));
+      li.append(link(tr('View vacancy ↗', 'عرض الوظيفة ↖'), j.url, 'read-link'));
+      $('jobsList').append(li);
     });
+    emptyState('jobs', items.length > 0, Boolean(query || location));
+    stamp('jobs');
+    $('jobsResult').textContent = tr(`${items.length} opportunities shown`, `عدد الفرص المعروضة: ${items.length}`);
   }
 
-  function renderAll(updated) {
-    applyStaticText();
-    renderStamp(updated);
-    renderStats();
-    renderFilters();
+  function renderSources() {
+    $('sourceList').replaceChildren();
+    ['news', 'jobs'].forEach(kind => (sources[kind] || []).forEach(s => {
+      if (!safeURL(s.url)) return;
+      const li = node('li'),
+        a = link(s.name, s.url);
+      a.append(node('small', '', kind === 'news' ? tr('News feed ↗', 'خلاصة أخبار ↖') : tr('Jobs feed ↗', 'خلاصة وظائف ↖')));
+      li.append(a);
+      $('sourceList').append(li);
+    }));
+  }
+
+  function renderEditor() {
+    $('editorNote').hidden = !(editor.enabled === true && value(editor, 'title') && value(editor, 'body'));
+    $('editorHeading').textContent = value(editor, 'title');
+    $('editorBody').textContent = value(editor, 'body');
+    $('editorLink').hidden = !safeURL(editor.url);
+    $('editorLink').href = safeURL(editor.url);
+    $('editorLink').textContent = value(editor, 'link');
+  }
+
+  function renderAll() {
+    staticText();
+    filters();
+    renderNews();
+    renderJobs();
+    renderSources();
+    renderEditor();
+  }
+  async function json(path) {
+    const r = await fetch(path, {
+      cache: 'no-cache'
+    });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return r.json();
+  }
+  async function loadFeed(kind) {
+    feeds[kind].loading = true;
+    feeds[kind].error = false;
+    kind === 'news' ? renderNews() : renderJobs();
+    try {
+      const data = await json(`data/${kind}.json`);
+      if (!Array.isArray(data.items)) throw new Error('Invalid feed');
+      feeds[kind] = {
+        items: data.items.filter(i => i && typeof i === 'object' && safeURL(i.url) && value(i, 'title')),
+        updated: data.updated,
+        loading: false
+      };
+    } catch (_) {
+      feeds[kind].loading = false;
+      feeds[kind].error = true;
+    }
+    filters();
     renderNews();
     renderJobs();
   }
-
-  function load() {
-    var updated = null;
-    Promise.all([
-      fetch("data/news.json?" + Date.now()).then(function (r) { return r.json(); }).catch(function () { return {}; }),
-      fetch("data/jobs.json?" + Date.now()).then(function (r) { return r.json(); }).catch(function () { return {}; }),
-      fetch("sources.json?" + Date.now()).then(function (r) { return r.json(); }).catch(function () { return null; })
-    ]).then(function (res) {
-      news = (res[0] && res[0].items) || [];
-      jobs = (res[1] && res[1].items) || [];
-      updated = (res[0] && res[0].updated) || null;
-      if (res[2]) {
-        sourceCount = ((res[2].news || []).length) + ((res[2].jobs || []).length);
-      }
-      renderAll(updated);
-    });
-
-    document.getElementById("langToggle").addEventListener("click", function () {
-      lang = lang === "ar" ? "en" : "ar";
-      localStorage.setItem("shc-lang", lang);
-      renderAll(updated);
-    });
-  }
-
-  load();
+  $('langToggle').onclick = () => {
+    lang = lang === 'en' ? 'ar' : 'en';
+    try {
+      localStorage.setItem('shc-lang', lang);
+    } catch (_) {}
+    renderAll();
+  };
+  $('search').addEventListener('input', e => {
+    query = normalize(e.target.value.trim());
+    renderNews();
+    renderJobs();
+  });
+  $('location').onchange = e => {
+    location = e.target.value;
+    renderJobs();
+  };
+  renderAll();
+  loadFeed('news');
+  loadFeed('jobs');
+  json('sources.json').then(data => {
+    sources = data;
+    renderSources();
+  }).catch(() => {
+    $('sourceError').hidden = false;
+  });
+  json('data/editor.json').then(data => {
+    editor = data;
+    renderEditor();
+  }).catch(() => {});
 })();

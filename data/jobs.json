@@ -1,6 +1,26 @@
 {
-  "updated": "2026-09-08T14:34:06+00:00",
+  "updated": "2026-10-03T17:35:06+00:00",
   "items": [
+    {
+      "title_en": "MEAL Manager",
+      "url": "https://reliefweb.int/job/4232153/meal-manager",
+      "published": "2026-10-01",
+      "source": "ReliefWeb Jobs — Syria",
+      "deadline": "2026-10-11",
+      "title_ar": "مدير المتابعة والتقييم والمساءلة والتعلم",
+      "organisation": "Independent Doctors Association",
+      "location": "Aleppo"
+    },
+    {
+      "title_en": "Health Advisor for Emergency Medical Systems",
+      "url": "https://reliefweb.int/job/4231993/health-advisor-emergency-medical-systems",
+      "published": "2026-09-30",
+      "source": "ReliefWeb Jobs — Syria",
+      "deadline": "2026-10-14",
+      "title_ar": "مستشار صحي لنظم الخدمات الطبية الطارئة",
+      "organisation": "GIZ",
+      "location": "Syria"
+    },
     {
       "title_en": "22804 Information and Communications Technology (ICT) Officer (P)",
       "url": "https://reliefweb.int/job/4228568/22804-information-and-communications-technology-ict-officer-p",
@@ -304,22 +324,6 @@
       "source": "ReliefWeb Jobs — Syria",
       "topic": "other",
       "summary_en": "Country: Syrian Arab Republic Organization: Chemonics Closing date: 15 Sep 2026 Background: The Syria Education Programme II (SEP II), funded by the UK’s Foreign, Commonwealth and Development Office (FCDO) and running un"
-    },
-    {
-      "title_en": "Pharmacist (Syria - Aleppo - Albab )",
-      "url": "https://reliefweb.int/job/4227967/pharmacist-syria-aleppo-albab",
-      "published": "2026-09-02",
-      "source": "ReliefWeb Jobs — Syria",
-      "topic": "other",
-      "summary_en": "Country: Syrian Arab Republic Organization: MedGlobal Closing date: 8 Sep 2026 Job Title: Pharmacist Job location: SYRIA- Aleppo – Al-Bab PHC Report to: Facility Admin Officer Job Style : Part Time JOB SUMMARY The main r"
-    },
-    {
-      "title_en": "Project Manager",
-      "url": "https://reliefweb.int/job/4228130/project-manager",
-      "published": "2026-09-02",
-      "source": "ReliefWeb Jobs — Syria",
-      "topic": "other",
-      "summary_en": "Country: Syrian Arab Republic Organization: World Vision Closing date: 16 Sep 2026 World Vision International Join and be part of a global relief, development and advocacy NGO, dedicated to work with children, families &"
     }
   ]
 }

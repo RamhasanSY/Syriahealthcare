@@ -17,6 +17,7 @@ concurrency:
 jobs:
   update:
     runs-on: ubuntu-latest
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
 
@@ -25,6 +26,8 @@ jobs:
           python-version: "3.12"
 
       - name: Collect and filter
+        id: collect
+        continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # Optional — set either of these as a repository secret to use
@@ -44,3 +47,9 @@ jobs:
             git commit -m "Update news and jobs ($(date -u +'%Y-%m-%d %H:%M UTC'))"
             git push
           fi
+
+      - name: Report collection failure
+        if: steps.collect.outcome == 'failure'
+        run: |
+          echo "Collection failed or a source was unavailable. Previous data for failed feeds was preserved. See the collection log." >> "$GITHUB_STEP_SUMMARY"
+          exit 1

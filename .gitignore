@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+*.tmp
+_site/
+.preview/
+node_modules/

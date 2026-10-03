@@ -1,105 +1,33 @@
 <!doctype html>
 <html lang="en" dir="ltr">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Syria Healthcare — news and jobs for the health sector</title>
-<meta name="description" content="Daily updated news and job openings across Syria's healthcare sector. Collected from public sources twice a day.">
-<meta property="og:title" content="Syria Healthcare">
-<meta property="og:description" content="News and job openings across Syria's healthcare sector, updated twice daily.">
-<meta property="og:type" content="website">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600;6..72,700&family=Inter:wght@400;500;600;700;800&family=Noto+Naskh+Arabic:wght@400;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/style.css">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#153e35">
+<title>Syria Healthcare — news, people & opportunities</title>
+<meta name="description" content="Healthcare news and opportunities connected to Syria. Available in English and Arabic, with original sources.">
+<meta property="og:title" content="Syria Healthcare"><meta property="og:description" content="A clearer view of healthcare in Syria. News and opportunities in one place."><meta property="og:type" content="website">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="assets/style.css"><script src="assets/app.js" defer></script>
 </head>
 <body>
-
-<header class="masthead">
-  <div class="wrap masthead-inner">
-    <a class="wordmark" href="./">
-      <span class="wordmark-mark" aria-hidden="true"></span>
-      <span class="wordmark-text">
-        <span class="wordmark-ar" lang="ar">الرعاية الصحية في سوريا</span>
-        <span class="wordmark-en">Syria Healthcare</span>
-      </span>
-    </a>
-    <div class="masthead-side">
-      <p class="stamp" id="stamp" data-en="Loading…" data-ar="…جارٍ التحميل">Loading…</p>
-      <button class="lang-toggle" id="langToggle" type="button" lang="ar">العربية</button>
-    </div>
-  </div>
-</header>
-
-<section class="intro" aria-labelledby="intro-heading">
-  <div class="intro-bg" aria-hidden="true"></div>
-  <div class="wrap intro-inner">
-    <div class="intro-copy">
-      <p class="eyebrow" data-en="Independent health intelligence" data-ar="معلومات صحية مستقلة">Independent health intelligence</p>
-      <h1 id="intro-heading" data-en="The health sector in Syria, in one clear view." data-ar="القطاع الصحي في سوريا، في نظرة واضحة واحدة.">The health sector in Syria, in one clear view.</h1>
-      <p class="intro-lede" data-en="Curated news, verified public sources and relevant job opportunities for people working in and supporting healthcare across Syria." data-ar="أخبار مختارة ومصادر عامة موثوقة وفرص عمل للعاملين في القطاع الصحي والداعمين له في سوريا.">Curated news, verified public sources and relevant job opportunities for people working in and supporting healthcare across Syria.</p>
-      <div class="intro-actions">
-        <a class="primary-action" href="#news-heading" data-en="Explore latest updates" data-ar="استكشف آخر التحديثات">Explore latest updates</a>
-        <a class="quiet-action" href="sources.json" data-en="View our sources" data-ar="اطّلع على مصادرنا">View our sources</a>
-      </div>
-    </div>
-    <div class="stats-panel">
-      <div class="stat-card">
-        <span class="stat-num" id="statNews">–</span>
-        <span class="stat-label" data-en="News tracked" data-ar="خبر مرصود">News tracked</span>
-      </div>
-      <div class="stat-card">
-        <span class="stat-num" id="statJobs">–</span>
-        <span class="stat-label" data-en="Open roles" data-ar="وظيفة شاغرة">Open roles</span>
-      </div>
-      <div class="stat-card">
-        <span class="stat-num" id="statSources">–</span>
-        <span class="stat-label" data-en="Sources monitored" data-ar="مصدر مُتابَع">Sources monitored</span>
-      </div>
-      <p class="trust-text" data-en="We link to original publishers and clearly label our sources. This platform does not replace medical or legal advice." data-ar="نحيل إلى الناشرين الأصليين ونوضح مصادرنا. لا يحل هذا الموقع محل الاستشارات الطبية أو القانونية.">We link to original publishers and clearly label our sources. This platform does not replace medical or legal advice.</p>
-    </div>
-  </div>
-</section>
-
-<main class="wrap columns">
-
-  <section class="feed" aria-labelledby="news-heading">
-    <div class="section-head">
-      <h2 id="news-heading" data-en="News" data-ar="الأخبار">News</h2>
-      <div class="filters" id="newsFilters" role="group" aria-label="Filter news by topic"></div>
-    </div>
-    <ol class="cards" id="newsList"></ol>
-    <p class="empty" id="newsEmpty" hidden
-       data-en="No stories yet. The next collection run will fill this in."
-       data-ar="لا توجد أخبار بعد. سيتم التحديث في الدورة القادمة.">
-      No stories yet. The next collection run will fill this in.
-    </p>
-  </section>
-
-  <aside class="board" aria-labelledby="jobs-heading">
-    <div class="section-head">
-      <h2 id="jobs-heading" data-en="Open positions" data-ar="وظائف شاغرة">Open positions</h2>
-    </div>
-    <ol class="jobs" id="jobsList"></ol>
-    <p class="empty" id="jobsEmpty" hidden
-       data-en="No openings listed right now."
-       data-ar="لا توجد وظائف مدرجة حالياً.">
-      No openings listed right now.
-    </p>
-  </aside>
-
-</main>
-
-<footer class="colophon">
-  <div class="wrap">
-    <p data-en="Syria Healthcare collects publicly published articles and job listings and links back to the original source. Nothing here is medical advice."
-       data-ar="يجمع هذا الموقع مقالات وإعلانات وظائف منشورة علناً ويحيل إلى مصدرها الأصلي. لا يقدّم الموقع استشارات طبية.">
-      Syria Healthcare collects publicly published articles and job listings and links back to the original source. Nothing here is medical advice.
-    </p>
-    <p class="sources-line"><a href="sources.json" data-en="See the source list" data-ar="قائمة المصادر">See the source list</a></p>
-  </div>
-</footer>
-
-<script src="assets/app.js"></script>
-</body>
-</html>
+<a class="skip-link" href="#main" data-en="Skip to content" data-ar="انتقل إلى المحتوى">Skip to content</a>
+<header class="masthead"><div class="wrap masthead-inner">
+<a class="wordmark" href="./"><span class="brand-symbol" aria-hidden="true">✳</span><span><span class="wordmark-en">Syria Healthcare<span class="brand-dot">.</span></span><span class="wordmark-ar" lang="ar">الرعاية الصحية في سوريا</span></span></a>
+<nav class="header-nav" aria-label="Main navigation" data-label-en="Main navigation" data-label-ar="التنقل الرئيسي"><a href="#news" data-en="News" data-ar="الأخبار">News</a><a href="#jobs" data-en="Opportunities" data-ar="فرص العمل">Opportunities</a><a href="#about" data-en="Our approach" data-ar="نهجنا">Our approach</a></nav>
+<button class="lang-toggle" id="langToggle" type="button" lang="ar">العربية</button></div></header>
+<main id="main">
+<section class="hero wrap" aria-labelledby="hero-title"><div class="hero-copy">
+<p class="eyebrow"><span class="small-cross" aria-hidden="true">+</span> <span data-en="INFORMATION THAT CONNECTS US" data-ar="معلومات تجمعنا">INFORMATION THAT CONNECTS US</span></p>
+<h1 id="hero-title"><span data-en="A clearer view of" data-ar="رؤية أوضح لقطاع">A clearer view of</span> <em data-en="healthcare in Syria." data-ar="الصحة في سوريا.">healthcare in Syria.</em></h1>
+<p class="hero-description" data-en="Follow the stories shaping healthcare. Find your next opportunity. Stay connected to a sector that matters." data-ar="تابع الأخبار التي ترسم ملامح الرعاية الصحية، واكتشف فرصتك القادمة، وابقَ على تواصل مع قطاع يهمنا جميعاً.">Follow the stories shaping healthcare. Find your next opportunity. Stay connected to a sector that matters.</p>
+<div class="hero-actions"><a class="button primary" href="#news"><span data-en="Explore the news" data-ar="تصفح الأخبار">Explore the news</span><span aria-hidden="true">↗</span></a><a class="button secondary" href="#jobs" data-en="Find an opportunity" data-ar="ابحث عن فرصة">Find an opportunity</a></div></div>
+<div class="hero-art" aria-hidden="true"><div class="art-grid"></div><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><div class="art-cross"></div><span class="art-dot dot-one"></span><span class="art-dot dot-two"></span><div class="art-caption"><span>SYRIA / سوريا</span><span>CARE · COMMUNITY · CONNECTION</span></div></div></section>
+<div class="status-strip"><div class="wrap status-inner"><span class="status-item"><span class="status-dot" aria-hidden="true"></span><span data-en="Collection scheduled twice daily" data-ar="جمع المحتوى مجدول مرتين يومياً">Collection scheduled twice daily</span></span><span data-en="Public sources. Original links. English & Arabic." data-ar="مصادر عامة وروابط أصلية بالعربية والإنجليزية.">Public sources. Original links. English & Arabic.</span></div></div>
+<div class="wrap content-area"><div class="browse-bar"><p class="eyebrow" data-en="YOUR HEALTHCARE BRIEFING" data-ar="موجز القطاع الصحي">YOUR HEALTHCARE BRIEFING</p><label class="search-box"><span aria-hidden="true">⌕</span><span class="sr-only" data-en="Search news and opportunities" data-ar="ابحث في الأخبار والفرص">Search news and opportunities</span><input id="search" type="search" placeholder="Search news and opportunities…" data-placeholder-en="Search news and opportunities…" data-placeholder-ar="ابحث في الأخبار والفرص…"></label></div>
+<nav class="mobile-jumps" aria-label="Browse sections" data-label-en="Browse sections" data-label-ar="تصفح الأقسام"><a href="#news" data-en="Latest news" data-ar="آخر الأخبار">Latest news</a><a href="#jobs" data-en="Job opportunities" data-ar="فرص العمل">Job opportunities</a></nav>
+<div class="columns"><section class="feed" id="news" aria-labelledby="news-heading"><div class="section-head"><div><p class="section-kicker" data-en="THE LATEST" data-ar="المستجدات">THE LATEST</p><h2 id="news-heading" data-en="News & perspectives" data-ar="أخبار وآفاق">News & perspectives</h2></div><span class="count" id="newsCount">—</span></div><p class="stamp" id="newsStamp"></p><div class="filters" id="newsFilters" role="group" aria-label="Filter news by topic" data-label-en="Filter news by topic" data-label-ar="تصفية الأخبار حسب الموضوع"></div><ol class="cards" id="newsList"></ol><div class="empty" id="newsEmpty" role="status"><h3 data-en="Loading the latest stories…" data-ar="جارٍ تحميل آخر الأخبار…">Loading the latest stories…</h3></div><p id="newsResult" class="sr-only" role="status"></p></section>
+<aside class="board" id="jobs" aria-labelledby="jobs-heading"><div class="section-head"><div><p class="section-kicker" data-en="TAKE THE NEXT STEP" data-ar="خطوتك القادمة">TAKE THE NEXT STEP</p><h2 id="jobs-heading" data-en="Opportunities" data-ar="فرص العمل">Opportunities</h2></div><span class="count" id="jobsCount">—</span></div><p class="board-intro" data-en="Put your skills to work where they matter." data-ar="وظّف مهاراتك حيث تصنع فرقاً.">Put your skills to work where they matter.</p><p class="stamp" id="jobsStamp"></p><label class="location-label" for="location" data-en="Location" data-ar="الموقع">Location</label><select id="location"><option value="" data-en="All locations" data-ar="جميع المواقع">All locations</option></select><ol class="jobs" id="jobsList"></ol><div class="empty compact" id="jobsEmpty" role="status"></div><p id="jobsResult" class="sr-only" role="status"></p><p class="board-note" data-en="Check requirements and closing dates with the hiring organization before applying." data-ar="تحقق من الشروط والمواعيد النهائية لدى الجهة الموظِّفة قبل التقديم.">Check requirements and closing dates with the hiring organization before applying.</p></aside></div>
+<section class="editor-note" id="editorNote" hidden aria-labelledby="editorHeading"><p class="eyebrow" data-en="FROM THE EDITOR" data-ar="من المحرر">FROM THE EDITOR</p><h2 id="editorHeading"></h2><p id="editorBody"></p><a id="editorLink"></a></section>
+<section class="about" id="about" aria-labelledby="about-heading"><div><p class="eyebrow" data-en="CONNECTED BY CARE" data-ar="تجمعنا الرعاية">CONNECTED BY CARE</p><h2 id="about-heading" data-en="Useful information. A human purpose." data-ar="معلومات مفيدة، وغاية إنسانية.">Useful information. A human purpose.</h2></div><div><p data-en="Syria Healthcare brings public news and health-sector opportunities together in one accessible place, for the people working to make care better." data-ar="يجمع موقع الرعاية الصحية في سوريا الأخبار العامة وفرص القطاع الصحي في مكان واحد يسهل الوصول إليه، من أجل العاملين على تحسين الرعاية.">Syria Healthcare brings public news and health-sector opportunities together in one accessible place, for the people working to make care better.</p><p class="muted" data-en="Feeds are collected automatically. AI helps select relevant items and translate headlines and summaries; these can contain errors. Follow the original source for full details. This site does not provide medical advice." data-ar="تُجمع الخلاصات آلياً، ويساعد الذكاء الاصطناعي في اختيار المواد وترجمة العناوين والملخصات، وقد تتضمن أخطاء. راجع المصدر الأصلي للتفاصيل الكاملة. لا يقدم الموقع نصائح طبية.">Feeds are collected automatically. AI helps select relevant items and translate headlines and summaries; these can contain errors. Follow the original source for full details. This site does not provide medical advice.</p></div></section>
+<section class="sources-section" id="sources" aria-labelledby="sources-heading"><div class="section-head"><h2 id="sources-heading" data-en="Start with the source" data-ar="ابدأ من المصدر">Start with the source</h2><span class="section-kicker" data-en="OPEN & TRANSPARENT" data-ar="وضوح وشفافية">OPEN & TRANSPARENT</span></div><p class="muted" data-en="Our configured public feeds are listed below. Listing a source does not imply a partnership or endorsement." data-ar="خلاصات المصادر العامة المعتمدة لدينا مدرجة أدناه. إدراج المصدر لا يعني وجود شراكة أو تأييد.">Our configured public feeds are listed below. Listing a source does not imply a partnership or endorsement.</p><ul class="source-grid" id="sourceList"></ul><p id="sourceError" hidden data-en="The source list could not load. Please try again later." data-ar="تعذر تحميل قائمة المصادر. يرجى المحاولة لاحقاً.">The source list could not load. Please try again later.</p></section></div>
+<noscript><p class="wrap">Enable JavaScript to load news and opportunities. / فعّل جافاسكريبت لعرض الأخبار والفرص.</p></noscript></main>
+<footer class="colophon"><div class="wrap footer-inner"><span class="footer-brand">Syria Healthcare.</span><span data-en="Information for a healthier tomorrow." data-ar="معلومات لغدٍ أكثر صحة.">Information for a healthier tomorrow.</span><a href="#main" data-en="Back to top ↑" data-ar="العودة للأعلى ↑">Back to top ↑</a></div></footer>
+</body></html>

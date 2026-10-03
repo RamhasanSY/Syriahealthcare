@@ -6,10 +6,10 @@ filter them with an LLM, and write data/news.json and data/jobs.json.
 Runs twice a day via .github/workflows/update.yml.
 
 AI provider is picked from environment variables, in this order:
-  GITHUB_TOKEN  -> GitHub Models  (no extra signup, works inside Actions)
   GROQ_API_KEY  -> Groq
   GEMINI_API_KEY-> Google AI Studio (OpenAI-compatible endpoint)
-If none is set, everything is kept unfiltered and untranslated.
+  GITHUB_TOKEN  -> GitHub Models (inside Actions)
+If none is set, publishing fails safely and existing data is preserved.
 """
 
 import json
@@ -22,6 +22,7 @@ import urllib.request
 from datetime import datetime, timezone, timedelta
 from email.utils import parsedate_to_datetime
 from xml.etree import ElementTree
+from urllib.parse import urlsplit, urlunsplit, parse_qsl, urlencode
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SOURCES = os.path.join(ROOT, "sources.json")
@@ -60,6 +61,11 @@ def parse_date(raw):
         return None
     raw = raw.strip()
     try:
+        d = datetime.fromisoformat(raw.replace("Z", "+00:00"))
+        return d.replace(tzinfo=d.tzinfo or timezone.utc).astimezone(timezone.utc)
+    except ValueError:
+        pass
+    try:
         return parsedate_to_datetime(raw).astimezone(timezone.utc)
     except Exception:
         pass
@@ -78,8 +84,10 @@ def parse_feed(xml_bytes, source_name):
     try:
         root = ElementTree.fromstring(xml_bytes)
     except ElementTree.ParseError as exc:
-        print(f"  ! could not parse feed from {source_name}: {exc}")
-        return out
+        raise ValueError(f"Invalid XML from {source_name}") from exc
+
+    if root.tag not in ("rss", "{http://www.w3.org/2005/Atom}feed", "{http://www.w3.org/1999/02/22-rdf-syntax-ns#}RDF"):
+        raise ValueError(f"Not an RSS/Atom feed: {source_name}")
 
     ns = {"atom": "http://www.w3.org/2005/Atom"}
 
@@ -97,32 +105,45 @@ def parse_feed(xml_bytes, source_name):
             ln = e.find("atom:link", ns)
             if ln is not None:
                 link = ln.get("href", "")
-        desc = text("description", "atom:summary") or text("content:encoded", "atom:content")
-        pub = text("pubDate", "atom:published") or text("dc:date", "atom:updated")
+        desc = text("description", "atom:summary") or text("{http://purl.org/rss/1.0/modules/content/}encoded", "atom:content")
+        pub = text("pubDate", "atom:published") or text("{http://purl.org/dc/elements/1.1/}date", "atom:updated")
 
-        if not title or not link:
+        if not title or not canonical_url(link):
             continue
 
-        out.append({
+        item = {
             "title_en": strip_html(title),
             "url": link.strip(),
             "raw_summary": strip_html(desc)[:900],
             "published": parse_date(pub),
             "source": source_name,
-        })
+        }
+        closing = re.search(r"Closing date:\s*(\d{1,2} [A-Za-z]{3} \d{4})", strip_html(desc), re.I)
+        if closing:
+            try:
+                item["deadline"] = datetime.strptime(closing.group(1), "%d %b %Y").date().isoformat()
+            except ValueError:
+                pass
+        out.append(item)
     return out
 
 
 def collect(feeds):
     items = []
+    failures = []
+    successes = 0
     for f in feeds:
         print(f"  reading {f['name']}")
         try:
             items.extend(parse_feed(fetch(f["url"]), f["name"]))
-        except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError) as exc:
+            successes += 1
+        except (urllib.error.URLError, TimeoutError, ValueError, OSError) as exc:
             print(f"  ! {f['name']} unreachable: {exc}")
+            failures.append(f["name"])
         time.sleep(1)
-    return items
+    if not successes:
+        raise RuntimeError("No sources could be read; previous data preserved")
+    return items, failures
 
 
 # --------------------------------------------------------------------------
@@ -196,17 +217,13 @@ def call_llm(url, key, model, system_prompt, payload_text, retries=3):
             wait = 5 * (attempt + 1)
             print(f"  ! LLM call failed ({exc}); retrying in {wait}s")
             time.sleep(wait)
-    return []
+    raise RuntimeError("AI screening failed; previous data preserved")
 
 
 def screen(items, kind):
     url, key, model = llm_config()
     if not url:
-        print("  no AI key found — keeping everything unfiltered")
-        for i in items:
-            i["topic"] = "other"
-            i["summary_en"] = i.get("raw_summary", "")[:220]
-        return items
+        raise RuntimeError("No AI credentials configured; refusing to publish unfiltered items")
 
     print(f"  screening {len(items)} items with {model}")
     prompt = NEWS_PROMPT if kind == "news" else JOBS_PROMPT
@@ -218,12 +235,20 @@ def screen(items, kind):
         for n, it in enumerate(chunk, 1):
             lines.append(f"{n}. TITLE: {it['title_en']}\n   TEXT: {it.get('raw_summary', '')[:500]}")
         results = call_llm(url, key, model, prompt, "\n\n".join(lines))
-
+        if not isinstance(results, list):
+            raise ValueError("AI returned invalid results")
         by_n = {r.get("n"): r for r in results if isinstance(r, dict)}
+        if len(results) != len(chunk) or set(by_n) != set(range(1, len(chunk) + 1)):
+            raise ValueError("AI returned incomplete screening; previous data preserved")
         for n, it in enumerate(chunk, 1):
             r = by_n.get(n)
-            if not r or not r.get("keep"):
+            if type(r.get("keep")) is not bool:
+                raise ValueError("AI keep decision must be a boolean")
+            if not r["keep"]:
                 continue
+            fields = ("title_ar", "summary_en", "summary_ar", "topic") if kind == "news" else ("title_ar", "organisation", "location")
+            if any(not isinstance(r.get(field), str) for field in fields):
+                raise ValueError("AI returned invalid content fields")
             if kind == "news":
                 topic = r.get("topic", "other")
                 it["topic"] = topic if topic in TOPICS else "other"
@@ -246,15 +271,32 @@ def screen(items, kind):
 
 def load_existing(path):
     try:
-        with open(path, encoding="utf-8") as fh:
+        with open(path, encoding="utf-8-sig") as fh:
             return json.load(fh).get("items", [])
     except (FileNotFoundError, json.JSONDecodeError):
         return []
 
 
-def merge(existing, fresh, limit):
-    seen = {i["url"] for i in existing}
-    combined = existing + [i for i in fresh if i["url"] not in seen]
+def canonical_url(url):
+    try:
+        parts = urlsplit(url.strip())
+        if parts.scheme not in ("http", "https") or not parts.hostname:
+            return ""
+        query = [(k, v) for k, v in parse_qsl(parts.query, keep_blank_values=True)
+                 if not k.lower().startswith("utm_") and k.lower() not in ("fbclid", "gclid")]
+        return urlunsplit((parts.scheme.lower(), parts.netloc.lower(), parts.path.rstrip("/"), urlencode(sorted(query)), ""))
+    except (ValueError, AttributeError):
+        return ""
+
+
+def merge(existing, fresh, limit, kind="news"):
+    seen = set()
+    combined = []
+    for item in fresh + existing:
+        key = canonical_url(item.get("url", ""))
+        if key and key not in seen:
+            combined.append(item)
+            seen.add(key)
 
     cutoff = datetime.now(timezone.utc) - timedelta(days=MAX_AGE_DAYS)
 
@@ -265,6 +307,9 @@ def merge(existing, fresh, limit):
         return d or datetime.min.replace(tzinfo=timezone.utc)
 
     combined = [i for i in combined if sort_key(i) >= cutoff or not i.get("published")]
+    if kind == "jobs":
+        today = datetime.now(timezone.utc).date()
+        combined = [i for i in combined if not parse_date(i.get("deadline")) or parse_date(i["deadline"]).date() >= today]
     combined.sort(key=sort_key, reverse=True)
     return combined[:limit]
 
@@ -286,31 +331,36 @@ def write(path, items):
         "updated": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "items": serialise(items),
     }
-    with open(path, "w", encoding="utf-8") as fh:
+    temporary = path + ".tmp"
+    with open(temporary, "w", encoding="utf-8") as fh:
         json.dump(payload, fh, ensure_ascii=False, indent=2)
         fh.write("\n")
+    os.replace(temporary, path)
     print(f"  wrote {len(items)} items to {os.path.relpath(path, ROOT)}")
 
 
 def main():
-    with open(SOURCES, encoding="utf-8") as fh:
+    with open(SOURCES, encoding="utf-8-sig") as fh:
         sources = json.load(fh)
 
-    print("News:")
-    fresh_news = collect(sources.get("news", []))
-    existing_urls = {i["url"] for i in load_existing(NEWS_FILE)}
-    new_only = [i for i in fresh_news if i["url"] not in existing_urls]
-    print(f"  {len(new_only)} new of {len(fresh_news)} fetched")
-    screened_news = screen(new_only, "news") if new_only else []
-    write(NEWS_FILE, merge(load_existing(NEWS_FILE), screened_news, MAX_NEWS))
-
-    print("Jobs:")
-    fresh_jobs = collect(sources.get("jobs", []))
-    existing_urls = {i["url"] for i in load_existing(JOBS_FILE)}
-    new_only = [i for i in fresh_jobs if i["url"] not in existing_urls]
-    print(f"  {len(new_only)} new of {len(fresh_jobs)} fetched")
-    screened_jobs = screen(new_only, "jobs") if new_only else []
-    write(JOBS_FILE, merge(load_existing(JOBS_FILE), screened_jobs, MAX_JOBS))
+    failures = []
+    for kind, path, limit in (("news", NEWS_FILE, MAX_NEWS), ("jobs", JOBS_FILE, MAX_JOBS)):
+        print(f"{kind.title()}:")
+        try:
+            fresh, unavailable = collect(sources.get(kind, []))
+            existing = load_existing(path)
+            existing_urls = {canonical_url(i["url"]) for i in existing}
+            new_only = [i for i in merge([], fresh, limit, kind) if canonical_url(i["url"]) not in existing_urls]
+            screened = screen(new_only, kind) if new_only else []
+            write(path, merge(existing, screened, limit, kind))
+            failures.extend(unavailable)
+        except (RuntimeError, ValueError, OSError) as exc:
+            failures.append(f"{kind}: {exc}")
+            print(f"::error::{kind}: {exc}")
+    if failures:
+        print("::error::Collection needs attention: " + "; ".join(failures))
+        return 1
+    return 0
 
 
 if __name__ == "__main__":
