@@ -1,4 +1,6 @@
 import json
+import gzip
+import io
 import tempfile
 import unittest
 from datetime import datetime, timedelta, timezone
@@ -9,6 +11,11 @@ from scripts import update
 
 
 class CollectorTests(unittest.TestCase):
+    def test_compressed_feed_response_is_decoded(self):
+        xml = b'<rss><channel /></rss>'
+        with patch.object(update.urllib.request, 'urlopen', return_value=io.BytesIO(gzip.compress(xml))):
+            self.assertEqual(update.fetch('https://example.org/feed'), xml)
+
     def item(self, url="https://example.org/story", **fields):
         return {"url": url, "title_en": "Health in Syria", "published": datetime.now(timezone.utc), **fields}
 
