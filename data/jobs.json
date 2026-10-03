@@ -1,6 +1,6 @@
 {
-  "updated": "2026-10-03T18:31:40+00:00",
-  "checked_at": "2026-10-03T18:31:40+00:00",
+  "updated": "2026-10-03T19:17:50+00:00",
+  "checked_at": "2026-10-03T19:17:50+00:00",
   "status": "ok",
   "items": [
     {
@@ -12,7 +12,7 @@
       "source": "IDA vacancies",
       "source_id": "ida-jobs",
       "verification_version": 2,
-      "verified_at": "2026-10-03T18:31:17+00:00",
+      "verified_at": "2026-10-03T19:17:07+00:00",
       "deadline": "2026-10-11",
       "organisation": "Independent Doctors Association",
       "location": "Syria - Aleppo City",
@@ -23,6 +23,8 @@
         "deadline": "October 11, 2026",
         "location": "Syria - Aleppo City"
       },
+      "sector": "healthcare",
+      "listing_page": false,
       "id": "ida-jobs:https://ida-org.com/jobs/meal-manager-4"
     },
     {
@@ -34,7 +36,7 @@
       "source": "SAMS recruitment",
       "source_id": "sams-jobs",
       "verification_version": 2,
-      "verified_at": "2026-10-03T18:31:13+00:00",
+      "verified_at": "2026-10-03T19:17:50+00:00",
       "deadline": "2026-10-13",
       "organisation": "Syrian American Medical Society (SAMS)",
       "location": "Syria / Damascus",
@@ -45,6 +47,8 @@
         "deadline": "2026-10-13",
         "location": "Syria / Damascus"
       },
+      "sector": "healthcare",
+      "listing_page": true,
       "id": "sams-jobs:1555"
     },
     {
@@ -56,7 +60,7 @@
       "source": "SAMS recruitment",
       "source_id": "sams-jobs",
       "verification_version": 2,
-      "verified_at": "2026-10-03T18:31:13+00:00",
+      "verified_at": "2026-10-03T19:17:50+00:00",
       "deadline": "2026-10-07",
       "organisation": "Syrian American Medical Society (SAMS)",
       "location": "Syria / Damascus",
@@ -67,6 +71,8 @@
         "deadline": "2026-10-07",
         "location": "Syria / Damascus"
       },
+      "sector": "healthcare",
+      "listing_page": true,
       "id": "sams-jobs:1554"
     },
     {
@@ -78,7 +84,7 @@
       "source": "SAMS recruitment",
       "source_id": "sams-jobs",
       "verification_version": 2,
-      "verified_at": "2026-10-03T18:31:13+00:00",
+      "verified_at": "2026-10-03T19:17:50+00:00",
       "deadline": "2026-10-10",
       "organisation": "Syrian American Medical Society (SAMS)",
       "location": "Syria / Aleppo",
@@ -89,29 +95,35 @@
         "deadline": "2026-10-10",
         "location": "Syria / Aleppo"
       },
+      "sector": "healthcare",
+      "listing_page": true,
       "id": "sams-jobs:1553"
     },
     {
-      "title": "Private Fund Projects Officer",
-      "title_en": "Private Fund Projects Officer",
+      "title": "Administration Team Leader G6, Syria, Country Office - Damascus",
+      "title_en": "Administration Team Leader G6, Syria, Country Office - Damascus",
       "language": "en",
-      "url": "https://recruitment.sams-hr.com/PositionForCondidate/ApplyJob",
+      "url": "https://23109900.webcruiter.no/Main/Recruit/Public/5186696990?language=en&link_source_id=0",
       "published": "2026-09-27",
-      "source": "SAMS recruitment",
-      "source_id": "sams-jobs",
+      "source": "NRC vacancies",
+      "source_id": "nrc-jobs",
       "verification_version": 2,
-      "verified_at": "2026-10-03T18:31:13+00:00",
+      "verified_at": "2026-10-03T19:17:05+00:00",
       "deadline": "2026-10-10",
-      "organisation": "Syrian American Medical Society (SAMS)",
+      "organisation": "Norwegian Refugee Council",
       "location": "Syria / Damascus",
-      "reference": "1552",
+      "reference": "5186696990",
       "role_type": "support",
       "evidence": {
         "type": "employer-listing",
-        "deadline": "2026-10-10",
+        "deadline": "2026-10-10T21:59:59+00:00",
         "location": "Syria / Damascus"
       },
-      "id": "sams-jobs:1552"
+      "sector": "ngo",
+      "listing_page": false,
+      "deadline_at": "2026-10-10T21:59:59+00:00",
+      "contract": "Contract",
+      "id": "nrc-jobs:5186696990"
     },
     {
       "title": "(طبيبـ/ـة أخصائيـ/ـة (أطفال",
@@ -122,7 +134,7 @@
       "source": "IDA vacancies",
       "source_id": "ida-jobs",
       "verification_version": 2,
-      "verified_at": "2026-10-03T18:31:20+00:00",
+      "verified_at": "2026-10-03T19:17:09+00:00",
       "deadline": "2026-10-03",
       "organisation": "Independent Doctors Association",
       "location": "Northern Deir Alzoor Countryside : Abu Khashab PHC",
@@ -133,8 +145,112 @@
         "deadline": "October 3, 2026",
         "location": "Northern Deir Alzoor Countryside : Abu Khashab PHC"
       },
+      "sector": "healthcare",
+      "listing_page": false,
       "id": "ida-jobs:https://ida-org.com/jobs/specialized-doctor-pediatrician-4",
       "title_en": "Specialized Doctor (Pediatrician)"
+    },
+    {
+      "title": "Private Fund Projects Officer",
+      "title_en": "Private Fund Projects Officer",
+      "language": "en",
+      "url": "https://recruitment.sams-hr.com/PositionForCondidate/ApplyJob",
+      "published": "2026-09-27",
+      "source": "SAMS recruitment",
+      "source_id": "sams-jobs",
+      "verification_version": 2,
+      "verified_at": "2026-10-03T19:17:50+00:00",
+      "deadline": "2026-10-10",
+      "organisation": "Syrian American Medical Society (SAMS)",
+      "location": "Syria / Damascus",
+      "reference": "1552",
+      "role_type": "support",
+      "evidence": {
+        "type": "employer-listing",
+        "deadline": "2026-10-10",
+        "location": "Syria / Damascus"
+      },
+      "sector": "healthcare",
+      "listing_page": true,
+      "id": "sams-jobs:1552"
+    },
+    {
+      "title": "WASH Technical Assistant G4, Syria, Aleppo",
+      "title_en": "WASH Technical Assistant G4, Syria, Aleppo",
+      "language": "en",
+      "url": "https://23109900.webcruiter.no/Main/Recruit/Public/5185568659?language=en&link_source_id=0",
+      "published": "2026-09-24",
+      "source": "NRC vacancies",
+      "source_id": "nrc-jobs",
+      "verification_version": 2,
+      "verified_at": "2026-10-03T19:17:05+00:00",
+      "deadline": "2026-10-03",
+      "organisation": "Norwegian Refugee Council",
+      "location": "Syria",
+      "reference": "5185568659",
+      "role_type": "support",
+      "evidence": {
+        "type": "employer-listing",
+        "deadline": "2026-10-03T21:59:59+00:00",
+        "location": "Syria"
+      },
+      "sector": "ngo",
+      "listing_page": false,
+      "deadline_at": "2026-10-03T21:59:59+00:00",
+      "contract": "Contract",
+      "id": "nrc-jobs:5185568659"
+    },
+    {
+      "title": "Information Counselling and Legal Assistance (ICLA) Project Manager G8, Syria (Homs)",
+      "title_en": "Information Counselling and Legal Assistance (ICLA) Project Manager G8, Syria (Homs)",
+      "language": "en",
+      "url": "https://23109900.webcruiter.no/Main/Recruit/Public/5185816030?language=en&link_source_id=0",
+      "published": "2026-09-24",
+      "source": "NRC vacancies",
+      "source_id": "nrc-jobs",
+      "verification_version": 2,
+      "verified_at": "2026-10-03T19:17:05+00:00",
+      "deadline": "2026-10-07",
+      "organisation": "Norwegian Refugee Council",
+      "location": "Syria",
+      "reference": "5185816030",
+      "role_type": "support",
+      "evidence": {
+        "type": "employer-listing",
+        "deadline": "2026-10-07T21:59:59+00:00",
+        "location": "Syria"
+      },
+      "sector": "ngo",
+      "listing_page": false,
+      "deadline_at": "2026-10-07T21:59:59+00:00",
+      "contract": "Permanent position",
+      "id": "nrc-jobs:5185816030"
+    },
+    {
+      "title": "NGO Forum Partnerships and Localization Adviser",
+      "title_en": "NGO Forum Partnerships and Localization Adviser",
+      "language": "en",
+      "url": "https://23109900.webcruiter.no/Main/Recruit/Public/5183954689?language=en&link_source_id=0",
+      "published": "2026-09-21",
+      "source": "NRC vacancies",
+      "source_id": "nrc-jobs",
+      "verification_version": 2,
+      "verified_at": "2026-10-03T19:17:05+00:00",
+      "deadline": "2026-10-07",
+      "organisation": "Norwegian Refugee Council",
+      "location": "Syria",
+      "reference": "5183954689",
+      "role_type": "support",
+      "evidence": {
+        "type": "employer-listing",
+        "deadline": "2026-10-07T21:59:59+00:00",
+        "location": "Syria"
+      },
+      "sector": "ngo",
+      "listing_page": false,
+      "deadline_at": "2026-10-07T21:59:59+00:00",
+      "contract": "Permanent position",
+      "id": "nrc-jobs:5183954689"
     }
   ]
 }

@@ -8,7 +8,9 @@
   ],
   "jobs": [
     {"id":"sams-jobs","name":"SAMS recruitment","organisation":"Syrian American Medical Society (SAMS)","adapter":"sams_jobs","url":"https://recruitment.sams-hr.com/PositionForCondidate/GetAviablePositions1","website":"https://recruitment.sams-hr.com/PositionForCondidate/ApplyJob"},
-    {"id":"ida-jobs","name":"IDA vacancies","organisation":"Independent Doctors Association","adapter":"ida_jobs","url":"https://ida-org.com/feed/?post_type=jobs","website":"https://ida-org.com/jobs/"}
+    {"id":"ida-jobs","name":"IDA vacancies","organisation":"Independent Doctors Association","adapter":"ida_jobs","url":"https://ida-org.com/feed/?post_type=jobs","website":"https://ida-org.com/jobs/"},
+    {"id":"nrc-jobs","name":"NRC vacancies","organisation":"Norwegian Refugee Council","sector":"ngo","adapter":"nrc_jobs","url":"https://candidate.webcruiter.com/api/odvert/companysearch/23109900?language=en","website":"https://candidate.webcruiter.com/en-gb/Home/companyadverts?companylock=23109900"},
+    {"id":"drc-jobs","name":"DRC vacancies","organisation":"Danish Refugee Council","sector":"ngo","adapter":"drc_jobs","url":"https://drc.ngo/en/about-us/careers/vacancies/","website":"https://drc.ngo/en/about-us/careers/vacancies/"}
   ],
   "directories": [
     {"name":"LinkedIn — new healthcare jobs in Syria","name_ar":"لينكدإن — وظائف صحية جديدة في سوريا","url":"https://www.linkedin.com/jobs/search/?keywords=healthcare&location=Syria&sortBy=DD&f_TPR=r604800","mode":"external"},

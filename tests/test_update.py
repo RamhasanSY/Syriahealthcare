@@ -1,4 +1,4 @@
-﻿import gzip
+import gzip
 import io
 import json
 import tempfile
@@ -123,6 +123,38 @@ class CollectorTests(unittest.TestCase):
             records, status = u.collect_source({'id':'example','name':'Example','adapter':'rss','url':'https://example.org/feed'},'news')
         self.assertEqual(records,[])
         self.assertEqual(status['state'],'error')
+
+    def test_exact_job_deadline_expires_within_day(self):
+        self.assertFalse(u.job_valid(self.job(deadline=(u.now()-timedelta(minutes=1)).isoformat())))
+
+    def test_nrc_imports_only_public_syria_jobs(self):
+        source = {'id':'nrc-jobs','name':'NRC','organisation':'Norwegian Refugee Council','sector':'ngo','adapter':'nrc_jobs','url':'https://example.org/jobs'}
+        row = {'Id':'123','TenantId':'23109900','Heading':'Programme officer','IsInternet':True,'WorkPlaceFacet':'Syria','Workplace3':'Damascus','PublishedDate':u.now().strftime('%d/%m/%Y'),'ApplicationDeadline':(u.now()+timedelta(days=3)).isoformat(),'OpenAdvertUrl':'https://23109900.webcruiter.no/Main/Recruit/Public/123','JobType':'Contract'}
+        payload = {'Total':4,'Data':[row,{**row,'IsInternet':False},{**row,'WorkPlaceFacet':'Venezuela'},{**row,'TenantId':'unrelated'}]}
+        with patch.object(u,'fetch',return_value=json.dumps(payload).encode()):
+            records, total = u.nrc_jobs(source)
+        self.assertEqual(len(records),1)
+        self.assertEqual(records[0]['sector'],'ngo')
+        self.assertEqual(records[0]['location'],'Syria / Damascus')
+        self.assertIn('deadline_at',records[0])
+        self.assertFalse(records[0]['listing_page'])
+
+    def test_nrc_rejects_incomplete_snapshot(self):
+        with patch.object(u,'fetch',return_value=b'{"Total":5,"Data":[]}'):
+            with self.assertRaises(ValueError):
+                u.nrc_jobs({'url':'https://example.org/jobs'})
+
+    def test_drc_filters_country_and_source_dates(self):
+        date = (u.now()+timedelta(days=3)).strftime('%m/%d/%Y %I:%M:%S %p')
+        published = u.now().strftime('%m/%d/%Y %I:%M:%S %p')
+        row = f'<article class="jobList__item" data-title="Protection Officer" data-country="Syria" data-published="{published}" data-deadline="{date}"><a href="/jobs/job?id=12"></a></article>'
+        page = '<section id="jobList">'+row+row.replace('Syria','Ukraine')+'</section>'
+        source = {'id':'drc-jobs','name':'DRC','organisation':'Danish Refugee Council','sector':'ngo','adapter':'drc_jobs','url':'https://drc.ngo/en/about-us/careers/vacancies/'}
+        with patch.object(u,'fetch',return_value=page.encode()):
+            records, total = u.drc_jobs(source)
+        self.assertEqual(total,2)
+        self.assertEqual(len(records),1)
+        self.assertEqual(records[0]['url'],'https://drc.ngo/jobs/job?id=12')
 
 if __name__ == '__main__':
     unittest.main()

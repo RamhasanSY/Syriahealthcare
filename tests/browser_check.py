@@ -20,7 +20,7 @@ news = {"updated": now.isoformat(), "items": [
 ]}
 jobs = {"updated": now.isoformat(), "items": [
     {"title_en": "Nurse", "title_ar": "ممرض", "organisation": "Example", "location": "Aleppo", "deadline": now.date().isoformat(), "url": "https://example.org/nurse"},
-    {"title_en": "Doctor", "location": "Damascus", "url": "https://example.org/doctor"},
+    {"title_en": "Doctor", "location": "Damascus", "organisation": "NGO Example", "sector": "ngo", "url": "https://example.org/doctor"},
     {"title_en": "Expired", "deadline": (now.date() - timedelta(days=1)).isoformat(), "url": "https://example.org/expired"},
 ]}
 for item in news['items'] + jobs['items']:
@@ -37,9 +37,13 @@ with sync_playwright() as p:
     errors = []
     page.on("pageerror", lambda error: errors.append(str(error)))
     page.goto(BASE, wait_until="networkidle")
-    expect(page.locator("#newsList li")).to_have_count(len(actual_news))
+    expect(page.locator("#newsList li")).to_have_count(min(6, len(actual_news)))
     expect(page.locator("#jobsList li")).to_have_count(len(active_jobs))
     page.screenshot(path=str(preview / "desktop.png"), full_page=True)
+    page.screenshot(path=str(preview / "desktop-top.png"))
+    if len(actual_news) > 6:
+        page.locator('#moreNews').click()
+        expect(page.locator('#newsList li')).to_have_count(min(12, len(actual_news)))
     for language in ("en", "ar"):
         if page.locator("html").get_attribute("lang") != language:
             page.locator("#langToggle").click()
@@ -63,6 +67,21 @@ with sync_playwright() as p:
     page.reload(wait_until="networkidle")
     expect(page.locator("#newsList li")).to_have_count(2)
     expect(page.locator("#jobsList li")).to_have_count(2)
+    page.locator('[data-sector="ngo"]').click()
+    expect(page.locator('#jobsList li')).to_have_count(1)
+    expect(page.locator('#jobsList')).to_contain_text('Doctor')
+    page.locator('#clearFilters').click()
+    page.locator('#organisation').select_option('NGO Example')
+    expect(page.locator('#jobsList li')).to_have_count(1)
+    page.locator('#clearFilters').click()
+    page.get_by_role('button', name='Save job: Nurse', exact=True).click()
+    page.locator('[data-sector="saved"]').click()
+    expect(page.locator('#jobsList li')).to_have_count(1)
+    expect(page.locator('#jobsList')).to_contain_text('Nurse')
+    page.reload(wait_until='networkidle')
+    expect(page.get_by_role('button',name='Unsave job: Nurse',exact=True)).to_have_attribute('aria-pressed','true')
+    page.locator('#jobSort').select_option('deadline')
+    expect(page.locator('#jobsList li').first).to_contain_text('Nurse')
     page.get_by_role("button", name="Hospitals & clinics", exact=True).click()
     expect(page.locator("#newsList li")).to_have_count(1)
     expect(page.get_by_role("button", name="Hospitals & clinics", exact=True)).to_be_focused()
@@ -93,7 +112,7 @@ with sync_playwright() as p:
     restricted.add_init_script("Object.defineProperty(window, 'localStorage', {get() {throw new Error('blocked')}})")
     restricted_page = restricted.new_page()
     restricted_page.goto(BASE, wait_until="networkidle")
-    expect(restricted_page.locator("#newsList li")).to_have_count(len(actual_news))
+    expect(restricted_page.locator("#newsList li")).to_have_count(min(6, len(actual_news)))
     restricted_page.locator("#langToggle").click()
     expect(restricted_page.locator("html")).to_have_attribute("lang", "ar")
     assert not errors, errors

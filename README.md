@@ -1,6 +1,6 @@
-﻿# Syria Healthcare
+# Syria Healthcare
 
-A bilingual interface for original healthcare news about Syria and current vacancies at healthcare employers in Syria. Static HTML/CSS/JavaScript hosted on GitHub Pages at https://syriahealthcare.com/.
+A bilingual interface for original healthcare news about Syria and current healthcare and NGO vacancies in Syria. Static HTML/CSS/JavaScript hosted on GitHub Pages at https://syriahealthcare.com/.
 
 ## How content is selected
 
@@ -8,13 +8,13 @@ The collector uses public publisher feeds and employer listings. It does not use
 
 News must have a valid publication date within 45 days, evidence of a Syrian location in the headline/article lead, and a healthcare headline (or an explicitly Syrian medical mission). Publisher names and WordPress footers do not count as geographic evidence. Original headlines link to the publisher; medical claims are not independently certified by this site.
 
-Jobs come directly from SAMS recruitment and IDA vacancies. A record needs a published date, an explicit unexpired closing date and a Syrian workplace. Employer-supplied dates and locations are preserved as evidence. Clinical and support roles are distinguished. SAMS uses one shared vacancy board: its individual vacancy reference is displayed so applicants can find the correct posting. Deadline dates are evaluated by UTC date; applicants should check the employer's original announcement for any specific local closing time.
+Jobs come directly from SAMS recruitment, IDA vacancies, NRC's public Webcruiter listings and DRC's public careers page. A record needs a published date, an explicit unexpired closing date and a Syrian workplace. Employer-supplied dates and locations are preserved as evidence. Clinical and support roles are distinguished. SAMS uses one shared vacancy board: its individual vacancy reference is displayed so applicants can find the correct posting. Exact closing timestamps are respected when supplied; date-only deadlines are evaluated by UTC date; applicants should check the employer's original announcement for any specific local closing time.
 
 There is no automatic LinkedIn import. LinkedIn, ReliefWeb and UOSSM vacancy pages are external discovery links. ReliefWeb's RSS endpoint returned empty HTTP 202 responses from GitHub runners; its API requires an approved app name. No blocked feeds or unapproved API credentials are used as dependencies.
 
 ## Sources and freshness
 
-`sources.json` contains five news feeds (SAMS, UOSSM, IDA, WHO and UN News Health) and two employer integrations (SAMS and IDA). A working source may legitimately have no recent eligible items. Older UOSSM and IDA news is not presented as fresh content.
+`sources.json` contains five news feeds (SAMS, UOSSM, IDA, WHO and UN News Health) and four employer integrations (SAMS, IDA, NRC and DRC). A working source may legitimately have no recent eligible items. Older UOSSM and IDA news is not presented as fresh content.
 
 Each record includes a source ID, original publication date, `verified_at`, and `verification_version: 2`. Legacy records without this provenance are removed even when a collection fails. Unknown dates are never guessed. Duplicates are removed by URL and matching title/location/employer.
 
@@ -48,10 +48,14 @@ python -m playwright install chromium
 python tests/browser_check.py
 ```
 
-Browser checks cover desktop/mobile layouts, English/Arabic navigation, search, filters, expiration, rejected legacy records, safe links, retry behavior and restricted local storage. Screenshots are saved to ignored `.preview/`.
+Browser checks cover desktop/mobile layouts, English/Arabic navigation, search, healthcare/NGO and organization filters, deadline sorting, saved-job persistence, expiration, rejected legacy records, safe links, retry behavior and restricted local storage. Screenshots are saved to ignored `.preview/`.
 
 Run `python scripts/update.py` to collect content locally. It writes public JSON files and makes no Git commits itself.
 
 ## Personal editorial note
 
 Edit `data/editor.json`, set `enabled` to `true`, and provide the English/Arabic title and body. An optional link may be included. The collector never overwrites your note. Keep editorial statements distinct from automated source listings.
+
+## Job discovery
+
+The job board supports keyword search, location and organization filters, healthcare/NGO categories, newest/deadline sorting and bookmarks saved on the visitor's device. Bookmarks require no account. Only eligible vacancies appear; a working integration with no matching Syria jobs stays visible in source status. LinkedIn searches remain clearly marked external discovery links.

@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """Publish source-backed Syria healthcare records without an AI dependency."""
 import gzip
 import html
@@ -14,7 +14,7 @@ from datetime import datetime, timedelta, timezone
 from email.utils import parsedate_to_datetime
 from html.parser import HTMLParser
 from pathlib import Path
-from urllib.parse import urlsplit, urlunsplit, parse_qsl, urlencode
+from urllib.parse import urlsplit, urlunsplit, parse_qsl, urlencode, urljoin
 from xml.etree import ElementTree
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -67,8 +67,13 @@ def canonical_url(raw):
         return ''
 
 
-def fetch(url, timeout=25):
-    req = urllib.request.Request(url, headers={'User-Agent': USER_AGENT, 'Accept': 'application/rss+xml, application/json, text/html, */*'})
+def fetch(url, timeout=25, payload=None):
+    headers = {'User-Agent': USER_AGENT, 'Accept': 'application/rss+xml, application/json, text/html, */*'}
+    body = None
+    if payload is not None:
+        body = json.dumps(payload).encode('utf-8')
+        headers['Content-Type'] = 'application/json'
+    req = urllib.request.Request(url, data=body, headers=headers)
     for attempt in range(3):
         try:
             with urllib.request.urlopen(req, timeout=timeout) as response:
@@ -195,7 +200,8 @@ def news_records(source):
 
 def job_valid(item):
     deadline, published = parse_date(item.get('deadline')), parse_date(item.get('published'))
-    return bool(deadline and deadline.date() >= now().date() and published and published <= now() + timedelta(hours=1)
+    exact_deadline = item.get('deadline_at') or (item.get('deadline') if 'T' in str(item.get('deadline')) else None)
+    return bool(deadline and deadline.date() >= now().date() and (not exact_deadline or parse_date(exact_deadline) >= now()) and published and published <= now() + timedelta(hours=1)
                 and SYRIA.search(item.get('location', '')) and canonical_url(item.get('url', '')))
 
 
@@ -205,6 +211,12 @@ def job_record(item, source):
                   location=item['location'], reference=str(item.get('reference', '')),
                   role_type='clinical' if HEALTH.search(item['title']) else 'support',
                   evidence={'type': 'employer-listing', 'deadline': item['deadline'], 'location': item['location']})
+    record['sector'] = source.get('sector', 'healthcare')
+    record['listing_page'] = source.get('adapter') == 'sams_jobs'
+    if 'T' in item['deadline']:
+        record['deadline_at'] = parse_date(item['deadline']).isoformat()
+    if item.get('contract'):
+        record['contract'] = item['contract']
     record['id'] = source['id'] + ':' + str(item.get('reference') or canonical_url(item['url']))
     return record
 
@@ -254,8 +266,67 @@ def ida_jobs(source):
     return result, len(candidates)
 
 
+def nrc_jobs(source):
+    result, total, page = [], None, 1
+    while total is None or (page - 1) * 100 < total:
+        payload = json.loads(fetch(source['url'], payload={'page': page, 'pageSize': 100, 'skip': (page - 1) * 100, 'take': 100, 'sort': [{'field': '1', 'dir': 'desc'}]}))
+        if not isinstance(payload.get('Data'), list) or not isinstance(payload.get('Total'), int):
+            raise ValueError('NRC public recruitment response has changed')
+        total = payload['Total']
+        if total > 1000 or (not payload['Data'] and (page - 1) * 100 < total):
+            raise ValueError('NRC returned an incomplete vacancy snapshot')
+        for row in payload['Data']:
+            if row.get('IsInternet') is not True or row.get('TenantId') != '23109900' or not SYRIA.search(row.get('WorkPlaceFacet', '')):
+                continue
+            if urlsplit(row.get('OpenAdvertUrl', '')).hostname != '23109900.webcruiter.no':
+                continue
+            published = datetime.strptime(row['PublishedDate'], '%d/%m/%Y').date().isoformat()
+            location = ' / '.join(dict.fromkeys(x for x in (row.get('WorkPlaceFacet'), row.get('Workplace3')) if x))
+            item = {'title': row['Heading'], 'published': published, 'deadline': row['ApplicationDeadline'], 'location': location,
+                    'url': row['OpenAdvertUrl'], 'reference': row['Id'], 'contract': row.get('JobType')}
+            if job_valid(item):
+                result.append(job_record(item, source))
+        page += 1
+    return result, total
+
+
+class DRCListings(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.rows, self.current = [], None
+
+    def handle_starttag(self, tag, attrs):
+        attrs = dict(attrs)
+        if tag == 'article' and 'jobList__item' in attrs.get('class', '').split():
+            self.current = attrs
+        elif tag == 'a' and self.current is not None:
+            self.current['url'] = attrs.get('href', '')
+
+    def handle_endtag(self, tag):
+        if tag == 'article' and self.current is not None:
+            self.rows.append(self.current)
+            self.current = None
+
+
+def drc_jobs(source):
+    page = fetch(source['url']).decode('utf-8-sig')
+    if 'id="jobList"' not in page:
+        raise ValueError('DRC vacancy list was not found')
+    parser = DRCListings(); parser.feed(page)
+    result = []
+    for row in parser.rows:
+        if not SYRIA.search(row.get('data-country', '')):
+            continue
+        item = {'title': row['data-title'], 'location': row['data-country'], 'url': urljoin(source['url'], row['url']),
+                'published': datetime.strptime(row['data-published'], '%m/%d/%Y %I:%M:%S %p').date().isoformat(),
+                'deadline': datetime.strptime(row['data-deadline'], '%m/%d/%Y %I:%M:%S %p').date().isoformat(), 'contract': row.get('data-contract')}
+        if job_valid(item):
+            result.append(job_record(item, source))
+    return result, len(parser.rows)
+
+
 def collect_source(source, kind):
-    handlers = {'rss': news_records, 'sams_jobs': sams_jobs, 'ida_jobs': ida_jobs}
+    handlers = {'rss': news_records, 'sams_jobs': sams_jobs, 'ida_jobs': ida_jobs, 'nrc_jobs': nrc_jobs, 'drc_jobs': drc_jobs}
     try:
         items, total = handlers[source['adapter']](source)
         return items, {'id': source['id'], 'kind': kind, 'state': 'ok', 'checked_at': now().isoformat(timespec='seconds'),
