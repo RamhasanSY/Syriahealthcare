@@ -13,7 +13,9 @@ from scripts import update
 class CollectorTests(unittest.TestCase):
     def test_compressed_feed_response_is_decoded(self):
         xml = b'<rss><channel /></rss>'
-        with patch.object(update.urllib.request, 'urlopen', return_value=io.BytesIO(gzip.compress(xml))):
+        response = io.BytesIO(gzip.compress(xml))
+        response.status = 200
+        with patch.object(update.urllib.request, 'urlopen', return_value=response):
             self.assertEqual(update.fetch('https://example.org/feed'), xml)
 
     def item(self, url="https://example.org/story", **fields):

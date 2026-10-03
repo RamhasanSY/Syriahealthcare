@@ -45,10 +45,20 @@ USER_AGENT = "SyriaHealthcareBot/1.0 (+https://syriahealthcare.com)"
 # --------------------------------------------------------------------------
 
 def fetch(url, timeout=30):
-    req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
-    with urllib.request.urlopen(req, timeout=timeout) as r:
-        content = r.read()
-        return gzip.decompress(content) if content.startswith(b"\x1f\x8b") else content
+    req = urllib.request.Request(url, headers={
+        "User-Agent": USER_AGENT,
+        "Accept": "application/rss+xml, application/atom+xml, application/xml, text/xml;q=0.9, */*;q=0.5",
+        "Cache-Control": "no-cache",
+    })
+    for attempt in range(3):
+        with urllib.request.urlopen(req, timeout=timeout) as r:
+            content = r.read()
+            status = r.status
+            if content:
+                return gzip.decompress(content) if content.startswith(b"\x1f\x8b") else content
+        if attempt < 2:
+            time.sleep(3 * (attempt + 1))
+    raise ValueError(f"Feed returned an empty response (HTTP {status}) after three attempts")
 
 
 def strip_html(text):
