@@ -30,7 +30,7 @@ Browser requests time out after 15 seconds. Failed background refreshes retain e
 
 The updater runs source requests with bounded retries and timeouts, atomically writes the content/status JSON, commits changes, rebases over concurrent repository changes, and pushes them to `main`.
 
-`.github/workflows/deploy.yml` validates code, then deploys on a main-branch push and after an update run completes. The existing CNAME preserves `syriahealthcare.com`. Pages must use GitHub Actions as its deployment source.
+`.github/workflows/deploy.yml` validates code, then deploys on a main-branch push and after an update run completes. Each run attempt uses a unique Pages artifact name so rerunning a failed deployment cannot select duplicate artifacts. The existing CNAME preserves `syriahealthcare.com`. Pages must use GitHub Actions as its deployment source.
 
 For failed-run notifications, enable GitHub Actions notifications in your own GitHub account. Detailed source results appear in each update run's summary and on the website's source list.
 
