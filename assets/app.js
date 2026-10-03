@@ -9,7 +9,8 @@
     location = '',
     query = '',
     sources = {},
-    editor = {};
+    editor = {},
+    sourceStatus = {};
   const feeds = {
     news: {
       items: [],
@@ -71,12 +72,12 @@
   }
 
   function matches(item) {
-    return !query || normalize(['title_en', 'title_ar', 'summary_en', 'summary_ar', 'source', 'organisation', 'location'].map(k => item[k] || '').join(' ')).includes(query);
+    return !query || normalize(['title', 'title_en', 'title_ar', 'source', 'organisation', 'location'].map(k => item[k] || '').join(' ')).includes(query);
   }
 
   function openJobs() {
     const today = new Date().toISOString().slice(0, 10);
-    return feeds.jobs.items.filter(j => !/^\d{4}-\d{2}-\d{2}$/.test(j.deadline || '') || j.deadline >= today);
+    return feeds.jobs.items.filter(j => /^\d{4}-\d{2}-\d{2}$/.test(j.deadline || '') && date(j.deadline) && j.deadline >= today && Date.now() - new Date(j.verified_at).getTime() <= 72 * 3600000);
   }
 
   function staticText() {
@@ -99,6 +100,10 @@
     const stale = checked && Date.now() - new Date(f.updated).getTime() > 48 * 3600000;
     n.textContent = checked ? tr('Last successful collection: ', 'آخر جمع ناجح: ') + checked + (stale ? tr(' · Updates delayed', ' · التحديثات متأخرة') : '') : '';
     n.classList.toggle('stale', Boolean(stale));
+    if (f.status === 'partial' || f.status === 'error') {
+      n.textContent += tr(' · Some sources are temporarily unavailable', ' · بعض المصادر غير متاحة مؤقتاً');
+      n.classList.add('stale');
+    }
   }
 
   function emptyState(kind, hasResults, filtered) {
@@ -192,9 +197,10 @@
         meta.append(time);
       }
       const title = node('h3', 'card-title');
+      title.dir = 'auto';
       title.append(link(value(n, 'title'), n.url));
       li.append(meta, title);
-      if (value(n, 'summary')) li.append(node('p', 'card-summary', value(n, 'summary')));
+      li.append(node('p', 'card-summary', n.language === 'ar' ? tr('Original headline in Arabic', 'العنوان الأصلي بالعربية') : tr('Original headline in English', 'العنوان الأصلي بالإنجليزية')));
       li.append(link(tr('Read original story ↗', 'اقرأ الخبر الأصلي ↖'), n.url, 'read-link'));
       $('newsList').append(li);
     });
@@ -210,11 +216,14 @@
     items.forEach(j => {
       const li = node('li'),
         title = node('h3', 'job-title');
+      title.dir = 'auto';
       title.append(link(value(j, 'title'), j.url));
       li.append(title);
+      li.append(node('p', 'job-meta', j.role_type === 'clinical' ? tr('Clinical / healthcare role', 'وظيفة طبية / صحية') : tr('Support role at a healthcare organization', 'وظيفة دعم في منظمة صحية')));
       li.append(node('p', 'job-meta', [j.organisation || j.source, j.location].filter(Boolean).join(' · ')));
       li.append(node('p', 'job-deadline', date(j.deadline) ? tr('Closes ', 'آخر موعد: ') + date(j.deadline) : tr('Closing date: check original listing', 'الموعد النهائي: راجع الإعلان الأصلي')));
-      li.append(link(tr('View vacancy ↗', 'عرض الوظيفة ↖'), j.url, 'read-link'));
+      if (j.reference) li.append(node('p', 'job-meta', tr('Vacancy reference: ', 'رقم الوظيفة: ') + j.reference));
+      li.append(link(j.reference ? tr('View employer listings ↗', 'عرض وظائف الجهة الموظفة ↖') : tr('View vacancy ↗', 'عرض الوظيفة ↖'), j.url, 'read-link'));
       $('jobsList').append(li);
     });
     emptyState('jobs', items.length > 0, Boolean(query || location));
@@ -227,11 +236,20 @@
     ['news', 'jobs'].forEach(kind => (sources[kind] || []).forEach(s => {
       if (!safeURL(s.url)) return;
       const li = node('li'),
-        a = link(s.name, s.url);
+        a = link(s.name, s.website || s.url);
       a.append(node('small', '', kind === 'news' ? tr('News feed ↗', 'خلاصة أخبار ↖') : tr('Jobs feed ↗', 'خلاصة وظائف ↖')));
       li.append(a);
+      const status = sourceStatus[s.id];
+      li.append(node('p', 'source-status', status ? (status.state === 'ok' ? (status.accepted ? tr('Available · ', 'متاح · ') + status.accepted + tr(' matching items', ' مواد مطابقة') : tr('Available · no recent matching items', 'متاح · لا توجد مواد حديثة مطابقة')) : tr('Temporarily unavailable', 'غير متاح مؤقتاً')) : tr('Status not yet available', 'الحالة غير متاحة بعد')));
       $('sourceList').append(li);
     }));
+    $('externalJobs').replaceChildren();
+    (sources.directories || []).forEach(s => {
+      if (!safeURL(s.url)) return;
+      const li = node('li');
+      li.append(link(lang === 'ar' ? s.name_ar || s.name : s.name, s.url));
+      $('externalJobs').append(li);
+    });
   }
 
   function renderEditor() {
@@ -266,8 +284,9 @@
       const data = await json(`data/${kind}.json`);
       if (!Array.isArray(data.items)) throw new Error('Invalid feed');
       feeds[kind] = {
-        items: data.items.filter(i => i && typeof i === 'object' && safeURL(i.url) && value(i, 'title')),
+        items: data.items.filter(i => i && typeof i === 'object' && i.verification_version === 2 && safeURL(i.url) && value(i, 'title') && date(i.published) && new Date(i.published).getTime() <= Date.now() + 3600000 && (kind !== 'news' || Date.now() - new Date(i.published).getTime() <= 45 * 86400000)),
         updated: data.updated,
+        status: data.status,
         loading: false
       };
     } catch (_) {
@@ -307,4 +326,9 @@
     editor = data;
     renderEditor();
   }).catch(() => {});
+  json('data/status.json').then(data => {
+    sourceStatus = Object.fromEntries((data.sources || []).map(s => [s.id, s]));
+    renderSources();
+  }).catch(() => {});
+  setInterval(() => { loadFeed('news'); loadFeed('jobs'); }, 15 * 60 * 1000);
 })();

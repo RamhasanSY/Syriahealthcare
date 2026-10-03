@@ -1,0 +1,69 @@
+{
+  "checked_at": "2026-10-03T18:29:36+00:00",
+  "sources": [
+    {
+      "id": "ida-jobs",
+      "kind": "jobs",
+      "state": "ok",
+      "checked_at": "2026-10-03T18:29:11+00:00",
+      "fetched": 10,
+      "accepted": 2,
+      "latest_published": "2026-10-01"
+    },
+    {
+      "id": "ida-news",
+      "kind": "news",
+      "state": "ok",
+      "checked_at": "2026-10-03T18:28:50+00:00",
+      "fetched": 10,
+      "accepted": 0,
+      "latest_published": null
+    },
+    {
+      "id": "sams-jobs",
+      "kind": "jobs",
+      "state": "ok",
+      "checked_at": "2026-10-03T18:29:36+00:00",
+      "fetched": 544,
+      "accepted": 4,
+      "latest_published": "2026-09-30"
+    },
+    {
+      "id": "sams-news",
+      "kind": "news",
+      "state": "ok",
+      "checked_at": "2026-10-03T18:28:49+00:00",
+      "fetched": 10,
+      "accepted": 9,
+      "latest_published": "2026-10-01"
+    },
+    {
+      "id": "un-health",
+      "kind": "news",
+      "state": "ok",
+      "checked_at": "2026-10-03T18:28:49+00:00",
+      "fetched": 30,
+      "accepted": 0,
+      "latest_published": null
+    },
+    {
+      "id": "uossm-news",
+      "kind": "news",
+      "state": "ok",
+      "checked_at": "2026-10-03T18:28:50+00:00",
+      "fetched": 10,
+      "accepted": 0,
+      "latest_published": null
+    },
+    {
+      "id": "who-news",
+      "kind": "news",
+      "state": "ok",
+      "checked_at": "2026-10-03T18:28:49+00:00",
+      "fetched": 25,
+      "accepted": 0,
+      "latest_published": null
+    }
+  ],
+  "version": 2
+}

@@ -23,6 +23,13 @@ jobs = {"updated": now.isoformat(), "items": [
     {"title_en": "Doctor", "location": "Damascus", "url": "https://example.org/doctor"},
     {"title_en": "Expired", "deadline": (now.date() - timedelta(days=1)).isoformat(), "url": "https://example.org/expired"},
 ]}
+for item in news['items'] + jobs['items']:
+    item.update(verification_version=2, verified_at=now.isoformat())
+    item.setdefault('published', now.date().isoformat())
+for item in jobs['items']:
+    item.setdefault('deadline', (now.date()+timedelta(days=2)).isoformat())
+news['items'].append({'title_en': 'Legacy unverified record', 'url': 'https://example.org/legacy', 'published': now.date().isoformat()})
+jobs['items'].append({'title_en': 'Undated role', 'url': 'https://example.org/undated', 'published': now.date().isoformat(), 'verification_version': 2, 'verified_at': now.isoformat()})
 
 with sync_playwright() as p:
     browser = p.chromium.launch()

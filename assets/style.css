@@ -1054,3 +1054,11 @@ body[dir=rtl] .lang-toggle {
     scroll-behavior: auto
   }
 }
+
+.source-status {font-size:11px;color:var(--muted);padding:0 20px 15px;margin:0;}
+.external-jobs {border-top:1px solid var(--rule);margin-top:22px;padding-top:20px;}
+.external-jobs h3 {font-size:15px;}
+.external-jobs p,.external-jobs li {font-size:12px;}
+.external-jobs p {color:var(--muted);}
+.external-jobs ul {padding-inline-start:18px;}
+.external-jobs a {display:inline-block;padding-block:7px;}

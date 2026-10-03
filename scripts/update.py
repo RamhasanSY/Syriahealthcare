@@ -1,380 +1,344 @@
-#!/usr/bin/env python3
-"""
-Collect health-sector news and job listings from public RSS feeds,
-filter them with an LLM, and write data/news.json and data/jobs.json.
-
-Runs twice a day via .github/workflows/update.yml.
-
-AI provider is picked from environment variables, in this order:
-  GROQ_API_KEY  -> Groq
-  GEMINI_API_KEY-> Google AI Studio (OpenAI-compatible endpoint)
-  GITHUB_TOKEN  -> GitHub Models (inside Actions)
-If none is set, publishing fails safely and existing data is preserved.
-"""
-
-import json
+﻿#!/usr/bin/env python3
+"""Publish source-backed Syria healthcare records without an AI dependency."""
 import gzip
+import html
+import json
 import os
 import re
 import sys
 import time
 import urllib.error
 import urllib.request
-from datetime import datetime, timezone, timedelta
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from datetime import datetime, timedelta, timezone
 from email.utils import parsedate_to_datetime
-from xml.etree import ElementTree
+from html.parser import HTMLParser
+from pathlib import Path
 from urllib.parse import urlsplit, urlunsplit, parse_qsl, urlencode
+from xml.etree import ElementTree
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SOURCES = os.path.join(ROOT, "sources.json")
-NEWS_FILE = os.path.join(ROOT, "data", "news.json")
-JOBS_FILE = os.path.join(ROOT, "data", "jobs.json")
-
-MAX_NEWS = 60          # how many stories the site keeps
-MAX_JOBS = 40
-MAX_AGE_DAYS = 45      # drop anything older than this
-BATCH = 8              # items per LLM call
-
-TOPICS = ["hospitals", "public-health", "aid", "workforce", "policy", "other"]
-
-USER_AGENT = "SyriaHealthcareBot/1.0 (+https://syriahealthcare.com)"
+ROOT = Path(__file__).resolve().parents[1]
+SOURCES = ROOT / 'sources.json'
+DATA = ROOT / 'data'
+VERSION = 2
+USER_AGENT = 'SyriaHealthcareBot/2.0 (+https://syriahealthcare.com)'
+MAX_NEWS_DAYS = 45
+CACHE_HOURS = 72
+SYRIA = re.compile(r'\b(?:syria|syrian|damascus|aleppo|idlib|homs|hama|daraa|dar.a|raqqa|hasakah|azaz|deir\s+(?:ez[ -]?zor|ezzor|alzoor|azzur))\b|سوري[اة]|دمشق|حلب|إدلب|ادلب|حمص|حماة|درعا|الرقة|دير الزور|أعزاز', re.I)
+HEALTH = re.compile(r'\b(?:health(?:care)?|medical|medicine|hospital|clinic|cardiac|cardiology|surgery|surgeries|surgical|nurs\w*|doctor|physician|patient|cancer|cholera|vaccin\w*|dialysis|nutrition|malnutrition|physiotherapy|midwi\w*|pharmac\w*|paediatri\w*|pediatri\w*|premature|disease|ambulance|outbreak|measles|polio|mental health|ureter|sight|blindness)\b|صح[ية]|طب[يية]|مشفى|مشاف|مستشف|تمريض|ممرض|صيدل|لقاح|تغذي|سرطان|أطفال|اطفال', re.I)
 
 
-# --------------------------------------------------------------------------
-# Feed reading
-# --------------------------------------------------------------------------
-
-def fetch(url, timeout=30):
-    req = urllib.request.Request(url, headers={
-        "User-Agent": USER_AGENT,
-        "Accept": "application/rss+xml, application/atom+xml, application/xml, text/xml;q=0.9, */*;q=0.5",
-        "Cache-Control": "no-cache",
-    })
-    for attempt in range(3):
-        with urllib.request.urlopen(req, timeout=timeout) as r:
-            content = r.read()
-            status = r.status
-            if content:
-                return gzip.decompress(content) if content.startswith(b"\x1f\x8b") else content
-        if attempt < 2:
-            time.sleep(3 * (attempt + 1))
-    raise ValueError(f"Feed returned an empty response (HTTP {status}) after three attempts")
-
-
-def strip_html(text):
-    text = re.sub(r"<[^>]+>", " ", text or "")
-    text = (text.replace("&amp;", "&").replace("&lt;", "<").replace("&gt;", ">")
-                .replace("&quot;", '"').replace("&#39;", "'").replace("&nbsp;", " "))
-    return re.sub(r"\s+", " ", text).strip()
+def now():
+    return datetime.now(timezone.utc)
 
 
 def parse_date(raw):
-    if not raw:
+    if isinstance(raw, datetime):
+        return raw.replace(tzinfo=raw.tzinfo or timezone.utc).astimezone(timezone.utc)
+    if not isinstance(raw, str) or not raw.strip():
         return None
     raw = raw.strip()
     try:
-        d = datetime.fromisoformat(raw.replace("Z", "+00:00"))
-        return d.replace(tzinfo=d.tzinfo or timezone.utc).astimezone(timezone.utc)
+        d = datetime.fromisoformat(raw.replace('Z', '+00:00'))
     except ValueError:
-        pass
-    try:
-        return parsedate_to_datetime(raw).astimezone(timezone.utc)
-    except Exception:
-        pass
-    for fmt in ("%Y-%m-%dT%H:%M:%S%z", "%Y-%m-%dT%H:%M:%SZ", "%Y-%m-%d"):
         try:
-            d = datetime.strptime(raw, fmt)
-            return d.replace(tzinfo=d.tzinfo or timezone.utc).astimezone(timezone.utc)
-        except ValueError:
+            d = parsedate_to_datetime(raw)
+        except (ValueError, TypeError, OverflowError):
+            d = None
+            for fmt in ('%B %d, %Y', '%b %d, %Y', '%d %b %Y', '%d %B %Y'):
+                try:
+                    d = datetime.strptime(raw, fmt)
+                    break
+                except ValueError:
+                    pass
+            if d is None:
+                return None
+    return d.replace(tzinfo=d.tzinfo or timezone.utc).astimezone(timezone.utc)
+
+
+def canonical_url(raw):
+    try:
+        p = urlsplit(raw.strip())
+        if p.scheme not in ('https', 'http') or not p.hostname or p.username or p.password:
+            return ''
+        query = [(k, v) for k, v in parse_qsl(p.query) if not k.lower().startswith('utm_') and k.lower() not in ('fbclid', 'gclid')]
+        return urlunsplit((p.scheme, p.netloc.lower(), p.path.rstrip('/'), urlencode(sorted(query)), ''))
+    except (ValueError, AttributeError):
+        return ''
+
+
+def fetch(url, timeout=25):
+    req = urllib.request.Request(url, headers={'User-Agent': USER_AGENT, 'Accept': 'application/rss+xml, application/json, text/html, */*'})
+    for attempt in range(3):
+        try:
+            with urllib.request.urlopen(req, timeout=timeout) as response:
+                content = response.read(4_000_001)
+                if len(content) > 4_000_000:
+                    raise ValueError('Source exceeded the maximum response size')
+                if not content:
+                    raise ValueError(f'Empty response (HTTP {response.status})')
+                return gzip.decompress(content) if content.startswith(b'\x1f\x8b') else content
+        except (urllib.error.URLError, OSError, ValueError):
+            if attempt == 2:
+                raise
+            time.sleep(attempt + 1)
+
+
+class TextOnly(HTMLParser):
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.parts, self.ignore = [], 0
+
+    def handle_starttag(self, tag, attrs):
+        if tag in ('script', 'style'):
+            self.ignore += 1
+        elif tag in ('p', 'div', 'li', 'br', 'h1', 'h2', 'h3'):
+            self.parts.append(' ')
+
+    def handle_endtag(self, tag):
+        if tag in ('script', 'style'):
+            self.ignore = max(0, self.ignore - 1)
+        self.parts.append(' ')
+
+    def handle_data(self, data):
+        if not self.ignore:
+            self.parts.append(data)
+
+
+def strip_html(raw):
+    parser = TextOnly()
+    parser.feed(raw or '')
+    return re.sub(r'\s+', ' ', html.unescape(''.join(parser.parts))).strip()
+
+
+def clean_body(raw):
+    text = strip_html(raw)
+    return re.split(r'\bThe post\b|\bRead Full Article\b', text, maxsplit=1)[0].strip()
+
+
+def parse_feed(content, source_name):
+    root = ElementTree.fromstring(content)
+    if root.tag not in ('rss', '{http://www.w3.org/2005/Atom}feed'):
+        raise ValueError('Response is not RSS or Atom')
+    ns = {'a': 'http://www.w3.org/2005/Atom'}
+    entries = root.findall('.//item') or root.findall('a:entry', ns)
+    items = []
+    for entry in entries:
+        def text(tag, atom=None):
+            el = entry.find(tag)
+            if el is None and atom:
+                el = entry.find('a:' + atom, ns)
+            return ''.join(el.itertext()).strip() if el is not None else ''
+        url = text('link')
+        if not url:
+            links = entry.findall('a:link', ns)
+            alternative = next((a for a in links if a.get('rel', 'alternate') == 'alternate'), None)
+            url = alternative.get('href', '') if alternative is not None else ''
+        title = strip_html(text('title', 'title'))
+        if not title or not canonical_url(url):
             continue
+        content = text('{http://purl.org/rss/1.0/modules/content/}encoded', 'content') or text('description', 'summary')
+        published = text('pubDate', 'published') or text('{http://purl.org/dc/elements/1.1/}date', 'updated')
+        items.append({'title': title, 'url': url, 'published': published, 'raw_summary': clean_body(content), 'source': source_name})
+    return items
+
+
+def classify(text):
+    if re.search(r'hospital|clinic|cardiac|surg|مشفى|مستشف|جراح', text, re.I):
+        return 'hospitals'
+    if re.search(r'training|education|workforce|تدريب|تعليم', text, re.I):
+        return 'workforce'
+    if re.search(r'policy|system|سياس|نظام', text, re.I):
+        return 'policy'
+    return 'public-health'
+
+
+def original_fields(title):
+    language = 'ar' if re.search(r'[\u0600-\u06ff]', title) else 'en'
+    return {'title': title, 'title_' + language: title, 'language': language}
+
+
+def eligible_news(item):
+    published = parse_date(item.get('published'))
+    if not published or not now() - timedelta(days=MAX_NEWS_DAYS) <= published <= now() + timedelta(hours=1):
+        return False
+    title = item.get('title', '')
+    lead = (item.get('raw_summary') or '')[:1500]
+    # The publisher's name must never count as evidence of a Syrian location.
+    evidence = re.sub(r'Syrian American Medical Society(?: Foundation)?|Syrian Arab Red Crescent', '', title + ' ' + lead, flags=re.I)
+    if not SYRIA.search(evidence):
+        return False
+    # Require a healthcare headline, or an explicitly Syrian mission with health content.
+    return bool(HEALTH.search(title) or (SYRIA.search(title) and re.search(r'mission|بعثة|حملة', title, re.I) and HEALTH.search(lead)))
+
+
+def base_record(item, source):
+    pub = parse_date(item.get('published'))
+    return {**original_fields(item['title']), 'url': item['url'], 'published': pub.date().isoformat() if pub else None,
+            'source': source['name'], 'source_id': source['id'], 'verification_version': VERSION,
+            'verified_at': now().isoformat(timespec='seconds')}
+
+
+def news_records(source):
+    candidates = parse_feed(fetch(source['url']), source['name'])
+    accepted = []
+    for item in candidates:
+        if not eligible_news(item):
+            continue
+        record = base_record(item, source)
+        record['topic'] = classify(item['title'] + ' ' + item['raw_summary'][:700])
+        # Original headlines only: no generated claims, summaries, or translations.
+        record['evidence'] = {'geography': SYRIA.search(re.sub(r'Syrian American Medical Society(?: Foundation)?', '', item['title'] + ' ' + item['raw_summary'][:1500], flags=re.I)).group(0), 'type': 'publisher-headline'}
+        accepted.append(record)
+    return accepted, len(candidates)
+
+
+def job_valid(item):
+    deadline, published = parse_date(item.get('deadline')), parse_date(item.get('published'))
+    return bool(deadline and deadline.date() >= now().date() and published and published <= now() + timedelta(hours=1)
+                and SYRIA.search(item.get('location', '')) and canonical_url(item.get('url', '')))
+
+
+def job_record(item, source):
+    record = base_record(item, source)
+    record.update(deadline=parse_date(item['deadline']).date().isoformat(), organisation=source['organisation'],
+                  location=item['location'], reference=str(item.get('reference', '')),
+                  role_type='clinical' if HEALTH.search(item['title']) else 'support',
+                  evidence={'type': 'employer-listing', 'deadline': item['deadline'], 'location': item['location']})
+    record['id'] = source['id'] + ':' + str(item.get('reference') or canonical_url(item['url']))
+    return record
+
+
+def sams_jobs(source):
+    payload = json.loads(fetch(source['url']))
+    if payload.get('success') is not True or not isinstance(payload.get('data'), list):
+        raise ValueError('SAMS recruitment response has changed')
+    result = []
+    for row in payload['data']:
+        if row.get('btnwork') is not True or row.get('StatusOfPositionName') != 'Available':
+            continue
+        item = {'title': row.get('PositionName', ''), 'published': row.get('StartingDate'), 'deadline': row.get('EndingDate'),
+                'location': row.get('PositionLocationName', ''), 'reference': row.get('PositionForCondidateID'), 'url': source['website']}
+        if item['title'] and item['reference'] and job_valid(item):
+            result.append(job_record(item, source))
+    return result, len(payload['data'])
+
+
+def ida_detail(item, source):
+    if urlsplit(item['url']).hostname != urlsplit(source['url']).hostname:
+        raise ValueError('Vacancy link leaves the configured employer domain')
+    text = strip_html(fetch(item['url']).decode('utf-8-sig'))
+    expiry = re.search(r'Expiry Date:\s*([A-Za-z]+\s+\d{1,2},\s*\d{4})', text)
+    location = re.search(r'Workspace:\s*(.+?)(?:\s+IDA is|\s+Apply Now)', text)
+    title = re.search(r'Position:\s*(.+?)\s+Department:', text)
+    if not expiry or not location or not title:
+        raise ValueError('Employer deadline, position or location field is missing')
+    item = {**item, 'deadline': expiry.group(1), 'location': location.group(1).strip()}
+    # Keep the feed's original Arabic title; the detail page supplies the English title.
+    if job_valid(item):
+        record = job_record(item, source)
+        record['title_en'] = title.group(1).strip()
+        return record
     return None
 
 
-def parse_feed(xml_bytes, source_name):
-    """Handle both RSS 2.0 and Atom without external dependencies."""
-    out = []
+def ida_jobs(source):
+    candidates = parse_feed(fetch(source['url']), source['name'])
+    recent = [i for i in candidates if parse_date(i['published']) and parse_date(i['published']) >= now() - timedelta(days=45)]
+    result = []
+    # Each vacancy must have a deadline and workplace on its own employer page.
+    for item in recent[:30]:
+        record = ida_detail(item, source)
+        if record:
+            result.append(record)
+    return result, len(candidates)
+
+
+def collect_source(source, kind):
+    handlers = {'rss': news_records, 'sams_jobs': sams_jobs, 'ida_jobs': ida_jobs}
     try:
-        root = ElementTree.fromstring(xml_bytes)
-    except ElementTree.ParseError as exc:
-        preview = xml_bytes[:160].decode("utf-8", errors="replace").replace("\n", " ")
-        raise ValueError(f"Invalid XML from {source_name}: {exc}; response begins {preview!r}") from exc
-
-    if root.tag not in ("rss", "{http://www.w3.org/2005/Atom}feed", "{http://www.w3.org/1999/02/22-rdf-syntax-ns#}RDF"):
-        raise ValueError(f"Not an RSS/Atom feed: {source_name}")
-
-    ns = {"atom": "http://www.w3.org/2005/Atom"}
-
-    entries = root.findall(".//item") or root.findall(".//atom:entry", ns)
-    for e in entries:
-        def text(tag, atom_tag=None):
-            node = e.find(tag)
-            if node is None and atom_tag:
-                node = e.find(atom_tag, ns)
-            return (node.text or "").strip() if node is not None and node.text else ""
-
-        title = text("title", "atom:title")
-        link = text("link", None)
-        if not link:
-            ln = e.find("atom:link", ns)
-            if ln is not None:
-                link = ln.get("href", "")
-        desc = text("description", "atom:summary") or text("{http://purl.org/rss/1.0/modules/content/}encoded", "atom:content")
-        pub = text("pubDate", "atom:published") or text("{http://purl.org/dc/elements/1.1/}date", "atom:updated")
-
-        if not title or not canonical_url(link):
-            continue
-
-        item = {
-            "title_en": strip_html(title),
-            "url": link.strip(),
-            "raw_summary": strip_html(desc)[:900],
-            "published": parse_date(pub),
-            "source": source_name,
-        }
-        closing = re.search(r"Closing date:\s*(\d{1,2} [A-Za-z]{3} \d{4})", strip_html(desc), re.I)
-        if closing:
-            try:
-                item["deadline"] = datetime.strptime(closing.group(1), "%d %b %Y").date().isoformat()
-            except ValueError:
-                pass
-        out.append(item)
-    return out
+        items, total = handlers[source['adapter']](source)
+        return items, {'id': source['id'], 'kind': kind, 'state': 'ok', 'checked_at': now().isoformat(timespec='seconds'),
+                       'fetched': total, 'accepted': len(items), 'latest_published': max((i['published'] for i in items), default=None)}
+    except (OSError, ValueError, KeyError, TypeError, ElementTree.ParseError) as exc:
+        return [], {'id': source['id'], 'kind': kind, 'state': 'error', 'checked_at': now().isoformat(timespec='seconds'),
+                    'error': str(exc)[:240], 'accepted': 0}
 
 
-def collect(feeds):
-    items = []
-    failures = []
-    successes = 0
-    for f in feeds:
-        print(f"  reading {f['name']}")
-        try:
-            items.extend(parse_feed(fetch(f["url"]), f["name"]))
-            successes += 1
-        except (urllib.error.URLError, TimeoutError, ValueError, OSError) as exc:
-            print(f"  ! {f['name']} unreachable: {exc}")
-            failures.append(f["name"])
-        time.sleep(1)
-    if not successes:
-        raise RuntimeError("No sources could be read; previous data preserved")
-    return items, failures
-
-
-# --------------------------------------------------------------------------
-# LLM filtering
-# --------------------------------------------------------------------------
-
-def llm_config():
-    if os.environ.get("GROQ_API_KEY"):
-        return ("https://api.groq.com/openai/v1/chat/completions",
-                os.environ["GROQ_API_KEY"], "llama-3.3-70b-versatile")
-    if os.environ.get("GEMINI_API_KEY"):
-        return ("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
-                os.environ["GEMINI_API_KEY"], os.environ.get("GEMINI_MODEL", "gemini-3.6-flash"))
-    if os.environ.get("GITHUB_TOKEN"):
-        return ("https://models.github.ai/inference/chat/completions",
-                os.environ["GITHUB_TOKEN"], "openai/gpt-4o-mini")
-    return (None, None, None)
-
-
-NEWS_PROMPT = """You screen articles for a site about Syria's healthcare sector.
-
-For each numbered item decide:
-- keep: true only if the article is substantially about health, medicine, hospitals,
-  disease, medical staff, health funding, or health policy AND relates to Syria or
-  Syrians. Otherwise false.
-- topic: one of hospitals, public-health, aid, workforce, policy, other
-- summary_en: one neutral sentence, max 28 words
-- summary_ar: the same sentence in Modern Standard Arabic
-- title_ar: the headline in Modern Standard Arabic
-
-Reply with JSON only: {"results":[{"n":1,"keep":true,"topic":"aid","summary_en":"...","summary_ar":"...","title_ar":"..."}]}
-No markdown, no commentary."""
-
-JOBS_PROMPT = """You screen job listings for a site about Syria's healthcare sector.
-
-For each numbered item decide:
-- keep: true only if it is a real vacancy in a health or medical role, or a health
-  programme role, connected to Syria or Syrians. Otherwise false.
-- organisation: the hiring organisation, or "" if unclear
-- location: city or region, or "" if unclear
-- title_ar: the job title in Modern Standard Arabic
-
-Reply with JSON only: {"results":[{"n":1,"keep":true,"organisation":"...","location":"...","title_ar":"..."}]}
-No markdown, no commentary."""
-
-
-def call_llm(url, key, model, system_prompt, payload_text, retries=3):
-    body = json.dumps({
-        "model": model,
-        "temperature": 0,
-        "messages": [
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": payload_text},
-        ],
-    }).encode()
-
-    req = urllib.request.Request(url, data=body, headers={
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {key}",
-        "User-Agent": USER_AGENT,
-    })
-
-    for attempt in range(retries):
-        try:
-            with urllib.request.urlopen(req, timeout=90) as r:
-                data = json.loads(r.read())
-            content = data["choices"][0]["message"]["content"]
-            content = re.sub(r"^```(?:json)?|```$", "", content.strip(), flags=re.M).strip()
-            return json.loads(content).get("results", [])
-        except Exception as exc:
-            wait = 5 * (attempt + 1)
-            print(f"  ! LLM call failed ({exc}); retrying in {wait}s")
-            time.sleep(wait)
-    raise RuntimeError("AI screening failed; previous data preserved")
-
-
-def screen(items, kind):
-    url, key, model = llm_config()
-    if not url:
-        raise RuntimeError("No AI credentials configured; refusing to publish unfiltered items")
-
-    print(f"  screening {len(items)} items with {model}")
-    prompt = NEWS_PROMPT if kind == "news" else JOBS_PROMPT
-    kept = []
-
-    for start in range(0, len(items), BATCH):
-        chunk = items[start:start + BATCH]
-        lines = []
-        for n, it in enumerate(chunk, 1):
-            lines.append(f"{n}. TITLE: {it['title_en']}\n   TEXT: {it.get('raw_summary', '')[:500]}")
-        results = call_llm(url, key, model, prompt, "\n\n".join(lines))
-        if not isinstance(results, list):
-            raise ValueError("AI returned invalid results")
-        by_n = {r.get("n"): r for r in results if isinstance(r, dict)}
-        if len(results) != len(chunk) or set(by_n) != set(range(1, len(chunk) + 1)):
-            raise ValueError("AI returned incomplete screening; previous data preserved")
-        for n, it in enumerate(chunk, 1):
-            r = by_n.get(n)
-            if type(r.get("keep")) is not bool:
-                raise ValueError("AI keep decision must be a boolean")
-            if not r["keep"]:
-                continue
-            fields = ("title_ar", "summary_en", "summary_ar", "topic") if kind == "news" else ("title_ar", "organisation", "location")
-            if any(not isinstance(r.get(field), str) for field in fields):
-                raise ValueError("AI returned invalid content fields")
-            if kind == "news":
-                topic = r.get("topic", "other")
-                it["topic"] = topic if topic in TOPICS else "other"
-                it["summary_en"] = r.get("summary_en", "")
-                it["summary_ar"] = r.get("summary_ar", "")
-            else:
-                it["organisation"] = r.get("organisation", "")
-                it["location"] = r.get("location", "")
-            it["title_ar"] = r.get("title_ar", "")
-            kept.append(it)
-        time.sleep(2)
-
-    print(f"  kept {len(kept)} of {len(items)}")
-    return kept
-
-
-# --------------------------------------------------------------------------
-# Assembling output
-# --------------------------------------------------------------------------
-
-def load_existing(path):
+def read(path, default):
     try:
-        with open(path, encoding="utf-8-sig") as fh:
-            return json.load(fh).get("items", [])
-    except (FileNotFoundError, json.JSONDecodeError):
-        return []
+        return json.loads(Path(path).read_text(encoding='utf-8-sig'))
+    except (FileNotFoundError, ValueError):
+        return default
 
 
-def canonical_url(url):
-    try:
-        parts = urlsplit(url.strip())
-        if parts.scheme not in ("http", "https") or not parts.hostname:
-            return ""
-        query = [(k, v) for k, v in parse_qsl(parts.query, keep_blank_values=True)
-                 if not k.lower().startswith("utm_") and k.lower() not in ("fbclid", "gclid")]
-        return urlunsplit((parts.scheme.lower(), parts.netloc.lower(), parts.path.rstrip("/"), urlencode(sorted(query)), ""))
-    except (ValueError, AttributeError):
-        return ""
-
-
-def merge(existing, fresh, limit, kind="news"):
-    seen = set()
-    combined = []
-    for item in fresh + existing:
-        key = canonical_url(item.get("url", ""))
-        if key and key not in seen:
-            combined.append(item)
-            seen.add(key)
-
-    cutoff = datetime.now(timezone.utc) - timedelta(days=MAX_AGE_DAYS)
-
-    def sort_key(i):
-        d = i.get("published")
-        if isinstance(d, str):
-            d = parse_date(d)
-        return d or datetime.min.replace(tzinfo=timezone.utc)
-
-    combined = [i for i in combined if sort_key(i) >= cutoff or not i.get("published")]
-    if kind == "jobs":
-        today = datetime.now(timezone.utc).date()
-        combined = [i for i in combined if not parse_date(i.get("deadline")) or parse_date(i["deadline"]).date() >= today]
-    combined.sort(key=sort_key, reverse=True)
-    return combined[:limit]
-
-
-def serialise(items):
-    out = []
-    for i in items:
-        d = dict(i)
-        d.pop("raw_summary", None)
-        pub = d.get("published")
-        if isinstance(pub, datetime):
-            d["published"] = pub.date().isoformat()
-        out.append(d)
-    return out
-
-
-def write(path, items):
-    payload = {
-        "updated": datetime.now(timezone.utc).isoformat(timespec="seconds"),
-        "items": serialise(items),
-    }
-    temporary = path + ".tmp"
-    with open(temporary, "w", encoding="utf-8") as fh:
-        json.dump(payload, fh, ensure_ascii=False, indent=2)
-        fh.write("\n")
+def write(path, payload):
+    path = Path(path)
+    temporary = path.with_suffix('.tmp')
+    temporary.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
     os.replace(temporary, path)
-    print(f"  wrote {len(items)} items to {os.path.relpath(path, ROOT)}")
+
+
+def retain_verified(item, kind, configured):
+    verified = parse_date(item.get('verified_at'))
+    published = parse_date(item.get('published'))
+    if item.get('verification_version') != VERSION or item.get('source_id') not in configured or not canonical_url(item.get('url', '')):
+        return False
+    if not verified or not published or published > now() + timedelta(hours=1):
+        return False
+    if kind == 'jobs':
+        return verified >= now() - timedelta(hours=CACHE_HOURS) and job_valid(item)
+    return published >= now() - timedelta(days=MAX_NEWS_DAYS)
+
+
+def merge_records(existing, fresh, kind, statuses):
+    configured = {s['id'] for s in statuses}
+    refreshed = {s['id'] for s in statuses if s['state'] == 'ok'}
+    # Never retain legacy, unverified records. Replace successful employer snapshots.
+    retained = [i for i in existing if retain_verified(i, kind, configured)
+                and not (kind == 'jobs' and i['source_id'] in refreshed)]
+    seen, titles, result = set(), set(), []
+    for item in fresh + retained:
+        key = item.get('id') or canonical_url(item['url'])
+        title = re.sub(r'\W+', '', item.get('title', '').casefold())
+        title_key = (title, item.get('organisation', ''), item.get('location', ''))
+        if key in seen or (title and title_key in titles):
+            continue
+        seen.add(key); titles.add(title_key); result.append(item)
+    result.sort(key=lambda i: i.get('published') or '', reverse=True)
+    return result[:60 if kind == 'news' else 40]
 
 
 def main():
-    with open(SOURCES, encoding="utf-8-sig") as fh:
-        sources = json.load(fh)
+    config = read(SOURCES, {})
+    status_rows, fresh = [], {'news': [], 'jobs': []}
+    with ThreadPoolExecutor(max_workers=5) as pool:
+        tasks = {pool.submit(collect_source, source, kind): kind for kind in ('news', 'jobs') for source in config.get(kind, [])}
+        for task in as_completed(tasks):
+            kind = tasks[task]
+            items, status = task.result()
+            fresh[kind].extend(items); status_rows.append(status)
+            print(f"{status['id']}: {status['state']}, {len(items)} accepted", flush=True)
+            if status['state'] == 'error':
+                print('::warning::' + status['id'] + ': ' + status['error'], flush=True)
+    checked = now().isoformat(timespec='seconds')
+    failed = False
+    for kind in ('news', 'jobs'):
+        statuses = [s for s in status_rows if s['kind'] == kind]
+        old = read(DATA / (kind + '.json'), {})
+        success = any(s['state'] == 'ok' for s in statuses)
+        items = merge_records(old.get('items', []), fresh[kind], kind, statuses)
+        write(DATA / (kind + '.json'), {'updated': checked if success else old.get('updated'), 'checked_at': checked,
+              'status': 'ok' if all(s['state'] == 'ok' for s in statuses) and statuses else 'partial' if success else 'error', 'items': items})
+        if not success:
+            failed = True
+    write(DATA / 'status.json', {'checked_at': checked, 'sources': sorted(status_rows, key=lambda s: s['id']), 'version': VERSION})
+    summary = '\n'.join(f"- {s['id']}: {s['state']} — {s['accepted']} eligible items" for s in status_rows)
+    if os.environ.get('GITHUB_STEP_SUMMARY'):
+        with open(os.environ['GITHUB_STEP_SUMMARY'], 'a', encoding='utf-8') as stream:
+            stream.write('## Source collection\n' + summary + '\n')
+    return 1 if failed else 0
 
-    failures = []
-    for kind, path, limit in (("news", NEWS_FILE, MAX_NEWS), ("jobs", JOBS_FILE, MAX_JOBS)):
-        print(f"{kind.title()}:")
-        try:
-            fresh, unavailable = collect(sources.get(kind, []))
-            existing = load_existing(path)
-            existing_urls = {canonical_url(i["url"]) for i in existing}
-            new_only = [i for i in merge([], fresh, limit, kind) if canonical_url(i["url"]) not in existing_urls]
-            screened = screen(new_only, kind) if new_only else []
-            write(path, merge(existing, screened, limit, kind))
-            failures.extend(unavailable)
-        except (RuntimeError, ValueError, OSError) as exc:
-            failures.append(f"{kind}: {exc}")
-            print(f"::error::{kind}: {exc}")
-    if failures:
-        print("::error::Collection needs attention: " + "; ".join(failures))
-        return 1
-    return 0
 
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     sys.exit(main())

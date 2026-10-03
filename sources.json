@@ -1,32 +1,18 @@
-{
-  "_comment": "Add or remove feeds here. type: 'news' or 'jobs'. Only public RSS/Atom feeds — no scraping of sites that forbid it in their terms. C226 = ReliefWeb country code for Syrian Arab Republic, T4595 = ReliefWeb theme code for Health. Every URL here has been fetch-tested directly (see chat history 2026-09-08) — the previous O1076/O19/O48/F34 codes and the old WHO EMRO/OCHA URLs were invalid or dead and were silently returning generic global content instead of Syria-specific items.",
+﻿{
   "news": [
-    {
-      "name": "ReliefWeb — Syria",
-      "url": "https://reliefweb.int/updates/rss.xml?advanced-search=%28C226%29",
-      "lang": "en"
-    },
-    {
-      "name": "ReliefWeb — Syria Health & Nutrition",
-      "url": "https://reliefweb.int/updates/rss.xml?advanced-search=%28C226%29_%28T4595%29",
-      "lang": "en"
-    },
-    {
-      "name": "Syrian American Medical Society (SAMS)",
-      "url": "https://sams-usa.net/feed/",
-      "lang": "en"
-    }
+    {"id":"sams-news","name":"Syrian American Medical Society (SAMS)","adapter":"rss","url":"https://sams-usa.net/feed/","website":"https://sams-usa.net/"},
+    {"id":"uossm-news","name":"UOSSM","adapter":"rss","url":"https://uossm.org/feed/","website":"https://uossm.org/"},
+    {"id":"ida-news","name":"Independent Doctors Association","adapter":"rss","url":"https://ida-org.com/feed/","website":"https://ida-org.com/"},
+    {"id":"who-news","name":"World Health Organization","adapter":"rss","url":"https://www.who.int/rss-feeds/news-english.xml","website":"https://www.who.int/"},
+    {"id":"un-health","name":"UN News — Health","adapter":"rss","url":"https://news.un.org/feed/subscribe/en/news/topic/health/feed/rss.xml","website":"https://news.un.org/en/news/topic/health"}
   ],
   "jobs": [
-    {
-      "name": "ReliefWeb Jobs — Syria",
-      "url": "https://reliefweb.int/jobs/rss.xml?advanced-search=%28C226%29",
-      "lang": "en"
-    },
-    {
-      "name": "ReliefWeb Jobs — Syria Health",
-      "url": "https://reliefweb.int/jobs/rss.xml?advanced-search=%28C226%29_%28T4595%29",
-      "lang": "en"
-    }
+    {"id":"sams-jobs","name":"SAMS recruitment","organisation":"Syrian American Medical Society (SAMS)","adapter":"sams_jobs","url":"https://recruitment.sams-hr.com/PositionForCondidate/GetAviablePositions1","website":"https://recruitment.sams-hr.com/PositionForCondidate/ApplyJob"},
+    {"id":"ida-jobs","name":"IDA vacancies","organisation":"Independent Doctors Association","adapter":"ida_jobs","url":"https://ida-org.com/feed/?post_type=jobs","website":"https://ida-org.com/jobs/"}
+  ],
+  "directories": [
+    {"name":"LinkedIn — healthcare jobs in Syria","name_ar":"لينكدإن — وظائف الرعاية الصحية في سوريا","url":"https://www.linkedin.com/jobs/search/?keywords=healthcare&location=Syria","mode":"external"},
+    {"name":"ReliefWeb — Syria vacancies","name_ar":"ريليف ويب — وظائف في سوريا","url":"https://reliefweb.int/jobs?advanced-search=%28C226%29","mode":"external"},
+    {"name":"UOSSM — official vacancies","name_ar":"أوسوم — الوظائف الرسمية","url":"https://uossm.org/reach-us/job-vacancies/","mode":"external"}
   ]
 }

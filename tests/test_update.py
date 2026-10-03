@@ -1,86 +1,128 @@
-import json
-import gzip
+﻿import gzip
 import io
+import json
 import tempfile
 import unittest
-from datetime import datetime, timedelta, timezone
+from datetime import timedelta
 from pathlib import Path
 from unittest.mock import patch
-
-from scripts import update
+from scripts import update as u
 
 
 class CollectorTests(unittest.TestCase):
-    def test_compressed_feed_response_is_decoded(self):
+    def news(self, **fields):
+        return {'title': 'New cardiac services in Syria', 'url': 'https://example.org/clinic', 'published': u.now().isoformat(), 'raw_summary': 'Hospital teams in Damascus provide cardiac care.', **fields}
+
+    def job(self, **fields):
+        return {'title': 'Nurse', 'url': 'https://example.org/job', 'published': u.now().isoformat(), 'deadline': (u.now() + timedelta(days=2)).date().isoformat(), 'location': 'Syria / Aleppo', **fields}
+
+    def verified(self, item, kind='news'):
+        return {**item, 'verification_version': 2, 'source_id': 'example', 'verified_at': u.now().isoformat()}
+
+    def test_gzip_feed_decoding(self):
         xml = b'<rss><channel /></rss>'
-        response = io.BytesIO(gzip.compress(xml))
-        response.status = 200
-        with patch.object(update.urllib.request, 'urlopen', return_value=response):
-            self.assertEqual(update.fetch('https://example.org/feed'), xml)
+        response = io.BytesIO(gzip.compress(xml)); response.status = 200
+        with patch.object(u.urllib.request, 'urlopen', return_value=response):
+            self.assertEqual(u.fetch('https://example.org/feed'), xml)
 
-    def item(self, url="https://example.org/story", **fields):
-        return {"url": url, "title_en": "Health in Syria", "published": datetime.now(timezone.utc), **fields}
+    def test_original_headlines_and_html_entities(self):
+        xml = b'<rss><channel><item><title>Health &amp; care in Syria</title><link>https://example.org/clinic</link><pubDate>Thu, 01 Oct 2026 10:00:00 +0000</pubDate><description>&lt;p&gt;Clinic news&lt;/p&gt;</description></item></channel></rss>'
+        row = u.parse_feed(xml, 'Example')[0]
+        self.assertEqual(row['title'], 'Health & care in Syria')
+        self.assertEqual(row['raw_summary'], 'Clinic news')
 
-    def test_deduplicates_tracking_urls_across_fresh_and_existing(self):
-        old = self.item("https://example.org/story?utm_source=rss")
-        fresh = self.item("https://example.org/story#top", title_en="Updated")
-        merged = update.merge([old], [fresh, fresh], 60)
-        self.assertEqual(len(merged), 1)
-        self.assertEqual(merged[0]["title_en"], "Updated")
+    def test_atom_uses_article_link_not_self_link(self):
+        xml = b'<feed xmlns="http://www.w3.org/2005/Atom"><entry><title>Clinic</title><link rel="self" href="https://example.org/api"/><link rel="alternate" href="https://example.org/article"/><updated>2026-10-01T10:00:00Z</updated></entry></feed>'
+        self.assertEqual(u.parse_feed(xml, 'Example')[0]['url'], 'https://example.org/article')
 
-    def test_rejects_unsafe_links(self):
-        self.assertEqual(update.merge([], [self.item("javascript:alert(1)")], 60), [])
+    def test_non_feed_responses_fail(self):
+        with self.assertRaises(ValueError):
+            u.parse_feed(b'<html></html>', 'Example')
 
-    def test_jobs_expire_after_deadline_but_not_on_closing_day(self):
-        today = datetime.now(timezone.utc).date()
-        expired = self.item(deadline=(today - timedelta(days=1)).isoformat())
-        current = self.item("https://example.org/current", deadline=today.isoformat())
-        self.assertEqual(update.merge([], [expired, current], 40, "jobs"), [current])
+    def test_unsafe_urls_are_rejected(self):
+        for url in ['javascript:alert(1)', 'https://user:password@example.org', 'not-a-url']:
+            self.assertFalse(u.canonical_url(url))
 
-    def test_extracts_only_explicit_closing_date(self):
-        xml = b'<rss><channel><item><title>Nurse</title><link>https://example.org/job</link><description>Closing date: 16 Oct 2026</description></item></channel></rss>'
-        self.assertEqual(update.parse_feed(xml, "Jobs")[0]["deadline"], "2026-10-16")
+    def test_eligible_syria_health_news(self):
+        self.assertTrue(u.eligible_news(self.news()))
 
-    def test_invalid_feed_is_a_failure_not_an_empty_success(self):
-        for content in (b'<html></html>', b'broken xml'):
+    def test_foreign_and_nonmedical_news_are_rejected(self):
+        for title, body in [('Floods in Nepal', 'Flood recovery in Nepal'), ('Hospital opens in Sudan', 'Published by Syrian American Medical Society Foundation'), ('Election campaign in Syria', 'New political party in Damascus')]:
+            self.assertFalse(u.eligible_news(self.news(title=title, raw_summary=body)))
+
+    def test_publisher_footer_is_not_country_evidence(self):
+        self.assertEqual(u.clean_body('Hospital in Nepal. The post Hospital first appeared on Syrian American Medical Society.'), 'Hospital in Nepal.')
+        self.assertFalse(u.eligible_news(self.news(title='Hospital in Nepal', raw_summary='Syrian American Medical Society Foundation')))
+
+    def test_news_requires_recent_nonfuture_date(self):
+        for date in [None, 'nonsense', (u.now() - timedelta(days=46)).isoformat(), (u.now() + timedelta(days=3)).isoformat()]:
+            self.assertFalse(u.eligible_news(self.news(published=date)))
+
+    def test_jobs_require_syria_and_confirmed_open_deadline(self):
+        self.assertTrue(u.job_valid(self.job()))
+        for fields in [{'deadline': None}, {'deadline': '2026-02-31'}, {'deadline': (u.now()-timedelta(days=1)).date().isoformat()}, {'location': 'Nigeria'}, {'location': ''}, {'published': (u.now()+timedelta(days=4)).isoformat()}]:
+            self.assertFalse(u.job_valid(self.job(**fields)))
+
+    def test_job_stays_open_on_closing_date(self):
+        self.assertTrue(u.job_valid(self.job(deadline=u.now().date().isoformat())))
+
+    def test_legacy_records_are_never_retained(self):
+        statuses = [{'id': 'example', 'state': 'error'}]
+        self.assertEqual(u.merge_records([self.news()], [], 'news', statuses), [])
+        self.assertEqual(u.merge_records([self.job()], [], 'jobs', statuses), [])
+
+    def test_successful_employer_snapshot_removes_withdrawn_jobs(self):
+        self.assertEqual(u.merge_records([self.verified(self.job())], [], 'jobs', [{'id':'example', 'state':'ok'}]), [])
+
+    def test_failed_employer_keeps_only_recently_checked_unexpired_jobs(self):
+        good = self.verified(self.job())
+        old = {**good, 'verified_at': (u.now()-timedelta(hours=73)).isoformat()}
+        statuses = [{'id':'example', 'state':'error'}]
+        self.assertEqual(u.merge_records([good], [], 'jobs', statuses), [good])
+        self.assertEqual(u.merge_records([old], [], 'jobs', statuses), [])
+
+    def test_deduplicate_tracking_links_and_matching_headlines(self):
+        a = self.verified(self.news())
+        b = {**a, 'url': a['url']+'?utm_source=rss'}
+        c = {**a, 'url': 'https://example.org/duplicate'}
+        self.assertEqual(len(u.merge_records([], [a,b,c], 'news', [{'id':'example','state':'ok'}])), 1)
+
+    def test_sams_filters_closed_and_foreign_positions(self):
+        source = {'id':'sams', 'name':'SAMS', 'organisation':'SAMS', 'website':'https://example.org/jobs', 'url':'https://example.org/api'}
+        row = {'PositionName':'Nurse', 'PositionForCondidateID':10, 'StartingDate':u.now().date().isoformat(), 'EndingDate':(u.now()+timedelta(days=3)).date().isoformat(), 'PositionLocationName':'Syria / Damascus', 'btnwork':True, 'StatusOfPositionName':'Available'}
+        payload = {'success':True,'data':[row,{**row,'PositionForCondidateID':11,'btnwork':False},{**row,'PositionForCondidateID':12,'PositionLocationName':'Jordan'}]}
+        with patch.object(u, 'fetch', return_value=json.dumps(payload).encode()):
+            records, _ = u.sams_jobs(source)
+        self.assertEqual(len(records), 1)
+        self.assertEqual(records[0]['reference'], '10')
+        self.assertEqual(records[0]['evidence']['deadline'], row['EndingDate'])
+
+    def test_ida_details_supply_location_and_deadline(self):
+        deadline = (u.now()+timedelta(days=2)).strftime('%B %d, %Y')
+        page = f'<p>Expiry Date: {deadline}</p><p>Position: Nurse</p><p>Department: Health</p><p>Workspace: Syria - Aleppo City</p><p>IDA is a medical organization.</p>'
+        source = {'id':'ida','name':'IDA','organisation':'IDA','url':'https://example.org/feed/'}
+        with patch.object(u, 'fetch', return_value=page.encode()):
+            record = u.ida_detail(self.job(),source)
+        self.assertEqual(record['location'], 'Syria - Aleppo City')
+        self.assertEqual(record['title_en'], 'Nurse')
+
+    def test_ida_missing_fields_fail_without_guessing(self):
+        with patch.object(u,'fetch',return_value=b'<p>Nurse in Syria. Apply soon.</p>'):
             with self.assertRaises(ValueError):
-                update.parse_feed(content, "Broken")
+                u.ida_detail(self.job(), {'url':'https://example.org/feed/'})
 
-    def test_atom_dates_and_links(self):
-        xml = b'<feed xmlns="http://www.w3.org/2005/Atom"><entry><title>Clinic</title><link href="https://example.org/clinic"/><updated>2026-10-01T10:00:00Z</updated><summary>Health news</summary></entry></feed>'
-        item = update.parse_feed(xml, "Atom")[0]
-        self.assertEqual(item["published"].day, 1)
-        self.assertEqual(item["url"], "https://example.org/clinic")
+    def test_atomic_json_is_valid_unicode(self):
+        with tempfile.TemporaryDirectory() as d:
+            path = Path(d)/'data.json'
+            u.write(path, {'items':[{'title':'ممرض'}]})
+            self.assertEqual(json.loads(path.read_text(encoding='utf-8'))['items'][0]['title'],'ممرض')
+            self.assertFalse(path.with_suffix('.tmp').exists())
 
-    def test_missing_credentials_do_not_publish_unfiltered_items(self):
-        with patch.dict(update.os.environ, {}, clear=True):
-            with self.assertRaises(RuntimeError):
-                update.screen([self.item()], "news")
+    def test_source_failure_is_reported_not_silently_empty(self):
+        with patch.object(u,'fetch',side_effect=OSError('unavailable')):
+            records, status = u.collect_source({'id':'example','name':'Example','adapter':'rss','url':'https://example.org/feed'},'news')
+        self.assertEqual(records,[])
+        self.assertEqual(status['state'],'error')
 
-    def test_incomplete_ai_response_does_not_discard_unreviewed_items(self):
-        with patch.object(update, "llm_config", return_value=("url", "key", "model")), patch.object(update, "call_llm", return_value=[]):
-            with self.assertRaises(ValueError):
-                update.screen([self.item()], "news")
-
-    def test_string_true_is_not_a_valid_ai_decision(self):
-        with patch.object(update, "llm_config", return_value=("url", "key", "model")), patch.object(update, "call_llm", return_value=[{"n": 1, "keep": "true"}]):
-            with self.assertRaises(ValueError):
-                update.screen([self.item()], "news")
-
-    def test_failure_preserves_existing_content_and_timestamp(self):
-        with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
-            sources = root / "sources.json"
-            sources.write_text('{"news":[],"jobs":[]}', encoding="utf-8")
-            news, jobs = root / "news.json", root / "jobs.json"
-            saved = '{"updated":"2026-09-01","items":[]}'
-            news.write_text(saved, encoding="utf-8")
-            jobs.write_text(saved, encoding="utf-8")
-            with patch.object(update, "SOURCES", str(sources)), patch.object(update, "NEWS_FILE", str(news)), patch.object(update, "JOBS_FILE", str(jobs)):
-                self.assertEqual(update.main(), 1)
-            self.assertEqual(news.read_text(encoding="utf-8"), saved)
-            self.assertEqual(jobs.read_text(encoding="utf-8"), saved)
-
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     unittest.main()

@@ -1,329 +1,140 @@
 {
-  "updated": "2026-10-03T17:35:06+00:00",
+  "updated": "2026-10-03T18:29:36+00:00",
+  "checked_at": "2026-10-03T18:29:36+00:00",
+  "status": "ok",
   "items": [
     {
+      "title": "MEAL Manager",
       "title_en": "MEAL Manager",
-      "url": "https://reliefweb.int/job/4232153/meal-manager",
+      "language": "en",
+      "url": "https://ida-org.com/jobs/meal-manager-4/",
       "published": "2026-10-01",
-      "source": "ReliefWeb Jobs — Syria",
+      "source": "IDA vacancies",
+      "source_id": "ida-jobs",
+      "verification_version": 2,
+      "verified_at": "2026-10-03T18:28:52+00:00",
       "deadline": "2026-10-11",
-      "title_ar": "مدير المتابعة والتقييم والمساءلة والتعلم",
       "organisation": "Independent Doctors Association",
-      "location": "Aleppo"
+      "location": "Syria - Aleppo City",
+      "reference": "",
+      "role_type": "support",
+      "evidence": {
+        "type": "employer-listing",
+        "deadline": "October 11, 2026",
+        "location": "Syria - Aleppo City"
+      },
+      "id": "ida-jobs:https://ida-org.com/jobs/meal-manager-4"
     },
     {
-      "title_en": "Health Advisor for Emergency Medical Systems",
-      "url": "https://reliefweb.int/job/4231993/health-advisor-emergency-medical-systems",
+      "title": "Senior Project Finance Officer",
+      "title_en": "Senior Project Finance Officer",
+      "language": "en",
+      "url": "https://recruitment.sams-hr.com/PositionForCondidate/ApplyJob",
       "published": "2026-09-30",
-      "source": "ReliefWeb Jobs — Syria",
-      "deadline": "2026-10-14",
-      "title_ar": "مستشار صحي لنظم الخدمات الطبية الطارئة",
-      "organisation": "GIZ",
-      "location": "Syria"
+      "source": "SAMS recruitment",
+      "source_id": "sams-jobs",
+      "verification_version": 2,
+      "verified_at": "2026-10-03T18:29:36+00:00",
+      "deadline": "2026-10-13",
+      "organisation": "Syrian American Medical Society (SAMS)",
+      "location": "Syria / Damascus",
+      "reference": "1555",
+      "role_type": "support",
+      "evidence": {
+        "type": "employer-listing",
+        "deadline": "2026-10-13",
+        "location": "Syria / Damascus"
+      },
+      "id": "sams-jobs:1555"
     },
     {
-      "title_en": "22804 Information and Communications Technology (ICT) Officer (P)",
-      "url": "https://reliefweb.int/job/4228568/22804-information-and-communications-technology-ict-officer-p",
-      "published": "2026-09-05",
-      "source": "NGO Jobs — Health Sector",
-      "topic": "other",
-      "summary_en": "Country: Bangladesh Organization: International Organization for Migration Closing date: 17 Sep 2026 Under the overall supervision of Chief of Mission (CoM), direct supervision of the Head of Resources Management and in "
+      "title": "Procurement Officer",
+      "title_en": "Procurement Officer",
+      "language": "en",
+      "url": "https://recruitment.sams-hr.com/PositionForCondidate/ApplyJob",
+      "published": "2026-09-30",
+      "source": "SAMS recruitment",
+      "source_id": "sams-jobs",
+      "verification_version": 2,
+      "verified_at": "2026-10-03T18:29:36+00:00",
+      "deadline": "2026-10-07",
+      "organisation": "Syrian American Medical Society (SAMS)",
+      "location": "Syria / Damascus",
+      "reference": "1554",
+      "role_type": "support",
+      "evidence": {
+        "type": "employer-listing",
+        "deadline": "2026-10-07",
+        "location": "Syria / Damascus"
+      },
+      "id": "sams-jobs:1554"
     },
     {
-      "title_en": "22673 Media and Communications Officer (P)",
-      "url": "https://reliefweb.int/job/4228567/22673-media-and-communications-officer-p",
-      "published": "2026-09-05",
-      "source": "NGO Jobs — Health Sector",
-      "topic": "other",
-      "summary_en": "Country: Chad Organization: International Organization for Migration Closing date: 17 Sep 2026 Under the overall supervision of the Chief of Mission (CoM) and direct supervision of the Programme Support Unit (PSU), the M"
+      "title": "Senior HR Officer",
+      "title_en": "Senior HR Officer",
+      "language": "en",
+      "url": "https://recruitment.sams-hr.com/PositionForCondidate/ApplyJob",
+      "published": "2026-09-30",
+      "source": "SAMS recruitment",
+      "source_id": "sams-jobs",
+      "verification_version": 2,
+      "verified_at": "2026-10-03T18:29:36+00:00",
+      "deadline": "2026-10-10",
+      "organisation": "Syrian American Medical Society (SAMS)",
+      "location": "Syria / Aleppo",
+      "reference": "1553",
+      "role_type": "support",
+      "evidence": {
+        "type": "employer-listing",
+        "deadline": "2026-10-10",
+        "location": "Syria / Aleppo"
+      },
+      "id": "sams-jobs:1553"
     },
     {
-      "title_en": "22727 Associate Monitoring and Evaluation Officer (P)",
-      "url": "https://reliefweb.int/job/4228566/22727-associate-monitoring-and-evaluation-officer-p",
-      "published": "2026-09-05",
-      "source": "NGO Jobs — Health Sector",
-      "topic": "other",
-      "summary_en": "Country: Solomon Islands Organization: International Organization for Migration Closing date: 17 Sep 2026 Under the overall supervision of the Chief of Mission from the Coordination Office for the South Pacific (COSP) an"
+      "title": "(طبيبـ/ـة أخصائيـ/ـة (أطفال",
+      "title_ar": "(طبيبـ/ـة أخصائيـ/ـة (أطفال",
+      "language": "ar",
+      "url": "https://ida-org.com/jobs/specialized-doctor-pediatrician-4/",
+      "published": "2026-09-27",
+      "source": "IDA vacancies",
+      "source_id": "ida-jobs",
+      "verification_version": 2,
+      "verified_at": "2026-10-03T18:28:54+00:00",
+      "deadline": "2026-10-03",
+      "organisation": "Independent Doctors Association",
+      "location": "Northern Deir Alzoor Countryside : Abu Khashab PHC",
+      "reference": "",
+      "role_type": "clinical",
+      "evidence": {
+        "type": "employer-listing",
+        "deadline": "October 3, 2026",
+        "location": "Northern Deir Alzoor Countryside : Abu Khashab PHC"
+      },
+      "id": "ida-jobs:https://ida-org.com/jobs/specialized-doctor-pediatrician-4",
+      "title_en": "Specialized Doctor (Pediatrician)"
     },
     {
-      "title_en": "22719 Head of Programme Coordination and Innovation Unit (P)",
-      "url": "https://reliefweb.int/job/4228565/22719-head-programme-coordination-and-innovation-unit-p",
-      "published": "2026-09-05",
-      "source": "NGO Jobs — Health Sector",
-      "topic": "other",
-      "summary_en": "Country: Nigeria Organization: International Organization for Migration Closing date: 17 Sep 2026 Under the overall supervision of the Chief of Mission (CoM) and direct supervision of the Deputy Chief of Mission (DCoM), "
-    },
-    {
-      "title_en": "International Consultant CSTII, Resilience Officer, N'Djamena, Chad",
-      "url": "https://reliefweb.int/job/4228559/international-consultant-cstii-resilience-officer-ndjamena-chad",
-      "published": "2026-09-05",
-      "source": "NGO Jobs — Health Sector",
-      "topic": "other",
-      "summary_en": "Country: Chad Organization: World Food Programme Closing date: 12 Sep 2026 ORGANIZATIONAL CONTEXT The World Food Programme (WFP) is the world’s largest humanitarian organization with a dual mandate to save lives and chan"
-    },
-    {
-      "title_en": "Regional Climate Advisor - Asia Pacific",
-      "url": "https://reliefweb.int/job/4228557/regional-climate-advisor-asia-pacific",
-      "published": "2026-09-05",
-      "source": "NGO Jobs — Health Sector",
-      "topic": "other",
-      "summary_en": "Organization: Plan International Closing date: 27 Sep 2026 The Organisation Plan International is an independent development and humanitarian organisation that advances children’s rights and equality for girls. We believ"
-    },
-    {
-      "title_en": "Asistente de Recuperación Económica (Maracaibo)",
-      "url": "https://reliefweb.int/job/4228539/asistente-de-recuperacion-economica-maracaibo",
-      "published": "2026-09-04",
-      "source": "NGO Jobs — Health Sector",
-      "topic": "other",
-      "summary_en": "Country: Venezuela (Bolivarian Republic of) Organization: Danish Refugee Council Closing date: 13 Sep 2026 El Consejo Dánes para refugiados es una de las ONG humanitarias líderes en el mundo, que trabaja en más de 40 paí"
-    },
-    {
-      "title_en": "Oficial de Finanzas – Colombia (Puesto nacional)",
-      "url": "https://reliefweb.int/job/4228534/oficial-de-finanzas-colombia-puesto-nacional",
-      "published": "2026-09-04",
-      "source": "NGO Jobs — Health Sector",
-      "topic": "other",
-      "summary_en": "Country: Colombia Organization: International NGO Safety Organisation Closing date: 15 Sep 2026 Información general sobre INSO Fundada en 2011, International NGO Safety Organisation (INSO) es una organización internacion"
-    },
-    {
-      "title_en": "Development of the CEO Approval package for the GEF-SCCF project “Blue Carbon Horizons: Strengthening Climate-Resilient Coastal Planning in Mauritius",
-      "url": "https://reliefweb.int/job/4228429/development-ceo-approval-package-gef-sccf-project-blue-carbon-horizons-strengthening-climate-resilient-coastal-planning-mauritius",
-      "published": "2026-09-04",
-      "source": "NGO Jobs — Health Sector",
-      "topic": "other",
-      "summary_en": "Country: Mauritius Organization: International Union for Conservation of Nature Closing date: 24 Sep 2026 Terms of Reference for IUCN Consultancy Development of the CEO Approval package for the GEF-SCCF project “Blue Car"
-    },
-    {
-      "title_en": "Technical appraisal, advisory and national stakeholder coordination services for the Project Preparation Grant (PPG) phase of the GEF-SCCF project",
-      "url": "https://reliefweb.int/job/4228426/technical-appraisal-advisory-and-national-stakeholder-coordination-services-project-preparation-grant-ppg-phase-gef-sccf-project",
-      "published": "2026-09-04",
-      "source": "NGO Jobs — Health Sector",
-      "topic": "other",
-      "summary_en": "Country: Mauritius Organization: International Union for Conservation of Nature Closing date: 24 Sep 2026 Terms of Reference for IUCN Consultancy Technical appraisal, advisory and national stakeholder coordination servic"
-    },
-    {
-      "title_en": "Senior Portfolio Manager, NTDs",
-      "url": "https://reliefweb.int/job/4228424/senior-portfolio-manager-ntds",
-      "published": "2026-09-04",
-      "source": "NGO Jobs — Health Sector",
-      "topic": "other",
-      "summary_en": "Countries: Cameroon, Central African Republic, Ethiopia, Germany, Kenya, Niger, Nigeria, Togo, Uganda, United Kingdom of Great Britain and Northern Ireland, United Republic of Tanzania, United States of America, Zambia O"
-    },
-    {
-      "title_en": "LOOKING FOR PART-TIME STAFF COUNSELLOR (LOCAL RECRUITMENT ONLY)",
-      "url": "https://reliefweb.int/job/4228423/looking-part-time-staff-counsellor-local-recruitment-only",
-      "published": "2026-09-04",
-      "source": "NGO Jobs — Health Sector",
-      "topic": "other",
-      "summary_en": "Country: Thailand Organization: UN Economic and Social Commission for Asia and the Pacific Closing date: 16 Sep 2026 Duties and Responsibilities BACKGROUND: The United Nations currently requires professional staff counse"
-    },
-    {
-      "title_en": "BASELINE ASSESSMENT STUDY - DREEM",
-      "url": "https://reliefweb.int/job/4228384/baseline-assessment-study-dreem",
-      "published": "2026-09-04",
-      "source": "NGO Jobs — Health Sector",
-      "topic": "other",
-      "summary_en": "Organization: World University Service of Canada Closing date: 13 Sep 2026 INTRODUCTION WUSC (World University Service of Canada) is a leading Canadian international development organization committed to providing educat"
-    },
-    {
-      "title_en": "Membership Development & Engagement Officer",
-      "url": "https://reliefweb.int/job/4228430/membership-development-engagement-officer",
-      "published": "2026-09-04",
-      "source": "NGO Jobs — Health Sector",
-      "topic": "other",
-      "summary_en": "Country: Switzerland Organization: International Social Service Closing date: 27 Sep 2026 International Social Service (ISS) founded in 1924 is a non-governmental, non-sectarian, non-profit and independent membership org"
-    },
-    {
-      "title_en": "SENIOR SPECIALIST: REGIONAL INFORMATION SERVICES (RIS LEAD)",
-      "url": "https://reliefweb.int/job/4228432/senior-specialist-regional-information-services-ris-lead",
-      "published": "2026-09-04",
-      "source": "NGO Jobs — Health Sector",
-      "topic": "other",
-      "summary_en": "Country: Nepal Organization: International Centre for Integrated Mountain Development Closing date: 4 Oct 2026 Position Overview Regional Information Services (RIS) is housed in ICIMOD’s broader work on Regional Action a"
-    },
-    {
-      "title_en": "TERMS OF REFERENCE — MIDLINE EVALUATION (NYOKAL LOCAL RIGHTS PROGRAMME)",
-      "url": "https://reliefweb.int/job/4228441/terms-reference-midline-evaluation-nyokal-local-rights-programme",
-      "published": "2026-09-04",
-      "source": "NGO Jobs — Health Sector",
-      "topic": "other",
-      "summary_en": "Country: Kenya Organization: ActionAid Closing date: 15 Sep 2026 TERMS OF REFERENCE — MIDLINE EVALUATION (NYOKAL LOCAL RIGHTS PROGRAMME) Project/LRP Name: Nyokal Local Rights Programme (LRP) Midline Evaluation Location(s"
-    },
-    {
-      "title_en": "Prosthetics and Orthotics ( P&O ) Technician - Reyhanlı, Hatay, Türkiye",
-      "url": "https://reliefweb.int/job/4228442/prosthetics-and-orthotics-po-technician-reyhanli-hatay-turkiye",
-      "published": "2026-09-04",
-      "source": "NGO Jobs — Health Sector",
-      "topic": "other",
-      "summary_en": "Country: Türkiye Organization: National Syrian Project for Prosthetic Limbs Closing date: 26 Sep 2026 Position : Prosthetics and Orthotics ( P&O ) Technician Location : NSPPL Center - Reyhanlı, Hatay, Türkiye Closing dat"
-    },
-    {
-      "title_en": "VALUE BASED COUNSELING® EXPERT (Master Trainer and Translator)",
-      "url": "https://reliefweb.int/job/4228443/value-based-counselingr-expert-master-trainer-and-translator",
-      "published": "2026-09-04",
-      "source": "NGO Jobs — Health Sector",
-      "topic": "other",
-      "summary_en": "Organization: International Psychosocial Organisation Closing date: 18 Sep 2026 About us Ipso gGmbH ( https://ipsocontext.org/ ) is a Germany-based humanitarian not-for-profit organization specialized in Mental Health an"
-    },
-    {
-      "title_en": "Director of Programs",
-      "url": "https://reliefweb.int/job/4228448/director-programs",
-      "published": "2026-09-04",
-      "source": "NGO Jobs — Health Sector",
-      "topic": "other",
-      "summary_en": "Country: Haiti Organization: World Relief Closing date: 30 Sep 2026 Job Title: Director of Programs Work Location: Port-au-Prince, Haiti Reports to: WR Haiti Country Director Department/Unit: International Programs ORGAN"
-    },
-    {
-      "title_en": "République Centrafricaine : Responsable Développement de Projets Pays – Bangui",
-      "url": "https://reliefweb.int/job/4228522/republique-centrafricaine-responsable-developpement-de-projets-pays-bangui",
-      "published": "2026-09-04",
-      "source": "NGO Jobs — Health Sector",
-      "topic": "other",
-      "summary_en": "Country: Central African Republic Organization: Agency for Technical Cooperation and Development Closing date: 4 Oct 2026 CDD | 6 mois | ASAP Acted Qui sommes-nous Acted travaille avec 19 millions de personnes dans 43 pa"
-    },
-    {
-      "title_en": "Supply Chain and Admin Officer",
-      "url": "https://reliefweb.int/job/4228388/supply-chain-and-admin-officer",
-      "published": "2026-09-03",
-      "source": "ReliefWeb Jobs — Syria",
-      "topic": "other",
-      "summary_en": "Country: Syrian Arab Republic Organization: World Vision Closing date: 17 Sep 2026 About World Vision For more than 75 years, World Vision has been committed to making a positive and lasting difference in the world. We h"
-    },
-    {
-      "title_en": "In person unpaid internship Grants & Proposal Writing (Aleppo or Damascus/ Syria)",
-      "url": "https://reliefweb.int/job/4228302/person-unpaid-internship-grants-proposal-writing-aleppo-or-damascus-syria",
-      "published": "2026-09-03",
-      "source": "ReliefWeb Jobs — Syria",
-      "topic": "other",
-      "summary_en": "Country: Syrian Arab Republic Organization: TRUST Consultancy & Development Closing date: 15 Sep 2026 About Trust Consultancy and Development Trust Consultancy and Development is an independent research and third-party m"
-    },
-    {
-      "title_en": "Receptionist & Cashier – موظفة استقبال وكاشير",
-      "url": "https://reliefweb.int/job/4228295/receptionist-cashier-mwzft-astqbal-wkashyr",
-      "published": "2026-09-03",
-      "source": "ReliefWeb Jobs — Syria",
-      "topic": "other",
-      "summary_en": "Country: Syrian Arab Republic Organization: Independent Doctors Association Closing date: 12 Sep 2026 Responsibilities and Duties Welcome and receive patients, visitors, and clients in a professional and courteous manner"
-    },
-    {
-      "title_en": "Anesthesia Technician – فنية تخدير",
-      "url": "https://reliefweb.int/job/4228293/anesthesia-technician-fnyt-tkhdyr",
-      "published": "2026-09-03",
-      "source": "ReliefWeb Jobs — Syria",
-      "topic": "other",
-      "summary_en": "Country: Syrian Arab Republic Organization: Independent Doctors Association Closing date: 12 Sep 2026 Responsibilities and Duties Prepare the operating room, anesthesia equipment, and devices before the start of surgical"
-    },
-    {
-      "title_en": "OP-Technician – فنية عمليات",
-      "url": "https://reliefweb.int/job/4228292/op-technician-fnyt-mlyat",
-      "published": "2026-09-03",
-      "source": "ReliefWeb Jobs — Syria",
-      "topic": "other",
-      "summary_en": "Country: Syrian Arab Republic Organization: Independent Doctors Association Closing date: 12 Sep 2026 Responsibilities and Duties Prepare the operating room and ensure it is ready before the start of surgical procedures."
-    },
-    {
-      "title_en": "ICU-Technician (Pediatric-Adult) – فني/ة عناية (أطفال-بالغين)",
-      "url": "https://reliefweb.int/job/4228291/icu-technician-pediatric-adult-fnyt-nayt-atfal-balghyn",
-      "published": "2026-09-03",
-      "source": "ReliefWeb Jobs — Syria",
-      "topic": "other",
-      "summary_en": "Country: Syrian Arab Republic Organization: Independent Doctors Association Closing date: 12 Sep 2026 Responsibilities and Duties Provide technical care to patients in the Pediatric or Adult Intensive Care Unit (PICU/ICU"
-    },
-    {
-      "title_en": "فنية تعقيم – Sterilization Technician",
-      "url": "https://reliefweb.int/job/4228290/fnyt-tqym-sterilization-technician",
-      "published": "2026-09-03",
-      "source": "ReliefWeb Jobs — Syria",
-      "topic": "other",
-      "summary_en": "Country: Syrian Arab Republic Organization: Independent Doctors Association Closing date: 12 Sep 2026 Responsibilities and Duties Clean, prepare, and sterilize medical instruments and equipment in accordance with approve"
-    },
-    {
-      "title_en": "Midwife – قابلة",
-      "url": "https://reliefweb.int/job/4228289/midwife-qablt",
-      "published": "2026-09-03",
-      "source": "ReliefWeb Jobs — Syria",
-      "topic": "other",
-      "summary_en": "Country: Syrian Arab Republic Organization: Independent Doctors Association Closing date: 12 Sep 2026 Responsibilities and Duties Provide healthcare and midwifery care to pregnant women and mothers in accordance with app"
-    },
-    {
-      "title_en": "Nurse - ممرضة",
-      "url": "https://reliefweb.int/job/4228288/nurse-mmrdt",
-      "published": "2026-09-03",
-      "source": "ReliefWeb Jobs — Syria",
-      "topic": "other",
-      "summary_en": "Country: Syrian Arab Republic Organization: Independent Doctors Association Closing date: 12 Sep 2026 Responsibilities and Duties Provide safe and comprehensive nursing care to patients in accordance with approved standa"
-    },
-    {
-      "title_en": "Health Field Officer (Re-advertisement)",
-      "url": "https://reliefweb.int/job/4228297/health-field-officer-re-advertisement",
-      "published": "2026-09-03",
-      "source": "ReliefWeb Jobs — Syria",
-      "topic": "other",
-      "summary_en": "Country: Syrian Arab Republic Organization: Hand in Hand for Aid and Development Closing date: 10 Sep 2026 Vacancy Ref: HIHFAD-2026-77 Job Title: Health Field Officer Department: Programs Direct report to: Health Field c"
-    },
-    {
-      "title_en": "resident-doctor-emergency",
-      "url": "https://reliefweb.int/job/4228287/resident-doctor-emergency",
-      "published": "2026-09-03",
-      "source": "ReliefWeb Jobs — Syria",
-      "topic": "other",
-      "summary_en": "Country: Syrian Arab Republic Organization: Independent Doctors Association Closing date: 12 Sep 2026 Job Responsibilities Assess and diagnose pediatric and adult medical and emergency cases within the scope of specializ"
-    },
-    {
-      "title_en": "Senior MEAL Officer",
-      "url": "https://reliefweb.int/job/4228296/senior-meal-officer",
-      "published": "2026-09-03",
-      "source": "ReliefWeb Jobs — Syria",
-      "topic": "other",
-      "summary_en": "Country: Syrian Arab Republic Organization: World Vision Closing date: 17 Sep 2026 World Vision International Join and be part of a global relief, development and advocacy NGO, dedicated to work with children, families &"
-    },
-    {
-      "title_en": "IMCFM Assistant-Female Only-Raqqa",
-      "url": "https://reliefweb.int/job/4228283/imcfm-assistant-female-only-raqqa",
-      "published": "2026-09-03",
-      "source": "ReliefWeb Jobs — Syria",
-      "topic": "other",
-      "summary_en": "Country: Syrian Arab Republic Organization: Agency for Technical Cooperation and Development Closing date: 9 Sep 2026 About Acted “We go the last mile. Founded in Afghanistan, against the backdrop of a forgotten crisis, "
-    },
-    {
-      "title_en": "ERL Project Manager",
-      "url": "https://reliefweb.int/job/4228149/erl-project-manager",
-      "published": "2026-09-02",
-      "source": "ReliefWeb Jobs — Syria",
-      "topic": "other",
-      "summary_en": "Country: Syrian Arab Republic Organization: Bonyan Organization Closing date: 12 Sep 2026 General Information Department: ERL/FSL Program Job Title: ERL Project Manager Job Location: Hama Overview of Bonyan Organization "
-    },
-    {
-      "title_en": "Call for Service Providers – Experts || إعلان لمزودي/ات خدمات – خبير/ة",
-      "url": "https://reliefweb.int/job/4228091/call-service-providers-experts-alan-lmzwdyat-khdmat-khbyrt",
-      "published": "2026-09-02",
-      "source": "ReliefWeb Jobs — Syria",
-      "topic": "other",
-      "summary_en": "Country: Syrian Arab Republic Organization: Syrian Center for Media and Freedom of Expression Closing date: 8 Sep 2026 Within the framework of the Syrian Center for Media and Freedom of Expression’s efforts to support tr"
-    },
-    {
-      "title_en": "Specialized Doctor (Pediatrician)",
-      "url": "https://reliefweb.int/job/4228082/specialized-doctor-pediatrician",
-      "published": "2026-09-02",
-      "source": "ReliefWeb Jobs — Syria",
-      "topic": "other",
-      "summary_en": "Country: Syrian Arab Republic Organization: Independent Doctors Association Closing date: 6 Sep 2026 Who we are? IDA is an international independent non-governmental organization providing medical and humanitarian assist"
-    },
-    {
-      "title_en": "Project Officer",
-      "url": "https://reliefweb.int/job/4228077/project-officer",
-      "published": "2026-09-02",
-      "source": "ReliefWeb Jobs — Syria",
-      "topic": "other",
-      "summary_en": "Country: Syrian Arab Republic Organization: Independent Doctors Association Closing date: 6 Sep 2026 Who we are? IDA is an international independent non-governmental organization providing medical and humanitarian assist"
-    },
-    {
-      "title_en": "Senior Grants Manager",
-      "url": "https://reliefweb.int/job/4228001/senior-grants-manager",
-      "published": "2026-09-02",
-      "source": "ReliefWeb Jobs — Syria",
-      "topic": "other",
-      "summary_en": "Country: Syrian Arab Republic Organization: Chemonics Closing date: 15 Sep 2026 Background: The Syria Education Programme II (SEP II), funded by the UK’s Foreign, Commonwealth and Development Office (FCDO) and running un"
+      "title": "Private Fund Projects Officer",
+      "title_en": "Private Fund Projects Officer",
+      "language": "en",
+      "url": "https://recruitment.sams-hr.com/PositionForCondidate/ApplyJob",
+      "published": "2026-09-27",
+      "source": "SAMS recruitment",
+      "source_id": "sams-jobs",
+      "verification_version": 2,
+      "verified_at": "2026-10-03T18:29:36+00:00",
+      "deadline": "2026-10-10",
+      "organisation": "Syrian American Medical Society (SAMS)",
+      "location": "Syria / Damascus",
+      "reference": "1552",
+      "role_type": "support",
+      "evidence": {
+        "type": "employer-listing",
+        "deadline": "2026-10-10",
+        "location": "Syria / Damascus"
+      },
+      "id": "sams-jobs:1552"
     }
   ]
 }
