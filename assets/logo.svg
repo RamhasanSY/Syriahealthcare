@@ -2,7 +2,7 @@
   <title>Syria Healthcare ? jasmine and courtyard arch</title>
   <rect width="88" height="88" rx="21" fill="#173e36"/>
   <!-- A courtyard arch frames a jasmine blossom and a healthcare cross. -->
-  <path d="M19 72V41c0-12 10-21 25-28 15 7 25 16 25 28v31" fill="none" stroke="#cfad79" stroke-width="4" stroke-linecap="round"/>
+  <path d="M19 72V41c0-12 10-21 25-28 15 7 25 16 25 28v31" fill="none" stroke="#cfad79" stroke-width="2.5" stroke-linecap="round"/>
   <g fill="#faf5e9">
     <path id="petal" d="M44 45c-9-5-11-16-4-20 2-1 6-1 8 0 7 4 5 15-4 20Z"/>
     <use href="#petal" transform="rotate(72 44 45)"/>
@@ -12,4 +12,6 @@
   </g>
   <circle cx="44" cy="45" r="8" fill="#173e36"/>
   <path d="M42 39h4v4h4v4h-4v4h-4v-4h-4v-4h4Z" fill="#faf5e9"/>
+  <path d="M44 65v9" stroke="#cfad79" stroke-width="2" stroke-linecap="round"/>
+  <path d="M43 71c-7 1-12-3-13-9 7-1 12 3 13 9Zm2 0c7 1 12-3 13-9-7-1-12 3-13 9Z" fill="#a9c28a"/>
 </svg>
