@@ -14,7 +14,7 @@ from datetime import datetime, timedelta, timezone
 from email.utils import parsedate_to_datetime, format_datetime
 from html.parser import HTMLParser
 from pathlib import Path
-from urllib.parse import urlsplit, urlunsplit, parse_qsl, urlencode, urljoin
+from urllib.parse import urlsplit, urlunsplit, parse_qsl, urlencode, urljoin, quote
 from xml.etree import ElementTree
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -190,8 +190,7 @@ def base_record(item, source):
             'verified_at': now().isoformat(timespec='seconds')}
 
 
-def news_records(source):
-    candidates = parse_feed(fetch(source['url']), source['name'])
+def publish_news(candidates, source):
     accepted = []
     for item in candidates:
         if not eligible_news(item):
@@ -202,6 +201,72 @@ def news_records(source):
         record['evidence'] = {'geography': news_geography(item).group(0), 'type': 'publisher-headline'}
         accepted.append(record)
     return accepted, len(candidates)
+
+
+def news_records(source):
+    return publish_news(parse_feed(fetch(source['url']), source['name']), source)
+
+
+def sana_news(source):
+    content = fetch(source['url'])
+    # SANA currently repeats the identical media namespace in its RSS root.
+    # Repair that exact publisher defect; conflicting declarations still fail.
+    start = content.find(b'<rss')
+    end = content.find(b'>', start) if start >= 0 else -1
+    if end >= 0:
+        declaration = b'xmlns:media="http://search.yahoo.com/mrss/"'
+        header = content[start:end]
+        count = header.count(declaration)
+        if count > 1:
+            header = header.replace(declaration, b'', count - 1)
+            content = content[:start] + header + content[end:]
+    return publish_news(parse_feed(content, source['name']), source)
+
+
+class MinistryNews(HTMLParser):
+    """Read dated article cards, excluding navigation, campaigns and tenders."""
+    def __init__(self, website):
+        super().__init__(convert_charrefs=True)
+        self.website, self.rows, self.current, self.field = website, [], None, None
+
+    def handle_starttag(self, tag, attrs):
+        attrs = dict(attrs)
+        if tag == 'a':
+            url = urljoin(self.website, attrs.get('href', ''))
+            if urlsplit(url).netloc == urlsplit(self.website).netloc and urlsplit(url).path.startswith('/news/'):
+                self.current = {'url': quote(url, safe=':/%?=&-._~'), 'title': [], 'raw_summary': [], 'published': []}
+        if self.current is not None:
+            if tag in ('h2', 'h3'):
+                self.field = 'title'
+            elif tag == 'p':
+                self.field = 'raw_summary'
+            elif tag in ('time', 'span'):
+                self.field = 'published'
+                if tag == 'time' and attrs.get('datetime'):
+                    self.current['published'].append(attrs['datetime'])
+
+    def handle_data(self, data):
+        if self.current is not None and self.field:
+            self.current[self.field].append(data)
+
+    def handle_endtag(self, tag):
+        if tag in ('h2', 'h3', 'p', 'time', 'span'):
+            self.field = None
+        if tag == 'a' and self.current is not None:
+            row = {k: re.sub(r'\s+', ' ', ''.join(v)).strip() if isinstance(v, list) else v for k, v in self.current.items()}
+            # A changed card layout must be visible as a source failure.
+            if not row['title'] or not re.fullmatch(r'\d{4}-\d{2}-\d{2}', row['published']) or not parse_date(row['published']):
+                raise ValueError('Ministry news card is missing a title or valid publication date')
+            self.rows.append(row)
+            self.current, self.field = None, None
+
+
+def ministry_news(source):
+    parser = MinistryNews(source['website'])
+    parser.feed(fetch(source['url']).decode('utf-8-sig'))
+    if not parser.rows:
+        raise ValueError('Ministry dated news cards were not found')
+    return publish_news(parser.rows, source)
 
 
 def job_valid(item):
@@ -333,7 +398,8 @@ def drc_jobs(source):
 
 
 def collect_source(source, kind):
-    handlers = {'rss': news_records, 'sams_jobs': sams_jobs, 'ida_jobs': ida_jobs, 'nrc_jobs': nrc_jobs, 'drc_jobs': drc_jobs}
+    handlers = {'rss': news_records, 'sana_rss': sana_news, 'ministry_news': ministry_news,
+                'sams_jobs': sams_jobs, 'ida_jobs': ida_jobs, 'nrc_jobs': nrc_jobs, 'drc_jobs': drc_jobs}
     try:
         items, total = handlers[source['adapter']](source)
         return items, {'id': source['id'], 'kind': kind, 'state': 'ok', 'checked_at': now().isoformat(timespec='seconds'),

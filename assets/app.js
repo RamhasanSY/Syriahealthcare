@@ -70,6 +70,8 @@
         if (typeof raw !== 'string' || !/^\d{4}-\d{2}-\d{2}(?:T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2}))?$/.test(raw)) return NaN;
         const day = raw.slice(0, 10), calendar = new Date(day + 'T00:00:00Z');
         if (isNaN(calendar) || calendar.toISOString().slice(0, 10) !== day) return NaN;
+        // Date.parse accepts 24:00 by rolling into tomorrow; feeds must use real times.
+        if (raw.length > 10 && (+raw.slice(11, 13) > 23 || +raw.slice(14, 16) > 59 || +raw.slice(17, 19) > 59)) return NaN;
         return Date.parse(raw);
     }
 
@@ -375,7 +377,7 @@
         ['news', 'jobs'].forEach(kind => (sources[kind] || []).forEach(s => {
             if (!safeURL(s.website || s.url)) return;
             const li = node('li'),
-                a = link(s.name, s.website || s.url);
+                a = link(lang === 'ar' ? s.name_ar || s.name : s.name, s.website || s.url);
             a.append(node('small', '', kind === 'news' ? tr('NEWS ↗', 'أخبار ↖') : tr('JOBS ↗', 'وظائف ↖')));
             li.append(a);
             const status = sourceStatus[s.id];
@@ -462,7 +464,7 @@
         try {
             localStorage.setItem('shc-lang', lang);
         } catch (_) {}
-        renderAll();
+        preserveFocus(renderAll);
     };
     $('search').addEventListener('input', e => {
         query = normalize(e.target.value.trim());
@@ -500,7 +502,7 @@
     loadStatus();
     json('sources.json').then(data => {
         sources = data;
-        renderSources();
+        preserveFocus(renderSources);
     }).catch(() => {
         $('sourceError').hidden = false;
     });

@@ -1,0 +1,14 @@
+{
+  "name": "syriahealthcare",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "python -m http.server 8000 --bind 127.0.0.1",
+    "build": "node scripts/build.mjs",
+    "build:dev": "node scripts/build.mjs",
+    "preview": "python -m http.server 8000 --bind 127.0.0.1 --directory dist",
+    "lint": "node --check assets/app.js && node --check scripts/build.mjs",
+    "test": "python -m unittest discover -s tests -p \"test_*.py\"",
+    "test:browser": "python tests/browser_check.py"
+  }
+}

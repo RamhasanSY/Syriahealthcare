@@ -1455,7 +1455,10 @@ body[dir=rtl] .section-head h2 {
 
     .header-nav a {
         font-size: 12px;
-        padding-block: 4px
+        padding-block: 10px;
+        min-height: 44px;
+        display: inline-flex;
+        align-items: center
     }
 
     .hero {
@@ -1583,7 +1586,7 @@ body[dir=rtl] .section-head h2 {
     }
 
     .select-wrap select {
-        font-size: 11px;
+        font-size: 16px;
         max-width: 100%
     }
 
@@ -1677,7 +1680,7 @@ body[dir=rtl] .section-head h2 {
     .filters button {
         font-size: 10px;
         padding: 6px 10px;
-        min-height: 35px
+        min-height: 44px
     }
 
     .card-title {

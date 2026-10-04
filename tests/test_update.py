@@ -58,6 +58,62 @@ class CollectorTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             u.parse_feed(b'<html></html>', 'Example')
 
+    def test_sana_repairs_only_identical_media_namespace(self):
+        source = {'id': 'sana-health', 'name': 'SANA', 'url': 'https://sana.sy/health/feed/'}
+        published = u.format_datetime(u.now(), usegmt=True)
+        header = 'xmlns:media="http://search.yahoo.com/mrss/"'
+        feed = f'<rss version="2.0" {header} {header}><channel><item><title>New hospital in Damascus</title><link>https://sana.sy/health/123/</link><pubDate>{published}</pubDate></item></channel></rss>'
+        with patch.object(u, 'fetch', return_value=feed.encode()):
+            records, total = u.sana_news(source)
+        self.assertEqual(total, 1)
+        self.assertEqual(records[0]['source_id'], 'sana-health')
+        self.assertEqual(records[0]['title'], 'New hospital in Damascus')
+        conflicting = feed.replace(header, 'xmlns:media="https://example.org/other"', 1)
+        with patch.object(u, 'fetch', return_value=conflicting.encode()):
+            with self.assertRaises(u.ElementTree.ParseError):
+                u.sana_news(source)
+
+    def test_sana_does_not_hide_other_malformed_xml(self):
+        with patch.object(u, 'fetch', return_value=b'<rss><channel>'):
+            records, status = u.collect_source({'id': 'sana', 'name': 'SANA', 'adapter': 'sana_rss', 'url': 'https://sana.sy/health/feed/'}, 'news')
+        self.assertEqual(records, [])
+        self.assertEqual(status['state'], 'error')
+
+    def ministry_card(self, title='خدمات صحية جديدة في دمشق', published=None, href='/news/خبر', lead='رعاية طبية في دمشق'):
+        return f'<a href="{href}"><article><h3>{title}</h3><p>{lead}</p><span>{published or u.now().date().isoformat()}</span></article></a>'
+
+    def test_ministry_preserves_original_dates_titles_and_safe_article_links(self):
+        source = {'id': 'sy-moh-news', 'name': 'Syrian Ministry of Health', 'url': 'https://moh.gov.sy/news', 'website': 'https://moh.gov.sy/news'}
+        page = self.ministry_card() + self.ministry_card(href='/tenders/123') + self.ministry_card(href='https://unrelated.example/news/123')
+        with patch.object(u, 'fetch', return_value=page.encode()):
+            records, total = u.ministry_news(source)
+        self.assertEqual(total, 1)
+        self.assertEqual(len(records), 1)
+        self.assertEqual(records[0]['title_ar'], 'خدمات صحية جديدة في دمشق')
+        self.assertEqual(records[0]['published'], u.now().date().isoformat())
+        self.assertEqual(records[0]['url'], 'https://moh.gov.sy/news/%D8%AE%D8%A8%D8%B1')
+        self.assertEqual(records[0]['evidence']['geography'], 'دمشق')
+        self.assertEqual(records[0]['verification_version'], 2)
+
+    def test_ministry_filters_foreign_nonhealth_old_and_future_news(self):
+        source = {'id': 'sy-moh-news', 'name': 'Syrian Ministry of Health', 'url': 'https://moh.gov.sy/news', 'website': 'https://moh.gov.sy/news'}
+        page = (self.ministry_card(title='New hospital in Sudan', lead='New care facilities in Sudan')
+                + self.ministry_card(title='Election in Damascus', lead='Political announcements')
+                + self.ministry_card(published=(u.now() - timedelta(days=46)).date().isoformat())
+                + self.ministry_card(published=(u.now() + timedelta(days=2)).date().isoformat()))
+        with patch.object(u, 'fetch', return_value=page.encode()):
+            records, total = u.ministry_news(source)
+        self.assertEqual(total, 4)
+        self.assertEqual(records, [])
+
+    def test_ministry_missing_or_invalid_dates_and_changed_layout_report_errors(self):
+        source = {'id': 'sy-moh-news', 'name': 'Syrian Ministry of Health', 'adapter': 'ministry_news', 'url': 'https://moh.gov.sy/news', 'website': 'https://moh.gov.sy/news'}
+        for page in [self.ministry_card(published='Date coming soon'), self.ministry_card(published='2026-02-31'), '<html><p>وزارة الصحة</p></html>']:
+            with self.subTest(page=page), patch.object(u, 'fetch', return_value=page.encode()):
+                records, status = u.collect_source(source, 'news')
+            self.assertEqual(records, [])
+            self.assertEqual(status['state'], 'error')
+
     def test_unsafe_urls_are_rejected(self):
         for url in ['javascript:alert(1)', 'https://user:password@example.org', 'not-a-url']:
             self.assertFalse(u.canonical_url(url))

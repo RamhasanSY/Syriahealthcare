@@ -1,8 +1,136 @@
 {
-  "updated": "2026-10-03T20:58:22+00:00",
-  "checked_at": "2026-10-03T20:58:22+00:00",
+  "updated": "2026-10-04T11:51:49+00:00",
+  "checked_at": "2026-10-04T11:51:49+00:00",
   "status": "ok",
   "items": [
+    {
+      "title": "أكثر من 30 ألف مستفيد من خدمات الأشعة بمشفى الرقة الوطني خلال 9 أشهر",
+      "title_ar": "أكثر من 30 ألف مستفيد من خدمات الأشعة بمشفى الرقة الوطني خلال 9 أشهر",
+      "language": "ar",
+      "url": "https://sana.sy/governorates/alrakkah/2596971/",
+      "published": "2026-10-04",
+      "source": "Syrian Arab News Agency (SANA) — Health",
+      "source_id": "sana-health",
+      "verification_version": 2,
+      "verified_at": "2026-10-04T11:51:24+00:00",
+      "topic": "hospitals",
+      "evidence": {
+        "geography": "الرقة",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "وزارة الصحة تتسلّم 10 سيارات إسعاف مجهزة بالكامل مقدّمة من مركز الملك سلمان للإغاثة",
+      "title_ar": "وزارة الصحة تتسلّم 10 سيارات إسعاف مجهزة بالكامل مقدّمة من مركز الملك سلمان للإغاثة",
+      "language": "ar",
+      "url": "https://moh.gov.sy/news/%D9%88%D8%B2%D8%A7%D8%B1%D8%A9-%D8%A7%D9%84%D8%B5%D8%AD%D8%A9-%D8%AA%D8%AA%D8%B3%D9%84%D9%91%D9%85-10-%D8%B3%D9%8A%D8%A7%D8%B1%D8%A7%D8%AA-%D8%A5%D8%B3%D8%B9%D8%A7%D9%81-%D9%85%D8%AC%D9%87%D8%B2%D8%A9-%D8%A8%D8%A7%D9%84%D9%83%D8%A7%D9%85%D9%84-%D9%85%D9%82%D8%AF%D9%91%D9%85%D8%A9-%D9%85%D9%86-%D9%85%D8%B1%D9%83%D8%B2-%D8%A7%D9%84%D9%85%D9%84%D9%83-%D8%B3%D9%84%D9%85%D8%A7%D9%86-%D9%84%D9%84%D8%A5%D8%BA%D8%A7%D8%AB%D8%A9",
+      "published": "2026-10-03",
+      "source": "Syrian Ministry of Health",
+      "source_id": "sy-moh-news",
+      "verification_version": 2,
+      "verified_at": "2026-10-04T11:51:24+00:00",
+      "topic": "public-health",
+      "evidence": {
+        "geography": "سوريا",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "الصحة ترفد مشافي صدد وتدمر والتل الوطنية بأجهزة أشعة حديثة",
+      "title_ar": "الصحة ترفد مشافي صدد وتدمر والتل الوطنية بأجهزة أشعة حديثة",
+      "language": "ar",
+      "url": "https://moh.gov.sy/news/%D8%A7%D9%84%D8%B5%D8%AD%D8%A9-%D8%AA%D8%B1%D9%81%D8%AF-%D9%85%D8%B4%D8%A7%D9%81%D9%8A-%D8%B5%D8%AF%D8%AF-%D9%88%D8%AA%D8%AF%D9%85%D8%B1-%D9%88%D8%A7%D9%84%D8%AA%D9%84-%D8%A7%D9%84%D9%88%D8%B7%D9%86%D9%8A%D8%A9-%D8%A8%D8%A3%D8%AC%D9%87%D8%B2%D8%A9-%D8%A3%D8%B4%D8%B9%D8%A9-%D8%AD%D8%AF%D9%8A%D8%AB%D8%A9",
+      "published": "2026-10-03",
+      "source": "Syrian Ministry of Health",
+      "source_id": "sy-moh-news",
+      "verification_version": 2,
+      "verified_at": "2026-10-04T11:51:24+00:00",
+      "topic": "hospitals",
+      "evidence": {
+        "geography": "حمص",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "مجمع التكافل المجتمعي الطبي في زملكا يرفع أعداد المستفيدين لـ 4000 ‏شهرياً",
+      "title_ar": "مجمع التكافل المجتمعي الطبي في زملكا يرفع أعداد المستفيدين لـ 4000 ‏شهرياً",
+      "language": "ar",
+      "url": "https://sana.sy/governorates/reef-dimashak/2596409/",
+      "published": "2026-10-03",
+      "source": "Syrian Arab News Agency (SANA) — Health",
+      "source_id": "sana-health",
+      "verification_version": 2,
+      "verified_at": "2026-10-04T11:51:24+00:00",
+      "topic": "public-health",
+      "evidence": {
+        "geography": "دمشق",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "تجهيزات طبية حديثة لمشافي صدد وتدمر والتل الوطنية بحمص",
+      "title_ar": "تجهيزات طبية حديثة لمشافي صدد وتدمر والتل الوطنية بحمص",
+      "language": "ar",
+      "url": "https://sana.sy/governorates/homs/2596406/",
+      "published": "2026-10-03",
+      "source": "Syrian Arab News Agency (SANA) — Health",
+      "source_id": "sana-health",
+      "verification_version": 2,
+      "verified_at": "2026-10-04T11:51:24+00:00",
+      "topic": "hospitals",
+      "evidence": {
+        "geography": "حمص",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "وصول جهاز رنين مغناطيسي جديد إلى المشفى الوطني بدير الزور",
+      "title_ar": "وصول جهاز رنين مغناطيسي جديد إلى المشفى الوطني بدير الزور",
+      "language": "ar",
+      "url": "https://sana.sy/governorates/dayer-al-zoor/2596363/",
+      "published": "2026-10-03",
+      "source": "Syrian Arab News Agency (SANA) — Health",
+      "source_id": "sana-health",
+      "verification_version": 2,
+      "verified_at": "2026-10-04T11:51:24+00:00",
+      "topic": "hospitals",
+      "evidence": {
+        "geography": "دير الزور",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "دير الزور: للمرة الأولى.. تفعيل خدمة الكشف المبكّر عن سرطان الثدي",
+      "title_ar": "دير الزور: للمرة الأولى.. تفعيل خدمة الكشف المبكّر عن سرطان الثدي",
+      "language": "ar",
+      "url": "https://moh.gov.sy/news/%D8%AF%D9%8A%D8%B1-%D8%A7%D9%84%D8%B2%D9%88%D8%B1:-%D9%84%D9%84%D9%85%D8%B1%D8%A9-%D8%A7%D9%84%D8%A3%D9%88%D9%84%D9%89..-%D8%AA%D9%81%D8%B9%D9%8A%D9%84-%D8%AE%D8%AF%D9%85%D8%A9-%D8%A7%D9%84%D9%83%D8%B4%D9%81-%D8%A7%D9%84%D9%85%D8%A8%D9%83%D9%91%D8%B1-%D8%B9%D9%86-%D8%B3%D8%B1%D8%B7%D8%A7%D9%86-%D8%A7%D9%84%D8%AB%D8%AF%D9%8A",
+      "published": "2026-10-02",
+      "source": "Syrian Ministry of Health",
+      "source_id": "sy-moh-news",
+      "verification_version": 2,
+      "verified_at": "2026-10-04T11:51:24+00:00",
+      "topic": "hospitals",
+      "evidence": {
+        "geography": "دير الزور",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "مؤتمر الجراحة العامة والتنظيرية يختتم أعماله في المشفى الوطني الجامعي بدمشق",
+      "title_ar": "مؤتمر الجراحة العامة والتنظيرية يختتم أعماله في المشفى الوطني الجامعي بدمشق",
+      "language": "ar",
+      "url": "https://sana.sy/health/2595806/",
+      "published": "2026-10-02",
+      "source": "Syrian Arab News Agency (SANA) — Health",
+      "source_id": "sana-health",
+      "verification_version": 2,
+      "verified_at": "2026-10-04T11:51:24+00:00",
+      "topic": "hospitals",
+      "evidence": {
+        "geography": "دمشق",
+        "type": "publisher-headline"
+      }
+    },
     {
       "title": "ReliefWeb: For Every Heartbeat: A SAMS Report on Rebuilding Advanced Cardiac Care in Syria",
       "title_en": "ReliefWeb: For Every Heartbeat: A SAMS Report on Rebuilding Advanced Cardiac Care in Syria",
@@ -12,10 +140,90 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-03T20:57:47+00:00",
+      "verified_at": "2026-10-04T11:51:23+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "Syria",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "الصحة تبحث الواقع الصحي في دير الزور وسبل تطوير الخدمات",
+      "title_ar": "الصحة تبحث الواقع الصحي في دير الزور وسبل تطوير الخدمات",
+      "language": "ar",
+      "url": "https://moh.gov.sy/news/%D8%A7%D9%84%D8%B5%D8%AD%D8%A9-%D8%AA%D8%A8%D8%AD%D8%AB-%D8%A7%D9%84%D9%88%D8%A7%D9%82%D8%B9-%D8%A7%D9%84%D8%B5%D8%AD%D9%8A-%D9%81%D9%8A-%D8%AF%D9%8A%D8%B1-%D8%A7%D9%84%D8%B2%D9%88%D8%B1-%D9%88%D8%B3%D8%A8%D9%84-%D8%AA%D8%B7%D9%88%D9%8A%D8%B1-%D8%A7%D9%84%D8%AE%D8%AF%D9%85%D8%A7%D8%AA",
+      "published": "2026-10-01",
+      "source": "Syrian Ministry of Health",
+      "source_id": "sy-moh-news",
+      "verification_version": 2,
+      "verified_at": "2026-10-04T11:51:24+00:00",
+      "topic": "public-health",
+      "evidence": {
+        "geography": "دير الزور",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "وزارة الصحة تبحث احتياجات القطاع الصحي بدير الزور وتطوير جاهزية المنشآت الطبية",
+      "title_ar": "وزارة الصحة تبحث احتياجات القطاع الصحي بدير الزور وتطوير جاهزية المنشآت الطبية",
+      "language": "ar",
+      "url": "https://sana.sy/health/2595302/",
+      "published": "2026-10-01",
+      "source": "Syrian Arab News Agency (SANA) — Health",
+      "source_id": "sana-health",
+      "verification_version": 2,
+      "verified_at": "2026-10-04T11:51:24+00:00",
+      "topic": "public-health",
+      "evidence": {
+        "geography": "دير الزور",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "وزير الصحة يبحث مع «نورواك» النرويجية تعزيز التعاون لتطوير القطاع الصحي في سوريا",
+      "title_ar": "وزير الصحة يبحث مع «نورواك» النرويجية تعزيز التعاون لتطوير القطاع الصحي في سوريا",
+      "language": "ar",
+      "url": "https://moh.gov.sy/news/%D9%88%D8%B2%D9%8A%D8%B1-%D8%A7%D9%84%D8%B5%D8%AD%D8%A9-%D9%8A%D8%A8%D8%AD%D8%AB-%D9%85%D8%B9-%C2%AB%D9%86%D9%88%D8%B1%D9%88%D8%A7%D9%83%C2%BB-%D8%A7%D9%84%D9%86%D8%B1%D9%88%D9%8A%D8%AC%D9%8A%D8%A9-%D8%AA%D8%B9%D8%B2%D9%8A%D8%B2-%D8%A7%D9%84%D8%AA%D8%B9%D8%A7%D9%88%D9%86-%D9%84%D8%AA%D8%B7%D9%88%D9%8A%D8%B1-%D8%A7%D9%84%D9%82%D8%B7%D8%A7%D8%B9-%D8%A7%D9%84%D8%B5%D8%AD%D9%8A-%D9%81%D9%8A-%D8%B3%D9%88%D8%B1%D9%8A%D8%A7",
+      "published": "2026-09-30",
+      "source": "Syrian Ministry of Health",
+      "source_id": "sy-moh-news",
+      "verification_version": 2,
+      "verified_at": "2026-10-04T11:51:24+00:00",
+      "topic": "public-health",
+      "evidence": {
+        "geography": "سوريا",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "وفد من وزارة الصحة ومديرية صحة الرقة يزور مستشفى تل أبيض",
+      "title_ar": "وفد من وزارة الصحة ومديرية صحة الرقة يزور مستشفى تل أبيض",
+      "language": "ar",
+      "url": "https://moh.gov.sy/news/%D9%88%D9%81%D8%AF-%D9%85%D9%86-%D9%88%D8%B2%D8%A7%D8%B1%D8%A9-%D8%A7%D9%84%D8%B5%D8%AD%D8%A9-%D9%88%D9%85%D8%AF%D9%8A%D8%B1%D9%8A%D8%A9-%D8%B5%D8%AD%D8%A9-%D8%A7%D9%84%D8%B1%D9%82%D8%A9-%D9%8A%D8%B2%D9%88%D8%B1-%D9%85%D8%B3%D8%AA%D8%B4%D9%81%D9%89-%D8%AA%D9%84-%D8%A3%D8%A8%D9%8A%D8%B6",
+      "published": "2026-09-30",
+      "source": "Syrian Ministry of Health",
+      "source_id": "sy-moh-news",
+      "verification_version": 2,
+      "verified_at": "2026-10-04T11:51:24+00:00",
+      "topic": "hospitals",
+      "evidence": {
+        "geography": "الرقة",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "بمناسبة اليوم العالمي للقلب.. انطلاق الملتقى العلمي الأول في مشفى دمشق لأمراض وجراحة القلب",
+      "title_ar": "بمناسبة اليوم العالمي للقلب.. انطلاق الملتقى العلمي الأول في مشفى دمشق لأمراض وجراحة القلب",
+      "language": "ar",
+      "url": "https://moh.gov.sy/news/%D8%A8%D9%85%D9%86%D8%A7%D8%B3%D8%A8%D8%A9-%D8%A7%D9%84%D9%8A%D9%88%D9%85-%D8%A7%D9%84%D8%B9%D8%A7%D9%84%D9%85%D9%8A-%D9%84%D9%84%D9%82%D9%84%D8%A8..-%D8%A7%D9%86%D8%B7%D9%84%D8%A7%D9%82-%D8%A7%D9%84%D9%85%D9%84%D8%AA%D9%82%D9%89-%D8%A7%D9%84%D8%B9%D9%84%D9%85%D9%8A-%D8%A7%D9%84%D8%A3%D9%88%D9%84-%D9%81%D9%8A-%D9%85%D8%B4%D9%81%D9%89-%D8%AF%D9%85%D8%B4%D9%82-%D9%84%D8%A3%D9%85%D8%B1%D8%A7%D8%B6-%D9%88%D8%AC%D8%B1%D8%A7%D8%AD%D8%A9-%D8%A7%D9%84%D9%82%D9%84%D8%A8",
+      "published": "2026-09-29",
+      "source": "Syrian Ministry of Health",
+      "source_id": "sy-moh-news",
+      "verification_version": 2,
+      "verified_at": "2026-10-04T11:51:24+00:00",
+      "topic": "hospitals",
+      "evidence": {
+        "geography": "دمشق",
         "type": "publisher-headline"
       }
     },
@@ -28,7 +236,7 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-03T20:57:47+00:00",
+      "verified_at": "2026-10-04T11:51:23+00:00",
       "topic": "policy",
       "evidence": {
         "geography": "Syria",
@@ -44,7 +252,7 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-03T20:57:47+00:00",
+      "verified_at": "2026-10-04T11:51:23+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "Syria",
@@ -60,10 +268,26 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-03T20:57:47+00:00",
+      "verified_at": "2026-10-04T11:51:23+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "Idlib",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "عيادات صحة حمص المتنقلة تقدّم أكثر من 9 آلاف خدمة صحية خلال آب",
+      "title_ar": "عيادات صحة حمص المتنقلة تقدّم أكثر من 9 آلاف خدمة صحية خلال آب",
+      "language": "ar",
+      "url": "https://moh.gov.sy/news/%D8%B9%D9%8A%D8%A7%D8%AF%D8%A7%D8%AA-%D8%B5%D8%AD%D8%A9-%D8%AD%D9%85%D8%B5-%D8%A7%D9%84%D9%85%D8%AA%D9%86%D9%82%D9%84%D8%A9-%D8%AA%D9%82%D8%AF%D9%91%D9%85-%D8%A3%D9%83%D8%AB%D8%B1-%D9%85%D9%86-9-%D8%A2%D9%84%D8%A7%D9%81-%D8%AE%D8%AF%D9%85%D8%A9-%D8%B5%D8%AD%D9%8A%D8%A9-%D8%AE%D9%84%D8%A7%D9%84-%D8%A2%D8%A8",
+      "published": "2026-09-22",
+      "source": "Syrian Ministry of Health",
+      "source_id": "sy-moh-news",
+      "verification_version": 2,
+      "verified_at": "2026-10-04T11:51:24+00:00",
+      "topic": "public-health",
+      "evidence": {
+        "geography": "حمص",
         "type": "publisher-headline"
       }
     },
@@ -76,7 +300,7 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-03T20:57:47+00:00",
+      "verified_at": "2026-10-04T11:51:23+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "Syria",
@@ -92,7 +316,7 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-03T20:57:47+00:00",
+      "verified_at": "2026-10-04T11:51:23+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "Syria",
@@ -108,7 +332,7 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-03T20:57:47+00:00",
+      "verified_at": "2026-10-04T11:51:23+00:00",
       "topic": "policy",
       "evidence": {
         "geography": "Syria",
@@ -124,7 +348,7 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-03T20:57:47+00:00",
+      "verified_at": "2026-10-04T11:51:23+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "Syrian",
@@ -140,7 +364,87 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-03T20:57:47+00:00",
+      "verified_at": "2026-10-04T11:51:23+00:00",
+      "topic": "public-health",
+      "evidence": {
+        "geography": "Syria",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "Behind every dialysis session in northern Aleppo",
+      "title_en": "Behind every dialysis session in northern Aleppo",
+      "language": "en",
+      "url": "https://www.emro.who.int/syria/news/behind-every-dialysis-session-in-northern-aleppo.html",
+      "published": "2026-09-09",
+      "source": "WHO — Syria office",
+      "source_id": "who-syria-news",
+      "verification_version": 2,
+      "verified_at": "2026-10-04T11:51:24+00:00",
+      "topic": "public-health",
+      "evidence": {
+        "geography": "Aleppo",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "When treatment is within reach at Sharan Primary Health Care Centre",
+      "title_en": "When treatment is within reach at Sharan Primary Health Care Centre",
+      "language": "en",
+      "url": "https://www.emro.who.int/syria/news/when-treatment-is-within-reach-at-sharan-primary-health-care-centre.html",
+      "published": "2026-09-09",
+      "source": "WHO — Syria office",
+      "source_id": "who-syria-news",
+      "verification_version": 2,
+      "verified_at": "2026-10-04T11:51:24+00:00",
+      "topic": "public-health",
+      "evidence": {
+        "geography": "Aleppo",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "Where care begins at Sundi Primary Health Care Centre",
+      "title_en": "Where care begins at Sundi Primary Health Care Centre",
+      "language": "en",
+      "url": "https://www.emro.who.int/syria/news/where-care-begins-at-sundi-primary-health-care-centre.html",
+      "published": "2026-09-08",
+      "source": "WHO — Syria office",
+      "source_id": "who-syria-news",
+      "verification_version": 2,
+      "verified_at": "2026-10-04T11:51:24+00:00",
+      "topic": "public-health",
+      "evidence": {
+        "geography": "Aleppo",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "Why continuity of care matters at Al-Bab Primary Health Care Centre",
+      "title_en": "Why continuity of care matters at Al-Bab Primary Health Care Centre",
+      "language": "en",
+      "url": "https://www.emro.who.int/syria/news/why-continuity-of-care-matters-at-al-bab-primary-health-care-centre.html",
+      "published": "2026-08-31",
+      "source": "WHO — Syria office",
+      "source_id": "who-syria-news",
+      "verification_version": 2,
+      "verified_at": "2026-10-04T11:51:24+00:00",
+      "topic": "hospitals",
+      "evidence": {
+        "geography": "Aleppo",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "EU provides €12 million to WHO to sustain essential health services and support recovery across Syria",
+      "title_en": "EU provides €12 million to WHO to sustain essential health services and support recovery across Syria",
+      "language": "en",
+      "url": "https://www.emro.who.int/syria/news/eu-provides-eur12-million-to-who-to-sustain-essential-health-services-and-support-recovery-across-syria.html",
+      "published": "2026-08-30",
+      "source": "WHO — Syria office",
+      "source_id": "who-syria-news",
+      "verification_version": 2,
+      "verified_at": "2026-10-04T11:51:24+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "Syria",

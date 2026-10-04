@@ -2,8 +2,8 @@ name: Update news and jobs
 
 on:
   schedule:
-    # 06:00 and 18:00 UTC — GitHub cron is always UTC
-    - cron: "0 6,18 * * *"
+    # Twice daily: 06:17 and 18:17 UTC. Avoid the busy start of each hour.
+    - cron: "17 6,18 * * *"
   workflow_dispatch:        # lets you run it by hand from the Actions tab
 
 permissions:
@@ -19,10 +19,16 @@ jobs:
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
 
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+
+      - name: Validate collector
+        run: python -m unittest discover -s tests -p 'test_*.py'
 
       - name: Collect and filter
         id: collect
@@ -38,8 +44,16 @@ jobs:
             echo "Nothing changed."
           else
             git commit -m "Update news and jobs ($(date -u +'%Y-%m-%d %H:%M UTC'))"
-            git pull --rebase origin main
-            git push
+            # Only the new, unpublished bot commit is rebased.
+            for attempt in 1 2 3; do
+              git pull --rebase origin main
+              if git push origin HEAD:main; then
+                exit 0
+              fi
+              sleep 5
+            done
+            echo "Could not push collected data after three attempts." >&2
+            exit 1
           fi
 
       - name: Report collection failure

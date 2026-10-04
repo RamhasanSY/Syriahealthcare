@@ -14,7 +14,9 @@ There is no automatic LinkedIn import. LinkedIn, ReliefWeb and UOSSM vacancy pag
 
 ## Sources and freshness
 
-`sources.json` contains five news feeds (SAMS, UOSSM, IDA, WHO and UN News Health) and four employer integrations (SAMS, IDA, NRC and DRC). A working source may legitimately have no recent eligible items. Older UOSSM and IDA news is not presented as fresh content.
+`sources.json` contains nine news integrations: the Syrian Ministry of Health, SANA Health, WHO's Syria office, the Syrian Arab Red Crescent, SAMS, UOSSM, IDA, WHO global news and UN News Health. The four employer integrations are SAMS, IDA, NRC and DRC. A working source may legitimately have no recent eligible items. Older UOSSM, IDA and Red Crescent items are not presented as fresh content.
+
+The Ministry integration reads original titles, article links, publication dates and article leads from its public news cards. Navigation, tenders, undated campaigns and the Ministry's name never count as article evidence. SANA's adapter removes its duplicated identical RSS media namespace declaration before parsing; other malformed feeds still report errors. All new sources use the same Syria, healthcare, date and provenance checks as the existing sources.
 
 Each record includes a source ID, original publication date, `verified_at`, and `verification_version: 2`. Legacy records without this provenance are removed even when a collection fails. Unknown dates are never guessed. Duplicates are removed by URL and matching title/location/employer.
 
@@ -26,7 +28,7 @@ Browser requests time out after 15 seconds. Failed background refreshes retain e
 
 ## Automation and deployment
 
-`.github/workflows/update.yml` runs at 06:00 and 18:00 UTC, and supports manual dispatch. GitHub can delay scheduled jobs. No API keys, model subscription or paid automation service is required. Existing unrelated secrets are not read or modified.
+`.github/workflows/update.yml` runs twice daily at 06:17 and 18:17 UTC, and supports manual dispatch on `main`. Scheduling away from the start of the hour reduces GitHub's busy-hour delays; GitHub schedules are still best effort and can be delayed or dropped. The workflow is kept on the default branch, validates the collector before collecting, and commits fresh public feeds with bounded push retries. No API keys, model subscription or paid automation service is required. Existing unrelated secrets are not read or modified.
 
 The updater runs source requests with bounded retries and timeouts, atomically writes the content/status JSON, commits changes, rebases over concurrent repository changes, and pushes them to `main`.
 
@@ -35,6 +37,17 @@ The updater runs source requests with bounded retries and timeouts, atomically w
 For failed-run notifications, enable GitHub Actions notifications in your own GitHub account. Detailed source results appear in each update run's summary and on the website's source list.
 
 ## Preview and tests
+
+The website is plain HTML, CSS and JavaScript. The npm commands below use Node and Python directly and require no npm dependency installation. `npm run build` validates the public JSON and copies only the public website files into `dist/`, including the custom domain and `.nojekyll` marker.
+
+```sh
+npm run build
+npm run lint
+npm test
+npm run preview
+```
+
+Use `npm run dev` to serve the working files. Both servers use http://127.0.0.1:8000; stop one before starting the other. With the server running, `npm run test:browser` runs the Playwright checks below.
 
 ```sh
 python -m http.server 8000

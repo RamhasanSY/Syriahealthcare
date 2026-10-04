@@ -1,12 +1,13 @@
 """Run against python -m http.server 8000; requires local Playwright."""
 import json
+import os
 import re
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from playwright.sync_api import sync_playwright, expect
 
-BASE = "http://127.0.0.1:8000"
+BASE = os.environ.get('SITE_URL', 'http://127.0.0.1:8000')
 preview = Path(__file__).resolve().parents[1] / ".preview"
 preview.mkdir(exist_ok=True)
 now = datetime.now(timezone.utc)
@@ -37,6 +38,7 @@ jobs['items'].append({'title_en': 'Undated role', 'url': 'https://example.org/un
 jobs['items'].extend([
     {**jobs['items'][0], 'title_en': 'Impossible calendar date', 'url': 'https://example.org/impossible-date', 'deadline': '2099-02-30'},
     {**jobs['items'][0], 'title_en': 'Invalid exact deadline', 'url': 'https://example.org/invalid-time', 'deadline_at': 'invalid'},
+    {**jobs['items'][0], 'title_en': 'Rollover exact deadline', 'url': 'https://example.org/rollover-time', 'deadline_at': now.date().isoformat() + 'T24:00:00Z'},
     {**jobs['items'][0], 'title_en': 'Expired exact deadline', 'url': 'https://example.org/expired-time', 'deadline_at': (now-timedelta(minutes=1)).isoformat()},
 ])
 
@@ -108,6 +110,7 @@ with sync_playwright() as p:
     expect(page.locator("#jobsList li")).to_have_count(1)
     page.locator("#langToggle").click()
     expect(page.locator("#jobsList")).to_contain_text("ممرض")
+    expect(page.locator("#langToggle")).to_be_focused()
     page.locator("#langToggle").click()
     page.unroute("**/data/news.json")
     page.route("**/data/news.json", lambda route: route.fulfill(status=503, body="Unavailable"))
