@@ -1,12 +1,12 @@
 {
-  "checked_at": "2026-10-06T22:40:36+00:00",
+  "checked_at": "2026-10-07T13:27:28+00:00",
   "sources": [
     {
       "id": "drc-jobs",
       "kind": "jobs",
       "state": "ok",
-      "checked_at": "2026-10-06T22:40:08+00:00",
-      "fetched": 67,
+      "checked_at": "2026-10-07T13:27:01+00:00",
+      "fetched": 66,
       "accepted": 8,
       "latest_published": "2026-10-06"
     },
@@ -14,16 +14,16 @@
       "id": "ida-jobs",
       "kind": "jobs",
       "state": "ok",
-      "checked_at": "2026-10-06T22:40:36+00:00",
+      "checked_at": "2026-10-07T13:27:28+00:00",
       "fetched": 10,
-      "accepted": 2,
-      "latest_published": "2026-10-04"
+      "accepted": 3,
+      "latest_published": "2026-10-07"
     },
     {
       "id": "ida-news",
       "kind": "news",
       "state": "ok",
-      "checked_at": "2026-10-06T22:40:08+00:00",
+      "checked_at": "2026-10-07T13:27:01+00:00",
       "fetched": 10,
       "accepted": 0,
       "latest_published": null
@@ -32,7 +32,7 @@
       "id": "nrc-jobs",
       "kind": "jobs",
       "state": "ok",
-      "checked_at": "2026-10-06T22:40:08+00:00",
+      "checked_at": "2026-10-07T13:27:01+00:00",
       "fetched": 20,
       "accepted": 4,
       "latest_published": "2026-09-27"
@@ -41,7 +41,7 @@
       "id": "sams-jobs",
       "kind": "jobs",
       "state": "ok",
-      "checked_at": "2026-10-06T22:40:07+00:00",
+      "checked_at": "2026-10-07T13:27:00+00:00",
       "fetched": 545,
       "accepted": 5,
       "latest_published": "2026-10-05"
@@ -50,7 +50,7 @@
       "id": "sams-news",
       "kind": "news",
       "state": "ok",
-      "checked_at": "2026-10-06T22:40:07+00:00",
+      "checked_at": "2026-10-07T13:27:00+00:00",
       "fetched": 10,
       "accepted": 9,
       "latest_published": "2026-10-01"
@@ -59,16 +59,16 @@
       "id": "sana-health",
       "kind": "news",
       "state": "ok",
-      "checked_at": "2026-10-06T22:40:06+00:00",
+      "checked_at": "2026-10-07T13:26:59+00:00",
       "fetched": 10,
       "accepted": 5,
-      "latest_published": "2026-10-06"
+      "latest_published": "2026-10-07"
     },
     {
       "id": "sarc-news",
       "kind": "news",
       "state": "ok",
-      "checked_at": "2026-10-06T22:40:06+00:00",
+      "checked_at": "2026-10-07T13:26:59+00:00",
       "fetched": 10,
       "accepted": 0,
       "latest_published": null
@@ -77,16 +77,16 @@
       "id": "sy-moh-news",
       "kind": "news",
       "state": "ok",
-      "checked_at": "2026-10-06T22:40:06+00:00",
+      "checked_at": "2026-10-07T13:27:00+00:00",
       "fetched": 12,
       "accepted": 8,
-      "latest_published": "2026-10-05"
+      "latest_published": "2026-10-07"
     },
     {
       "id": "un-health",
       "kind": "news",
       "state": "ok",
-      "checked_at": "2026-10-06T22:40:07+00:00",
+      "checked_at": "2026-10-07T13:27:00+00:00",
       "fetched": 30,
       "accepted": 0,
       "latest_published": null
@@ -95,7 +95,7 @@
       "id": "uossm-news",
       "kind": "news",
       "state": "ok",
-      "checked_at": "2026-10-06T22:40:20+00:00",
+      "checked_at": "2026-10-07T13:27:02+00:00",
       "fetched": 10,
       "accepted": 0,
       "latest_published": null
@@ -104,7 +104,7 @@
       "id": "who-news",
       "kind": "news",
       "state": "ok",
-      "checked_at": "2026-10-06T22:40:07+00:00",
+      "checked_at": "2026-10-07T13:27:00+00:00",
       "fetched": 25,
       "accepted": 0,
       "latest_published": null
@@ -113,7 +113,7 @@
       "id": "who-syria-news",
       "kind": "news",
       "state": "ok",
-      "checked_at": "2026-10-06T22:40:07+00:00",
+      "checked_at": "2026-10-07T13:27:00+00:00",
       "fetched": 10,
       "accepted": 6,
       "latest_published": "2026-10-05"
