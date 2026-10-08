@@ -1,6 +1,6 @@
 {
-  "updated": "2026-10-08T13:33:30+00:00",
-  "checked_at": "2026-10-08T13:33:30+00:00",
+  "updated": "2026-10-08T23:22:59+00:00",
+  "checked_at": "2026-10-08T23:22:59+00:00",
   "status": "ok",
   "items": [
     {
@@ -12,7 +12,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-08T13:32:58+00:00",
+      "verified_at": "2026-10-08T23:22:27+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "سوريا",
@@ -20,15 +20,15 @@
       }
     },
     {
-      "title": "انطلاق فعاليات المؤتمر العلمي لهيئة مخابر التحاليل الطبية في سوريا",
-      "title_ar": "انطلاق فعاليات المؤتمر العلمي لهيئة مخابر التحاليل الطبية في سوريا",
+      "title": "انطلاق المؤتمر العلمي الحادي عشر لهيئة مخابر التحاليل الطبية في سوريا",
+      "title_ar": "انطلاق المؤتمر العلمي الحادي عشر لهيئة مخابر التحاليل الطبية في سوريا",
       "language": "ar",
       "url": "https://sana.sy/health/2600649/",
       "published": "2026-10-08",
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-08T13:32:58+00:00",
+      "verified_at": "2026-10-08T23:22:28+00:00",
       "topic": "workforce",
       "evidence": {
         "geography": "سوريا",
@@ -44,7 +44,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-08T13:32:58+00:00",
+      "verified_at": "2026-10-08T23:22:28+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "دمشق",
@@ -60,7 +60,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-08T13:32:58+00:00",
+      "verified_at": "2026-10-08T23:22:27+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "دمشق",
@@ -76,7 +76,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-08T13:32:58+00:00",
+      "verified_at": "2026-10-08T23:22:27+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "دمشق",
@@ -92,7 +92,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-08T13:32:58+00:00",
+      "verified_at": "2026-10-08T23:22:27+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "دمشق",
@@ -172,7 +172,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-08T13:32:58+00:00",
+      "verified_at": "2026-10-08T23:22:27+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "درعا",
@@ -188,7 +188,7 @@
       "source": "WHO — Syria office",
       "source_id": "who-syria-news",
       "verification_version": 2,
-      "verified_at": "2026-10-08T13:33:00+00:00",
+      "verified_at": "2026-10-08T23:22:29+00:00",
       "topic": "policy",
       "evidence": {
         "geography": "Syria",
@@ -252,7 +252,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-08T13:32:58+00:00",
+      "verified_at": "2026-10-08T23:22:27+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "درعا",
@@ -364,7 +364,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-08T13:32:58+00:00",
+      "verified_at": "2026-10-08T23:22:27+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "دير الزور",
@@ -396,7 +396,7 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-08T13:32:58+00:00",
+      "verified_at": "2026-10-08T23:22:26+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "Syria",
@@ -412,7 +412,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-08T13:32:58+00:00",
+      "verified_at": "2026-10-08T23:22:27+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "دير الزور",
@@ -492,7 +492,7 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-08T13:32:58+00:00",
+      "verified_at": "2026-10-08T23:22:26+00:00",
       "topic": "policy",
       "evidence": {
         "geography": "Syria",
@@ -508,7 +508,7 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-08T13:32:58+00:00",
+      "verified_at": "2026-10-08T23:22:26+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "Syria",
@@ -524,7 +524,7 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-08T13:32:58+00:00",
+      "verified_at": "2026-10-08T23:22:26+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "Idlib",
@@ -556,7 +556,7 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-08T13:32:58+00:00",
+      "verified_at": "2026-10-08T23:22:26+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "Syria",
@@ -572,7 +572,7 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-08T13:32:58+00:00",
+      "verified_at": "2026-10-08T23:22:26+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "Syria",
@@ -588,7 +588,7 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-08T13:32:58+00:00",
+      "verified_at": "2026-10-08T23:22:26+00:00",
       "topic": "policy",
       "evidence": {
         "geography": "Syria",
@@ -604,7 +604,7 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-08T13:32:58+00:00",
+      "verified_at": "2026-10-08T23:22:26+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "Syrian",
@@ -620,7 +620,7 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-08T13:32:58+00:00",
+      "verified_at": "2026-10-08T23:22:26+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "Syria",
@@ -636,7 +636,7 @@
       "source": "WHO — Syria office",
       "source_id": "who-syria-news",
       "verification_version": 2,
-      "verified_at": "2026-10-08T13:33:00+00:00",
+      "verified_at": "2026-10-08T23:22:29+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "Aleppo",
@@ -652,7 +652,7 @@
       "source": "WHO — Syria office",
       "source_id": "who-syria-news",
       "verification_version": 2,
-      "verified_at": "2026-10-08T13:33:00+00:00",
+      "verified_at": "2026-10-08T23:22:29+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "Aleppo",
@@ -668,7 +668,7 @@
       "source": "WHO — Syria office",
       "source_id": "who-syria-news",
       "verification_version": 2,
-      "verified_at": "2026-10-08T13:33:00+00:00",
+      "verified_at": "2026-10-08T23:22:29+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "Aleppo",
@@ -684,7 +684,7 @@
       "source": "WHO — Syria office",
       "source_id": "who-syria-news",
       "verification_version": 2,
-      "verified_at": "2026-10-08T13:33:00+00:00",
+      "verified_at": "2026-10-08T23:22:29+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "Aleppo",
@@ -700,7 +700,7 @@
       "source": "WHO — Syria office",
       "source_id": "who-syria-news",
       "verification_version": 2,
-      "verified_at": "2026-10-08T13:33:00+00:00",
+      "verified_at": "2026-10-08T23:22:29+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "Syria",
