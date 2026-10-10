@@ -1,8 +1,24 @@
 {
-  "updated": "2026-10-09T22:40:44+00:00",
-  "checked_at": "2026-10-09T22:40:44+00:00",
+  "updated": "2026-10-10T12:35:07+00:00",
+  "checked_at": "2026-10-10T12:35:07+00:00",
   "status": "ok",
   "items": [
+    {
+      "title": "الصحة النفسية في سوريا.. ما أبرز المشكلات وطرق ‏العلاج؟",
+      "title_ar": "الصحة النفسية في سوريا.. ما أبرز المشكلات وطرق ‏العلاج؟",
+      "language": "ar",
+      "url": "https://sana.sy/health/2602446/",
+      "published": "2026-10-10",
+      "source": "Syrian Arab News Agency (SANA) — Health",
+      "source_id": "sana-health",
+      "verification_version": 2,
+      "verified_at": "2026-10-10T12:34:38+00:00",
+      "topic": "public-health",
+      "evidence": {
+        "geography": "سوريا",
+        "type": "publisher-headline"
+      }
+    },
     {
       "title": "باليوم العالمي للبصر.. مشفى العيون بدمشق خدمات علاجية وتشخيصية متكاملة",
       "title_ar": "باليوم العالمي للبصر.. مشفى العيون بدمشق خدمات علاجية وتشخيصية متكاملة",
@@ -12,7 +28,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-09T22:40:15+00:00",
+      "verified_at": "2026-10-10T12:34:38+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "دمشق",
@@ -28,7 +44,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-09T22:40:14+00:00",
+      "verified_at": "2026-10-10T12:34:37+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "سوريا",
@@ -76,7 +92,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-09T22:40:14+00:00",
+      "verified_at": "2026-10-10T12:34:37+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "دمشق",
@@ -92,7 +108,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-09T22:40:14+00:00",
+      "verified_at": "2026-10-10T12:34:37+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "دمشق",
@@ -108,7 +124,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-09T22:40:14+00:00",
+      "verified_at": "2026-10-10T12:34:37+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "دمشق",
@@ -188,7 +204,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-09T22:40:14+00:00",
+      "verified_at": "2026-10-10T12:34:37+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "درعا",
@@ -204,7 +220,7 @@
       "source": "WHO — Syria office",
       "source_id": "who-syria-news",
       "verification_version": 2,
-      "verified_at": "2026-10-09T22:40:18+00:00",
+      "verified_at": "2026-10-10T12:34:38+00:00",
       "topic": "policy",
       "evidence": {
         "geography": "Syria",
@@ -268,7 +284,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-09T22:40:14+00:00",
+      "verified_at": "2026-10-10T12:34:37+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "درعا",
@@ -372,22 +388,6 @@
       }
     },
     {
-      "title": "دير الزور: للمرة الأولى.. تفعيل خدمة الكشف المبكّر عن سرطان الثدي",
-      "title_ar": "دير الزور: للمرة الأولى.. تفعيل خدمة الكشف المبكّر عن سرطان الثدي",
-      "language": "ar",
-      "url": "https://moh.gov.sy/news/%D8%AF%D9%8A%D8%B1-%D8%A7%D9%84%D8%B2%D9%88%D8%B1:-%D9%84%D9%84%D9%85%D8%B1%D8%A9-%D8%A7%D9%84%D8%A3%D9%88%D9%84%D9%89..-%D8%AA%D9%81%D8%B9%D9%8A%D9%84-%D8%AE%D8%AF%D9%85%D8%A9-%D8%A7%D9%84%D9%83%D8%B4%D9%81-%D8%A7%D9%84%D9%85%D8%A8%D9%83%D9%91%D8%B1-%D8%B9%D9%86-%D8%B3%D8%B1%D8%B7%D8%A7%D9%86-%D8%A7%D9%84%D8%AB%D8%AF%D9%8A",
-      "published": "2026-10-02",
-      "source": "Syrian Ministry of Health",
-      "source_id": "sy-moh-news",
-      "verification_version": 2,
-      "verified_at": "2026-10-09T22:40:14+00:00",
-      "topic": "hospitals",
-      "evidence": {
-        "geography": "دير الزور",
-        "type": "publisher-headline"
-      }
-    },
-    {
       "title": "How Your Support Is Bridging the Healthcare Gap in Syria",
       "title_en": "How Your Support Is Bridging the Healthcare Gap in Syria",
       "language": "en",
@@ -396,10 +396,26 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-09T22:40:15+00:00",
+      "verified_at": "2026-10-10T12:34:36+00:00",
       "topic": "workforce",
       "evidence": {
         "geography": "Syria",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "دير الزور: للمرة الأولى.. تفعيل خدمة الكشف المبكّر عن سرطان الثدي",
+      "title_ar": "دير الزور: للمرة الأولى.. تفعيل خدمة الكشف المبكّر عن سرطان الثدي",
+      "language": "ar",
+      "url": "https://moh.gov.sy/news/%D8%AF%D9%8A%D8%B1-%D8%A7%D9%84%D8%B2%D9%88%D8%B1:-%D9%84%D9%84%D9%85%D8%B1%D8%A9-%D8%A7%D9%84%D8%A3%D9%88%D9%84%D9%89..-%D8%AA%D9%81%D8%B9%D9%8A%D9%84-%D8%AE%D8%AF%D9%85%D8%A9-%D8%A7%D9%84%D9%83%D8%B4%D9%81-%D8%A7%D9%84%D9%85%D8%A8%D9%83%D9%91%D8%B1-%D8%B9%D9%86-%D8%B3%D8%B1%D8%B7%D8%A7%D9%86-%D8%A7%D9%84%D8%AB%D8%AF%D9%8A",
+      "published": "2026-10-02",
+      "source": "Syrian Ministry of Health",
+      "source_id": "sy-moh-news",
+      "verification_version": 2,
+      "verified_at": "2026-10-10T12:34:37+00:00",
+      "topic": "hospitals",
+      "evidence": {
+        "geography": "دير الزور",
         "type": "publisher-headline"
       }
     },
@@ -420,22 +436,6 @@
       }
     },
     {
-      "title": "الصحة تبحث الواقع الصحي في دير الزور وسبل تطوير الخدمات",
-      "title_ar": "الصحة تبحث الواقع الصحي في دير الزور وسبل تطوير الخدمات",
-      "language": "ar",
-      "url": "https://moh.gov.sy/news/%D8%A7%D9%84%D8%B5%D8%AD%D8%A9-%D8%AA%D8%A8%D8%AD%D8%AB-%D8%A7%D9%84%D9%88%D8%A7%D9%82%D8%B9-%D8%A7%D9%84%D8%B5%D8%AD%D9%8A-%D9%81%D9%8A-%D8%AF%D9%8A%D8%B1-%D8%A7%D9%84%D8%B2%D9%88%D8%B1-%D9%88%D8%B3%D8%A8%D9%84-%D8%AA%D8%B7%D9%88%D9%8A%D8%B1-%D8%A7%D9%84%D8%AE%D8%AF%D9%85%D8%A7%D8%AA",
-      "published": "2026-10-01",
-      "source": "Syrian Ministry of Health",
-      "source_id": "sy-moh-news",
-      "verification_version": 2,
-      "verified_at": "2026-10-09T22:40:14+00:00",
-      "topic": "public-health",
-      "evidence": {
-        "geography": "دير الزور",
-        "type": "publisher-headline"
-      }
-    },
-    {
       "title": "ReliefWeb: For Every Heartbeat: A SAMS Report on Rebuilding Advanced Cardiac Care in Syria",
       "title_en": "ReliefWeb: For Every Heartbeat: A SAMS Report on Rebuilding Advanced Cardiac Care in Syria",
       "language": "en",
@@ -444,10 +444,26 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-09T22:40:15+00:00",
+      "verified_at": "2026-10-10T12:34:36+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "Syria",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "الصحة تبحث الواقع الصحي في دير الزور وسبل تطوير الخدمات",
+      "title_ar": "الصحة تبحث الواقع الصحي في دير الزور وسبل تطوير الخدمات",
+      "language": "ar",
+      "url": "https://moh.gov.sy/news/%D8%A7%D9%84%D8%B5%D8%AD%D8%A9-%D8%AA%D8%A8%D8%AD%D8%AB-%D8%A7%D9%84%D9%88%D8%A7%D9%82%D8%B9-%D8%A7%D9%84%D8%B5%D8%AD%D9%8A-%D9%81%D9%8A-%D8%AF%D9%8A%D8%B1-%D8%A7%D9%84%D8%B2%D9%88%D8%B1-%D9%88%D8%B3%D8%A8%D9%84-%D8%AA%D8%B7%D9%88%D9%8A%D8%B1-%D8%A7%D9%84%D8%AE%D8%AF%D9%85%D8%A7%D8%AA",
+      "published": "2026-10-01",
+      "source": "Syrian Ministry of Health",
+      "source_id": "sy-moh-news",
+      "verification_version": 2,
+      "verified_at": "2026-10-10T12:34:37+00:00",
+      "topic": "public-health",
+      "evidence": {
+        "geography": "دير الزور",
         "type": "publisher-headline"
       }
     },
@@ -524,7 +540,7 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-09T22:40:15+00:00",
+      "verified_at": "2026-10-10T12:34:36+00:00",
       "topic": "policy",
       "evidence": {
         "geography": "Syria",
@@ -540,7 +556,7 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-09T22:40:15+00:00",
+      "verified_at": "2026-10-10T12:34:36+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "Syria",
@@ -556,7 +572,7 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-09T22:40:15+00:00",
+      "verified_at": "2026-10-10T12:34:36+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "Idlib",
@@ -588,7 +604,7 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-09T22:40:15+00:00",
+      "verified_at": "2026-10-10T12:34:36+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "Syria",
@@ -604,7 +620,7 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-09T22:40:15+00:00",
+      "verified_at": "2026-10-10T12:34:36+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "Syria",
@@ -620,7 +636,7 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-09T22:40:15+00:00",
+      "verified_at": "2026-10-10T12:34:36+00:00",
       "topic": "policy",
       "evidence": {
         "geography": "Syria",
@@ -636,7 +652,7 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-09T22:40:15+00:00",
+      "verified_at": "2026-10-10T12:34:36+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "Syrian",
@@ -668,7 +684,7 @@
       "source": "WHO — Syria office",
       "source_id": "who-syria-news",
       "verification_version": 2,
-      "verified_at": "2026-10-09T22:40:18+00:00",
+      "verified_at": "2026-10-10T12:34:38+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "Aleppo",
@@ -684,7 +700,7 @@
       "source": "WHO — Syria office",
       "source_id": "who-syria-news",
       "verification_version": 2,
-      "verified_at": "2026-10-09T22:40:18+00:00",
+      "verified_at": "2026-10-10T12:34:38+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "Aleppo",
@@ -700,7 +716,7 @@
       "source": "WHO — Syria office",
       "source_id": "who-syria-news",
       "verification_version": 2,
-      "verified_at": "2026-10-09T22:40:18+00:00",
+      "verified_at": "2026-10-10T12:34:38+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "Aleppo",
@@ -716,7 +732,7 @@
       "source": "WHO — Syria office",
       "source_id": "who-syria-news",
       "verification_version": 2,
-      "verified_at": "2026-10-09T22:40:18+00:00",
+      "verified_at": "2026-10-10T12:34:38+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "Aleppo",
@@ -732,7 +748,7 @@
       "source": "WHO — Syria office",
       "source_id": "who-syria-news",
       "verification_version": 2,
-      "verified_at": "2026-10-09T22:40:18+00:00",
+      "verified_at": "2026-10-10T12:34:38+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "Syria",
