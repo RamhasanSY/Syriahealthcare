@@ -49,3 +49,21 @@ export async function signIn(post, role, email, name = 'Test User') {
     }
     return cookieOf(await post('/api/auth/doctor/register', {name, email, password: 'doctor password 123', consent: true}));
 }
+
+// Signs in a patient through the real SMS-code flow and returns the session cookie.
+export async function signInPatient(post, sms, phone, name = 'Test Patient') {
+    await post('/api/auth/otp/request', {phone});
+    const code = sms.sent.at(-1).message.match(/\d{6}/)[0];
+    return cookieOf(await post('/api/auth/otp/verify', {phone, code, name, consent: true}));
+}
+
+// An approved doctor open every day 09:00–12:00 in 30-minute slots, bookable from now on.
+export async function approvedDoctor(post, email = 'dr@example.org', name = 'Dr. Approved') {
+    const cookie = await signIn(post, 'doctor', email, name);
+    const hours = [0, 1, 2, 3, 4, 5, 6].map(weekday => ({weekday, starts_at: '09:00', ends_at: '12:00'}));
+    await post('/api/doctor/schedule', {slot_minutes: 30, booking_window_days: 30, min_notice_hours: 0, hours}, {cookie});
+    const {rows: [{id}]} = await pool.query('SELECT id FROM users WHERE email = $1', [email]);
+    await pool.query(`UPDATE doctor_profiles SET status = 'approved', specialty = 'cardiology', governorate = 'damascus', area = 'Mezzeh',
+        clinic_name = 'Heart Clinic', clinic_address = 'Mezzeh Highway 12', clinic_phone = '+963112345678', licence_number = 'SY-1' WHERE user_id = $1`, [id]);
+    return {cookie, id};
+}

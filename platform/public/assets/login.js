@@ -36,7 +36,11 @@ document.addEventListener('DOMContentLoaded', () => {
         busy($('verify'), true);
         const res = await api('/api/auth/otp/verify', body);
         busy($('verify'), false);
-        if (res.ok) return window.location.assign('/account');
+        if (res.ok) {
+            // Return to the page that sent the patient here (same site only).
+            const next = new URLSearchParams(window.location.search).get('next') || '';
+            return window.location.assign(/^\/(?![\/\\])/.test(next) ? next : '/account');
+        }
         if (res.data.error === 'profile_required') {
             const firstTime = !newPatient;
             newPatient = true;
