@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "python -m http.server 8000 --bind 127.0.0.1",
+    "dev": "node scripts/build.mjs && python -m http.server 8000 --bind 127.0.0.1 --directory dist",
     "build": "node scripts/build.mjs",
     "build:dev": "node scripts/build.mjs",
     "preview": "python -m http.server 8000 --bind 127.0.0.1 --directory dist",

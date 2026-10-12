@@ -1,4 +1,4 @@
-"""Run against python -m http.server 8000; requires local Playwright."""
+"""Run against the built site (npm run dev serves dist/ on port 8000); requires local Playwright."""
 import json
 import os
 import re
@@ -7,7 +7,9 @@ from pathlib import Path
 
 from playwright.sync_api import sync_playwright, expect
 
-BASE = os.environ.get('SITE_URL', 'http://127.0.0.1:8000')
+BASE = os.environ.get('SITE_URL', 'http://127.0.0.1:8000').rstrip('/')
+HOME, JOBS, NEWS = BASE + '/', BASE + '/jobs.html', BASE + '/news.html'
+PAGES = ['', 'jobs.html', 'doctors.html', 'hospitals.html', 'labs.html', 'pregnancy.html', 'news.html', 'about.html', '404.html']
 preview = Path(__file__).resolve().parents[1] / ".preview"
 preview.mkdir(exist_ok=True)
 now = datetime.now(timezone.utc)
@@ -47,29 +49,41 @@ with sync_playwright() as p:
     page = browser.new_page(viewport={"width": 1440, "height": 1100})
     errors = []
     page.on("pageerror", lambda error: errors.append(str(error)))
-    page.goto(BASE, wait_until="networkidle")
+    page.goto(NEWS, wait_until="networkidle")
     expect(page.locator("#newsList li")).to_have_count(min(6, len(actual_news)))
+    expect(page.locator('.header-nav [aria-current=page]')).to_have_attribute('href', 'news.html')
+    page.goto(JOBS, wait_until="networkidle")
     expect(page.locator("#jobsList li")).to_have_count(len(active_jobs))
+    page.goto(HOME, wait_until="networkidle")
+    expect(page.locator("#homeJobs li")).to_have_count(min(3, max(1, len(active_jobs))))
     page.screenshot(path=str(preview / "desktop.png"), full_page=True)
     page.screenshot(path=str(preview / "desktop-top.png"))
+    # Links shared before the site had separate pages still arrive on the right page.
+    page.goto(HOME + '#hospitals', wait_until="networkidle")
+    expect(page).to_have_url(re.compile(r'/hospitals\.html$'))
+    page.goto(NEWS, wait_until="networkidle")
     if len(actual_news) > 6:
         page.locator('#moreNews').click()
         expect(page.locator('#newsList li')).to_have_count(min(12, len(actual_news)))
         expect(page.locator('#newsList li').nth(6).locator('.card-title a')).to_be_focused()
     for language in ("en", "ar"):
-        if page.locator("html").get_attribute("lang") != language:
-            page.locator("#langToggle").click()
-        for width in (320, 390, 768, 1440):
-            page.set_viewport_size({"width": width, "height": 900})
-            assert not page.evaluate("document.documentElement.scrollWidth > innerWidth"), (language, width)
-            assert page.locator('#externalJobs li').evaluate_all('(items) => items.every(li => li.lastElementChild.getBoundingClientRect().bottom <= li.getBoundingClientRect().bottom + 1)'), (language, width, 'directory notes overflow')
-        page.set_viewport_size({"width": 390, "height": 844})
-        page.screenshot(path=str(preview / f"{language}-mobile.png"), full_page=True)
-    page.reload(wait_until="networkidle")
+        for name in PAGES:
+            page.goto(BASE + '/' + name, wait_until="networkidle")
+            if page.locator("html").get_attribute("lang") != language:
+                page.locator("#langToggle").click()
+            for width in (320, 390, 768, 1440):
+                page.set_viewport_size({"width": width, "height": 900})
+                assert not page.evaluate("document.documentElement.scrollWidth > innerWidth"), (language, name, width)
+                assert page.locator('#externalJobs li').evaluate_all('(items) => items.every(li => li.lastElementChild.getBoundingClientRect().bottom <= li.getBoundingClientRect().bottom + 1)'), (language, width, 'directory notes overflow')
+            page.set_viewport_size({"width": 390, "height": 844})
+            page.screenshot(path=str(preview / f"{language}-mobile-{name.replace('.html', '') or 'home'}.png"), full_page=True)
+        page.set_viewport_size({"width": 1440, "height": 1100})
+    page.goto(NEWS, wait_until="networkidle")
     expect(page.locator("html")).to_have_attribute("dir", "rtl")
     if any(n.get('title_ar') for n in actual_news):
         expect(page.locator("#newsList")).to_contain_text(re.compile(r'[\u0600-\u06ff]'))
         assert '????' not in page.locator('#newsList').inner_text()
+    page.goto(JOBS, wait_until="networkidle")
     if any(j.get('title_ar') for j in active_jobs):
         expect(page.locator("#jobsList")).to_contain_text(re.compile(r'[\u0600-\u06ff]'))
         assert '????' not in page.locator('#jobsList').inner_text()
@@ -77,8 +91,9 @@ with sync_playwright() as p:
 
     page.route("**/data/news.json", lambda route: route.fulfill(json=news))
     page.route("**/data/jobs.json", lambda route: route.fulfill(json=jobs))
-    page.reload(wait_until="networkidle")
+    page.goto(NEWS, wait_until="networkidle")
     expect(page.locator("#newsList li")).to_have_count(2)
+    page.goto(JOBS, wait_until="networkidle")
     expect(page.locator("#jobsList li")).to_have_count(2)
     page.locator('[data-sector="ngo"]').click()
     expect(page.locator('#jobsList li')).to_have_count(1)
@@ -95,6 +110,10 @@ with sync_playwright() as p:
     expect(page.get_by_role('button',name='Unsave job: Nurse',exact=True)).to_have_attribute('aria-pressed','true')
     page.locator('#jobSort').select_option('deadline')
     expect(page.locator('#jobsList li').first).to_contain_text('Nurse')
+    page.goto(JOBS + '#saved', wait_until='networkidle')
+    expect(page.locator('[data-sector="saved"]')).to_have_attribute('aria-pressed', 'true')
+    expect(page.locator('#jobsList li')).to_have_count(1)
+    page.goto(NEWS, wait_until="networkidle")
     page.get_by_role("button", name="Hospitals & clinics", exact=True).click()
     expect(page.locator("#newsList li")).to_have_count(1)
     expect(page.get_by_role("button", name="Hospitals & clinics", exact=True)).to_be_focused()
@@ -106,6 +125,7 @@ with sync_playwright() as p:
     page.locator("#newsEmpty button").click()
     expect(page.locator("#newsList li")).to_have_count(2)
     expect(page.locator('#search')).to_be_focused()
+    page.goto(JOBS, wait_until="networkidle")
     page.locator("#location").select_option("Aleppo")
     expect(page.locator("#jobsList li")).to_have_count(1)
     page.locator("#langToggle").click()
@@ -114,9 +134,10 @@ with sync_playwright() as p:
     page.locator("#langToggle").click()
     page.unroute("**/data/news.json")
     page.route("**/data/news.json", lambda route: route.fulfill(status=503, body="Unavailable"))
-    page.reload(wait_until="networkidle")
+    page.goto(HOME, wait_until="networkidle")
+    expect(page.locator("#homeJobs li")).to_have_count(2)
+    page.goto(NEWS, wait_until="networkidle")
     expect(page.locator("#newsEmpty")).to_contain_text("Unable to load")
-    expect(page.locator("#jobsList li")).to_have_count(2)
     page.unroute("**/data/news.json")
     page.route("**/data/news.json", lambda route: route.fulfill(json=news))
     page.locator("#newsEmpty button").click()
@@ -132,11 +153,13 @@ with sync_playwright() as p:
     page.unroute('**/data/jobs.json')
     page.route('**/data/jobs.json', lambda route: route.fulfill(json=exact_jobs))
     page.clock.install()
-    page.reload(wait_until='networkidle')
+    page.goto(JOBS, wait_until='networkidle')
     page.locator('#jobSort').select_option('deadline')
     expect(page.locator('#jobsList li').first).to_contain_text('Early closing')
+    page.goto(HOME, wait_until='networkidle')
     expect(page.locator('#featuredTitle')).to_have_text('Early closing')
     expect(page.locator('.spotlight-top .pill')).to_have_text('Featured opportunity')
+    page.goto(NEWS, wait_until='networkidle')
 
     # A failed background refresh must keep valid results and disclose the
     # failure without losing the keyboard user's place in the filters.
@@ -169,24 +192,24 @@ with sync_playwright() as p:
     ]}
     page.route('**/data/jobs.json', lambda route: route.fulfill(json=expiring_jobs))
     page.route('**/data/news.json', lambda route: route.fulfill(json=news))
-    page.reload(wait_until='networkidle')
+    page.goto(JOBS, wait_until='networkidle')
     expect(page.locator('#jobsList li')).to_have_count(1)
     page.locator('#jobsList .job-title a').focus()
     page.clock.fast_forward(61000)
     expect(page.locator('#jobsList li')).to_have_count(0)
     expect(page.locator('#jobsEmpty')).to_contain_text('No current openings')
-    expect(page.locator('#heroJobCount')).to_have_text('0')
     expect(page.locator('#search')).to_be_focused()
 
     # Storage restrictions must not stop rendering.
     restricted = browser.new_context()
     restricted.add_init_script("Object.defineProperty(window, 'localStorage', {get() {throw new Error('blocked')}})")
     restricted_page = restricted.new_page()
-    restricted_page.goto(BASE, wait_until="networkidle")
+    restricted_page.goto(NEWS, wait_until="networkidle")
     expect(restricted_page.locator("#newsList li")).to_have_count(min(6, len(actual_news)))
+    restricted_page.goto(JOBS, wait_until="networkidle")
     expect(restricted_page.locator('#savedHint')).to_contain_text('while this page stays open')
     restricted_page.locator("#langToggle").click()
     expect(restricted_page.locator("html")).to_have_attribute("lang", "ar")
     assert not errors, errors
     browser.close()
-print("Browser checks passed: English/Arabic layouts, search, filters, exact deadlines, automatic expiration, safe links, refresh failures, timeouts, keyboard focus, persistence and restricted storage.")
+print("Browser checks passed: all pages in English/Arabic, old-link redirects, search, filters, exact deadlines, automatic expiration, safe links, refresh failures, timeouts, keyboard focus, persistence and restricted storage.")

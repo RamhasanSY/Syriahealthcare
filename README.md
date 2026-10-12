@@ -36,21 +36,24 @@ The updater runs source requests with bounded retries and timeouts, atomically w
 
 For failed-run notifications, enable GitHub Actions notifications in your own GitHub account. Detailed source results appear in each update run's summary and on the website's source list.
 
+## Pages and editing
+
+The site has eight pages: Home, Jobs, Doctors, Hospitals, Labs, Pregnancy, News and About, plus a "page not found" page. Each page's content is in `pages/<name>.html`; the shared head, header, menu and footer are in `pages/_layout.html`. Page titles, descriptions and menu labels (English and Arabic) are listed at the top of `scripts/build.mjs`. The build stitches them together into `dist/`, highlights the current page in the menu, adds `sitemap.xml` and `robots.txt`, and versions the CSS and JavaScript automatically, so there is no `?v=` number to update by hand. Old one-page links such as `/#jobs` forward to the new page.
+
 ## Preview and tests
 
-The website is plain HTML, CSS and JavaScript. The npm commands below use Node and Python directly and require no npm dependency installation. `npm run build` validates the public JSON and copies only the public website files into `dist/`, including the custom domain and `.nojekyll` marker.
+The website is plain HTML, CSS and JavaScript. The npm commands below use Node and Python directly and require no npm dependency installation. `npm run build` validates the public JSON, builds the pages and copies only the public website files into `dist/`, including the custom domain and `.nojekyll` marker.
 
 ```sh
 npm run build
 npm run lint
 npm test
-npm run preview
+npm run dev
 ```
 
-Use `npm run dev` to serve the working files. Both servers use http://127.0.0.1:8000; stop one before starting the other. With the server running, `npm run test:browser` runs the Playwright checks below.
+`npm run dev` builds the site and serves `dist/` at http://127.0.0.1:8000; run it again after editing a page. `npm run preview` serves the last build without rebuilding. With the server running, `npm run test:browser` runs the Playwright checks below.
 
 ```sh
-python -m http.server 8000
 python -m unittest discover -s tests -p 'test_*.py'
 node --check assets/app.js
 ```
@@ -63,7 +66,7 @@ python -m playwright install chromium
 python tests/browser_check.py
 ```
 
-Browser checks cover desktop/mobile layouts, English/Arabic navigation, search, healthcare/NGO and organization filters, exact deadline sorting, saved-job persistence, expiration, invalid verification records, safe links, retry behavior, background refresh failures, stalled request timeouts, keyboard focus, directory-note containment and restricted local storage. Screenshots are saved to ignored `.preview/`.
+Browser checks cover every page at four widths in English and Arabic, old-link forwarding, search, healthcare/NGO and organization filters, exact deadline sorting, saved-job persistence, expiration, invalid verification records, safe links, retry behavior, background refresh failures, stalled request timeouts, keyboard focus, directory-note containment and restricted local storage. Screenshots are saved to ignored `.preview/`.
 
 The site uses a jasmine and courtyard arch SVG logo and a simplified matching favicon. Canonical and social metadata point to the production domain. `assets/social-card.png` is the 1200 × 630 sharing image; its editable template is `scripts/social-card.html`. To regenerate it, serve the repository, open that template in a browser at 1200 × 630 with device scale 1, and save a viewport screenshot over the PNG.
 
