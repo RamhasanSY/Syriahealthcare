@@ -51,6 +51,26 @@ class CollectorTests(unittest.TestCase):
         self.assertEqual((total, len(items)), (2, 1))
         self.assertEqual((items[0]['organisation'], items[0]['sector']), ('GOAL', 'healthcare'))
 
+    def test_osm_hospitals_use_governorate_and_skip_unnamed(self):
+        elements = [{'type': 'area', 'tags': {'name': 'محافظة دمشق', 'name:en': 'Damascus Governorate', 'name:ar': 'محافظة دمشق'}},
+                    {'type': 'node', 'id': 1, 'tags': {'amenity': 'hospital', 'name': 'مشفى المواساة', 'name:en': 'Mouasat Hospital', 'phone': '+963 11 1; +963 11 2', 'emergency': 'yes'}},
+                    {'type': 'node', 'id': 2, 'tags': {'amenity': 'hospital'}},
+                    {'type': 'node', 'id': 1, 'tags': {'amenity': 'hospital', 'name': 'Duplicate'}}]
+        rows = u.osm_hospitals(elements)
+        self.assertEqual(len(rows), 1)
+        self.assertEqual((rows[0]['name'], rows[0]['name_ar'], rows[0]['city'], rows[0]['city_ar']), ('Mouasat Hospital', 'مشفى المواساة', 'Damascus', 'دمشق'))
+        self.assertEqual((rows[0]['phone'], rows[0]['emergency'], rows[0]['source_url']), ('+963 11 1', True, 'https://www.openstreetmap.org/node/1'))
+
+    def test_reliefweb_api_used_when_appname_is_set(self):
+        closing = (u.now() + timedelta(days=5)).isoformat()
+        payload = {'data': [{'fields': {'title': 'Nurse', 'url': 'https://reliefweb.int/job/9/nurse', 'date': {'created': u.now().isoformat(), 'closing': closing},
+                                        'source': [{'name': 'GOAL'}], 'country': [{'name': 'Syrian Arab Republic'}], 'theme': [{'name': 'Health'}]}}]}
+        source = {'id': 'rw', 'name': 'RW', 'organisation': 'ReliefWeb listing', 'sector': 'ngo', 'url': 'https://reliefweb.int/jobs/rss.xml'}
+        with patch.dict(u.os.environ, {'RELIEFWEB_APPNAME': 'syriahealthcare'}), patch.object(u, 'fetch', return_value=json.dumps(payload).encode()) as fetch:
+            items, total = u.reliefweb_jobs(source)
+        self.assertIn('api.reliefweb.int', fetch.call_args[0][0])
+        self.assertEqual((total, items[0]['organisation'], items[0]['sector']), (1, 'GOAL', 'healthcare'))
+
     def test_gzip_feed_decoding(self):
         xml = b'<rss><channel /></rss>'
         response = io.BytesIO(gzip.compress(xml)); response.status = 200

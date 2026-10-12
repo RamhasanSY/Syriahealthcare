@@ -33,13 +33,16 @@ jobs:
       - name: Collect and filter
         id: collect
         continue-on-error: true
+        env:
+          # Optional: an approved ReliefWeb API appname (Settings → Secrets and variables → Actions → Variables).
+          RELIEFWEB_APPNAME: ${{ vars.RELIEFWEB_APPNAME }}
         run: python scripts/update.py
 
       - name: Commit changes
         run: |
           git config user.name "syriahealthcare-bot"
           git config user.email "actions@github.com"
-          git add data/news.json data/news.xml data/jobs.json data/jobs.xml data/status.json
+          git add data/news.json data/news.xml data/jobs.json data/jobs.xml data/status.json data/hospitals.json
           if git diff --staged --quiet; then
             echo "Nothing changed."
           else
