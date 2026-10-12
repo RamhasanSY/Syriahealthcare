@@ -1,7 +1,7 @@
 {
-  "updated": "2026-10-12T15:45:37+00:00",
-  "checked_at": "2026-10-12T15:45:37+00:00",
-  "status": "ok",
+  "updated": "2026-10-12T17:10:20+00:00",
+  "checked_at": "2026-10-12T17:10:20+00:00",
+  "status": "partial",
   "items": [
     {
       "title": "افتتاح أربعة مراكز صحية بريف إدلب الشرقي لتعزيز الخدمات الطبية للعائدين",
@@ -12,7 +12,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-12T15:45:08+00:00",
+      "verified_at": "2026-10-12T17:09:04+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "إدلب",
@@ -28,7 +28,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-12T15:45:08+00:00",
+      "verified_at": "2026-10-12T17:09:04+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "سورية",
@@ -44,7 +44,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-12T15:45:08+00:00",
+      "verified_at": "2026-10-12T17:09:04+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "دير الزور",
@@ -60,7 +60,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-12T15:45:08+00:00",
+      "verified_at": "2026-10-12T17:09:04+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "دمشق",
@@ -76,7 +76,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-12T15:45:08+00:00",
+      "verified_at": "2026-10-12T17:09:04+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "حماة",
@@ -92,7 +92,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-12T15:45:08+00:00",
+      "verified_at": "2026-10-12T17:09:04+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "دمشق",
@@ -108,7 +108,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-12T15:45:08+00:00",
+      "verified_at": "2026-10-12T17:09:04+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "دمشق",
@@ -124,10 +124,42 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-12T15:45:08+00:00",
+      "verified_at": "2026-10-12T17:09:04+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "حماة",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "الصحة تدعو مالكي التطبيقات الطبية والصحية لاستكمال الترخيص قبل 2 كانون ‏الأول",
+      "title_ar": "الصحة تدعو مالكي التطبيقات الطبية والصحية لاستكمال الترخيص قبل 2 كانون ‏الأول",
+      "language": "ar",
+      "url": "https://sana.sy/health/2604072/",
+      "published": "2026-10-11",
+      "source": "Syrian Arab News Agency (SANA) — Health",
+      "source_id": "sana-health",
+      "verification_version": 2,
+      "verified_at": "2026-10-12T17:09:04+00:00",
+      "topic": "workforce",
+      "evidence": {
+        "geography": "دمشق",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "وزارة الصحة تنظم ورشة لإطلاق خطة العمل التنفيذية للتمويل الصحي",
+      "title_ar": "وزارة الصحة تنظم ورشة لإطلاق خطة العمل التنفيذية للتمويل الصحي",
+      "language": "ar",
+      "url": "https://sana.sy/health/2604018/",
+      "published": "2026-10-11",
+      "source": "Syrian Arab News Agency (SANA) — Health",
+      "source_id": "sana-health",
+      "verification_version": 2,
+      "verified_at": "2026-10-12T17:09:04+00:00",
+      "topic": "public-health",
+      "evidence": {
+        "geography": "دمشق",
         "type": "publisher-headline"
       }
     },
@@ -160,38 +192,6 @@
       "topic": "public-health",
       "evidence": {
         "geography": "الرقة",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "الصحة تدعو مالكي التطبيقات الطبية والصحية لاستكمال الترخيص قبل 2 كانون ‏الأول",
-      "title_ar": "الصحة تدعو مالكي التطبيقات الطبية والصحية لاستكمال الترخيص قبل 2 كانون ‏الأول",
-      "language": "ar",
-      "url": "https://sana.sy/health/2604072/",
-      "published": "2026-10-11",
-      "source": "Syrian Arab News Agency (SANA) — Health",
-      "source_id": "sana-health",
-      "verification_version": 2,
-      "verified_at": "2026-10-12T15:45:08+00:00",
-      "topic": "workforce",
-      "evidence": {
-        "geography": "دمشق",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "وزارة الصحة تنظم ورشة لإطلاق خطة العمل التنفيذية للتمويل الصحي",
-      "title_ar": "وزارة الصحة تنظم ورشة لإطلاق خطة العمل التنفيذية للتمويل الصحي",
-      "language": "ar",
-      "url": "https://sana.sy/health/2604018/",
-      "published": "2026-10-11",
-      "source": "Syrian Arab News Agency (SANA) — Health",
-      "source_id": "sana-health",
-      "verification_version": 2,
-      "verified_at": "2026-10-12T15:45:08+00:00",
-      "topic": "public-health",
-      "evidence": {
-        "geography": "دمشق",
         "type": "publisher-headline"
       }
     },
@@ -588,7 +588,7 @@
       "source": "WHO — Syria office",
       "source_id": "who-syria-news",
       "verification_version": 2,
-      "verified_at": "2026-10-12T15:45:08+00:00",
+      "verified_at": "2026-10-12T17:09:03+00:00",
       "topic": "policy",
       "evidence": {
         "geography": "Syria",
@@ -780,7 +780,7 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-12T15:45:07+00:00",
+      "verified_at": "2026-10-12T17:09:01+00:00",
       "topic": "workforce",
       "evidence": {
         "geography": "Syria",
@@ -828,7 +828,7 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-12T15:45:07+00:00",
+      "verified_at": "2026-10-12T17:09:01+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "Syria",
@@ -924,7 +924,7 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-12T15:45:07+00:00",
+      "verified_at": "2026-10-12T17:09:01+00:00",
       "topic": "policy",
       "evidence": {
         "geography": "Syria",
@@ -940,7 +940,7 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-12T15:45:07+00:00",
+      "verified_at": "2026-10-12T17:09:01+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "Syria",
@@ -956,7 +956,7 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-12T15:45:07+00:00",
+      "verified_at": "2026-10-12T17:09:01+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "Idlib",
