@@ -2,7 +2,7 @@
 
 Accounts and (in later steps) appointment booking for patients and doctors. It runs on the company's own server at `app.syriahealthcare.com`, separately from the public website, which stays on GitHub Pages.
 
-**Status: Stage 1, steps 1–2 of 6 done:** accounts and sign-in, plus doctor profiles and approval. Next: opening hours, booking, doctor dashboard, public doctor list.
+**Status: Stage 1, steps 1–3 of 6 done:** accounts and sign-in, doctor profiles and approval, and opening hours. Next: booking, doctor dashboard, public doctor list.
 
 ## What works now
 
@@ -20,6 +20,17 @@ Accounts and (in later steps) appointment booking for patients and doctors. It r
 4. **Admin** (`/admin`) sees doctors by status, opens the documents (every opening is logged), and either approves the doctor or asks for changes with a note the doctor sees.
 5. A doctor who changes an approved profile goes back to "waiting for review", so patients only ever see reviewed details. Documents are locked after approval.
 6. **Admin** can suspend an approved doctor with a reason, and reinstate them later. Every step appears in the doctor's history.
+
+### Opening hours (step 3)
+
+Doctors set their hours at `/schedule`:
+- **Appointment length:** 10–60 minutes.
+- **Booking window:** how far ahead patients may book (7–90 days).
+- **Minimum notice:** none, or 1–48 hours.
+- **Weekly hours:** up to 3 time ranges per day, e.g. 10:00–14:00 and 17:00–20:00, with a button to copy one day's times to every open day.
+- **Days off:** holidays, travel or conferences.
+
+A preview shows exactly which free appointments patients will see over the next 7 days. All times are Syria time (Asia/Damascus); the conversion also handles time zones with daylight saving. Patients only see free slots for approved doctors (`GET /api/doctors/:id/slots`). Changing hours does not need a new review.
 
 Five wrong passwords lock an account for 15 minutes. Sessions last 30 days for patients, 7 for doctors and 1 for admins. Every page is in Arabic and English.
 
