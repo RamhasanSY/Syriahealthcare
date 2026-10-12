@@ -77,6 +77,16 @@ Edit `data/editor.json`, set `enabled` to `true`, and provide the English/Arabic
 
 The job board supports keyword search, location and organization filters, healthcare/NGO categories, newest/deadline sorting and bookmarks saved on the visitor's device. Bookmarks require no account. Only eligible vacancies appear; a working integration with no matching Syria jobs stays visible in source status. LinkedIn searches remain clearly marked external discovery links.
 
+## Doctor, lab and hospital directories
+
+`data/doctors.json`, `data/labs.json` and `data/hospitals.json` are edited by hand and start empty. Add only entries you have verified; the site shows a "No verified entries yet" state until then. Each file is `{"updated": "YYYY-MM-DD", "items": [...]}`. Fields ending in `_ar` are optional Arabic versions; `phone` and `source_url` are optional everywhere.
+
+- Doctor: `name`, `specialty`, `city`, `availability` (`accepting`, `limited` or `not_accepting`), optional `hours`, `address`.
+- Lab: `name`, `city`, `address`, optional `tests` (list of test names, with `tests_ar` in the same order).
+- Hospital: `name`, `city`, `address`, optional `country` (defaults to Syria). The "Open in Google Maps" link is a plain search URL built from these fields — no API key or coordinates.
+
+Entries missing a required field are not shown. The pregnancy planner computes dates in the browser only and stores nothing.
+
 ## LinkedIn publishing
 
 The public RSS feed at https://syriahealthcare.com/data/news.xml is rebuilt with each collection. It contains original headlines, publisher attribution, original article links, publication dates and stable URL identifiers. Refreshing source verification does not create a new feed item. No full article text is republished.

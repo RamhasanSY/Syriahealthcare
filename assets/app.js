@@ -425,19 +425,188 @@
         $('statSources').textContent = (sources.news || []).length + (sources.jobs || []).length || '—';
     }
 
-    function renderChecklist() {
+    function renderChecklist(listId = 'checklist', storageKey = 'shc-checklist', progressId = 'toolkitProgress') {
         let done = [];
-        try { done = JSON.parse(localStorage.getItem('shc-checklist') || '[]'); } catch (_) {}
-        const boxes = [...document.querySelectorAll('#checklist input')];
+        try { done = JSON.parse(localStorage.getItem(storageKey) || '[]'); } catch (_) {}
+        const boxes = [...document.querySelectorAll('#' + listId + ' input')];
         boxes.forEach(b => {
             b.checked = Array.isArray(done) && done.includes(b.dataset.item);
             b.onchange = () => {
-                try { localStorage.setItem('shc-checklist', JSON.stringify(boxes.filter(x => x.checked).map(x => x.dataset.item))); } catch (_) {}
-                renderChecklist();
+                try { localStorage.setItem(storageKey, JSON.stringify(boxes.filter(x => x.checked).map(x => x.dataset.item))); } catch (_) {}
+                renderChecklist(listId, storageKey, progressId);
             };
         });
         const n = boxes.filter(b => b.checked).length;
-        $('toolkitProgress').textContent = n === boxes.length ? tr('All set — good luck!', 'كل شيء جاهز، بالتوفيق!') : tr(`${n} of ${boxes.length} ready`, `${n} من ${boxes.length} جاهز`);
+        $(progressId).textContent = n === boxes.length ? tr('All set — good luck!', 'كل شيء جاهز، بالتوفيق!') : tr(`${n} of ${boxes.length} ready`, `${n} من ${boxes.length} جاهز`);
+    }
+
+    // Directories of doctors, labs and hospitals. Records come only from data/*.json; nothing is generated.
+    const availability = {
+        accepting: ['Accepting patients', 'يستقبل المرضى'],
+        limited: ['Limited availability', 'مواعيد محدودة'],
+        not_accepting: ['Not accepting new patients', 'لا يستقبل مرضى جدداً']
+    };
+    const directories = {
+        doctors: {
+            valid: d => value(d, 'name') && value(d, 'specialty') && value(d, 'city') && availability[d.availability],
+            text: d => [d.name, d.name_ar, d.specialty, d.specialty_ar, d.city, d.city_ar, d.address],
+            filters: {
+                Specialty: {all: ['All specialties', 'جميع الاختصاصات'], values: d => [value(d, 'specialty')]},
+                City: {all: ['All cities', 'جميع المدن'], values: d => [value(d, 'city')]},
+                Availability: {all: ['Any availability', 'أي توفر'], values: d => [availability[d.availability][lang === 'ar' ? 1 : 0]]}
+            },
+            count: n => tr(n === 1 ? '1 doctor found' : `${n} doctors found`, `${n} أطباء`),
+            card: (li, d) => {
+                const tags = node('div', 'job-tags');
+                tags.append(node('span', 'pill' + (d.availability === 'accepting' ? '' : ' warm'), availability[d.availability][lang === 'ar' ? 1 : 0]));
+                li.append(node('p', 'job-organisation', value(d, 'specialty')), heading(value(d, 'name')), node('p', 'job-location', value(d, 'city')), tags);
+                if (value(d, 'hours')) li.append(node('p', 'job-reference', value(d, 'hours')));
+                contact(li, d);
+            }
+        },
+        labs: {
+            valid: l => value(l, 'name') && value(l, 'city') && value(l, 'address'),
+            text: l => [l.name, l.name_ar, l.city, l.city_ar, l.address, ...(l.tests || []), ...(l.tests_ar || [])],
+            filters: {
+                Test: {all: ['All tests', 'جميع التحاليل'], values: l => (lang === 'ar' && l.tests_ar) || l.tests || []},
+                City: {all: ['All cities', 'جميع المدن'], values: l => [value(l, 'city')]}
+            },
+            count: n => tr(n === 1 ? '1 lab found' : `${n} labs found`, `${n} مخابر`),
+            card: (li, l) => {
+                li.append(node('p', 'job-organisation', value(l, 'city')), heading(value(l, 'name')), node('p', 'job-location', value(l, 'address')));
+                const tests = (lang === 'ar' && l.tests_ar) || l.tests || [];
+                if (tests.length) {
+                    const tags = node('div', 'job-tags');
+                    tests.forEach(t => tags.append(node('span', 'pill', t)));
+                    li.append(tags);
+                }
+                contact(li, l);
+            }
+        },
+        hospitals: {
+            valid: h => value(h, 'name') && value(h, 'city') && h.address,
+            text: h => [h.name, h.name_ar, h.city, h.city_ar, h.address, h.address_ar],
+            filters: {
+                City: {all: ['All cities', 'جميع المدن'], values: h => [value(h, 'city')]}
+            },
+            count: n => tr(n === 1 ? '1 hospital found' : `${n} hospitals found`, `${n} مشافٍ`),
+            card: (li, h) => {
+                li.append(node('p', 'job-organisation', value(h, 'city')), heading(value(h, 'name')), node('p', 'job-location', value(h, 'address')));
+                contact(li, h, link(tr('Open in Google Maps ↗', 'افتح في خرائط Google ↖'), mapsURL(h), 'apply-link'));
+            }
+        }
+    };
+    const directoryState = Object.fromEntries(Object.keys(directories).map(k => [k, {items: [], loading: true, error: false, query: '', picks: {}}]));
+
+    // A plain Maps search URL from the stored address fields: no API key, no coordinates.
+    function mapsURL(h) {
+        return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent([h.name, h.address, h.city, h.country || 'Syria'].filter(Boolean).join(', '));
+    }
+
+    function heading(text) {
+        const h = node('h3', 'job-title', text);
+        h.dir = 'auto';
+        return h;
+    }
+
+    function contact(li, item, action) {
+        const bottom = node('div', 'job-card-bottom'), phone = String(item.phone || '').trim();
+        if (phone) {
+            const a = node('a', 'job-deadline', phone);
+            a.href = 'tel:' + phone.replace(/[^\d+]/g, '');
+            a.dir = 'ltr';
+            bottom.append(a);
+        }
+        if (safeURL(item.source_url)) bottom.append(link(tr('Source ↗', 'المصدر ↖'), item.source_url, 'read-link'));
+        if (action) bottom.append(action);
+        if (bottom.children.length) li.append(bottom);
+    }
+
+    function renderDirectory(kind) {
+        const cfg = directories[kind], st = directoryState[kind], all = st.items.filter(cfg.valid);
+        Object.entries(cfg.filters).forEach(([name, f]) => {
+            const options = [...new Set(all.flatMap(f.values).filter(Boolean))].sort((a, b) => a.localeCompare(b, lang));
+            st.picks[name] = selectOptions(kind + name, tr(...f.all), options, st.picks[name] || '');
+        });
+        const items = all.filter(i => (!st.query || normalize(cfg.text(i).filter(Boolean).join(' ')).includes(st.query))
+            && Object.entries(cfg.filters).every(([name, f]) => !st.picks[name] || f.values(i).includes(st.picks[name])));
+        const filtered = Boolean(st.query || Object.values(st.picks).some(Boolean));
+        $(kind + 'List').replaceChildren();
+        $(kind + 'List').setAttribute('aria-busy', String(st.loading));
+        items.forEach(i => {
+            const li = node('li');
+            cfg.card(li, i);
+            $(kind + 'List').append(li);
+        });
+        $(kind + 'Count').textContent = st.loading ? '' : cfg.count(items.length);
+        $(kind + 'Result').textContent = st.loading ? '' : cfg.count(items.length);
+        const box = $(kind + 'Empty');
+        box.hidden = items.length > 0;
+        box.replaceChildren();
+        if (items.length) return;
+        const symbol = node('span', 'empty-symbol', '✳');
+        symbol.setAttribute('aria-hidden', 'true');
+        let title, body;
+        if (st.loading) [title, body] = [tr('Loading the directory…', 'جارٍ تحميل الدليل…'), ''];
+        else if (st.error) [title, body] = [tr('Unable to load this directory', 'تعذر تحميل هذا الدليل'), tr('Please try again later.', 'يرجى المحاولة لاحقاً.')];
+        else if (filtered) [title, body] = [tr('No matching results', 'لا توجد نتائج مطابقة'), tr('Try another keyword or filter.', 'جرّب كلمة أو تصفية أخرى.')];
+        else [title, body] = [tr('No verified entries yet', 'لا توجد مدخلات موثقة بعد'), tr('We only list entries we have checked. This directory is being prepared.', 'لا ندرج إلا ما تحققنا منه. هذا الدليل قيد الإعداد.')];
+        box.append(symbol, node('h3', '', title));
+        if (body) box.append(node('p', '', body));
+        if (filtered && !st.loading) {
+            const b = node('button', '', tr('Clear filters', 'مسح التصفية'));
+            b.type = 'button';
+            b.onclick = () => {
+                st.query = '';
+                st.picks = {};
+                $(kind + 'Search').value = '';
+                renderDirectory(kind);
+                $(kind + 'Search').focus();
+            };
+            box.append(b);
+        }
+    }
+
+    function loadDirectory(kind) {
+        json(`data/${kind}.json`).then(data => {
+            if (!Array.isArray(data.items)) throw new Error('Invalid directory');
+            directoryState[kind].items = data.items.filter(i => i && typeof i === 'object');
+        }).catch(() => {
+            directoryState[kind].error = true;
+        }).finally(() => {
+            directoryState[kind].loading = false;
+            preserveFocus(() => renderDirectory(kind));
+        });
+    }
+
+    // Pregnancy planner: WHO's eight antenatal contacts, dated from the last menstrual period.
+    const contactWeeks = [12, 20, 26, 30, 34, 36, 38, 40];
+
+    function renderPlanner() {
+        const out = $('plannerResult'), raw = $('lmpDate').value, lmp = timestamp(raw), day = 86400000;
+        out.replaceChildren();
+        $('lmpDate').max = new Date().toISOString().slice(0, 10);
+        if (!raw) return;
+        const days = Math.floor((Date.now() - lmp) / day);
+        if (!Number.isFinite(lmp) || days < 0 || days > 44 * 7) {
+            $('lmpDate').setAttribute('aria-invalid', 'true');
+            out.append(node('p', 'planner-error', tr('Enter a date within the last 44 weeks.', 'أدخلي تاريخاً خلال آخر 44 أسبوعاً.')));
+            return;
+        }
+        $('lmpDate').removeAttribute('aria-invalid');
+        const fmt = t => new Date(t).toLocaleDateString(lang === 'ar' ? 'ar' : 'en-GB', {day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC'});
+        const week = Math.floor(days / 7) + 1, trimester = week <= 12 ? 1 : week <= 27 ? 2 : 3;
+        const summary = node('div', 'planner-summary');
+        summary.append(node('p', '', tr('Estimated due date', 'موعد الولادة المتوقع')), node('strong', '', fmt(lmp + 280 * day)),
+            node('p', '', tr(`Week ${week} · trimester ${trimester}`, `الأسبوع ${week} · الثلث ${trimester}`)));
+        const list = node('ol', 'planner-visits');
+        contactWeeks.forEach((w, i) => {
+            const at = lmp + w * 7 * day, li = node('li', at < Date.now() ? 'past' : '');
+            li.append(node('span', '', tr(`Visit ${i + 1} · week ${w}`, `الزيارة ${i + 1} · الأسبوع ${w}`)), node('time', '', (i === 0 ? tr('by ', 'قبل ') : tr('around ', 'نحو ')) + fmt(at)));
+            list.append(li);
+        });
+        out.append(summary, node('p', 'planner-note', tr('Recommended checkups (WHO). Your health worker may suggest a different schedule.', 'الزيارات الموصى بها (منظمة الصحة العالمية). قد يقترح عليك العامل الصحي جدولاً مختلفاً.')), list,
+            node('p', 'planner-note', tr('This is an estimate. Only an ultrasound or your health worker can confirm your due date.', 'هذا تقدير فقط. يؤكد التصوير بالأمواج فوق الصوتية أو العامل الصحي موعد الولادة.')));
     }
 
     function renderSources() {
@@ -486,6 +655,9 @@
         renderEditor();
         renderStats();
         renderChecklist();
+        renderChecklist('pregnancyChecklist', 'shc-pregnancy-checklist', 'pregnancyProgress');
+        Object.keys(directories).forEach(renderDirectory);
+        renderPlanner();
     }
     async function json(path) {
         const controller = new AbortController(), timer = setTimeout(() => controller.abort(), 15000);
@@ -566,6 +738,20 @@
         renderJobs();
         $('jobs').scrollIntoView({behavior: 'smooth'});
     };
+    Object.keys(directories).forEach(kind => {
+        $(kind + 'Search').addEventListener('input', e => {
+            directoryState[kind].query = normalize(e.target.value.trim());
+            renderDirectory(kind);
+        });
+        Object.keys(directories[kind].filters).forEach(name => $(kind + name).onchange = e => {
+            directoryState[kind].picks[name] = e.target.value;
+            renderDirectory(kind);
+        });
+        loadDirectory(kind);
+    });
+    $('lmpDate').addEventListener('change', renderPlanner);
+    $('lmpDate').addEventListener('input', renderPlanner);
+    $('planner').addEventListener('submit', e => e.preventDefault());
     $('clearFilters').onclick = clearFilters;
     $('moreNews').onclick = () => {
         const next = newsLimit;
