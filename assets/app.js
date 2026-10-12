@@ -142,6 +142,8 @@
         });
         document.querySelectorAll('[data-label-en]').forEach(n => n.setAttribute('aria-label', n.getAttribute('data-label-' + lang)));
         document.querySelectorAll('[data-placeholder-en]').forEach(n => n.placeholder = n.getAttribute('data-placeholder-' + lang));
+        document.title = tr('Syria Healthcare — meaningful work, trusted information', 'الرعاية الصحية في سوريا — عمل هادف ومعلومات موثوقة');
+        document.querySelector('meta[name=description]').content = tr('Find healthcare and NGO jobs, doctors, labs and hospitals in Syria, plus healthcare news and pregnancy planning — in English and Arabic.', 'ابحث عن وظائف صحية وإنسانية وأطباء ومخابر ومشافٍ في سوريا، مع أخبار القطاع الصحي والتخطيط للحمل — بالعربية والإنجليزية.');
         $('langToggle').textContent = tr('العربية', 'English');
         $('langToggle').lang = tr('ar', 'en');
         $('langToggle').setAttribute('aria-label', tr('Switch to Arabic', 'التبديل إلى الإنجليزية'));
@@ -484,19 +486,27 @@
             }
         },
         hospitals: {
-            valid: h => value(h, 'name') && value(h, 'city') && h.address,
+            valid: h => value(h, 'name') && value(h, 'city'),
+            rank: h => (h.phone ? 4 : 0) + (h.emergency === true ? 2 : 0) + (h.address ? 1 : 0),
             text: h => [h.name, h.name_ar, h.city, h.city_ar, h.address, h.address_ar],
             filters: {
-                City: {all: ['All cities', 'جميع المدن'], values: h => [value(h, 'city')]}
+                City: {all: ['All governorates', 'جميع المحافظات'], values: h => [value(h, 'city')]}
             },
             count: n => tr(n === 1 ? '1 hospital found' : `${n} hospitals found`, `${n} مشافٍ`),
             card: (li, h) => {
-                li.append(node('p', 'job-organisation', value(h, 'city')), heading(value(h, 'name')), node('p', 'job-location', value(h, 'address')));
+                const address = value(h, 'address');
+                li.append(node('p', 'job-organisation', value(h, 'city')), heading(value(h, 'name')));
+                if (address) li.append(node('p', 'job-location', address));
+                if (h.emergency === true) {
+                    const tags = node('div', 'job-tags');
+                    tags.append(node('span', 'pill warm', tr('Emergency department', 'قسم إسعاف')));
+                    li.append(tags);
+                }
                 contact(li, h, link(tr('Open in Google Maps ↗', 'افتح في خرائط Google ↖'), mapsURL(h), 'apply-link'));
             }
         }
     };
-    const directoryState = Object.fromEntries(Object.keys(directories).map(k => [k, {items: [], loading: true, error: false, query: '', picks: {}}]));
+    const directoryState = Object.fromEntries(Object.keys(directories).map(k => [k, {items: [], loading: true, error: false, query: '', picks: {}, limit: 12}]));
 
     // A plain Maps search URL from the stored address fields: no API key, no coordinates.
     function mapsURL(h) {
@@ -517,7 +527,7 @@
             a.dir = 'ltr';
             bottom.append(a);
         }
-        if (safeURL(item.source_url)) bottom.append(link(tr('Source ↗', 'المصدر ↖'), item.source_url, 'read-link'));
+        if (safeURL(item.source_url)) bottom.append(link(item.osm ? tr('OpenStreetMap ↗', 'OpenStreetMap ↖') : tr('Source ↗', 'المصدر ↖'), item.source_url, 'read-link'));
         if (action) bottom.append(action);
         if (bottom.children.length) li.append(bottom);
     }
@@ -531,13 +541,23 @@
         const items = all.filter(i => (!st.query || normalize(cfg.text(i).filter(Boolean).join(' ')).includes(st.query))
             && Object.entries(cfg.filters).every(([name, f]) => !st.picks[name] || f.values(i).includes(st.picks[name])));
         const filtered = Boolean(st.query || Object.values(st.picks).some(Boolean));
+        if (cfg.rank) items.sort((a, b) => cfg.rank(b) - cfg.rank(a));
         $(kind + 'List').replaceChildren();
         $(kind + 'List').setAttribute('aria-busy', String(st.loading));
-        items.forEach(i => {
+        items.slice(0, st.limit).forEach(i => {
             const li = node('li');
             cfg.card(li, i);
             $(kind + 'List').append(li);
         });
+        const more = $(kind + 'More');
+        more.hidden = items.length <= st.limit;
+        more.textContent = tr(`Show more (${items.length - st.limit} more)`, `عرض المزيد (${items.length - st.limit})`);
+        more.onclick = () => {
+            const next = st.limit;
+            st.limit += 12;
+            renderDirectory(kind);
+            $(kind + 'List').children[next]?.querySelector('a')?.focus({preventScroll: true});
+        };
         $(kind + 'Count').textContent = st.loading ? '' : cfg.count(items.length);
         $(kind + 'Result').textContent = st.loading ? '' : cfg.count(items.length);
         const box = $(kind + 'Empty');
@@ -550,15 +570,21 @@
         if (st.loading) [title, body] = [tr('Loading the directory…', 'جارٍ تحميل الدليل…'), ''];
         else if (st.error) [title, body] = [tr('Unable to load this directory', 'تعذر تحميل هذا الدليل'), tr('Please try again later.', 'يرجى المحاولة لاحقاً.')];
         else if (filtered) [title, body] = [tr('No matching results', 'لا توجد نتائج مطابقة'), tr('Try another keyword or filter.', 'جرّب كلمة أو تصفية أخرى.')];
-        else [title, body] = [tr('No verified entries yet', 'لا توجد مدخلات موثقة بعد'), tr('We only list entries we have checked. This directory is being prepared.', 'لا ندرج إلا ما تحققنا منه. هذا الدليل قيد الإعداد.')];
+        else [title, body] = [tr('Coming soon', 'قريباً'), tr('We only list entries we have checked, so this directory is still being prepared.', 'لا ندرج إلا ما تحققنا منه، لذلك ما زال هذا الدليل قيد الإعداد.')];
         box.append(symbol, node('h3', '', title));
         if (body) box.append(node('p', '', body));
+        if (!st.loading && !filtered && kind !== 'hospitals') {
+            const a = node('a', '', tr('Meanwhile, find a hospital near you →', 'في الأثناء، ابحث عن مشفى قريب منك ←'));
+            a.href = '#hospitals';
+            box.append(a);
+        }
         if (filtered && !st.loading) {
             const b = node('button', '', tr('Clear filters', 'مسح التصفية'));
             b.type = 'button';
             b.onclick = () => {
                 st.query = '';
                 st.picks = {};
+                st.limit = 12;
                 $(kind + 'Search').value = '';
                 renderDirectory(kind);
                 $(kind + 'Search').focus();
@@ -741,10 +767,12 @@
     Object.keys(directories).forEach(kind => {
         $(kind + 'Search').addEventListener('input', e => {
             directoryState[kind].query = normalize(e.target.value.trim());
+            directoryState[kind].limit = 12;
             renderDirectory(kind);
         });
         Object.keys(directories[kind].filters).forEach(name => $(kind + name).onchange = e => {
             directoryState[kind].picks[name] = e.target.value;
+            directoryState[kind].limit = 12;
             renderDirectory(kind);
         });
         loadDirectory(kind);

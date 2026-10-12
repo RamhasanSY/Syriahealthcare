@@ -269,8 +269,47 @@ def ministry_news(source):
     return publish_news(parser.rows, source)
 
 
+def reliefweb_record(source, title, published, deadline, location, url, organisation, categories):
+    if urlsplit(url).hostname != 'reliefweb.int' or any(re.search(r'tender|rfp|eoi', c, re.I) for c in categories):
+        return None
+    item = {'title': strip_html(title), 'published': published, 'deadline': deadline,
+            'location': location, 'url': url, 'reference': urlsplit(url).path.split('/')[2]}
+    if not (title and organisation and job_valid(item)):
+        return None
+    record = job_record(item, source)
+    record['organisation'] = organisation
+    if any(re.search(r'health', c, re.I) for c in categories) or HEALTH.search(item['title']):
+        record['sector'] = 'healthcare'
+    return record
+
+
+def reliefweb_api_jobs(source, appname):
+    """ReliefWeb's official API, used when an approved appname is configured."""
+    fields = ['title', 'url', 'date.created', 'date.closing', 'source.name', 'country.name',
+              'career_categories.name', 'theme.name', 'type.name']
+    payload = json.loads(fetch('https://api.reliefweb.int/v2/jobs?appname=' + quote(appname), payload={
+        'filter': {'field': 'country.iso3', 'value': 'SYR'}, 'limit': 100, 'sort': ['date.created:desc'],
+        'fields': {'include': fields}}))
+    if not isinstance(payload.get('data'), list):
+        raise ValueError('ReliefWeb API response has changed')
+    result = []
+    for row in payload['data']:
+        f = row.get('fields', {})
+        names = lambda key: [x.get('name', '') for x in f.get(key, []) if isinstance(x, dict)]
+        record = reliefweb_record(source, f.get('title', ''), f.get('date', {}).get('created'), f.get('date', {}).get('closing'),
+                                  ' / '.join(names('country')), f.get('url', ''), ', '.join(names('source')),
+                                  names('career_categories') + names('theme') + names('type'))
+        if record:
+            result.append(record)
+    return result, len(payload['data'])
+
+
 def reliefweb_jobs(source):
-    """ReliefWeb's public Syria jobs RSS: employer, closing date and country come from the listing itself."""
+    """ReliefWeb Syria jobs: employer, closing date and country come from the listing itself."""
+    # The public RSS is challenged from cloud IPs (empty HTTP 202); the API needs a free approved appname.
+    appname = os.environ.get('RELIEFWEB_APPNAME', '').strip()
+    if appname:
+        return reliefweb_api_jobs(source, appname)
     root = ElementTree.fromstring(fetch(source['url']))
     if root.tag != 'rss':
         raise ValueError('ReliefWeb response is not RSS')
@@ -280,24 +319,67 @@ def reliefweb_jobs(source):
         def text(tag):
             el = entry.find(tag)
             return ''.join(el.itertext()).strip() if el is not None else ''
-        url, categories = text('link'), [c.text or '' for c in entry.findall('category')]
-        if urlsplit(url).hostname != 'reliefweb.int' or any(re.search(r'tender|rfp|eoi', c, re.I) for c in categories):
-            continue
         body = html.unescape(text('description'))
         closing = re.search(r'Closing date:\s*(\d{1,2}\s+[A-Za-z]{3,9}\s+\d{4})', body)
         organisation = re.search(r'Organization:\s*([^<\r\n]+)', body)
         country = re.search(r'Country:\s*([^<\r\n]+)', body)
-        if not closing or not organisation or not country or not text('title'):
+        if not closing or not organisation or not country:
             continue
-        item = {'title': strip_html(text('title')), 'published': text('pubDate'), 'deadline': closing.group(1),
-                'location': country.group(1).strip(), 'url': url, 'reference': urlsplit(url).path.split('/')[2]}
-        if job_valid(item):
-            record = job_record(item, source)
-            record['organisation'] = organisation.group(1).strip()
-            if any(re.search(r'health', c, re.I) for c in categories) or HEALTH.search(item['title']):
-                record['sector'] = 'healthcare'
+        record = reliefweb_record(source, text('title'), text('pubDate'), closing.group(1), country.group(1).strip(),
+                                  text('link'), organisation.group(1).strip(), [c.text or '' for c in entry.findall('category')])
+        if record:
             result.append(record)
     return result, len(entries)
+
+
+# Hospitals from OpenStreetMap (ODbL). Community-mapped: the site asks visitors to call ahead.
+OVERPASS_URL = 'https://overpass-api.de/api/interpreter'
+OVERPASS_QUERY = '''[out:json][timeout:180];
+area["ISO3166-1"="SY"]["admin_level"="2"]->.sy;
+rel(area.sy)["admin_level"="4"]["boundary"="administrative"];
+map_to_area->.govs;
+foreach.govs->.g(.g out tags; nwr(area.g)["amenity"="hospital"]; out tags;);'''
+ARABIC = re.compile(r'[؀-ۿ]')
+
+
+def osm_hospitals(elements):
+    governorate, seen, result = {}, set(), []
+    for e in elements:
+        tags = e.get('tags', {})
+        if e.get('type') == 'area':
+            governorate = {'city': re.sub(r'\s+Governorate$', '', tags.get('name:en') or tags.get('name', '')),
+                           'city_ar': re.sub(r'^محافظة\s+', '', tags.get('name:ar') or tags.get('name', ''))}
+            continue
+        key = f"{e.get('type')}/{e.get('id')}"
+        name = (tags.get('name') or '').strip()
+        name_en = (tags.get('name:en') or ('' if ARABIC.search(name) else name)).strip()
+        name_ar = (tags.get('name:ar') or (name if ARABIC.search(name) else '')).strip()
+        same = (re.sub(r'\W+', '', (name_en or name_ar).casefold()), governorate.get('city'))
+        if key in seen or same in seen or not (name_en or name_ar) or not governorate.get('city') or e.get('type') not in ('node', 'way', 'relation'):
+            continue
+        seen.update((key, same))
+        street = ' '.join(x for x in (tags.get('addr:street'), tags.get('addr:housenumber')) if x)
+        address = ', '.join(dict.fromkeys(x for x in (street, tags.get('addr:suburb') or tags.get('addr:district'), tags.get('addr:city')) if x))
+        record = {'name': name_en or name_ar, 'name_ar': name_ar or name_en, **governorate, 'address': address,
+                  'phone': (tags.get('phone') or tags.get('contact:phone') or '').split(';')[0].strip(),
+                  'emergency': tags.get('emergency') == 'yes', 'osm': True,
+                  'source_url': f"https://www.openstreetmap.org/{key}"}
+        result.append(record)
+    result.sort(key=lambda h: (h['city'], h['name'].casefold()))
+    return result
+
+
+def update_hospitals():
+    path = DATA / 'hospitals.json'
+    old = read(path, {})
+    manual = [h for h in old.get('items', []) if isinstance(h, dict) and not h.get('osm')]
+    payload = json.loads(fetch(OVERPASS_URL + '?' + urlencode({'data': OVERPASS_QUERY}), timeout=200))
+    hospitals = osm_hospitals(payload.get('elements', []))
+    if len(hospitals) < 100:
+        raise ValueError(f'OpenStreetMap returned only {len(hospitals)} hospitals')
+    write(path, {'updated': now().isoformat(timespec='seconds'), 'source': 'OpenStreetMap contributors (ODbL)',
+                 'items': manual + hospitals})
+    return len(hospitals)
 
 
 def job_valid(item):
@@ -575,6 +657,10 @@ def main():
             write_jobs_rss(items)
         if not success:
             failed = True
+    try:
+        print(f'openstreetmap-hospitals: ok, {update_hospitals()} accepted', flush=True)
+    except Exception as error:  # Keep the previous hospital list; this never blocks jobs and news.
+        print(f'::warning::openstreetmap-hospitals: {error}', flush=True)
     write(DATA / 'status.json', {'checked_at': checked, 'sources': sorted(status_rows, key=lambda s: s['id']), 'version': VERSION})
     summary = '\n'.join(f"- {s['id']}: {s['state']} — {s['accepted']} eligible items" for s in status_rows)
     if os.environ.get('GITHUB_STEP_SUMMARY'):

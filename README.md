@@ -83,7 +83,13 @@ The job board supports keyword search, location and organization filters, health
 
 - Doctor: `name`, `specialty`, `city`, `availability` (`accepting`, `limited` or `not_accepting`), optional `hours`, `address`.
 - Lab: `name`, `city`, `address`, optional `tests` (list of test names, with `tests_ar` in the same order).
-- Hospital: `name`, `city`, `address`, optional `country` (defaults to Syria). The "Open in Google Maps" link is a plain search URL built from these fields — no API key or coordinates.
+- Hospital: `name`, `city`, optional `address`, `emergency` (true/false), `country` (defaults to Syria). The "Open in Google Maps" link is a plain search URL built from these fields — no API key or coordinates.
+
+Hospitals are refreshed automatically from OpenStreetMap (© OpenStreetMap contributors, ODbL) on every collection run; entries you add by hand (without `"osm": true`) are kept in front of them. If OpenStreetMap is unreachable the previous list stays.
+
+### ReliefWeb jobs
+
+ReliefWeb's public RSS blocks GitHub's servers, so jobs from it only arrive through ReliefWeb's free API. Request an appname at https://apidoc.reliefweb.int/parameters#appname, then add it in GitHub under Settings → Secrets and variables → Actions → Variables as `RELIEFWEB_APPNAME`. No code change is needed.
 
 Entries missing a required field are not shown. The pregnancy planner computes dates in the browser only and stores nothing.
 
