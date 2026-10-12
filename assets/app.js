@@ -277,6 +277,7 @@
         $('moreNews').hidden = items.length <= newsLimit;
         emptyState('news', items.length > 0, Boolean(query || topic !== 'all'));
         stamp('news');
+        renderStats();
         $('newsResult').textContent = tr(`${items.length} matching stories`, `${items.length} أخبار مطابقة`);
     }
 
@@ -362,17 +363,85 @@
             const bottom = node('div', 'job-card-bottom'),
                 deadline = node('p', 'job-deadline', tr('Closes ', 'يغلق في ') + (j.deadline_at ? checkedTime(j.deadline_at) : date(j.deadline)));
             if (deadlineTime(j) - Date.now() <= 3 * 86400000) deadline.classList.add('urgent');
-            bottom.append(deadline, link(j.listing_page ? tr('View openings ↗', 'عرض الوظائف ↖') : tr('View role ↗', 'عرض الوظيفة ↖'), j.url, 'apply-link'));
+            const tools = node('div', 'job-tools');
+            tools.append(shareButton(j), calendarButton(j));
+            bottom.append(deadline, tools, link(j.listing_page ? tr('View openings ↗', 'عرض الوظائف ↖') : tr('View role ↗', 'عرض الوظيفة ↖'), j.url, 'apply-link'));
             li.append(bottom);
             $('jobsList').append(li);
         });
         emptyState('jobs', items.length > 0, filtered);
         stamp('jobs');
         renderFeatured();
+        renderStats();
         $('jobsResult').textContent = tr(`${items.length} opportunities shown`, `${items.length} فرص معروضة`);
     }
 
+    function shareButton(job) {
+        const b = node('button', 'tool-btn', tr('Share', 'مشاركة'));
+        b.type = 'button';
+        b.setAttribute('aria-label', tr('Share job: ', 'مشاركة الوظيفة: ') + value(job, 'title'));
+        b.onclick = async () => {
+            const title = value(job, 'title') + ' — ' + (job.organisation || job.source), url = safeURL(job.url);
+            if (navigator.share) {
+                try { await navigator.share({title, url}); } catch (_) {}
+            } else {
+                window.open('https://wa.me/?text=' + encodeURIComponent(title + '\n' + url), '_blank', 'noopener,noreferrer');
+            }
+        };
+        return b;
+    }
+
+    function calendarButton(job) {
+        const b = node('button', 'tool-btn', tr('Remind me', 'ذكّرني'));
+        b.type = 'button';
+        b.setAttribute('aria-label', tr('Add deadline to calendar: ', 'إضافة الموعد إلى التقويم: ') + value(job, 'title'));
+        b.onclick = () => {
+            const d = job.deadline.replace(/-/g, ''),
+                next = new Date(timestamp(job.deadline) + 86400000).toISOString().slice(0, 10).replace(/-/g, '');
+            const esc = t => String(t).replace(/[\\;,]/g, m => '\\' + m).replace(/\r?\n/g, '\\n');
+            const ics = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Syria Healthcare//EN', 'BEGIN:VEVENT',
+                'UID:' + d + '-' + Math.abs([...key(job)].reduce((h, c) => (h * 31 + c.charCodeAt(0)) | 0, 7)) + '@syriahealthcare.com',
+                'DTSTAMP:' + new Date().toISOString().replace(/[-:]|\.\d{3}/g, ''),
+                'DTSTART;VALUE=DATE:' + d, 'DTEND;VALUE=DATE:' + next,
+                'SUMMARY:' + esc('Deadline: ' + value(job, 'title') + ' (' + (job.organisation || job.source) + ')'),
+                'DESCRIPTION:' + esc('Confirm the closing time in the original announcement: ' + safeURL(job.url)),
+                'END:VEVENT', 'END:VCALENDAR'].join('\r\n');
+            const a = node('a');
+            a.href = URL.createObjectURL(new Blob([ics], {type: 'text/calendar'}));
+            a.download = 'deadline.ics';
+            document.body.append(a);
+            a.click();
+            a.remove();
+            setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+        };
+        return b;
+    }
+
+    function renderStats() {
+        const jobs = openJobs(), loading = feeds.jobs.loading && !jobs.length;
+        $('statJobs').textContent = loading ? '—' : jobs.length;
+        $('statClosing').textContent = loading ? '—' : jobs.filter(j => deadlineTime(j) - Date.now() <= 7 * 86400000).length;
+        $('statNews').textContent = feeds.news.loading && !feeds.news.items.length ? '—' : openNews().length;
+        $('statSources').textContent = (sources.news || []).length + (sources.jobs || []).length || '—';
+    }
+
+    function renderChecklist() {
+        let done = [];
+        try { done = JSON.parse(localStorage.getItem('shc-checklist') || '[]'); } catch (_) {}
+        const boxes = [...document.querySelectorAll('#checklist input')];
+        boxes.forEach(b => {
+            b.checked = Array.isArray(done) && done.includes(b.dataset.item);
+            b.onchange = () => {
+                try { localStorage.setItem('shc-checklist', JSON.stringify(boxes.filter(x => x.checked).map(x => x.dataset.item))); } catch (_) {}
+                renderChecklist();
+            };
+        });
+        const n = boxes.filter(b => b.checked).length;
+        $('toolkitProgress').textContent = n === boxes.length ? tr('All set — good luck!', 'كل شيء جاهز، بالتوفيق!') : tr(`${n} of ${boxes.length} ready`, `${n} من ${boxes.length} جاهز`);
+    }
+
     function renderSources() {
+        renderStats();
         $('sourceList').replaceChildren();
         ['news', 'jobs'].forEach(kind => (sources[kind] || []).forEach(s => {
             if (!safeURL(s.website || s.url)) return;
@@ -415,6 +484,8 @@
         renderJobs();
         renderSources();
         renderEditor();
+        renderStats();
+        renderChecklist();
     }
     async function json(path) {
         const controller = new AbortController(), timer = setTimeout(() => controller.abort(), 15000);
@@ -489,6 +560,12 @@
         $('sectorFilters').querySelectorAll('button').forEach(n => n.setAttribute('aria-pressed', String(n === b)));
         renderJobs();
     });
+    $('serviceSaved').onclick = () => {
+        sector = 'saved';
+        filters();
+        renderJobs();
+        $('jobs').scrollIntoView({behavior: 'smooth'});
+    };
     $('clearFilters').onclick = clearFilters;
     $('moreNews').onclick = () => {
         const next = newsLimit;
