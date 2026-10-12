@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="ar" dir="rtl" data-title-en="My account — Syria Healthcare" data-title-ar="حسابي — الرعاية الصحية في سوريا">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#173e36">
+<title>حسابي — الرعاية الصحية في سوريا</title>
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/assets/app.css">
+<script src="/assets/common.js" defer></script><script src="/assets/account.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#main" data-en="Skip to content" data-ar="انتقل إلى المحتوى">انتقل إلى المحتوى</a>
+<header class="top"><div class="top-inner"><a class="brand" href="/"><img src="/assets/logo.svg" alt=""><span data-en="Syria Healthcare" data-ar="الرعاية الصحية في سوريا">الرعاية الصحية في سوريا</span></a><div class="top-actions"><button class="lang" id="langToggle" type="button">English</button><button class="btn ghost" type="button" id="logout" hidden data-en="Sign out" data-ar="خروج">خروج</button></div></div></header>
+<main id="main" class="wrap" aria-busy="true">
+  <h1 id="greeting" data-en="My account" data-ar="حسابي">حسابي</h1>
+  <div class="card" id="details" hidden>
+    <dl class="dl"><dt data-en="Name" data-ar="الاسم">الاسم</dt><dd id="userName" dir="auto"></dd><dt data-en="Account type" data-ar="نوع الحساب">نوع الحساب</dt><dd id="userRole"></dd><dt id="contactLabel"></dt><dd id="userContact" dir="ltr"></dd></dl>
+    <div id="patientNext" hidden><p class="msg info" data-en="Booking with approved doctors is coming soon. Your appointments will appear here." data-ar="الحجز لدى الأطباء المعتمدين قريباً. ستظهر مواعيدك هنا.">الحجز لدى الأطباء المعتمدين قريباً. ستظهر مواعيدك هنا.</p></div>
+    <div id="doctorNext" hidden><p><span class="pill wait" data-en="Waiting for verification" data-ar="بانتظار التحقق">بانتظار التحقق</span></p><p data-en="Next, you will add your specialty, clinic and licence document. Our team checks it before patients can find and book you." data-ar="في الخطوة التالية ستضيف اختصاصك وعيادتك ووثيقة الترخيص. يتحقق فريقنا منها قبل أن يتمكن المرضى من إيجادك والحجز لديك.">في الخطوة التالية ستضيف اختصاصك وعيادتك ووثيقة الترخيص. يتحقق فريقنا منها قبل أن يتمكن المرضى من إيجادك والحجز لديك.</p></div>
+    <div id="adminNext" hidden><p class="msg info" data-en="Doctor review tools will appear here." data-ar="ستظهر هنا أدوات مراجعة الأطباء.">ستظهر هنا أدوات مراجعة الأطباء.</p></div>
+  </div>
+  <div class="card" id="signedOut" hidden><p data-en="You are not signed in." data-ar="لم تسجّل الدخول.">لم تسجّل الدخول.</p><a class="btn" href="/" data-en="Sign in" data-ar="تسجيل الدخول">تسجيل الدخول</a></div>
+</main>
+<footer><div class="wrap"><a href="https://syriahealthcare.com/" data-en="← Back to syriahealthcare.com" data-ar="العودة إلى الموقع ←">العودة إلى الموقع ←</a><a href="/privacy" data-en="Privacy policy" data-ar="سياسة الخصوصية">سياسة الخصوصية</a></div></footer>
+</body>
+</html>
