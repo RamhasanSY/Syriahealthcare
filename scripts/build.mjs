@@ -7,7 +7,7 @@ const output = path.join(root, 'dist');
 const files = ['index.html', 'sources.json', 'CNAME', 'assets', 'data'];
 
 // Validate feed syntax before producing a deployable copy of the static site.
-for (const file of ['sources.json', 'data/news.json', 'data/jobs.json', 'data/status.json', 'data/editor.json', 'data/doctors.json', 'data/labs.json', 'data/hospitals.json']) {
+for (const file of ['sources.json', 'data/news.json', 'data/jobs.json', 'data/status.json', 'data/editor.json', 'data/doctors.json', 'data/labs.json', 'data/hospitals.json', 'data/health_apps.json']) {
   JSON.parse(await readFile(path.join(root, file), 'utf8'));
 }
 if (path.dirname(output) !== path.resolve(root) || path.basename(output) !== 'dist') {

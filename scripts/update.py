@@ -332,6 +332,68 @@ def reliefweb_jobs(source):
     return result, len(entries)
 
 
+# Health apps licensed by the Ministry of Health. Owner names are not copied: several are private individuals.
+MOH_APPS_URL = 'https://moh.gov.sy/health-applications'
+APP_STATUS = {'معتمد من الهيئة': 'accredited', 'موافقة مؤقتة من الهيئة': 'provisional', 'موافقة مبدئية من وزارة الصحة': 'initial'}
+APP_CATEGORIES = [  # (pattern on the Ministry's Arabic category, audience, English label)
+    (r'إدارة العيادات|تنظيم عمل العيادة', 'professional', 'Clinic management'),
+    (r'مستودعات المواد السنية', 'professional', 'Dental supplies for clinics'),
+    (r'حجز', 'patient', 'Doctor appointments'),
+    (r'استشارات', 'patient', 'Medical consultations'),
+    (r'رعاية منزلية', 'patient', 'Home care'),
+    (r'سجلات صحية|المعلومات الصحية', 'patient', 'Personal health records'),
+]
+
+
+def flight_text(page):
+    """The Next.js page payload, which carries the rendered app details."""
+    return ''.join(json.loads('"' + c + '"') for c in re.findall(r'self\.__next_f\.push\(\[1,"(.*?)"\]\)', page, re.S))
+
+
+def moh_app(slug, page):
+    text = flight_text(page)
+    title = re.search(r'"h1",null,\{"className":"[^"]*heritage[^"]*","children":"([^"]+)"', text)
+    badge = re.search(r'heritage[^"]*","children":"[^"]+"\}\],\["\$","div",null,\{"className":"[^"]*","children":"([^"]+)"', text)
+    rows = dict(re.findall(r'"className":"font-bold text-primary","children":"([^"]+)"\}\],\["\$","span",null,'
+                           r'\{"className":"text-muted-foreground","children":"([^"]+)"', text))
+    category = rows.get('تصنيف التطبيق', '')
+    if not title or not badge or badge.group(1) not in APP_STATUS or not category:
+        raise ValueError(f'Ministry page for {slug} has changed')
+    parts = [p.strip() for p in title.group(1).split('|')]
+    name_ar = next((p for p in parts if ARABIC.search(p)), '')
+    name_en = next((p for p in parts if not ARABIC.search(p)), '') or slug.replace('-', ' ').title()
+    audience, label = next(((a, l) for pattern, a, l in APP_CATEGORIES if re.search(pattern, category)), ('patient', ''))
+    approved = re.fullmatch(r'(\d{2})/(\d{2})/(\d{4})', rows.get('تاريخ الموافقة', ''))
+    links = {}
+    for href in dict.fromkeys(re.findall(r'"href":"(https://[^"]+)"', text)):
+        host = urlsplit(href).hostname or ''
+        if re.search(r'(^|\.)(moh\.gov\.sy|facebook\.com|instagram\.com|t\.me|who-umc\.org)$', host):
+            continue
+        kind = 'ios' if host == 'apps.apple.com' else 'android' if host == 'play.google.com' or href.endswith('.apk') else 'website'
+        links.setdefault(kind, href)
+    host = (urlsplit(links.get('website', '')).hostname or '').removeprefix('www.')
+    if host == name_en.casefold() + '.sy':  # "Doctors" is listed as doctors.sy
+        name_en = host.capitalize()
+    return {'id': slug, 'name': name_en, 'name_ar': name_ar or name_en, 'category_ar': category, 'category': label or category,
+            'audience': audience, 'status': APP_STATUS[badge.group(1)],
+            'approved': f'{approved.group(3)}-{approved.group(2)}-{approved.group(1)}' if approved else None,
+            'links': links, 'moh_url': f'{MOH_APPS_URL}/{slug}'}
+
+
+def update_health_apps():
+    slugs = list(dict.fromkeys(re.findall(r'href="/health-applications/([a-z0-9-]+)"', fetch(MOH_APPS_URL).decode('utf-8'))))
+    if len(slugs) < 5:
+        raise ValueError(f'Ministry health-app list returned only {len(slugs)} apps')
+    apps = []
+    for slug in slugs:
+        apps.append(moh_app(slug, fetch(f'{MOH_APPS_URL}/{slug}').decode('utf-8')))
+        time.sleep(0.5)
+    order = {'accredited': 0, 'provisional': 1, 'initial': 2}
+    apps.sort(key=lambda a: (a['audience'] != 'patient', order[a['status']], a['name'].casefold()))
+    write(DATA / 'health_apps.json', {'updated': now().isoformat(timespec='seconds'), 'source': MOH_APPS_URL, 'items': apps})
+    return len(apps)
+
+
 # Hospitals from OpenStreetMap (ODbL). Community-mapped: the site asks visitors to call ahead.
 OVERPASS_URL = 'https://overpass-api.de/api/interpreter'
 OVERPASS_QUERY = '''[out:json][timeout:180];
@@ -661,6 +723,10 @@ def main():
         print(f'openstreetmap-hospitals: ok, {update_hospitals()} accepted', flush=True)
     except Exception as error:  # Keep the previous hospital list; this never blocks jobs and news.
         print(f'::warning::openstreetmap-hospitals: {error}', flush=True)
+    try:
+        print(f'moh-health-apps: ok, {update_health_apps()} accepted', flush=True)
+    except Exception as error:  # Keep the previous list of licensed apps.
+        print(f'::warning::moh-health-apps: {error}', flush=True)
     write(DATA / 'status.json', {'checked_at': checked, 'sources': sorted(status_rows, key=lambda s: s['id']), 'version': VERSION})
     summary = '\n'.join(f"- {s['id']}: {s['state']} — {s['accepted']} eligible items" for s in status_rows)
     if os.environ.get('GITHUB_STEP_SUMMARY'):

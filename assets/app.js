@@ -574,8 +574,8 @@
         box.append(symbol, node('h3', '', title));
         if (body) box.append(node('p', '', body));
         if (!st.loading && !filtered && kind !== 'hospitals') {
-            const a = node('a', '', tr('Meanwhile, find a hospital near you →', 'في الأثناء، ابحث عن مشفى قريب منك ←'));
-            a.href = '#hospitals';
+            const a = node('a', '', kind === 'doctors' ? tr('Meanwhile, book a doctor through a licensed app →', 'في الأثناء، احجز لدى طبيب عبر تطبيق مرخّص ←') : tr('Meanwhile, find a hospital near you →', 'في الأثناء، ابحث عن مشفى قريب منك ←'));
+            a.href = kind === 'doctors' ? '#apps' : '#hospitals';
             box.append(a);
         }
         if (filtered && !st.loading) {
@@ -603,6 +603,37 @@
             directoryState[kind].loading = false;
             preserveFocus(() => renderDirectory(kind));
         });
+    }
+
+    // Health apps licensed by the Ministry of Health (data/health_apps.json, refreshed by the collector).
+    const appStatus = {
+        accredited: ['Accredited', 'معتمد'],
+        provisional: ['Provisional approval', 'موافقة مؤقتة'],
+        initial: ['Initial approval', 'موافقة مبدئية']
+    };
+    const apps = {items: [], loading: true, error: false, audience: 'patient'};
+
+    function renderApps() {
+        const all = apps.items.filter(a => a && a.name && appStatus[a.status] && safeURL(a.moh_url)),
+            items = all.filter(a => apps.audience === 'all' || a.audience === apps.audience);
+        $('appsFilters').querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.audience === apps.audience)));
+        $('appsList').replaceChildren();
+        $('appsList').setAttribute('aria-busy', String(apps.loading));
+        items.forEach(a => {
+            const li = node('li'), tags = node('div', 'job-tags'), bottom = node('div', 'job-card-bottom app-links');
+            tags.append(node('span', 'pill' + (a.status === 'accredited' ? '' : ' warm'), appStatus[a.status][lang === 'ar' ? 1 : 0]));
+            li.append(node('p', 'job-organisation', lang === 'ar' ? a.category_ar : a.category), heading(lang === 'ar' ? a.name_ar || a.name : a.name), tags);
+            if (a.approved && date(a.approved)) li.append(node('p', 'job-location', tr('Approved ', 'تاريخ الموافقة: ') + date(a.approved)));
+            [['website', 'Website ↗', 'الموقع ↖'], ['android', 'Android ↗', 'أندرويد ↖'], ['ios', 'iPhone ↗', 'آيفون ↖']].forEach(([k, en, ar]) => {
+                if (safeURL((a.links || {})[k])) bottom.append(link(tr(en, ar), a.links[k], 'apply-link'));
+            });
+            bottom.append(link(tr('Ministry page ↗', 'صفحة الوزارة ↖'), a.moh_url, 'read-link'));
+            li.append(bottom);
+            $('appsList').append(li);
+        });
+        $('appsCount').textContent = apps.loading ? '' : tr(items.length === 1 ? '1 licensed app' : `${items.length} licensed apps`, `${items.length} تطبيقات مرخصة`);
+        $('appsEmpty').hidden = items.length > 0 || apps.loading;
+        $('appsEmpty').textContent = apps.error ? tr('The list of licensed apps could not load. Please try again later.', 'تعذر تحميل قائمة التطبيقات المرخصة. يرجى المحاولة لاحقاً.') : tr('No licensed apps in this group yet.', 'لا توجد تطبيقات مرخصة في هذه الفئة بعد.');
     }
 
     // Pregnancy planner: WHO's eight antenatal contacts, dated from the last menstrual period.
@@ -683,6 +714,7 @@
         renderChecklist();
         renderChecklist('pregnancyChecklist', 'shc-pregnancy-checklist', 'pregnancyProgress');
         Object.keys(directories).forEach(renderDirectory);
+        renderApps();
         renderPlanner();
     }
     async function json(path) {
@@ -776,6 +808,19 @@
             renderDirectory(kind);
         });
         loadDirectory(kind);
+    });
+    $('appsFilters').querySelectorAll('button').forEach(b => b.onclick = () => {
+        apps.audience = b.dataset.audience;
+        renderApps();
+    });
+    json('data/health_apps.json').then(data => {
+        if (!Array.isArray(data.items)) throw new Error('Invalid app list');
+        apps.items = data.items;
+    }).catch(() => {
+        apps.error = true;
+    }).finally(() => {
+        apps.loading = false;
+        preserveFocus(renderApps);
     });
     $('lmpDate').addEventListener('change', renderPlanner);
     $('lmpDate').addEventListener('input', renderPlanner);

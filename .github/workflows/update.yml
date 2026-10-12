@@ -42,7 +42,7 @@ jobs:
         run: |
           git config user.name "syriahealthcare-bot"
           git config user.email "actions@github.com"
-          git add data/news.json data/news.xml data/jobs.json data/jobs.xml data/status.json data/hospitals.json
+          git add data/news.json data/news.xml data/jobs.json data/jobs.xml data/status.json data/hospitals.json data/health_apps.json
           if git diff --staged --quiet; then
             echo "Nothing changed."
           else

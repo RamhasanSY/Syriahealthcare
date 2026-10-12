@@ -1,0 +1,221 @@
+{
+  "updated": "2026-10-12T16:04:29+00:00",
+  "source": "https://moh.gov.sy/health-applications",
+  "items": [
+    {
+      "id": "doctors",
+      "name": "Doctors.sy",
+      "name_ar": "Doctors.sy",
+      "category_ar": "حجز مواعيد، خدمات أخرى",
+      "category": "Doctor appointments",
+      "audience": "patient",
+      "status": "accredited",
+      "approved": "2026-03-15",
+      "links": {
+        "website": "https://doctors.sy/",
+        "android": "https://doctors.sy/mobile-apps/doctors.apk"
+      },
+      "moh_url": "https://moh.gov.sy/health-applications/doctors"
+    },
+    {
+      "id": "moadna",
+      "name": "Moadna",
+      "name_ar": "ع موعدنا",
+      "category_ar": "حجز مواعيد مع الأطباء، خدمات أخرى",
+      "category": "Doctor appointments",
+      "audience": "patient",
+      "status": "provisional",
+      "approved": "2026-08-03",
+      "links": {
+        "website": "https://moadna.com/",
+        "android": "https://play.google.com/store/apps/details?id=com.moadna.app&hl=ar",
+        "ios": "https://apps.apple.com/us/app/%D8%B9-%D9%85%D9%88%D8%B9%D8%AF%D9%86%D8%A7-moadna/id6761773074"
+      },
+      "moh_url": "https://moh.gov.sy/health-applications/moadna"
+    },
+    {
+      "id": "alo-hakim",
+      "name": "Alo Hakim",
+      "name_ar": "ألو حكيم",
+      "category_ar": "خدمات رعاية منزلية",
+      "category": "Home care",
+      "audience": "patient",
+      "status": "initial",
+      "approved": "2026-09-27",
+      "links": {},
+      "moh_url": "https://moh.gov.sy/health-applications/alo-hakim"
+    },
+    {
+      "id": "astromed",
+      "name": "AstroMED",
+      "name_ar": "AstroMED",
+      "category_ar": "سجلات صحية",
+      "category": "Personal health records",
+      "audience": "patient",
+      "status": "initial",
+      "approved": "2026-07-22",
+      "links": {},
+      "moh_url": "https://moh.gov.sy/health-applications/astromed"
+    },
+    {
+      "id": "dactrha",
+      "name": "Dactrha",
+      "name_ar": "دكترها",
+      "category_ar": "حجز مواعيد",
+      "category": "Doctor appointments",
+      "audience": "patient",
+      "status": "initial",
+      "approved": "2026-06-24",
+      "links": {},
+      "moh_url": "https://moh.gov.sy/health-applications/dactrha"
+    },
+    {
+      "id": "docsera",
+      "name": "DocSera",
+      "name_ar": "DocSera",
+      "category_ar": "حجز المواعيد لدى الأطباء",
+      "category": "Doctor appointments",
+      "audience": "patient",
+      "status": "initial",
+      "approved": "2026-08-18",
+      "links": {},
+      "moh_url": "https://moh.gov.sy/health-applications/docsera"
+    },
+    {
+      "id": "dome-care",
+      "name": "DomeCare",
+      "name_ar": "DomeCare",
+      "category_ar": "حجز مواعيد مع الأطباء، خدمات أخرى",
+      "category": "Doctor appointments",
+      "audience": "patient",
+      "status": "initial",
+      "approved": "2026-08-10",
+      "links": {},
+      "moh_url": "https://moh.gov.sy/health-applications/dome-care"
+    },
+    {
+      "id": "e-health",
+      "name": "E-Health",
+      "name_ar": "E-Health",
+      "category_ar": "استشارات طبية",
+      "category": "Medical consultations",
+      "audience": "patient",
+      "status": "initial",
+      "approved": "2026-08-06",
+      "links": {},
+      "moh_url": "https://moh.gov.sy/health-applications/e-health"
+    },
+    {
+      "id": "hiro-health",
+      "name": "HiRO health",
+      "name_ar": "HiRO health",
+      "category_ar": "حفظ المعلومات الصحية الخاصة بالمريض",
+      "category": "Personal health records",
+      "audience": "patient",
+      "status": "initial",
+      "approved": "2026-09-27",
+      "links": {},
+      "moh_url": "https://moh.gov.sy/health-applications/hiro-health"
+    },
+    {
+      "id": "medicaprof",
+      "name": "MedicaProf",
+      "name_ar": "MedicaProf",
+      "category_ar": "حجز مواعيد مع الأطباء، خدمات أخرى",
+      "category": "Doctor appointments",
+      "audience": "patient",
+      "status": "initial",
+      "approved": "2026-09-09",
+      "links": {},
+      "moh_url": "https://moh.gov.sy/health-applications/medicaprof"
+    },
+    {
+      "id": "shifaa",
+      "name": "Shifaa",
+      "name_ar": "Shifaa",
+      "category_ar": "حجز مواعيد مع الأطباء، خدمات أخرى",
+      "category": "Doctor appointments",
+      "audience": "patient",
+      "status": "initial",
+      "approved": null,
+      "links": {},
+      "moh_url": "https://moh.gov.sy/health-applications/shifaa"
+    },
+    {
+      "id": "tababati",
+      "name": "Tababati",
+      "name_ar": "طبابتي",
+      "category_ar": "حجز مواعيد مع الأطباء، خدمات أخرى",
+      "category": "Doctor appointments",
+      "audience": "patient",
+      "status": "initial",
+      "approved": "2026-07-16",
+      "links": {},
+      "moh_url": "https://moh.gov.sy/health-applications/tababati"
+    },
+    {
+      "id": "asnan-order",
+      "name": "Asnan Order",
+      "name_ar": "Asnan Order",
+      "category_ar": "ربط بين مستودعات المواد السنية والعيادات",
+      "category": "Dental supplies for clinics",
+      "audience": "professional",
+      "status": "provisional",
+      "approved": "2026-07-21",
+      "links": {
+        "website": "https://asnanorder.com/",
+        "ios": "https://apps.apple.com/de/app/asnan-order-%D8%A7%D8%B3%D9%86%D8%A7%D9%86-%D8%A7%D9%88%D8%B1%D8%AF%D8%B1/id1644619278",
+        "android": "https://play.google.com/store/apps/details?id=com.ertiqasoft.asnan_order&hl=en"
+      },
+      "moh_url": "https://moh.gov.sy/health-applications/asnan-order"
+    },
+    {
+      "id": "dentix",
+      "name": "Dentix",
+      "name_ar": "Dentix",
+      "category_ar": "ربط بين مستودعات المواد السنية والعيادات",
+      "category": "Dental supplies for clinics",
+      "audience": "professional",
+      "status": "initial",
+      "approved": "2026-08-27",
+      "links": {},
+      "moh_url": "https://moh.gov.sy/health-applications/dentix"
+    },
+    {
+      "id": "docsera-pro",
+      "name": "DocSera Pro",
+      "name_ar": "DocSera Pro",
+      "category_ar": "أداة إدارية لتنظيم عمل العيادة",
+      "category": "Clinic management",
+      "audience": "professional",
+      "status": "initial",
+      "approved": "2026-08-18",
+      "links": {},
+      "moh_url": "https://moh.gov.sy/health-applications/docsera-pro"
+    },
+    {
+      "id": "dome-care-clinic",
+      "name": "DomeCare Clinic",
+      "name_ar": "DomeCare Clinic",
+      "category_ar": "إدارة العيادات الطبية",
+      "category": "Clinic management",
+      "audience": "professional",
+      "status": "initial",
+      "approved": "2026-08-06",
+      "links": {},
+      "moh_url": "https://moh.gov.sy/health-applications/dome-care-clinic"
+    },
+    {
+      "id": "medicaprof-pro",
+      "name": "MedicaProf Pro",
+      "name_ar": "MedicaProf Pro",
+      "category_ar": "إدارة العيادات الطبية",
+      "category": "Clinic management",
+      "audience": "professional",
+      "status": "initial",
+      "approved": "2026-09-09",
+      "links": {},
+      "moh_url": "https://moh.gov.sy/health-applications/medicaprof-pro"
+    }
+  ]
+}

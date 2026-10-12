@@ -1853,3 +1853,6 @@ body[dir=rtl] .section-head h2 {
 .directory>.button.secondary{display:flex;margin:26px auto 0}
 .directory>.button.secondary[hidden]{display:none}
 @media(max-width:760px){.search-panel.two .select-wrap{grid-column:1/-1;border-inline-start:0}}
+#appsFilters{margin-bottom:14px}
+.app-links{justify-content:flex-start;align-items:center;gap:8px 16px}
+.app-links a{margin:0;padding:0}

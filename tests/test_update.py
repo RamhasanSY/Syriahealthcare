@@ -51,6 +51,20 @@ class CollectorTests(unittest.TestCase):
         self.assertEqual((total, len(items)), (2, 1))
         self.assertEqual((items[0]['organisation'], items[0]['sector']), ('GOAL', 'healthcare'))
 
+    def test_moh_app_reads_status_category_and_links_without_owner(self):
+        text = ('["$","h1",null,{"className":"text-3xl text-heritage-200","children":"ع موعدنا | Moadna"}],'
+                '["$","div",null,{"className":"badge","children":"موافقة مؤقتة من الهيئة"}]'
+                '["$","span",null,{"className":"font-bold text-primary","children":"الجهة المالكة"}],["$","span",null,{"className":"text-muted-foreground","children":"شركة"}]'
+                '["$","span",null,{"className":"font-bold text-primary","children":"تصنيف التطبيق"}],["$","span",null,{"className":"text-muted-foreground","children":"حجز مواعيد مع الأطباء"}]'
+                '["$","span",null,{"className":"font-bold text-primary","children":"تاريخ الموافقة"}],["$","span",null,{"className":"text-muted-foreground","children":"03/08/2026"}]'
+                '{"href":"https://moadna.com/"}{"href":"https://play.google.com/store/apps/details?id=x"}{"href":"https://www.facebook.com/SyrMOfH"}')
+        page = '<script>self.__next_f.push([1,' + json.dumps(text) + '])</script>'
+        app = u.moh_app('moadna', page)
+        self.assertEqual((app['name'], app['name_ar'], app['status'], app['audience'], app['category'], app['approved']),
+                         ('Moadna', 'ع موعدنا', 'provisional', 'patient', 'Doctor appointments', '2026-08-03'))
+        self.assertEqual(app['links'], {'website': 'https://moadna.com/', 'android': 'https://play.google.com/store/apps/details?id=x'})
+        self.assertNotIn('شركة', json.dumps(app, ensure_ascii=False))
+
     def test_osm_hospitals_use_governorate_and_skip_unnamed(self):
         elements = [{'type': 'area', 'tags': {'name': 'محافظة دمشق', 'name:en': 'Damascus Governorate', 'name:ar': 'محافظة دمشق'}},
                     {'type': 'node', 'id': 1, 'tags': {'amenity': 'hospital', 'name': 'مشفى المواساة', 'name:en': 'Mouasat Hospital', 'phone': '+963 11 1; +963 11 2', 'emergency': 'yes'}},
