@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="ar" dir="rtl" data-title-en="Book an appointment — Syria Healthcare" data-title-ar="احجز موعداً — الرعاية الصحية في سوريا">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#173e36">
+<title>احجز موعداً — الرعاية الصحية في سوريا</title>
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/assets/app.css">
+<script src="/assets/common.js" defer></script><script src="/assets/book.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#main" data-en="Skip to content" data-ar="انتقل إلى المحتوى">انتقل إلى المحتوى</a>
+<header class="top"><div class="top-inner"><a class="brand" href="/"><img src="/assets/logo.svg" alt=""><span data-en="Syria Healthcare" data-ar="الرعاية الصحية في سوريا">الرعاية الصحية في سوريا</span></a><div class="top-actions"><a class="btn ghost" href="/account" data-en="My account" data-ar="حسابي">حسابي</a><button class="lang" id="langToggle" type="button">English</button></div></div></header>
+<main id="main" class="wrap wide" aria-busy="true">
+  <a class="back" href="/doctors" data-en="← All doctors" data-ar="كل الأطباء ←">كل الأطباء ←</a>
+  <div class="card notfound" id="notFound" hidden><h1 data-en="Doctor not found" data-ar="الطبيب غير موجود">الطبيب غير موجود</h1><p data-en="This doctor may no longer be taking bookings." data-ar="ربما لم يعد هذا الطبيب يستقبل حجوزات.">ربما لم يعد هذا الطبيب يستقبل حجوزات.</p><a class="btn" href="/doctors" data-en="Find another doctor" data-ar="ابحث عن طبيب آخر">ابحث عن طبيب آخر</a></div>
+
+  <div id="booking" hidden>
+    <section class="doctor-head">
+      <p class="specialty" id="docSpecialty"></p>
+      <h1 id="docName" dir="auto"></h1>
+      <p class="muted-small" id="docClinic" dir="auto"></p>
+      <p id="docBio" class="bio" dir="auto" hidden></p>
+    </section>
+
+    <div class="two-col">
+      <section class="card" aria-labelledby="pickHeading">
+        <h2 id="pickHeading" data-en="1. Choose a day and time" data-ar="1. اختر اليوم والوقت">1. اختر اليوم والوقت</h2>
+        <p class="hint" id="slotHint"></p>
+        <div class="day-strip" id="days" role="radiogroup" aria-labelledby="pickHeading"></div>
+        <div class="chips times" id="times" role="radiogroup" aria-live="polite"></div>
+        <button class="link-btn" type="button" id="moreDays" data-en="Show later days" data-ar="أيام لاحقة">أيام لاحقة</button>
+      </section>
+
+      <section class="card" aria-labelledby="confirmHeading">
+        <h2 id="confirmHeading" data-en="2. Confirm" data-ar="2. التأكيد">2. التأكيد</h2>
+        <p class="chosen" id="chosen" role="status"></p>
+        <div class="msg error" id="bookError" role="alert" tabindex="-1" hidden></div>
+        <div id="signInFirst" hidden>
+          <p data-en="Sign in with your mobile number to book. It takes less than a minute and you will come straight back here." data-ar="سجّل الدخول برقم جوالك للحجز. يستغرق ذلك أقل من دقيقة وستعود إلى هنا مباشرة.">سجّل الدخول برقم جوالك للحجز. يستغرق ذلك أقل من دقيقة وستعود إلى هنا مباشرة.</p>
+          <a class="btn" id="signInLink" href="/login" data-en="Sign in to book" data-ar="سجّل الدخول للحجز">سجّل الدخول للحجز</a>
+        </div>
+        <div id="notPatient" class="msg info" hidden data-en="Bookings are made from a patient account. Sign out and sign in with your mobile number to book." data-ar="يتم الحجز من حساب مريض. سجّل الخروج ثم ادخل برقم جوالك للحجز.">يتم الحجز من حساب مريض. سجّل الخروج ثم ادخل برقم جوالك للحجز.</div>
+        <form id="bookForm" novalidate hidden>
+          <label class="field"><span data-en="Reason for the visit (optional)" data-ar="سبب الزيارة (اختياري)">سبب الزيارة (اختياري)</span><textarea id="reason" maxlength="300" rows="3" dir="auto" aria-describedby="reasonHint"></textarea><small id="reasonHint" data-en="Only this doctor sees it. Do not include anything you would not want the clinic to know." data-ar="لا يراه إلا هذا الطبيب. لا تكتب ما لا تريد أن تعرفه العيادة.">لا يراه إلا هذا الطبيب. لا تكتب ما لا تريد أن تعرفه العيادة.</small></label>
+          <button class="btn" type="submit" id="bookButton" disabled data-en="Request this appointment" data-ar="اطلب هذا الموعد">اطلب هذا الموعد</button>
+          <p class="hint" data-en="The doctor confirms your request. You can cancel any time before the appointment." data-ar="يؤكد الطبيب طلبك. يمكنك الإلغاء في أي وقت قبل الموعد.">يؤكد الطبيب طلبك. يمكنك الإلغاء في أي وقت قبل الموعد.</p>
+        </form>
+      </section>
+    </div>
+  </div>
+
+  <div class="card success" id="done" hidden tabindex="-1">
+    <h1 data-en="Request sent" data-ar="تم إرسال الطلب">تم إرسال الطلب</h1>
+    <p id="doneText"></p>
+    <p class="msg info" data-en="In an emergency do not wait for an appointment: go to the nearest hospital." data-ar="في حالات الطوارئ لا تنتظر موعداً: توجّه إلى أقرب مشفى.">في حالات الطوارئ لا تنتظر موعداً: توجّه إلى أقرب مشفى.</p>
+    <div class="actions"><a class="btn" href="/appointments" data-en="My appointments" data-ar="مواعيدي">مواعيدي</a><a class="btn ghost" href="/doctors" data-en="Find another doctor" data-ar="ابحث عن طبيب آخر">ابحث عن طبيب آخر</a></div>
+  </div>
+</main>
+<footer><div class="wrap"><a href="/doctors" data-en="← All doctors" data-ar="كل الأطباء ←">كل الأطباء ←</a><a href="/privacy" data-en="Privacy policy" data-ar="سياسة الخصوصية">سياسة الخصوصية</a></div></footer>
+</body>
+</html>

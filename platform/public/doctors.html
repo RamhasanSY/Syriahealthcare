@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="ar" dir="rtl" data-title-en="Find a doctor — Syria Healthcare" data-title-ar="ابحث عن طبيب — الرعاية الصحية في سوريا">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#173e36">
+<title>ابحث عن طبيب — الرعاية الصحية في سوريا</title>
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/assets/app.css">
+<script src="/assets/common.js" defer></script><script src="/assets/doctors.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#main" data-en="Skip to content" data-ar="انتقل إلى المحتوى">انتقل إلى المحتوى</a>
+<header class="top"><div class="top-inner"><a class="brand" href="/"><img src="/assets/logo.svg" alt=""><span data-en="Syria Healthcare" data-ar="الرعاية الصحية في سوريا">الرعاية الصحية في سوريا</span></a><div class="top-actions"><a class="btn ghost" href="/account" id="accountLink" data-en="My account" data-ar="حسابي">حسابي</a><button class="lang" id="langToggle" type="button">English</button></div></div></header>
+<main id="main" class="wrap wide">
+  <h1 data-en="Find a doctor" data-ar="ابحث عن طبيب">ابحث عن طبيب</h1>
+  <p class="lead" data-en="Every doctor here has been checked by our team. Choose one to see free times and book." data-ar="تحقق فريقنا من كل طبيب هنا. اختر طبيباً لترى الأوقات المتاحة وتحجز.">تحقق فريقنا من كل طبيب هنا. اختر طبيباً لترى الأوقات المتاحة وتحجز.</p>
+  <form class="filters card" id="filters" role="search">
+    <label class="field"><span data-en="Name, clinic or area" data-ar="الاسم أو العيادة أو المنطقة">الاسم أو العيادة أو المنطقة</span><input type="search" id="q" maxlength="80" dir="auto"></label>
+    <label class="field"><span data-en="Specialty" data-ar="الاختصاص">الاختصاص</span><select id="specialty"></select></label>
+    <label class="field"><span data-en="Governorate" data-ar="المحافظة">المحافظة</span><select id="governorate"></select></label>
+  </form>
+  <p class="results-count" id="count" role="status"></p>
+  <ul class="doctor-grid" id="results" aria-busy="true"></ul>
+</main>
+<footer><div class="wrap"><a href="https://syriahealthcare.com/" data-en="← Back to syriahealthcare.com" data-ar="العودة إلى الموقع ←">العودة إلى الموقع ←</a><a href="/privacy" data-en="Privacy policy" data-ar="سياسة الخصوصية">سياسة الخصوصية</a></div></footer>
+</body>
+</html>

@@ -2,7 +2,7 @@
 
 Accounts and (in later steps) appointment booking for patients and doctors. It runs on the company's own server at `app.syriahealthcare.com`, separately from the public website, which stays on GitHub Pages.
 
-**Status: Stage 1, steps 1–3 of 6 done:** accounts and sign-in, doctor profiles and approval, and opening hours. Next: booking, doctor dashboard, public doctor list.
+**Status: Stage 1, steps 1–4 of 6 done:** accounts and sign-in, doctor profiles and approval, opening hours, and patient booking. Next: doctor dashboard (confirm/decline), public doctor list on syriahealthcare.com.
 
 ## What works now
 
@@ -31,6 +31,15 @@ Doctors set their hours at `/schedule`:
 - **Days off:** holidays, travel or conferences.
 
 A preview shows exactly which free appointments patients will see over the next 7 days. All times are Syria time (Asia/Damascus); the conversion also handles time zones with daylight saving. Patients only see free slots for approved doctors (`GET /api/doctors/:id/slots`). Changing hours does not need a new review.
+
+### Booking (step 4)
+
+- **Find a doctor** (`/doctors`, public): approved doctors only, searchable by name, clinic or area and filterable by specialty and governorate. Only reviewed public details are shown: never email, licence number or documents.
+- **Book** (`/book?doctor=…`): pick a day and a free time, add an optional short reason (only that doctor sees it) and send the request. Visitors who are not signed in sign in with their phone and come straight back with their chosen time still selected.
+- **My appointments** (`/appointments`): upcoming and past appointments with the clinic's address and phone. Patients can cancel any upcoming appointment, after confirming on the card, and the time becomes free again.
+- **No double bookings:** a database constraint refuses two active bookings that overlap for the same doctor, or for the same patient, even when two people click at the same moment. The losing patient is told the time is gone and sees the updated times.
+- **Fair use:** at most 5 upcoming appointments per patient, 2 with the same doctor, and 10 booking requests per hour. A time is accepted only if it is currently one of the doctor's free slots.
+- New requests start as "waiting for the doctor to confirm"; doctors confirm or decline in step 5.
 
 Five wrong passwords lock an account for 15 minutes. Sessions last 30 days for patients, 7 for doctors and 1 for admins. Every page is in Arabic and English.
 

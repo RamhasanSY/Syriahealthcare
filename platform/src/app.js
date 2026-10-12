@@ -7,6 +7,7 @@ import authRoutes, {loadSession} from './auth.js';
 import {createSms} from './sms.js';
 import doctorRoutes from './doctors.js';
 import scheduleRoutes from './schedule.js';
+import appointmentRoutes from './appointments.js';
 import {createDocumentStore} from './documents.js';
 
 const UNSAFE = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
@@ -61,6 +62,7 @@ export async function buildApp({config, pool, sms, documents, logger = true}) {
     await app.register(authRoutes);
     await app.register(doctorRoutes);
     await app.register(scheduleRoutes);
+    await app.register(appointmentRoutes);
     await app.register(fastifyStatic, {root: fileURLToPath(new URL('../public/', import.meta.url)), extensions: ['html']});
     return app;
 }

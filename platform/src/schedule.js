@@ -29,12 +29,21 @@ async function loadSchedule(db, doctorId) {
 const DATE = '^\\d{4}-\\d{2}-\\d{2}$';
 const validDate = d => typeof d === 'string' && new RegExp(DATE).test(d) && !Number.isNaN(Date.parse(d + 'T00:00:00Z')) && new Date(d + 'T00:00:00Z').toISOString().startsWith(d);
 
-function slotsResponse(data, query) {
+// Active bookings (requested or confirmed) block their time for everyone else.
+export async function loadBusy(db, doctorId) {
+    const {rows} = await db.query(
+        `SELECT starts_at, ends_at FROM appointments
+         WHERE doctor_id = $1 AND status IN ('requested', 'confirmed') AND ends_at > now()`, [doctorId]);
+    return rows.map(r => ({starts_at: r.starts_at.getTime(), ends_at: r.ends_at.getTime()}));
+}
+
+export async function slotsFor(db, doctorId, query) {
+    const data = await loadSchedule(db, doctorId);
     const today = localDate(Date.now(), data.settings.timezone);
     const from = query.from && validDate(query.from) && query.from >= today ? query.from : today;
     const days = Math.min(Math.max(Number(query.days) || 7, 1), 31);
     return {timezone: data.settings.timezone, slot_minutes: data.settings.slot_minutes, from, days,
-        slots: freeSlots({schedule: data.settings, hours: data.hours, timeOff: data.timeOff, from, days})};
+        slots: freeSlots({schedule: data.settings, hours: data.hours, timeOff: data.timeOff, busy: await loadBusy(db, doctorId), from, days})};
 }
 
 const slotQuery = {querystring: {type: 'object', properties: {from: {type: 'string', pattern: DATE}, days: {type: 'integer', minimum: 1, maximum: 31}}}};
@@ -102,7 +111,7 @@ export default async function scheduleRoutes(app) {
 
     // The doctor's own preview of what patients will see.
     app.get('/api/doctor/slots', {preHandler: doctorOnly, schema: slotQuery}, async request =>
-        slotsResponse(await loadSchedule(app.pg, request.user.id), request.query));
+        slotsFor(app.pg, request.user.id, request.query));
 
     // Public: free slots of an approved doctor (used by booking in step 4).
     app.get('/api/doctors/:id/slots', {schema: {params: {type: 'object', properties: {id: {type: 'string', format: 'uuid'}}}, ...slotQuery}}, async request => {
@@ -110,6 +119,6 @@ export default async function scheduleRoutes(app) {
             `SELECT p.status FROM doctor_profiles p JOIN users u ON u.id = p.user_id
              WHERE p.user_id = $1 AND u.disabled_at IS NULL`, [request.params.id]);
         if (doctor?.status !== 'approved') throw new HttpError(404, 'not_found', 'Doctor not found.');
-        return slotsResponse(await loadSchedule(app.pg, request.params.id), request.query);
+        return slotsFor(app.pg, request.params.id, request.query);
     });
 }
