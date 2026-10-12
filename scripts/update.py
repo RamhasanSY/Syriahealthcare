@@ -269,6 +269,37 @@ def ministry_news(source):
     return publish_news(parser.rows, source)
 
 
+def reliefweb_jobs(source):
+    """ReliefWeb's public Syria jobs RSS: employer, closing date and country come from the listing itself."""
+    root = ElementTree.fromstring(fetch(source['url']))
+    if root.tag != 'rss':
+        raise ValueError('ReliefWeb response is not RSS')
+    entries = root.findall('.//item')
+    result = []
+    for entry in entries:
+        def text(tag):
+            el = entry.find(tag)
+            return ''.join(el.itertext()).strip() if el is not None else ''
+        url, categories = text('link'), [c.text or '' for c in entry.findall('category')]
+        if urlsplit(url).hostname != 'reliefweb.int' or any(re.search(r'tender|rfp|eoi', c, re.I) for c in categories):
+            continue
+        body = html.unescape(text('description'))
+        closing = re.search(r'Closing date:\s*(\d{1,2}\s+[A-Za-z]{3,9}\s+\d{4})', body)
+        organisation = re.search(r'Organization:\s*([^<\r\n]+)', body)
+        country = re.search(r'Country:\s*([^<\r\n]+)', body)
+        if not closing or not organisation or not country or not text('title'):
+            continue
+        item = {'title': strip_html(text('title')), 'published': text('pubDate'), 'deadline': closing.group(1),
+                'location': country.group(1).strip(), 'url': url, 'reference': urlsplit(url).path.split('/')[2]}
+        if job_valid(item):
+            record = job_record(item, source)
+            record['organisation'] = organisation.group(1).strip()
+            if any(re.search(r'health', c, re.I) for c in categories) or HEALTH.search(item['title']):
+                record['sector'] = 'healthcare'
+            result.append(record)
+    return result, len(entries)
+
+
 def job_valid(item):
     deadline, published = parse_date(item.get('deadline')), parse_date(item.get('published'))
     exact_deadline = item.get('deadline_at') or (item.get('deadline') if 'T' in str(item.get('deadline')) else None)
@@ -399,7 +430,8 @@ def drc_jobs(source):
 
 def collect_source(source, kind):
     handlers = {'rss': news_records, 'sana_rss': sana_news, 'ministry_news': ministry_news,
-                'sams_jobs': sams_jobs, 'ida_jobs': ida_jobs, 'nrc_jobs': nrc_jobs, 'drc_jobs': drc_jobs}
+                'sams_jobs': sams_jobs, 'ida_jobs': ida_jobs, 'nrc_jobs': nrc_jobs, 'drc_jobs': drc_jobs,
+                'reliefweb_jobs': reliefweb_jobs}
     try:
         items, total = handlers[source['adapter']](source)
         return items, {'id': source['id'], 'kind': kind, 'state': 'ok', 'checked_at': now().isoformat(timespec='seconds'),
@@ -513,7 +545,7 @@ def merge_records(existing, fresh, kind, statuses):
             continue
         seen.add(key); titles.add(title_key); result.append(item)
     result.sort(key=lambda i: i.get('published') or '', reverse=True)
-    return result[:60 if kind == 'news' else 40]
+    return result[:60 if kind == 'news' else 80]
 
 
 def main():
