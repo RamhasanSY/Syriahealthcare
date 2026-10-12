@@ -570,6 +570,7 @@ h1 em {
     margin-bottom: 26px
 }
 
+.section-head h1,
 .section-head h2 {
     font-size: 36px;
     letter-spacing: -1.4px;
@@ -1179,6 +1180,7 @@ h1 em {
     font-size: 9px
 }
 
+.about h1,
 .about h2 {
     font-size: 34px;
     letter-spacing: -1px;
@@ -1338,6 +1340,7 @@ body[dir=rtl] .spotlight {
     transform: rotate(2deg)
 }
 
+body[dir=rtl] .section-head h1,
 body[dir=rtl] .section-head h2 {
     font-size: 30px
 }
@@ -1539,6 +1542,7 @@ body[dir=rtl] .section-head h2 {
         margin-bottom: 22px
     }
 
+    .section-head h1,
     .section-head h2 {
         font-size: 31px
     }
@@ -1755,6 +1759,7 @@ body[dir=rtl] .section-head h2 {
         font-size: 39px
     }
 
+    body[dir=rtl] .section-head h1,
     body[dir=rtl] .section-head h2 {
         font-size: 27px
     }
@@ -1853,3 +1858,34 @@ body[dir=rtl] .section-head h2 {
 .directory>.button.secondary{display:flex;margin:26px auto 0}
 .directory>.button.secondary[hidden]{display:none}
 @media(max-width:760px){.search-panel.two .select-wrap{grid-column:1/-1;border-inline-start:0}}
+
+/* Multi-page layout */
+.section-head h1{line-height:1.12}
+.about h1{line-height:1.15}
+.header-nav a[aria-current=page]{color:var(--green);font-weight:700;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:6px}
+.footer-nav{padding-top:18px;margin-top:18px;border-top:1px solid var(--rule)}
+.footer-nav nav,.not-found nav{display:flex;flex-wrap:wrap;gap:6px 22px;font-size:13px}
+.footer-nav a,.not-found nav a{display:inline-flex;align-items:center;min-height:44px;color:var(--ink);text-decoration:none}
+.footer-nav a:hover,.not-found nav a:hover{color:var(--green);text-decoration:underline}
+.footer-nav a[aria-current=page]{font-weight:700;color:var(--green)}
+.home-previews{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:56px}
+.preview-panel{background:var(--white);border:1px solid var(--rule);border-radius:18px;padding:24px}
+.preview-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:12px}
+.preview-head h2{margin:0;font:600 24px/1.2 var(--serif)}
+.preview-head a{font-weight:700;color:var(--green);white-space:nowrap}
+.preview-list{list-style:none;margin:0;padding:0}
+.preview-list li{padding-block:14px;border-top:1px solid var(--rule)}
+.preview-list li:first-child{border-top:0;padding-top:4px}
+.preview-title{margin:0 0 4px;font-size:16px;line-height:1.35}
+.preview-title a{color:var(--ink);text-decoration:none}
+.preview-title a:hover{color:var(--green);text-decoration:underline}
+.preview-meta{margin:0;color:var(--muted);font-size:13px}
+.preview-list .job-deadline{margin:6px 0 0}
+.preview-empty{color:var(--muted)}
+.search-panel.one{grid-template-columns:1fr;margin-bottom:18px}
+.home-about{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px 24px;margin-top:48px;padding:24px 28px;background:var(--sage);border-radius:18px}
+.home-about p{margin:0;font-size:15px;max-width:60ch}
+.not-found{padding-block:40px 20px;max-width:640px}
+.not-found h1{font-size:clamp(30px,5vw,44px);letter-spacing:-1px;margin-bottom:12px}
+.directory,.pregnancy{margin-top:0}
+@media(max-width:800px){.home-previews{grid-template-columns:1fr}}

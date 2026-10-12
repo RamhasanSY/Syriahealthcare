@@ -1,6 +1,21 @@
 (() => {
     'use strict';
     const $ = id => document.getElementById(id);
+    // Links shared before the site had separate pages (e.g. /#jobs) open the new page instead.
+    const moved = {jobs: 'jobs.html', saved: 'jobs.html#saved', toolkit: 'jobs.html#toolkit', news: 'news.html', doctors: 'doctors.html', labs: 'labs.html',
+        hospitals: 'hospitals.html', pregnancy: 'pregnancy.html', about: 'about.html', sources: 'about.html#sources'};
+    const openMoved = () => {
+        const target = moved[window.location.hash.slice(1)];
+        if (target && $('homeJobs')) window.location.replace(target);
+        return Boolean(target && $('homeJobs'));
+    };
+    if (openMoved()) return;
+    window.addEventListener('hashchange', openMoved);
+    // On phones the menu scrolls sideways: bring the current page's link into view without moving the page.
+    const menu = document.querySelector('.header-nav'), current = menu?.querySelector('[aria-current=page]');
+    if (current && menu.scrollWidth > menu.clientWidth) {
+        menu.scrollLeft += current.getBoundingClientRect().left - menu.getBoundingClientRect().left - (menu.clientWidth - current.offsetWidth) / 2;
+    }
     let canPersist = true;
     let lang = 'en',
         saved = new Set();
@@ -117,9 +132,9 @@
         let replacement = active.id ? $(active.id) : null;
         if (href) replacement = [...document.querySelectorAll('a')].find(n => n.href === href && n.className === active.className && n.parentElement.className === parentClass);
         if (active.dataset.key) replacement = [...document.querySelectorAll('.save-job')].find(n => n.dataset.key === active.dataset.key) || document.querySelector('[data-sector="saved"]');
-        if (active.dataset.topic) replacement = [...$('newsFilters').querySelectorAll('button')].find(n => n.dataset.topic === active.dataset.topic);
+        if (active.dataset.topic && $('newsFilters')) replacement = [...$('newsFilters').querySelectorAll('button')].find(n => n.dataset.topic === active.dataset.topic);
         if (active.closest('.empty') || active.id === 'clearFilters') replacement = $('search');
-        (replacement || $('search')).focus({preventScroll: true});
+        (replacement || $('search'))?.focus({preventScroll: true});
     }
 
     function normalize(text) {
@@ -142,8 +157,9 @@
         });
         document.querySelectorAll('[data-label-en]').forEach(n => n.setAttribute('aria-label', n.getAttribute('data-label-' + lang)));
         document.querySelectorAll('[data-placeholder-en]').forEach(n => n.placeholder = n.getAttribute('data-placeholder-' + lang));
-        document.title = tr('Syria Healthcare — meaningful work, trusted information', 'الرعاية الصحية في سوريا — عمل هادف ومعلومات موثوقة');
-        document.querySelector('meta[name=description]').content = tr('Find healthcare and NGO jobs, doctors, labs and hospitals in Syria, plus healthcare news and pregnancy planning — in English and Arabic.', 'ابحث عن وظائف صحية وإنسانية وأطباء ومخابر ومشافٍ في سوريا، مع أخبار القطاع الصحي والتخطيط للحمل — بالعربية والإنجليزية.');
+        const page = document.documentElement.dataset;
+        if (page.titleEn) document.title = tr(page.titleEn, page.titleAr || page.titleEn);
+        if (page.descEn) document.querySelector('meta[name=description]').content = tr(page.descEn, page.descAr || page.descEn);
         $('langToggle').textContent = tr('العربية', 'English');
         $('langToggle').lang = tr('ar', 'en');
         $('langToggle').setAttribute('aria-label', tr('Switch to Arabic', 'التبديل إلى الإنجليزية'));
@@ -151,6 +167,7 @@
     }
 
     function savedHint() {
+        if (!$('savedHint')) return;
         $('savedHint').textContent = canPersist ? tr('Save a role to revisit on this device.', 'احفظ الوظيفة للعودة إليها على هذا الجهاز.') : tr('Bookmarks last only while this page stays open.', 'تبقى الوظائف المحفوظة متاحة ما دامت هذه الصفحة مفتوحة.');
     }
 
@@ -158,6 +175,7 @@
         const f = feeds[kind],
             n = $(kind + 'Stamp'),
             checked = checkedTime(f.updated);
+        if (!n) return;
         const stale = checked && Date.now() - new Date(f.updated).getTime() > 48 * 3600000;
         n.textContent = checked ? tr('Last checked: ', 'آخر فحص: ') + checked + (stale ? tr(' · Updates delayed', ' · التحديثات متأخرة') : '') : '';
         if (f.status === 'partial' || f.status === 'error') n.textContent += tr(' · Some sources unavailable', ' · بعض المصادر غير متاحة');
@@ -173,9 +191,9 @@
         organisation = '';
         sector = 'all';
         newsLimit = 6;
-        $('search').value = '';
+        if ($('search')) $('search').value = '';
         renderAll();
-        $('search').focus({preventScroll: true});
+        $('search')?.focus({preventScroll: true});
     }
 
     function emptyState(kind, hasResults, filtered) {
@@ -211,7 +229,7 @@
             box.append(b);
         } else if (!f.loading) {
             const a = node('a', '', tr('Explore our sources →', 'تصفح مصادرنا ←'));
-            a.href = '#sources';
+            a.href = 'about.html#sources';
             box.append(a);
         }
     }
@@ -235,6 +253,15 @@
     }
 
     function filters() {
+        if ($('newsFilters')) newsFilters();
+        if (!$('location')) return;
+        location = selectOptions('location', tr('All locations', 'جميع المواقع'), [...new Set(openJobs().map(j => j.location).filter(Boolean))].sort(), location);
+        organisation = selectOptions('organisation', tr('All organizations', 'جميع المنظمات'), [...new Set(openJobs().map(j => j.organisation).filter(Boolean))].sort(), organisation);
+        $('sectorFilters').querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.sector === sector)));
+        $('jobSort').value = sort;
+    }
+
+    function newsFilters() {
         const present = ['all', ...new Set(openNews().map(n => n.topic || 'other'))];
         if (!present.includes(topic)) topic = 'all';
         $('newsFilters').replaceChildren();
@@ -251,13 +278,12 @@
             };
             $('newsFilters').append(b);
         });
-        location = selectOptions('location', tr('All locations', 'جميع المواقع'), [...new Set(openJobs().map(j => j.location).filter(Boolean))].sort(), location);
-        organisation = selectOptions('organisation', tr('All organizations', 'جميع المنظمات'), [...new Set(openJobs().map(j => j.organisation).filter(Boolean))].sort(), organisation);
-        $('sectorFilters').querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.sector === sector)));
-        $('jobSort').value = sort;
     }
 
     function renderNews() {
+        renderHomeNews();
+        renderStats();
+        if (!$('newsList')) return;
         const items = openNews().filter(n => (topic === 'all' || (n.topic || 'other') === topic) && matches(n));
         $('newsList').replaceChildren();
         $('newsCount').textContent = tr(`${items.length} stories`, `${items.length} أخبار`);
@@ -279,7 +305,6 @@
         $('moreNews').hidden = items.length <= newsLimit;
         emptyState('news', items.length > 0, Boolean(query || topic !== 'all'));
         stamp('news');
-        renderStats();
         $('newsResult').textContent = tr(`${items.length} matching stories`, `${items.length} أخبار مطابقة`);
     }
 
@@ -324,6 +349,7 @@
         const all = openJobs(),
             first = [...all].sort((a, b) => deadlineTime(a) - deadlineTime(b))[0],
             pill = document.querySelector('.spotlight-top .pill');
+        if (!$('heroJobCount')) return;
         $('heroJobCount').textContent = feeds.jobs.loading && !all.length ? '—' : all.length;
         $('heroOrgCount').textContent = feeds.jobs.loading && !all.length ? '—' : new Set(all.map(j => j.organisation).filter(Boolean)).size;
         pill.hidden = !first;
@@ -332,7 +358,7 @@
             $('featuredOrg').textContent = tr('From original employers', 'من الجهات الموظفة الأصلية');
             $('featuredTitle').textContent = tr('Find work that matters.', 'ابحث عن عمل يصنع فرقاً.');
             $('featuredMeta').textContent = '';
-            $('featuredLink').href = '#jobs';
+            $('featuredLink').href = 'jobs.html';
             return;
         }
         $('featuredOrg').textContent = first.organisation;
@@ -343,6 +369,10 @@
     }
 
     function renderJobs() {
+        renderFeatured();
+        renderStats();
+        renderHomeJobs();
+        if (!$('jobsList')) return;
         let items = openJobs().filter(j => (!location || j.location === location) && (!organisation || j.organisation === organisation) && (sector === 'all' || (sector === 'saved' ? saved.has(key(j)) : (j.sector || 'healthcare') === sector)) && matches(j));
         items.sort((a, b) => sort === 'deadline' ? deadlineTime(a) - deadlineTime(b) : (b.published || '').localeCompare(a.published || ''));
         const filtered = Boolean(query || location || organisation || sector !== 'all');
@@ -373,8 +403,6 @@
         });
         emptyState('jobs', items.length > 0, filtered);
         stamp('jobs');
-        renderFeatured();
-        renderStats();
         $('jobsResult').textContent = tr(`${items.length} opportunities shown`, `${items.length} فرص معروضة`);
     }
 
@@ -420,6 +448,7 @@
     }
 
     function renderStats() {
+        if (!$('statJobs')) return;
         const jobs = openJobs(), loading = feeds.jobs.loading && !jobs.length;
         $('statJobs').textContent = loading ? '—' : jobs.length;
         $('statClosing').textContent = loading ? '—' : jobs.filter(j => deadlineTime(j) - Date.now() <= 7 * 86400000).length;
@@ -428,6 +457,7 @@
     }
 
     function renderChecklist(listId = 'checklist', storageKey = 'shc-checklist', progressId = 'toolkitProgress') {
+        if (!$(progressId)) return;
         let done = [];
         try { done = JSON.parse(localStorage.getItem(storageKey) || '[]'); } catch (_) {}
         const boxes = [...document.querySelectorAll('#' + listId + ' input')];
@@ -533,6 +563,7 @@
     }
 
     function renderDirectory(kind) {
+        if (!$(kind + 'List')) return;
         const cfg = directories[kind], st = directoryState[kind], all = st.items.filter(cfg.valid);
         Object.entries(cfg.filters).forEach(([name, f]) => {
             const options = [...new Set(all.flatMap(f.values).filter(Boolean))].sort((a, b) => a.localeCompare(b, lang));
@@ -575,7 +606,7 @@
         if (body) box.append(node('p', '', body));
         if (!st.loading && !filtered && kind !== 'hospitals') {
             const a = node('a', '', tr('Meanwhile, find a hospital near you →', 'في الأثناء، ابحث عن مشفى قريب منك ←'));
-            a.href = '#hospitals';
+            a.href = 'hospitals.html';
             box.append(a);
         }
         if (filtered && !st.loading) {
@@ -609,6 +640,7 @@
     const contactWeeks = [12, 20, 26, 30, 34, 36, 38, 40];
 
     function renderPlanner() {
+        if (!$('lmpDate')) return;
         const out = $('plannerResult'), raw = $('lmpDate').value, lmp = timestamp(raw), day = 86400000;
         out.replaceChildren();
         $('lmpDate').max = new Date().toISOString().slice(0, 10);
@@ -637,6 +669,11 @@
 
     function renderSources() {
         renderStats();
+        if ($('sourceList')) renderSourceList();
+        if ($('externalJobs')) renderExternalJobs();
+    }
+
+    function renderSourceList() {
         $('sourceList').replaceChildren();
         ['news', 'jobs'].forEach(kind => (sources[kind] || []).forEach(s => {
             if (!safeURL(s.website || s.url)) return;
@@ -653,6 +690,9 @@
             }
             $('sourceList').append(li);
         }));
+    }
+
+    function renderExternalJobs() {
         $('externalJobs').replaceChildren();
         (sources.directories || []).forEach(s => {
             if (!safeURL(s.url)) return;
@@ -664,12 +704,49 @@
     }
 
     function renderEditor() {
+        if (!$('editorNote')) return;
         $('editorNote').hidden = !(editor.enabled === true && value(editor, 'title') && value(editor, 'body'));
         $('editorHeading').textContent = value(editor, 'title');
         $('editorBody').textContent = value(editor, 'body');
         $('editorLink').hidden = !safeURL(editor.url);
         $('editorLink').href = safeURL(editor.url);
         $('editorLink').textContent = value(editor, 'link');
+    }
+
+    // Home page: the three roles closing soonest and the three latest stories.
+    function preview(id, items, fill, emptyText) {
+        const list = $(id);
+        if (!list) return;
+        list.replaceChildren();
+        list.setAttribute('aria-busy', String(feeds[id === 'homeJobs' ? 'jobs' : 'news'].loading));
+        items.slice(0, 3).forEach(i => {
+            const li = node('li');
+            fill(li, i);
+            list.append(li);
+        });
+        if (!items.length) list.append(node('li', 'preview-empty', emptyText));
+    }
+
+    function renderHomeJobs() {
+        const loading = feeds.jobs.loading && !openJobs().length;
+        preview('homeJobs', [...openJobs()].sort((a, b) => deadlineTime(a) - deadlineTime(b)), (li, j) => {
+            const title = node('h3', 'preview-title');
+            title.dir = 'auto';
+            title.append(link(value(j, 'title'), j.url));
+            const meta = node('p', 'preview-meta', (j.organisation || j.source) + ' · ' + j.location);
+            const due = node('p', 'job-deadline' + (deadlineTime(j) - Date.now() <= 3 * 86400000 ? ' urgent' : ''), tr('Closes ', 'يغلق في ') + (j.deadline_at ? checkedTime(j.deadline_at) : date(j.deadline)));
+            li.append(title, meta, due);
+        }, loading ? tr('Loading roles…', 'جارٍ تحميل الوظائف…') : tr('No open roles right now — check back soon.', 'لا توجد وظائف متاحة حالياً — عد قريباً.'));
+    }
+
+    function renderHomeNews() {
+        const loading = feeds.news.loading && !openNews().length;
+        preview('homeNews', openNews(), (li, n) => {
+            const title = node('h3', 'preview-title');
+            title.dir = 'auto';
+            title.append(link(value(n, 'title'), n.url));
+            li.append(title, node('p', 'preview-meta', [n.source, date(n.published)].filter(Boolean).join(' · ')));
+        }, loading ? tr('Loading stories…', 'جارٍ تحميل الأخبار…') : tr('More stories are on the way.', 'المزيد من الأخبار قريباً.'));
     }
 
     function renderAll() {
@@ -735,36 +812,41 @@
         } catch (_) {}
         preserveFocus(renderAll);
     };
-    $('search').addEventListener('input', e => {
+    $('search')?.addEventListener('input', e => {
         query = normalize(e.target.value.trim());
         newsLimit = 6;
         renderNews();
         renderJobs();
     });
-    $('location').onchange = e => {
-        location = e.target.value;
-        renderJobs();
-    };
-    $('organisation').onchange = e => {
-        organisation = e.target.value;
-        renderJobs();
-    };
-    $('jobSort').onchange = e => {
-        sort = e.target.value;
-        renderJobs();
-    };
-    $('sectorFilters').querySelectorAll('button').forEach(b => b.onclick = () => {
-        sector = b.dataset.sector;
-        $('sectorFilters').querySelectorAll('button').forEach(n => n.setAttribute('aria-pressed', String(n === b)));
-        renderJobs();
-    });
-    $('serviceSaved').onclick = () => {
-        sector = 'saved';
-        filters();
-        renderJobs();
-        $('jobs').scrollIntoView({behavior: 'smooth'});
-    };
-    Object.keys(directories).forEach(kind => {
+    if ($('jobsList')) {
+        $('location').onchange = e => {
+            location = e.target.value;
+            renderJobs();
+        };
+        $('organisation').onchange = e => {
+            organisation = e.target.value;
+            renderJobs();
+        };
+        $('jobSort').onchange = e => {
+            sort = e.target.value;
+            renderJobs();
+        };
+        $('sectorFilters').querySelectorAll('button').forEach(b => b.onclick = () => {
+            sector = b.dataset.sector;
+            $('sectorFilters').querySelectorAll('button').forEach(n => n.setAttribute('aria-pressed', String(n === b)));
+            renderJobs();
+        });
+        $('clearFilters').onclick = clearFilters;
+        // jobs.html#saved opens the saved-jobs view (linked from the home page).
+        if (window.location.hash === '#saved') sector = 'saved';
+        window.addEventListener('hashchange', () => {
+            if (window.location.hash !== '#saved') return;
+            sector = 'saved';
+            filters();
+            renderJobs();
+        });
+    }
+    Object.keys(directories).filter(kind => $(kind + 'List')).forEach(kind => {
         $(kind + 'Search').addEventListener('input', e => {
             directoryState[kind].query = normalize(e.target.value.trim());
             directoryState[kind].limit = 12;
@@ -777,35 +859,41 @@
         });
         loadDirectory(kind);
     });
-    $('lmpDate').addEventListener('change', renderPlanner);
-    $('lmpDate').addEventListener('input', renderPlanner);
-    $('planner').addEventListener('submit', e => e.preventDefault());
-    $('clearFilters').onclick = clearFilters;
-    $('moreNews').onclick = () => {
+    if ($('lmpDate')) {
+        $('lmpDate').addEventListener('change', renderPlanner);
+        $('lmpDate').addEventListener('input', renderPlanner);
+        $('planner').addEventListener('submit', e => e.preventDefault());
+    }
+    if ($('moreNews')) $('moreNews').onclick = () => {
         const next = newsLimit;
         newsLimit += 6;
         renderNews();
         $('newsList').children[next]?.querySelector('.card-title a')?.focus({preventScroll: true});
     };
+    // Each page loads only the feeds it shows.
+    const needs = {
+        news: ['newsList', 'homeNews', 'statNews'].some($),
+        jobs: ['jobsList', 'homeJobs', 'heroJobCount', 'statJobs'].some($),
+        status: Boolean($('sourceList'))
+    };
+    const refresh = () => {
+        if (needs.news) loadFeed('news');
+        if (needs.jobs) loadFeed('jobs');
+        if (needs.status) loadStatus();
+    };
     renderAll();
-    loadFeed('news');
-    loadFeed('jobs');
-    loadStatus();
-    json('sources.json').then(data => {
+    refresh();
+    if (['sourceList', 'externalJobs', 'statSources'].some($)) json('sources.json').then(data => {
         sources = data;
         preserveFocus(renderSources);
     }).catch(() => {
-        $('sourceError').hidden = false;
+        if ($('sourceError')) $('sourceError').hidden = false;
     });
-    json('data/editor.json').then(data => {
+    if ($('editorNote')) json('data/editor.json').then(data => {
         editor = data;
         renderEditor();
     }).catch(() => {});
-    setInterval(() => {
-        loadFeed('news');
-        loadFeed('jobs');
-        loadStatus();
-    }, 15 * 60 * 1000);
+    setInterval(refresh, 15 * 60 * 1000);
     // Expire loaded records even while the visitor leaves the tab open.
     setInterval(() => {
         const news = openNews(), jobs = openJobs();
