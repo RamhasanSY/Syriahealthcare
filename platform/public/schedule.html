@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="ar" dir="rtl" data-title-en="Opening hours — Syria Healthcare" data-title-ar="أوقات الدوام — الرعاية الصحية في سوريا">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#173e36">
+<title>أوقات الدوام — الرعاية الصحية في سوريا</title>
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/assets/app.css">
+<script src="/assets/common.js" defer></script><script src="/assets/schedule.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#main" data-en="Skip to content" data-ar="انتقل إلى المحتوى">انتقل إلى المحتوى</a>
+<header class="top"><div class="top-inner"><a class="brand" href="/account"><img src="/assets/logo.svg" alt=""><span data-en="Syria Healthcare" data-ar="الرعاية الصحية في سوريا">الرعاية الصحية في سوريا</span></a><div class="top-actions"><button class="lang" id="langToggle" type="button">English</button></div></div></header>
+<main id="main" class="wrap wide" aria-busy="true">
+  <h1 data-en="Opening hours" data-ar="أوقات الدوام">أوقات الدوام</h1>
+  <p class="lead" data-en="Set when patients can book you. Times are Syria time (Damascus). Changes apply to new bookings only." data-ar="حدّد متى يمكن للمرضى الحجز لديك. الأوقات بتوقيت سوريا (دمشق). تنطبق التعديلات على الحجوزات الجديدة فقط.">حدّد متى يمكن للمرضى الحجز لديك. الأوقات بتوقيت سوريا (دمشق). تنطبق التعديلات على الحجوزات الجديدة فقط.</p>
+
+  <div class="two-col">
+    <form class="card" id="scheduleForm" novalidate>
+      <h2 data-en="Appointments" data-ar="المواعيد">المواعيد</h2>
+      <div class="msg error" id="scheduleError" role="alert" tabindex="-1" hidden></div>
+      <div class="field-row">
+        <label class="field"><span data-en="Length of one appointment" data-ar="مدة الموعد الواحد">مدة الموعد الواحد</span><select id="slotMinutes"></select></label>
+        <label class="field"><span data-en="Patients can book up to" data-ar="يمكن للمرضى الحجز مسبقاً حتى">يمكن للمرضى الحجز مسبقاً حتى</span><select id="windowDays"></select></label>
+        <label class="field"><span data-en="Minimum notice" data-ar="أقل مهلة قبل الموعد">أقل مهلة قبل الموعد</span><select id="noticeHours"></select></label>
+      </div>
+      <h2 data-en="Weekly hours" data-ar="الدوام الأسبوعي">الدوام الأسبوعي</h2>
+      <p class="hint" data-en="Tick the days you work. You can add up to three times per day, for example 10:00–14:00 and 17:00–20:00." data-ar="ضع علامة على أيام عملك. يمكنك إضافة حتى ثلاث فترات في اليوم، مثلاً 10:00–14:00 و17:00–20:00.">ضع علامة على أيام عملك. يمكنك إضافة حتى ثلاث فترات في اليوم، مثلاً 10:00–14:00 و17:00–20:00.</p>
+      <div id="days"></div>
+      <button class="link-btn" type="button" id="copyHours" data-en="Use the first open day's times for all open days" data-ar="استخدم أوقات أول يوم عمل لكل أيام العمل">استخدم أوقات أول يوم عمل لكل أيام العمل</button>
+      <button class="btn" type="submit" id="saveSchedule" data-en="Save opening hours" data-ar="حفظ أوقات الدوام">حفظ أوقات الدوام</button>
+      <p class="saved" id="scheduleSaved" role="status"></p>
+    </form>
+
+    <div>
+      <section class="card" aria-labelledby="offHeading">
+        <h2 id="offHeading" data-en="Days off" data-ar="أيام الإجازة">أيام الإجازة</h2>
+        <p class="hint" data-en="Holidays, travel or conferences. Patients cannot book on these days." data-ar="عطل أو سفر أو مؤتمرات. لا يمكن للمرضى الحجز في هذه الأيام.">عطل أو سفر أو مؤتمرات. لا يمكن للمرضى الحجز في هذه الأيام.</p>
+        <ul class="doc-list" id="offList"></ul>
+        <form id="offForm" novalidate>
+          <div class="msg error" id="offError" role="alert" tabindex="-1" hidden></div>
+          <div class="field-row two">
+            <label class="field"><span data-en="From" data-ar="من">من</span><input type="date" id="offFrom" required></label>
+            <label class="field"><span data-en="Until (including)" data-ar="حتى (ضمناً)">حتى (ضمناً)</span><input type="date" id="offTo" required></label>
+          </div>
+          <label class="field"><span data-en="Note for yourself (optional)" data-ar="ملاحظة لك (اختياري)">ملاحظة لك (اختياري)</span><input type="text" id="offNote" maxlength="200" dir="auto"></label>
+          <button class="btn ghost full" type="submit" id="addOff" data-en="Add days off" data-ar="أضف إجازة">أضف إجازة</button>
+        </form>
+      </section>
+      <section class="card" aria-labelledby="previewHeading">
+        <h2 id="previewHeading" data-en="What patients will see" data-ar="ما سيراه المرضى">ما سيراه المرضى</h2>
+        <p class="hint" id="previewHint"></p>
+        <div id="preview" aria-live="polite"></div>
+      </section>
+    </div>
+  </div>
+</main>
+<footer><div class="wrap"><a href="/doctor" data-en="← My doctor profile" data-ar="ملفي كطبيب ←">ملفي كطبيب ←</a><a href="/account" data-en="My account" data-ar="حسابي">حسابي</a></div></footer>
+</body>
+</html>

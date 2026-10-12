@@ -91,3 +91,19 @@ table.list thead th{border-top:0;color:var(--muted);font-size:13px;font-weight:6
 .tabs{flex-wrap:wrap}
 .card.review{max-width:none}
 .review .dl dd{word-break:break-word}
+.field-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.field-row.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media(max-width:620px){.field-row,.field-row.two{grid-template-columns:1fr}}
+.day-row{display:grid;grid-template-columns:150px 1fr;gap:10px 16px;align-items:start;padding:12px 0;border-top:1px solid var(--rule)}
+.day-row:first-child{border-top:0}
+.day-toggle{margin:0;align-items:center;min-height:44px}
+.ranges{display:flex;flex-direction:column;gap:8px;align-items:flex-start;padding-top:10px}
+.ranges .muted-small{padding-top:2px}
+.range{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+input[type=time],input[type=date]{font:inherit;font-size:16px;padding:8px 10px;min-height:44px;border:1px solid #9fb2a4;border-radius:10px;background:var(--white);color:var(--ink)}
+input[type=date]{width:100%}
+@media(max-width:520px){.day-row{grid-template-columns:1fr}.ranges{padding-top:0}}
+.preview-day h3{font-size:15px;margin:14px 0 8px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{background:var(--sage);border-radius:99px;padding:4px 12px;font-size:14px;font-variant-numeric:tabular-nums;direction:ltr}
+#scheduleForm .btn[type=submit]{margin-top:12px}
