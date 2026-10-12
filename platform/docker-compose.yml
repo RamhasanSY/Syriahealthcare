@@ -30,10 +30,13 @@ services:
       DATABASE_URL: postgres://shc:${POSTGRES_PASSWORD}@db:5432/shc
       APP_ORIGIN: https://${APP_DOMAIN:?Set APP_DOMAIN in .env}
       OTP_SECRET: ${OTP_SECRET:?Set OTP_SECRET in .env}
+      DOCUMENT_KEY: ${DOCUMENT_KEY:?Set DOCUMENT_KEY in .env}
       SMS_PROVIDER: ${SMS_PROVIDER:-http}
       SMS_HTTP_URL: ${SMS_HTTP_URL:-}
       SMS_HTTP_TOKEN: ${SMS_HTTP_TOKEN:-}
       SMS_SENDER: ${SMS_SENDER:-SyriaHealth}
+    volumes:
+      - documents:/data/documents
 
   caddy:
     image: caddy:2-alpine
@@ -59,18 +62,22 @@ services:
       PGPASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - ./backups:/backups
-    # Every night at about 02:00 server time: a compressed dump, keeping the last 14 days.
+      - documents:/documents:ro
+    # Every night at about 02:00 server time: a compressed database dump and an archive of the
+    # (already encrypted) licence documents, keeping the last 14 days.
     entrypoint: ["/bin/sh", "-c"]
     command:
       - |
         while true; do
           sleep $$(( (26 - $$(date +%H)) % 24 * 3600 ))
-          pg_dump -h db -U shc -d shc -Fc -f /backups/shc-$$(date +%Y-%m-%d).dump && echo "backup ok"
-          find /backups -name 'shc-*.dump' -mtime +14 -delete
+          pg_dump -h db -U shc -d shc -Fc -f /backups/shc-$$(date +%Y-%m-%d).dump && echo "database backup ok"
+          tar -czf /backups/documents-$$(date +%Y-%m-%d).tar.gz -C /documents . && echo "documents backup ok"
+          find /backups \( -name 'shc-*.dump' -o -name 'documents-*.tar.gz' \) -mtime +14 -delete
           sleep 3600
         done
 
 volumes:
   db-data:
+  documents:
   caddy-data:
   caddy-config:

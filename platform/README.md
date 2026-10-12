@@ -2,15 +2,24 @@
 
 Accounts and (in later steps) appointment booking for patients and doctors. It runs on the company's own server at `app.syriahealthcare.com`, separately from the public website, which stays on GitHub Pages.
 
-**Status: Stage 1, step 1 of 6: accounts and sign-in.** Next: doctor profiles and approval, opening hours, booking, doctor dashboard, public doctor list.
+**Status: Stage 1, steps 1–2 of 6 done:** accounts and sign-in, plus doctor profiles and approval. Next: opening hours, booking, doctor dashboard, public doctor list.
 
 ## What works now
 
 | Who | How they sign in | Rules |
 |---|---|---|
 | Patient | Mobile number and a 6-digit SMS code | Max 3 codes per number per 15 min; a code is valid for 5 minutes, works once, and allows 5 tries. New patients give their name and accept the privacy policy. |
-| Doctor | Email and password (at least 10 characters), self-registration | Starts as "waiting for verification"; approval comes in step 2. |
+| Doctor | Email and password (at least 10 characters), self-registration | Fills in a profile and uploads a licence; must be approved by an admin before patients can see them. |
 | Admin | Email and password, created on the server only | `npm run create-admin -- you@company.com "Your Name"` |
+
+### Doctor verification (step 2)
+
+1. **Doctor** (`/doctor`) fills in specialty, governorate, area, clinic name, address and phone, licence number and an optional short introduction.
+2. **Doctor** uploads their licence to practise (required) and optionally a syndicate card: PDF, JPG or PNG, up to 5 MB and at most 6 files. The file's real content is checked, not its name. Files are encrypted with AES-256-GCM before they touch the disk.
+3. **Doctor** sends the profile for review. This only works when every required field is filled and a licence is uploaded.
+4. **Admin** (`/admin`) sees doctors by status, opens the documents (every opening is logged), and either approves the doctor or asks for changes with a note the doctor sees.
+5. A doctor who changes an approved profile goes back to "waiting for review", so patients only ever see reviewed details. Documents are locked after approval.
+6. **Admin** can suspend an approved doctor with a reason, and reinstate them later. Every step appears in the doctor's history.
 
 Five wrong passwords lock an account for 15 minutes. Sessions last 30 days for patients, 7 for doctors and 1 for admins. Every page is in Arabic and English.
 
@@ -46,7 +55,7 @@ In development, SMS codes are not sent. They appear in the server log as `[devel
 5. Create the first admin: `docker compose exec app node src/create-admin.js admin@company.com "Name"`.
 6. Check that https://app.syriahealthcare.com/api/health returns `{"ok":true}`.
 
-Backups: a compressed database dump is written to `platform/backups/` every night, and the last 14 days are kept. Copy these files off the server regularly (to another machine or storage), because a backup on the same disk does not survive a disk failure.
+Backups: a compressed database dump and an archive of the encrypted documents are written to `platform/backups/` every night, and the last 14 days are kept. **Keep `DOCUMENT_KEY` safe and separate from the backups: without it, the document backups cannot be opened, and with it anyone holding the backups can read the licences.** Copy these files off the server regularly (to another machine or storage), because a backup on the same disk does not survive a disk failure.
 
 Updates: `git pull && docker compose up -d --build`. Database changes in `migrations/` are applied automatically on start.
 

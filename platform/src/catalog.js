@@ -1,0 +1,51 @@
+// Fixed lists used in doctor profiles and search. Keys are stored in the database; labels are [English, Arabic].
+export const specialties = {
+    general: ['General practice', 'طب عام'],
+    family: ['Family medicine', 'طب الأسرة'],
+    internal: ['Internal medicine', 'أمراض داخلية'],
+    cardiology: ['Cardiology', 'أمراض القلب'],
+    pediatrics: ['Pediatrics', 'طب الأطفال'],
+    obgyn: ['Obstetrics & gynecology', 'نسائية وتوليد'],
+    dermatology: ['Dermatology', 'أمراض جلدية'],
+    ophthalmology: ['Ophthalmology', 'طب العيون'],
+    ent: ['Ear, nose & throat', 'أذن وأنف وحنجرة'],
+    orthopedics: ['Orthopedics', 'جراحة العظام'],
+    general_surgery: ['General surgery', 'جراحة عامة'],
+    neurology: ['Neurology', 'أمراض عصبية'],
+    neurosurgery: ['Neurosurgery', 'جراحة عصبية'],
+    psychiatry: ['Psychiatry', 'طب نفسي'],
+    urology: ['Urology', 'جراحة بولية'],
+    nephrology: ['Nephrology', 'أمراض الكلى'],
+    gastroenterology: ['Gastroenterology', 'أمراض الهضم'],
+    endocrinology: ['Endocrinology & diabetes', 'غدد صم وسكري'],
+    pulmonology: ['Pulmonology', 'أمراض صدرية'],
+    rheumatology: ['Rheumatology', 'أمراض المفاصل والروماتيزم'],
+    oncology: ['Oncology', 'أمراض الأورام'],
+    hematology: ['Hematology', 'أمراض الدم'],
+    radiology: ['Radiology', 'أشعة'],
+    anesthesiology: ['Anesthesiology', 'تخدير'],
+    plastic_surgery: ['Plastic surgery', 'جراحة تجميلية'],
+    vascular_surgery: ['Vascular surgery', 'جراحة أوعية'],
+    cardiac_surgery: ['Cardiac surgery', 'جراحة قلبية'],
+    physical_medicine: ['Physical medicine & rehabilitation', 'طب فيزيائي وإعادة تأهيل'],
+    nutrition: ['Clinical nutrition', 'تغذية علاجية'],
+    dentistry: ['Dentistry', 'طب الأسنان']
+};
+
+// The 14 governorates of Syria.
+export const governorates = {
+    damascus: ['Damascus', 'دمشق'],
+    rif_dimashq: ['Rif Dimashq', 'ريف دمشق'],
+    aleppo: ['Aleppo', 'حلب'],
+    homs: ['Homs', 'حمص'],
+    hama: ['Hama', 'حماة'],
+    latakia: ['Latakia', 'اللاذقية'],
+    tartus: ['Tartus', 'طرطوس'],
+    idlib: ['Idlib', 'إدلب'],
+    daraa: ['Daraa', 'درعا'],
+    suwayda: ['As-Suwayda', 'السويداء'],
+    quneitra: ['Quneitra', 'القنيطرة'],
+    deir_ez_zor: ['Deir ez-Zor', 'دير الزور'],
+    raqqa: ['Raqqa', 'الرقة'],
+    hasakah: ['Al-Hasakah', 'الحسكة']
+};

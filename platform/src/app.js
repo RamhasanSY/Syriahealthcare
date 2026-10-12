@@ -5,14 +5,17 @@ import fastifyStatic from '@fastify/static';
 import {fileURLToPath} from 'node:url';
 import authRoutes, {loadSession} from './auth.js';
 import {createSms} from './sms.js';
+import doctorRoutes from './doctors.js';
+import {createDocumentStore} from './documents.js';
 
 const UNSAFE = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
 
-export async function buildApp({config, pool, sms, logger = true}) {
+export async function buildApp({config, pool, sms, documents, logger = true}) {
     const app = Fastify({logger, trustProxy: config.trustProxy, bodyLimit: 64 * 1024});
     app.decorate('config', config);
     app.decorate('pg', pool);
     app.decorate('sms', sms || createSms(config, app.log));
+    app.decorate('documents', documents || createDocumentStore({dir: config.documentDir, keyHex: config.documentKey}));
     app.decorateRequest('user', null);
 
     await app.register(cookie);
@@ -45,7 +48,8 @@ export async function buildApp({config, pool, sms, logger = true}) {
         if (status >= 500) request.log.error({err: error}, 'Request failed');
         reply.code(status).send({
             error: error.code && status < 500 ? error.code : status === 429 ? 'rate_limited' : 'server_error',
-            message: status < 500 ? error.message : 'Something went wrong. Please try again.'
+            message: status < 500 ? error.message : 'Something went wrong. Please try again.',
+            ...(error.missing && {missing: error.missing})
         });
     });
 
@@ -54,6 +58,7 @@ export async function buildApp({config, pool, sms, logger = true}) {
         return {ok: true};
     });
     await app.register(authRoutes);
+    await app.register(doctorRoutes);
     await app.register(fastifyStatic, {root: fileURLToPath(new URL('../public/', import.meta.url)), extensions: ['html']});
     return app;
 }

@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="ar" dir="rtl" data-title-en="Doctor review — Syria Healthcare" data-title-ar="مراجعة الأطباء — الرعاية الصحية في سوريا">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#173e36">
+<title>مراجعة الأطباء — الرعاية الصحية في سوريا</title>
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/assets/app.css">
+<script src="/assets/common.js" defer></script><script src="/assets/admin.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#main" data-en="Skip to content" data-ar="انتقل إلى المحتوى">انتقل إلى المحتوى</a>
+<header class="top"><div class="top-inner"><a class="brand" href="/account"><img src="/assets/logo.svg" alt=""><span data-en="Syria Healthcare · Admin" data-ar="الرعاية الصحية في سوريا · الإدارة">الرعاية الصحية في سوريا · الإدارة</span></a><div class="top-actions"><button class="lang" id="langToggle" type="button">English</button></div></div></header>
+<main id="main" class="wrap wide">
+  <h1 data-en="Doctor review" data-ar="مراجعة الأطباء">مراجعة الأطباء</h1>
+  <p class="lead" data-en="Check each doctor's licence before approving. Approved doctors become visible to patients. Every action is recorded." data-ar="تحقق من ترخيص كل طبيب قبل اعتماده. يظهر الأطباء المعتمدون للمرضى. يُسجَّل كل إجراء.">تحقق من ترخيص كل طبيب قبل اعتماده. يظهر الأطباء المعتمدون للمرضى. يُسجَّل كل إجراء.</p>
+  <div class="tabs" role="tablist" id="statusTabs"></div>
+  <div id="listPanel" role="tabpanel">
+    <p class="hint" id="listEmpty" hidden></p>
+    <div class="table-wrap"><table class="list" id="doctorTable" hidden>
+      <thead><tr><th data-en="Doctor" data-ar="الطبيب">الطبيب</th><th data-en="Specialty" data-ar="الاختصاص">الاختصاص</th><th data-en="Governorate" data-ar="المحافظة">المحافظة</th><th data-en="Sent" data-ar="تاريخ الإرسال">تاريخ الإرسال</th><th data-en="Documents" data-ar="الوثائق">الوثائق</th><th><span class="sr-only" data-en="Action" data-ar="إجراء">إجراء</span></th></tr></thead>
+      <tbody id="doctorRows"></tbody>
+    </table></div>
+  </div>
+
+  <section class="card review" id="detail" hidden aria-labelledby="detailName" tabindex="-1">
+    <button class="link-btn" type="button" id="backToList" data-en="← Back to list" data-ar="العودة إلى القائمة ←">العودة إلى القائمة ←</button>
+    <h2 id="detailName" dir="auto"></h2>
+    <p id="detailStatus"></p>
+    <div class="two-col">
+      <div><h3 data-en="Details" data-ar="البيانات">البيانات</h3><dl class="dl" id="detailFields"></dl></div>
+      <div><h3 data-en="Documents" data-ar="الوثائق">الوثائق</h3><ul class="doc-list" id="detailDocs"></ul>
+        <p class="hint" data-en="Documents open in a new tab. Opening one is recorded in the history." data-ar="تُفتح الوثائق في نافذة جديدة. يُسجَّل فتحها في السجل.">تُفتح الوثائق في نافذة جديدة. يُسجَّل فتحها في السجل.</p></div>
+    </div>
+    <form id="decisionForm" novalidate>
+      <div class="msg error" id="decisionError" role="alert" tabindex="-1" hidden></div>
+      <label class="field"><span data-en="Note to the doctor (required to reject or suspend)" data-ar="ملاحظة للطبيب (إلزامية عند الرفض أو الإيقاف)">ملاحظة للطبيب (إلزامية عند الرفض أو الإيقاف)</span><textarea id="note" maxlength="1000" rows="3" dir="auto"></textarea></label>
+      <div class="actions">
+        <button class="btn" type="button" id="approve" data-en="Approve" data-ar="اعتماد">اعتماد</button>
+        <button class="btn danger" type="button" id="reject" data-en="Ask for changes" data-ar="طلب تعديلات">طلب تعديلات</button>
+        <button class="btn danger" type="button" id="suspend" data-en="Suspend" data-ar="إيقاف">إيقاف</button>
+      </div>
+    </form>
+    <h3 data-en="History" data-ar="السجل">السجل</h3>
+    <ol class="history" id="history"></ol>
+  </section>
+</main>
+<footer><div class="wrap"><a href="/account" data-en="← My account" data-ar="حسابي ←">حسابي ←</a></div></footer>
+</body>
+</html>

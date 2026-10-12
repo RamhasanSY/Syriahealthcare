@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="ar" dir="rtl" data-title-en="My doctor profile — Syria Healthcare" data-title-ar="ملفي كطبيب — الرعاية الصحية في سوريا">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#173e36">
+<title>ملفي كطبيب — الرعاية الصحية في سوريا</title>
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/assets/app.css">
+<script src="/assets/common.js" defer></script><script src="/assets/doctor.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#main" data-en="Skip to content" data-ar="انتقل إلى المحتوى">انتقل إلى المحتوى</a>
+<header class="top"><div class="top-inner"><a class="brand" href="/account"><img src="/assets/logo.svg" alt=""><span data-en="Syria Healthcare" data-ar="الرعاية الصحية في سوريا">الرعاية الصحية في سوريا</span></a><div class="top-actions"><button class="lang" id="langToggle" type="button">English</button></div></div></header>
+<main id="main" class="wrap wide" aria-busy="true">
+  <h1 data-en="My doctor profile" data-ar="ملفي كطبيب">ملفي كطبيب</h1>
+  <div class="status-box" id="statusBox" role="status" tabindex="-1"></div>
+
+  <div class="two-col">
+    <form class="card" id="profileForm" novalidate hidden>
+      <h2 data-en="1. Practice details" data-ar="1. بيانات العيادة">1. بيانات العيادة</h2>
+      <p class="hint" data-en="Fields marked * are required. Patients will see these details once you are approved." data-ar="الحقول المعلَّمة بـ * إلزامية. سيرى المرضى هذه البيانات بعد اعتمادك.">الحقول المعلَّمة بـ * إلزامية. سيرى المرضى هذه البيانات بعد اعتمادك.</p>
+      <div class="msg error" id="profileError" role="alert" tabindex="-1" hidden></div>
+      <label class="field"><span data-en="Specialty *" data-ar="الاختصاص *">الاختصاص *</span><select id="specialty" name="specialty"></select></label>
+      <label class="field"><span data-en="Governorate *" data-ar="المحافظة *">المحافظة *</span><select id="governorate" name="governorate"></select></label>
+      <label class="field"><span data-en="City or area *" data-ar="المدينة أو المنطقة *">المدينة أو المنطقة *</span><input type="text" id="area" name="area" dir="auto" maxlength="120"></label>
+      <label class="field"><span data-en="Clinic name *" data-ar="اسم العيادة *">اسم العيادة *</span><input type="text" id="clinic_name" name="clinic_name" dir="auto" maxlength="160"></label>
+      <label class="field"><span data-en="Clinic address *" data-ar="عنوان العيادة *">عنوان العيادة *</span><input type="text" id="clinic_address" name="clinic_address" dir="auto" maxlength="300" placeholder="" data-placeholder-en="Street, building, floor" data-placeholder-ar="الشارع، البناء، الطابق"></label>
+      <label class="field"><span data-en="Clinic phone *" data-ar="هاتف العيادة *">هاتف العيادة *</span><input type="tel" id="clinic_phone" name="clinic_phone" dir="ltr" placeholder="011 234 5678"></label>
+      <label class="field"><span data-en="Licence number *" data-ar="رقم الترخيص *">رقم الترخيص *</span><input type="text" id="licence_number" name="licence_number" maxlength="60" dir="ltr"><small data-en="As shown on your licence to practise or syndicate card." data-ar="كما يظهر في ترخيص مزاولة المهنة أو بطاقة النقابة.">كما يظهر في ترخيص مزاولة المهنة أو بطاقة النقابة.</small></label>
+      <label class="field"><span data-en="Short introduction (optional)" data-ar="نبذة قصيرة (اختياري)">نبذة قصيرة (اختياري)</span><textarea id="bio" name="bio" dir="auto" maxlength="600" rows="4" aria-describedby="bioCount"></textarea><small id="bioCount"></small></label>
+      <p class="msg info" id="reviewWarning" hidden data-en="You are approved. Saving changes sends your profile back for a short review, and patients will not see it until it is approved again." data-ar="ملفك معتمد. حفظ التعديلات يعيده إلى المراجعة، ولن يراه المرضى حتى يُعتمد مجدداً.">ملفك معتمد. حفظ التعديلات يعيده إلى المراجعة، ولن يراه المرضى حتى يُعتمد مجدداً.</p>
+      <button class="btn" type="submit" id="saveProfile" data-en="Save" data-ar="حفظ">حفظ</button>
+      <p class="saved" id="savedNote" role="status"></p>
+    </form>
+
+    <div>
+      <section class="card" id="documentsCard" hidden aria-labelledby="docsHeading">
+        <h2 id="docsHeading" data-en="2. Licence documents" data-ar="2. وثائق الترخيص">2. وثائق الترخيص</h2>
+        <p class="hint" data-en="Upload your licence to practise (required) and, if you have it, your syndicate card. PDF, JPG or PNG, up to 5 MB. Only our verification team can open them." data-ar="ارفع ترخيص مزاولة المهنة (إلزامي)، وبطاقة النقابة إن وُجدت. ملف PDF أو JPG أو PNG حتى 5 ميغابايت. لا يطّلع عليها إلا فريق التحقق لدينا.">ارفع ترخيص مزاولة المهنة (إلزامي)، وبطاقة النقابة إن وُجدت. ملف PDF أو JPG أو PNG حتى 5 ميغابايت. لا يطّلع عليها إلا فريق التحقق لدينا.</p>
+        <ul class="doc-list" id="docList"></ul>
+        <form id="uploadForm" novalidate>
+          <div class="msg error" id="uploadError" role="alert" tabindex="-1" hidden></div>
+          <label class="field"><span data-en="Document type" data-ar="نوع الوثيقة">نوع الوثيقة</span><select id="kind" name="kind">
+            <option value="licence" data-en="Licence to practise" data-ar="ترخيص مزاولة المهنة">ترخيص مزاولة المهنة</option>
+            <option value="syndicate" data-en="Syndicate membership card" data-ar="بطاقة عضوية النقابة">بطاقة عضوية النقابة</option>
+            <option value="other" data-en="Other supporting document" data-ar="وثيقة داعمة أخرى">وثيقة داعمة أخرى</option></select></label>
+          <label class="field"><span data-en="File" data-ar="الملف">الملف</span><input type="file" id="file" name="file" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"></label>
+          <button class="btn ghost full" type="submit" id="uploadButton" data-en="Upload" data-ar="رفع">رفع</button>
+        </form>
+      </section>
+      <section class="card" id="submitCard" hidden aria-labelledby="submitHeading">
+        <h2 id="submitHeading" data-en="3. Send for review" data-ar="3. أرسل للمراجعة">3. أرسل للمراجعة</h2>
+        <p class="hint" data-en="When your details and licence are complete, send them to our team. We usually review within two working days." data-ar="عند اكتمال بياناتك وترخيصك أرسلها إلى فريقنا. نراجعها عادةً خلال يومي عمل.">عند اكتمال بياناتك وترخيصك أرسلها إلى فريقنا. نراجعها عادةً خلال يومي عمل.</p>
+        <div class="msg error" id="submitError" role="alert" tabindex="-1" hidden></div>
+        <button class="btn" type="button" id="submitButton" data-en="Send for review" data-ar="أرسل للمراجعة">أرسل للمراجعة</button>
+      </section>
+    </div>
+  </div>
+</main>
+<footer><div class="wrap"><a href="/account" data-en="← My account" data-ar="حسابي ←">حسابي ←</a><a href="/privacy" data-en="Privacy policy" data-ar="سياسة الخصوصية">سياسة الخصوصية</a></div></footer>
+</body>
+</html>

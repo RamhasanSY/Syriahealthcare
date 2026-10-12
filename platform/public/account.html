@@ -14,8 +14,8 @@
   <div class="card" id="details" hidden>
     <dl class="dl"><dt data-en="Name" data-ar="الاسم">الاسم</dt><dd id="userName" dir="auto"></dd><dt data-en="Account type" data-ar="نوع الحساب">نوع الحساب</dt><dd id="userRole"></dd><dt id="contactLabel"></dt><dd id="userContact" dir="ltr"></dd></dl>
     <div id="patientNext" hidden><p class="msg info" data-en="Booking with approved doctors is coming soon. Your appointments will appear here." data-ar="الحجز لدى الأطباء المعتمدين قريباً. ستظهر مواعيدك هنا.">الحجز لدى الأطباء المعتمدين قريباً. ستظهر مواعيدك هنا.</p></div>
-    <div id="doctorNext" hidden><p><span class="pill wait" data-en="Waiting for verification" data-ar="بانتظار التحقق">بانتظار التحقق</span></p><p data-en="Next, you will add your specialty, clinic and licence document. Our team checks it before patients can find and book you." data-ar="في الخطوة التالية ستضيف اختصاصك وعيادتك ووثيقة الترخيص. يتحقق فريقنا منها قبل أن يتمكن المرضى من إيجادك والحجز لديك.">في الخطوة التالية ستضيف اختصاصك وعيادتك ووثيقة الترخيص. يتحقق فريقنا منها قبل أن يتمكن المرضى من إيجادك والحجز لديك.</p></div>
-    <div id="adminNext" hidden><p class="msg info" data-en="Doctor review tools will appear here." data-ar="ستظهر هنا أدوات مراجعة الأطباء.">ستظهر هنا أدوات مراجعة الأطباء.</p></div>
+    <div id="doctorNext" hidden><p><span class="pill wait" id="doctorStatus"></span></p><p id="doctorStatusText"></p><a class="btn" href="/doctor" data-en="Open my doctor profile" data-ar="افتح ملفي كطبيب">افتح ملفي كطبيب</a></div>
+    <div id="adminNext" hidden><a class="btn" href="/admin" data-en="Review doctors" data-ar="مراجعة الأطباء">مراجعة الأطباء</a></div>
   </div>
   <div class="card" id="signedOut" hidden><p data-en="You are not signed in." data-ar="لم تسجّل الدخول.">لم تسجّل الدخول.</p><a class="btn" href="/" data-en="Sign in" data-ar="تسجيل الدخول">تسجيل الدخول</a></div>
 </main>
