@@ -39,10 +39,12 @@ export function sameHash(a, b) {
 }
 
 // Normalizes phone numbers to E.164. Accepts Syrian local mobiles (09xxxxxxxx) and international numbers (+..., 00...).
-export function normalizePhone(raw) {
+// With {landline: true}, Syrian landlines with area code (e.g. 011 234 5678) are accepted too, for clinic phones.
+export function normalizePhone(raw, {landline = false} = {}) {
     let digits = String(raw || '').replace(/[\s\-().]/g, '');
     digits = digits.replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d));  // Arabic-Indic digits
     if (/^09\d{8}$/.test(digits)) return '+963' + digits.slice(1);
+    if (landline && /^0[1-8]\d{7,8}$/.test(digits)) return '+963' + digits.slice(1);
     if (digits.startsWith('00')) digits = '+' + digits.slice(2);
     if (/^\+9630?9\d{8}$/.test(digits)) return '+963' + digits.replace(/^\+9630?/, '');
     return /^\+[1-9]\d{7,14}$/.test(digits) ? digits : null;

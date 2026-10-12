@@ -137,6 +137,7 @@ export default async function authRoutes(app) {
                 `INSERT INTO users (role, name, email, password_hash, language, consented_at) VALUES ('doctor', $1, $2, $3, $4, now())
                  ON CONFLICT (email) DO NOTHING RETURNING *`, [name, email, hash, request.body.language || 'ar']);
             if (!created) throw new HttpError(409, 'email_taken', 'An account with this email already exists. Please sign in.');
+            await db.query('INSERT INTO doctor_profiles (user_id) VALUES ($1)', [created.id]);
             await audit(db, {actorId: created.id, action: 'doctor.registered', targetId: created.id, ip: request.ip});
             return created;
         });

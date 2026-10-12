@@ -1,40 +1,17 @@
 // Runs against a real PostgreSQL database: TEST_DATABASE_URL (default: local test server on port 54329).
-import {after, before, beforeEach, describe, test} from 'node:test';
+import {after, beforeEach, describe, test} from 'node:test';
 import assert from 'node:assert/strict';
-import {buildApp} from '../src/app.js';
-import {createPool} from '../src/db.js';
-import {migrate} from '../src/migrate.js';
-import {createSms} from '../src/sms.js';
+import {cookieOf, pool, setup, teardown} from './helpers.js';
 import {hashPassword, normalizePhone} from '../src/security.js';
 
-const origin = 'http://127.0.0.1:3000';
-const config = {
-    production: false, appOrigin: origin, otpSecret: 'test-secret-test-secret-test-secret', smsProvider: 'test',
-    sessionDays: {patient: 30, doctor: 7, admin: 1}, trustProxy: false
-};
-const pool = createPool(process.env.TEST_DATABASE_URL || 'postgres://postgres@127.0.0.1:54329/shc_test');
-let app, sms;
-
-before(async () => {
-    await pool.query('DROP SCHEMA public CASCADE; CREATE SCHEMA public');
-    await migrate(pool);
-});
+let app, sms, post;
 beforeEach(async () => {
-    await pool.query('TRUNCATE users, otp_codes, sessions, login_failures, audit_log RESTART IDENTITY CASCADE');
-    sms = createSms(config);
-    app = await buildApp({config, pool, sms, logger: false});
-});
-after(async () => {
     await app?.close();
-    await pool.end();
+    ({app, sms, post} = await setup());
 });
+after(() => teardown(app));
 
-const post = (url, payload, headers = {}) => app.inject({method: 'POST', url, payload, headers: {origin, ...headers}});
 const codeFrom = message => message.match(/\d{6}/)[0];
-const cookieOf = response => {
-    const c = response.cookies.find(x => x.name === 'shc_session');
-    return c && `shc_session=${c.value}`;
-};
 
 describe('phone numbers', () => {
     test('normalizes Syrian and international formats', () => {
@@ -44,6 +21,8 @@ describe('phone numbers', () => {
         assert.equal(normalizePhone('٠٩١٢٣٤٥٦٧٨'), '+963912345678');
         assert.equal(normalizePhone('+49 151 23456789'), '+4915123456789');
         assert.equal(normalizePhone('12345'), null);
+        assert.equal(normalizePhone('011 234 5678'), null, 'landlines cannot receive SMS codes');
+        assert.equal(normalizePhone('011 234 5678', {landline: true}), '+963112345678');
     });
 });
 
