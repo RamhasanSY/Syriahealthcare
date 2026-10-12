@@ -26,6 +26,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (user.role === 'doctor') {
         const profile = await api('/api/doctor/profile');
         if (profile.ok) doctorStatus = profile.data.profile.status;
+        const waiting = await api('/api/doctor/appointments?scope=requests');
+        if (waiting.ok && waiting.data.counts.requests) {
+            const n = waiting.data.counts.requests;
+            $('dashboardLink').removeAttribute('data-en');
+            const label = () => { $('dashboardLink').textContent = tr(`Appointments (${n} new)`, `المواعيد (${n} جديد)`); };
+            label();
+            document.addEventListener('shc:language', label);
+        }
     }
     const renderDoctor = () => {
         if (!doctorStatus) return;
