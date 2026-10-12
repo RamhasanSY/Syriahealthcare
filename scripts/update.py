@@ -455,6 +455,37 @@ def write_news_rss(items):
     os.replace(temporary, DATA / 'news.xml')
 
 
+def jobs_rss(items):
+    """Verified, still-open vacancies with employer attribution and deadlines."""
+    rss = ElementTree.Element('rss', version='2.0')
+    channel = ElementTree.SubElement(rss, 'channel')
+    for tag, value in [('title', 'Syria Healthcare - open vacancies'), ('link', 'https://syriahealthcare.com/#jobs'),
+                       ('description', 'Verified healthcare and NGO vacancies in Syria, linked to the original employer listing.')]:
+        ElementTree.SubElement(channel, tag).text = value
+    seen = set()
+    for item in items:
+        url = canonical_url(item.get('url', ''))
+        published = parse_date(item.get('published'))
+        title = item.get('title_en') or item.get('title') or item.get('title_ar')
+        if not url or url in seen or not title or item.get('verification_version') != VERSION or not published or not job_valid(item):
+            continue
+        seen.add(url)
+        entry = ElementTree.SubElement(channel, 'item')
+        description = f"{item.get('organisation', item.get('source', ''))} - {item.get('location', '')}. Closes {item['deadline']}. Confirm details on the original announcement."
+        for tag, value in [('title', title), ('link', url), ('description', description),
+                           ('pubDate', format_datetime(published.astimezone(timezone.utc), usegmt=True))]:
+            ElementTree.SubElement(entry, tag).text = value
+        ElementTree.SubElement(entry, 'guid', isPermaLink='true').text = url
+    ElementTree.indent(rss)
+    return ElementTree.tostring(rss, encoding='utf-8', xml_declaration=True)
+
+
+def write_jobs_rss(items):
+    temporary = DATA / 'jobs.xml.tmp'
+    temporary.write_bytes(jobs_rss(items))
+    os.replace(temporary, DATA / 'jobs.xml')
+
+
 def retain_verified(item, kind, configured):
     verified = parse_date(item.get('verified_at'))
     published = parse_date(item.get('published'))
@@ -508,6 +539,8 @@ def main():
               'status': 'ok' if all(s['state'] == 'ok' for s in statuses) and statuses else 'partial' if success else 'error', 'items': items})
         if kind == 'news':
             write_news_rss(items)
+        else:
+            write_jobs_rss(items)
         if not success:
             failed = True
     write(DATA / 'status.json', {'checked_at': checked, 'sources': sorted(status_rows, key=lambda s: s['id']), 'version': VERSION})
