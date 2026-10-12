@@ -36,13 +36,15 @@ jobs:
         env:
           # Optional: an approved ReliefWeb API appname (Settings → Secrets and variables → Actions → Variables).
           RELIEFWEB_APPNAME: ${{ vars.RELIEFWEB_APPNAME }}
+          # Optional: the booking platform's address, e.g. https://app.syriahealthcare.com (set once it is online).
+          PLATFORM_URL: ${{ vars.PLATFORM_URL }}
         run: python scripts/update.py
 
       - name: Commit changes
         run: |
           git config user.name "syriahealthcare-bot"
           git config user.email "actions@github.com"
-          git add data/news.json data/news.xml data/jobs.json data/jobs.xml data/status.json data/hospitals.json
+          git add data/news.json data/news.xml data/jobs.json data/jobs.xml data/status.json data/hospitals.json data/doctors.json
           if git diff --staged --quiet; then
             echo "Nothing changed."
           else
