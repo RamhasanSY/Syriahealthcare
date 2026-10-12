@@ -4,7 +4,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let phone = '', newPatient = false, sentInfo = null;
 
     const renderInfo = () => {
-        if (sentInfo) $('codeInfo').textContent = tr(`We sent a code to ${sentInfo.phone}. It is valid for ${sentInfo.minutes} minutes.`, `أرسلنا رمزاً إلى ${sentInfo.phone}، صالحاً لمدة ${sentInfo.minutes} دقائق.`);
+        if (!sentInfo) return;
+        $('codeInfo').textContent = tr(`We sent a code to ${sentInfo.phone}. It is valid for ${sentInfo.minutes} minutes.`, `أرسلنا رمزاً إلى ${sentInfo.phone}، صالحاً لمدة ${sentInfo.minutes} دقائق.`);
+        if (sentInfo.previewCode) $('codeInfo').textContent += tr(` (Test mode, no SMS sent: your code is ${sentInfo.previewCode}.)`, ` (وضع التجربة، لم تُرسل رسالة: رمزك هو ${sentInfo.previewCode}.)`);
     };
     document.addEventListener('shc:language', renderInfo);
 
@@ -20,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         $('phone').removeAttribute('aria-invalid');
         phone = res.data.phone;
-        sentInfo = {phone, minutes: res.data.expiresInMinutes};
+        sentInfo = {phone, minutes: res.data.expiresInMinutes, previewCode: res.data.previewCode};
         renderInfo();
         $('phoneForm').hidden = true;
         $('codeForm').hidden = false;

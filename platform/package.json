@@ -10,7 +10,8 @@
     "dev": "node --watch src/server.js",
     "migrate": "node src/migrate.js",
     "create-admin": "node src/create-admin.js",
-    "test": "node --test --test-concurrency=1 \"test/**/*.test.js\""
+    "test": "node --test --test-concurrency=1 \"test/**/*.test.js\"",
+    "seed:demo": "node src/seed-demo.js"
   },
   "dependencies": {
     "@fastify/cookie": "^11.1.3",

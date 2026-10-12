@@ -69,7 +69,9 @@ export default async function authRoutes(app) {
             throw new HttpError(502, 'sms_failed', 'We could not send the SMS. Please try again in a minute.');
         }
         reply.code(202);
-        return {sent: true, phone, expiresInMinutes: OTP_MINUTES};
+        // Local preview only: SMS_PROVIDER=console (refused in production) shows the code on screen.
+        const preview = app.config.smsProvider === 'console' && !app.config.production ? {previewCode: code} : {};
+        return {sent: true, phone, expiresInMinutes: OTP_MINUTES, ...preview};
     });
 
     // Patients: verify the code. New patients also send their name and consent.

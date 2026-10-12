@@ -64,7 +64,16 @@ npm run dev          # http://127.0.0.1:3000
 npm test             # uses postgres://postgres@127.0.0.1:54329/shc_test (or TEST_DATABASE_URL); it wipes that database
 ```
 
-In development, SMS codes are not sent. They appear in the server log as `[development SMS]`.
+In development, SMS codes are not sent. They appear in the server log as `[development SMS]` and, to make testing easy, on the sign-in screen ("Test mode"). The server refuses to start in production with this setting.
+
+**Local preview with demo data:** create an empty database (e.g. `shc_preview`), then run:
+
+```sh
+DATABASE_URL=postgres://postgres@127.0.0.1:54329/shc_preview npm run seed:demo
+DATABASE_URL=postgres://postgres@127.0.0.1:54329/shc_preview npm start
+```
+
+Open http://127.0.0.1:3000. The demo data has three approved doctors marked [DEMO]. The doctor login is `demo-doctor@demo.local` / `demo doctor 123`, and the admin login is `demo-admin@demo.local` / `demo admin 123`. Patients sign in with any mobile number. `seed:demo` refuses to run in production.
 
 ## Install on the company server
 
