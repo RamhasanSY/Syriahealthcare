@@ -38,6 +38,19 @@ class CollectorTests(unittest.TestCase):
     def verified(self, item, kind='news'):
         return {**item, 'verification_version': 2, 'source_id': 'example', 'verified_at': u.now().isoformat()}
 
+    def test_reliefweb_jobs_use_listed_employer_and_skip_tenders(self):
+        def entry(title, category):
+            return ('<item><title>%s</title><link>https://reliefweb.int/job/1/x</link><pubDate>%s</pubDate>'
+                    '<description>&lt;div&gt;Country: Syrian Arab Republic&lt;/div&gt;&lt;div&gt;Organization: GOAL&lt;/div&gt;'
+                    '&lt;div&gt;Closing date: %s&lt;/div&gt;</description><category>%s</category></item>'
+                    % (title, u.format_datetime(u.now()), (u.now() + timedelta(days=5)).strftime('%d %b %Y'), category))
+        xml = ('<rss><channel>' + entry('Nurse', 'Health') + entry('Soil lab', 'Tender/RFPs/EOIs') + '</channel></rss>').encode()
+        source = {'id': 'rw', 'name': 'RW', 'organisation': 'ReliefWeb listing', 'sector': 'ngo', 'url': 'https://reliefweb.int/jobs/rss.xml'}
+        with patch.object(u, 'fetch', return_value=xml):
+            items, total = u.reliefweb_jobs(source)
+        self.assertEqual((total, len(items)), (2, 1))
+        self.assertEqual((items[0]['organisation'], items[0]['sector']), ('GOAL', 'healthcare'))
+
     def test_gzip_feed_decoding(self):
         xml = b'<rss><channel /></rss>'
         response = io.BytesIO(gzip.compress(xml)); response.status = 200
