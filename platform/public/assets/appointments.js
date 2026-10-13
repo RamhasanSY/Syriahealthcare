@@ -19,7 +19,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     function card(a) {
-        const li = el('li', {className: 'appt'}), [en, ar, tone] = STATUS[a.status];
+        const expired = a.status === 'requested' && Date.parse(a.starts_at) <= Date.now();
+        const li = el('li', {className: 'appt'}), [en, ar, tone] = expired ? ['Not confirmed in time', 'لم يؤكده الطبيب في الوقت', 'off'] : STATUS[a.status];
         const spec = catalog?.specialties[a.specialty] ? tr(...catalog.specialties[a.specialty]) : '';
         li.append(el('span', {className: 'pill ' + tone, textContent: tr(en, ar)}), el('h3', {textContent: when(a.starts_at)}),
             el('p', {className: 'appt-doctor', textContent: [a.doctor_name, spec].filter(Boolean).join(' · '), dir: 'auto'}),

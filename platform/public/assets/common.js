@@ -51,7 +51,8 @@ const Shc = (() => {
         too_many_active: 'لديك 5 مواعيد قادمة. ألغِ أحدها قبل حجز موعد جديد.',
         too_many_with_doctor: 'لديك مواعيد قادمة مع هذا الطبيب مسبقاً.',
         too_many_bookings: 'حجوزات كثيرة في وقت قصير. حاول لاحقاً.',
-        cannot_cancel: 'لم يعد بالإمكان إلغاء هذا الموعد.'
+        cannot_cancel: 'لم يعد بالإمكان إلغاء هذا الموعد.',
+        not_started: 'يمكنك تسجيل الموعد فقط بعد بدئه.'
     };
 
     function applyLanguage() {
