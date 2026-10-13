@@ -1889,3 +1889,9 @@ body[dir=rtl] .section-head h2 {
 .not-found h1{font-size:clamp(30px,5vw,44px);letter-spacing:-1px;margin-bottom:12px}
 .directory,.pregnancy{margin-top:0}
 @media(max-width:800px){.home-previews{grid-template-columns:1fr}}
+
+/* Booking platform banner on the Doctors page */
+.booking-banner{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:14px 24px;margin-bottom:22px;padding:22px 26px;border-radius:18px;background:var(--ink);color:#fff}
+.booking-banner strong{font:600 22px/1.25 var(--serif)}
+.booking-banner p{margin:6px 0 0;opacity:.9;max-width:60ch}
+.booking-banner .button{background:var(--lime);color:var(--ink)}

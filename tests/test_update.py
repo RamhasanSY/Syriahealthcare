@@ -51,6 +51,27 @@ class CollectorTests(unittest.TestCase):
         self.assertEqual((total, len(items)), (2, 1))
         self.assertEqual((items[0]['organisation'], items[0]['sector']), ('GOAL', 'healthcare'))
 
+    def test_platform_doctors_keep_public_fields_and_link_to_booking(self):
+        catalog = {'specialties': {'cardiology': ['Cardiology', 'أمراض القلب']}, 'governorates': {'aleppo': ['Aleppo', 'حلب']}}
+        doctor = {'id': '0b6f1d1e-3c55-4a43-9f6e-5d3c2a1b0c9d', 'name': 'Dr. Omar Khalil', 'specialty': 'cardiology', 'governorate': 'aleppo',
+                  'area': 'Al Furqan', 'clinic_name': 'Heart Clinic', 'clinic_address': 'Street 4', 'clinic_phone': '+963210000002',
+                  'bio': 'Adult cardiology.', 'email': 'private@example.org'}
+        rows = u.platform_doctors('https://app.syriahealthcare.com/', catalog, [doctor, {**doctor, 'specialty': 'unknown'}, {**doctor, 'id': '../evil'}])
+        self.assertEqual(len(rows), 1)
+        row = rows[0]
+        self.assertEqual((row['specialty'], row['specialty_ar'], row['city_ar']), ('Cardiology', 'أمراض القلب', 'حلب'))
+        self.assertEqual(row['booking_url'], 'https://app.syriahealthcare.com/book?doctor=0b6f1d1e-3c55-4a43-9f6e-5d3c2a1b0c9d')
+        self.assertEqual(row['address'], 'Heart Clinic, Street 4, Al Furqan')
+        self.assertNotIn('email', row)
+        self.assertTrue(row['platform'])
+
+    def test_platform_doctors_skipped_until_configured(self):
+        with patch.dict(u.os.environ, {'PLATFORM_URL': ''}), patch.object(u, 'fetch') as fetch:
+            self.assertIsNone(u.update_platform_doctors())
+            fetch.assert_not_called()
+        with patch.dict(u.os.environ, {'PLATFORM_URL': 'http://app.example.org'}), self.assertRaises(ValueError):
+            u.update_platform_doctors()
+
     def test_osm_hospitals_use_governorate_and_skip_unnamed(self):
         elements = [{'type': 'area', 'tags': {'name': 'محافظة دمشق', 'name:en': 'Damascus Governorate', 'name:ar': 'محافظة دمشق'}},
                     {'type': 'node', 'id': 1, 'tags': {'amenity': 'hospital', 'name': 'مشفى المواساة', 'name:en': 'Mouasat Hospital', 'phone': '+963 11 1; +963 11 2', 'emergency': 'yes'}},
