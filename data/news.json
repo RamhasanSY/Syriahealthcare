@@ -1,8 +1,56 @@
 {
-  "updated": "2026-10-13T00:42:44+00:00",
-  "checked_at": "2026-10-13T00:42:44+00:00",
+  "updated": "2026-10-13T14:14:51+00:00",
+  "checked_at": "2026-10-13T14:14:51+00:00",
   "status": "ok",
   "items": [
+    {
+      "title": "الصحة تشارك في جلسة حول تعافي القطاع الصحي السوري ضمن قمة برلين 2026",
+      "title_ar": "الصحة تشارك في جلسة حول تعافي القطاع الصحي السوري ضمن قمة برلين 2026",
+      "language": "ar",
+      "url": "https://moh.gov.sy/news/%D8%A7%D9%84%D8%B5%D8%AD%D8%A9-%D8%AA%D8%B4%D8%A7%D8%B1%D9%83-%D9%81%D9%8A-%D8%AC%D9%84%D8%B3%D8%A9-%D8%AD%D9%88%D9%84-%D8%AA%D8%B9%D8%A7%D9%81%D9%8A-%D8%A7%D9%84%D9%82%D8%B7%D8%A7%D8%B9-%D8%A7%D9%84%D8%B5%D8%AD%D9%8A-%D8%A7%D9%84%D8%B3%D9%88%D8%B1%D9%8A-%D8%B6%D9%85%D9%86-%D9%82%D9%85%D8%A9-%D8%A8%D8%B1%D9%84%D9%8A%D9%86-2026",
+      "published": "2026-10-13",
+      "source": "Syrian Ministry of Health",
+      "source_id": "sy-moh-news",
+      "verification_version": 2,
+      "verified_at": "2026-10-13T14:14:21+00:00",
+      "topic": "policy",
+      "evidence": {
+        "geography": "سوريا",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "إدلب.. افتتاح أربعة مراكز صحية لتعزيز الرعاية الطبية للأهالي العائدين",
+      "title_ar": "إدلب.. افتتاح أربعة مراكز صحية لتعزيز الرعاية الطبية للأهالي العائدين",
+      "language": "ar",
+      "url": "https://moh.gov.sy/news/%D8%A5%D8%AF%D9%84%D8%A8..-%D8%A7%D9%81%D8%AA%D8%AA%D8%A7%D8%AD-%D8%A3%D8%B1%D8%A8%D8%B9%D8%A9-%D9%85%D8%B1%D8%A7%D9%83%D8%B2-%D8%B5%D8%AD%D9%8A%D8%A9-%D9%84%D8%AA%D8%B9%D8%B2%D9%8A%D8%B2-%D8%A7%D9%84%D8%B1%D8%B9%D8%A7%D9%8A%D8%A9-%D8%A7%D9%84%D8%B7%D8%A8%D9%8A%D8%A9-%D9%84%D9%84%D8%A3%D9%87%D8%A7%D9%84%D9%8A-%D8%A7%D9%84%D8%B9%D8%A7%D8%A6%D8%AF%D9%8A%D9%86",
+      "published": "2026-10-13",
+      "source": "Syrian Ministry of Health",
+      "source_id": "sy-moh-news",
+      "verification_version": 2,
+      "verified_at": "2026-10-13T14:14:21+00:00",
+      "topic": "public-health",
+      "evidence": {
+        "geography": "إدلب",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "دمشق.. نجاح أول عملية لتركيب معصرة بولية صناعية في المشافي العامة",
+      "title_ar": "دمشق.. نجاح أول عملية لتركيب معصرة بولية صناعية في المشافي العامة",
+      "language": "ar",
+      "url": "https://sana.sy/health/2605602/",
+      "published": "2026-10-13",
+      "source": "Syrian Arab News Agency (SANA) — Health",
+      "source_id": "sana-health",
+      "verification_version": 2,
+      "verified_at": "2026-10-13T14:14:22+00:00",
+      "topic": "hospitals",
+      "evidence": {
+        "geography": "دمشق",
+        "type": "publisher-headline"
+      }
+    },
     {
       "title": "وضع جهاز تصوير الثدي الشعاعي بالخدمة بعد إعادة تأهيله في مشفى إزرع الوطني بدرعا",
       "title_ar": "وضع جهاز تصوير الثدي الشعاعي بالخدمة بعد إعادة تأهيله في مشفى إزرع الوطني بدرعا",
@@ -12,7 +60,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-13T00:42:16+00:00",
+      "verified_at": "2026-10-13T14:14:22+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "درعا",
@@ -28,7 +76,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-13T00:42:16+00:00",
+      "verified_at": "2026-10-13T14:14:22+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "دير الزور",
@@ -44,7 +92,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-13T00:42:16+00:00",
+      "verified_at": "2026-10-13T14:14:22+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "إدلب",
@@ -60,7 +108,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-13T00:42:16+00:00",
+      "verified_at": "2026-10-13T14:14:22+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "سورية",
@@ -76,7 +124,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-13T00:42:16+00:00",
+      "verified_at": "2026-10-13T14:14:22+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "دير الزور",
@@ -92,7 +140,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-13T00:42:16+00:00",
+      "verified_at": "2026-10-13T14:14:22+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "دمشق",
@@ -108,7 +156,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-13T00:42:16+00:00",
+      "verified_at": "2026-10-13T14:14:22+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "حماة",
@@ -124,7 +172,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-13T00:42:16+00:00",
+      "verified_at": "2026-10-13T14:14:22+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "دمشق",
@@ -140,7 +188,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-13T00:42:16+00:00",
+      "verified_at": "2026-10-13T14:14:22+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "دمشق",
@@ -172,7 +220,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-13T00:42:15+00:00",
+      "verified_at": "2026-10-13T14:14:21+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "دمشق",
@@ -188,7 +236,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-13T00:42:15+00:00",
+      "verified_at": "2026-10-13T14:14:21+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "الرقة",
@@ -300,7 +348,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-13T00:42:15+00:00",
+      "verified_at": "2026-10-13T14:14:21+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "سورية",
@@ -444,7 +492,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-13T00:42:15+00:00",
+      "verified_at": "2026-10-13T14:14:21+00:00",
       "topic": "workforce",
       "evidence": {
         "geography": "سوريا",
@@ -620,7 +668,7 @@
       "source": "WHO — Syria office",
       "source_id": "who-syria-news",
       "verification_version": 2,
-      "verified_at": "2026-10-13T00:42:16+00:00",
+      "verified_at": "2026-10-13T14:14:23+00:00",
       "topic": "policy",
       "evidence": {
         "geography": "Syria",
@@ -812,7 +860,7 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-13T00:42:14+00:00",
+      "verified_at": "2026-10-13T14:14:20+00:00",
       "topic": "workforce",
       "evidence": {
         "geography": "Syria",
@@ -860,7 +908,7 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-13T00:42:14+00:00",
+      "verified_at": "2026-10-13T14:14:20+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "Syria",
@@ -912,54 +960,6 @@
       "topic": "public-health",
       "evidence": {
         "geography": "سوريا",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "وفد من وزارة الصحة ومديرية صحة الرقة يزور مستشفى تل أبيض",
-      "title_ar": "وفد من وزارة الصحة ومديرية صحة الرقة يزور مستشفى تل أبيض",
-      "language": "ar",
-      "url": "https://moh.gov.sy/news/%D9%88%D9%81%D8%AF-%D9%85%D9%86-%D9%88%D8%B2%D8%A7%D8%B1%D8%A9-%D8%A7%D9%84%D8%B5%D8%AD%D8%A9-%D9%88%D9%85%D8%AF%D9%8A%D8%B1%D9%8A%D8%A9-%D8%B5%D8%AD%D8%A9-%D8%A7%D9%84%D8%B1%D9%82%D8%A9-%D9%8A%D8%B2%D9%88%D8%B1-%D9%85%D8%B3%D8%AA%D8%B4%D9%81%D9%89-%D8%AA%D9%84-%D8%A3%D8%A8%D9%8A%D8%B6",
-      "published": "2026-09-30",
-      "source": "Syrian Ministry of Health",
-      "source_id": "sy-moh-news",
-      "verification_version": 2,
-      "verified_at": "2026-10-04T21:28:05+00:00",
-      "topic": "hospitals",
-      "evidence": {
-        "geography": "الرقة",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "بمناسبة اليوم العالمي للقلب.. انطلاق الملتقى العلمي الأول في مشفى دمشق لأمراض وجراحة القلب",
-      "title_ar": "بمناسبة اليوم العالمي للقلب.. انطلاق الملتقى العلمي الأول في مشفى دمشق لأمراض وجراحة القلب",
-      "language": "ar",
-      "url": "https://moh.gov.sy/news/%D8%A8%D9%85%D9%86%D8%A7%D8%B3%D8%A8%D8%A9-%D8%A7%D9%84%D9%8A%D9%88%D9%85-%D8%A7%D9%84%D8%B9%D8%A7%D9%84%D9%85%D9%8A-%D9%84%D9%84%D9%82%D9%84%D8%A8..-%D8%A7%D9%86%D8%B7%D9%84%D8%A7%D9%82-%D8%A7%D9%84%D9%85%D9%84%D8%AA%D9%82%D9%89-%D8%A7%D9%84%D8%B9%D9%84%D9%85%D9%8A-%D8%A7%D9%84%D8%A3%D9%88%D9%84-%D9%81%D9%8A-%D9%85%D8%B4%D9%81%D9%89-%D8%AF%D9%85%D8%B4%D9%82-%D9%84%D8%A3%D9%85%D8%B1%D8%A7%D8%B6-%D9%88%D8%AC%D8%B1%D8%A7%D8%AD%D8%A9-%D8%A7%D9%84%D9%82%D9%84%D8%A8",
-      "published": "2026-09-29",
-      "source": "Syrian Ministry of Health",
-      "source_id": "sy-moh-news",
-      "verification_version": 2,
-      "verified_at": "2026-10-07T23:06:40+00:00",
-      "topic": "hospitals",
-      "evidence": {
-        "geography": "دمشق",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "Qatar Tribune: QRCS event discusses how to rebuild health systems after war in Arab World",
-      "title_en": "Qatar Tribune: QRCS event discusses how to rebuild health systems after war in Arab World",
-      "language": "en",
-      "url": "https://sams-usa.net/qatar-tribune-qrcs-event-discusses-how-to-rebuild-health-systems-after-war-in-arab-world/",
-      "published": "2026-09-27",
-      "source": "Syrian American Medical Society (SAMS)",
-      "source_id": "sams-news",
-      "verification_version": 2,
-      "verified_at": "2026-10-13T00:42:14+00:00",
-      "topic": "policy",
-      "evidence": {
-        "geography": "Syria",
         "type": "publisher-headline"
       }
     }
