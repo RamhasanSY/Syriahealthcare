@@ -1,8 +1,40 @@
 {
-  "updated": "2026-10-14T11:56:05+00:00",
-  "checked_at": "2026-10-14T11:56:05+00:00",
+  "updated": "2026-10-14T21:43:18+00:00",
+  "checked_at": "2026-10-14T21:43:18+00:00",
   "status": "ok",
   "items": [
+    {
+      "title": "وزير الصحة: سوريا تنتقل من الاستجابة الطارئة إلى التعافي الصحي المستدام",
+      "title_ar": "وزير الصحة: سوريا تنتقل من الاستجابة الطارئة إلى التعافي الصحي المستدام",
+      "language": "ar",
+      "url": "https://sana.sy/health/2606963/",
+      "published": "2026-10-14",
+      "source": "Syrian Arab News Agency (SANA) — Health",
+      "source_id": "sana-health",
+      "verification_version": 2,
+      "verified_at": "2026-10-14T21:42:48+00:00",
+      "topic": "policy",
+      "evidence": {
+        "geography": "سوريا",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "مؤتمر الرعاية الصحية الأولية في طرطوس يناقش تطوير الخدمات وتعزيز جودتها",
+      "title_ar": "مؤتمر الرعاية الصحية الأولية في طرطوس يناقش تطوير الخدمات وتعزيز جودتها",
+      "language": "ar",
+      "url": "https://sana.sy/governorates/tartus/2606803/",
+      "published": "2026-10-14",
+      "source": "Syrian Arab News Agency (SANA) — Health",
+      "source_id": "sana-health",
+      "verification_version": 2,
+      "verified_at": "2026-10-14T21:42:48+00:00",
+      "topic": "workforce",
+      "evidence": {
+        "geography": "حماة",
+        "type": "publisher-headline"
+      }
+    },
     {
       "title": "محاضرة توعوية في الرقة حول الكشف المبكر عن سرطان الثدي",
       "title_ar": "محاضرة توعوية في الرقة حول الكشف المبكر عن سرطان الثدي",
@@ -12,7 +44,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-14T11:55:37+00:00",
+      "verified_at": "2026-10-14T21:42:48+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "الرقة",
@@ -28,7 +60,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-14T11:55:37+00:00",
+      "verified_at": "2026-10-14T21:42:48+00:00",
       "topic": "workforce",
       "evidence": {
         "geography": "دمشق",
@@ -44,7 +76,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-14T11:55:37+00:00",
+      "verified_at": "2026-10-14T21:42:48+00:00",
       "topic": "policy",
       "evidence": {
         "geography": "سوريا",
@@ -60,7 +92,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-14T11:55:37+00:00",
+      "verified_at": "2026-10-14T21:42:48+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "إدلب",
@@ -76,7 +108,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-14T11:55:37+00:00",
+      "verified_at": "2026-10-14T21:42:48+00:00",
       "topic": "workforce",
       "evidence": {
         "geography": "دير الزور",
@@ -92,7 +124,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-14T11:55:37+00:00",
+      "verified_at": "2026-10-14T21:42:48+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "سوريا",
@@ -108,7 +140,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-14T11:55:37+00:00",
+      "verified_at": "2026-10-14T21:42:48+00:00",
       "topic": "workforce",
       "evidence": {
         "geography": "دمشق",
@@ -316,7 +348,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-14T11:55:37+00:00",
+      "verified_at": "2026-10-14T21:42:48+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "دمشق",
@@ -332,7 +364,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-14T11:55:37+00:00",
+      "verified_at": "2026-10-14T21:42:48+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "الرقة",
@@ -444,7 +476,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-14T11:55:37+00:00",
+      "verified_at": "2026-10-14T21:42:48+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "سورية",
@@ -588,7 +620,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-14T11:55:37+00:00",
+      "verified_at": "2026-10-14T21:42:48+00:00",
       "topic": "workforce",
       "evidence": {
         "geography": "سوريا",
@@ -764,7 +796,7 @@
       "source": "WHO — Syria office",
       "source_id": "who-syria-news",
       "verification_version": 2,
-      "verified_at": "2026-10-14T11:55:38+00:00",
+      "verified_at": "2026-10-14T21:42:48+00:00",
       "topic": "policy",
       "evidence": {
         "geography": "Syria",
@@ -928,38 +960,6 @@
       "topic": "hospitals",
       "evidence": {
         "geography": "حمص",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "وصول جهاز رنين مغناطيسي جديد إلى المشفى الوطني بدير الزور",
-      "title_ar": "وصول جهاز رنين مغناطيسي جديد إلى المشفى الوطني بدير الزور",
-      "language": "ar",
-      "url": "https://sana.sy/governorates/dayer-al-zoor/2596363/",
-      "published": "2026-10-03",
-      "source": "Syrian Arab News Agency (SANA) — Health",
-      "source_id": "sana-health",
-      "verification_version": 2,
-      "verified_at": "2026-10-05T14:43:17+00:00",
-      "topic": "hospitals",
-      "evidence": {
-        "geography": "دير الزور",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "How Your Support Is Bridging the Healthcare Gap in Syria",
-      "title_en": "How Your Support Is Bridging the Healthcare Gap in Syria",
-      "language": "en",
-      "url": "https://sams-usa.net/how-your-support-is-bridging-the-healthcare-gap-in-syria/",
-      "published": "2026-10-02",
-      "source": "Syrian American Medical Society (SAMS)",
-      "source_id": "sams-news",
-      "verification_version": 2,
-      "verified_at": "2026-10-14T11:55:35+00:00",
-      "topic": "workforce",
-      "evidence": {
-        "geography": "Syria",
         "type": "publisher-headline"
       }
     }
