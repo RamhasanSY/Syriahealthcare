@@ -1,8 +1,24 @@
 {
-  "updated": "2026-10-15T11:32:37+00:00",
-  "checked_at": "2026-10-15T11:32:37+00:00",
+  "updated": "2026-10-15T21:25:15+00:00",
+  "checked_at": "2026-10-15T21:25:15+00:00",
   "status": "partial",
   "items": [
+    {
+      "title": "الصحة تشارك في القاهرة باجتماعات اللجنة الإقليمية لمنظمة الصحة العالمية ‏",
+      "title_ar": "الصحة تشارك في القاهرة باجتماعات اللجنة الإقليمية لمنظمة الصحة العالمية ‏",
+      "language": "ar",
+      "url": "https://sana.sy/health/2607622/",
+      "published": "2026-10-15",
+      "source": "Syrian Arab News Agency (SANA) — Health",
+      "source_id": "sana-health",
+      "verification_version": 2,
+      "verified_at": "2026-10-15T21:24:48+00:00",
+      "topic": "public-health",
+      "evidence": {
+        "geography": "سورية",
+        "type": "publisher-headline"
+      }
+    },
     {
       "title": "وزير الصحة: سوريا تنتقل من الاستجابة الطارئة إلى التعافي الصحي المستدام",
       "title_ar": "وزير الصحة: سوريا تنتقل من الاستجابة الطارئة إلى التعافي الصحي المستدام",
@@ -12,7 +28,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-15T11:32:06+00:00",
+      "verified_at": "2026-10-15T21:24:48+00:00",
       "topic": "policy",
       "evidence": {
         "geography": "سوريا",
@@ -28,7 +44,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-15T11:32:06+00:00",
+      "verified_at": "2026-10-15T21:24:48+00:00",
       "topic": "workforce",
       "evidence": {
         "geography": "حماة",
@@ -44,7 +60,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-15T11:32:06+00:00",
+      "verified_at": "2026-10-15T21:24:48+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "الرقة",
@@ -60,7 +76,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-15T11:32:06+00:00",
+      "verified_at": "2026-10-15T21:24:48+00:00",
       "topic": "workforce",
       "evidence": {
         "geography": "دمشق",
@@ -796,7 +812,7 @@
       "source": "WHO — Syria office",
       "source_id": "who-syria-news",
       "verification_version": 2,
-      "verified_at": "2026-10-15T11:32:07+00:00",
+      "verified_at": "2026-10-15T21:24:48+00:00",
       "topic": "policy",
       "evidence": {
         "geography": "Syria",
@@ -944,22 +960,6 @@
       "topic": "public-health",
       "evidence": {
         "geography": "دمشق",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "تجهيزات طبية حديثة لمشافي صدد وتدمر والتل الوطنية بحمص",
-      "title_ar": "تجهيزات طبية حديثة لمشافي صدد وتدمر والتل الوطنية بحمص",
-      "language": "ar",
-      "url": "https://sana.sy/governorates/homs/2596406/",
-      "published": "2026-10-03",
-      "source": "Syrian Arab News Agency (SANA) — Health",
-      "source_id": "sana-health",
-      "verification_version": 2,
-      "verified_at": "2026-10-06T00:04:45+00:00",
-      "topic": "hospitals",
-      "evidence": {
-        "geography": "حمص",
         "type": "publisher-headline"
       }
     }
