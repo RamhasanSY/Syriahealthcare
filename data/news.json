@@ -1,8 +1,40 @@
 {
-  "updated": "2026-10-16T11:27:36+00:00",
-  "checked_at": "2026-10-16T11:27:36+00:00",
+  "updated": "2026-10-16T21:11:53+00:00",
+  "checked_at": "2026-10-16T21:11:53+00:00",
   "status": "partial",
   "items": [
+    {
+      "title": "بمشاركة 800 طبيب.. انطلاق أعمال المؤتمر الطبي السوري الفرنسي بدير الزور",
+      "title_ar": "بمشاركة 800 طبيب.. انطلاق أعمال المؤتمر الطبي السوري الفرنسي بدير الزور",
+      "language": "ar",
+      "url": "https://sana.sy/health/2609068/",
+      "published": "2026-10-16",
+      "source": "Syrian Arab News Agency (SANA) — Health",
+      "source_id": "sana-health",
+      "verification_version": 2,
+      "verified_at": "2026-10-16T21:11:24+00:00",
+      "topic": "workforce",
+      "evidence": {
+        "geography": "دير الزور",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "صحة القنيطرة تعيد تفعيل العيادات المتنقلة لخدمة أبناء الجولان المحتل",
+      "title_ar": "صحة القنيطرة تعيد تفعيل العيادات المتنقلة لخدمة أبناء الجولان المحتل",
+      "language": "ar",
+      "url": "https://sana.sy/governorates/alqunaytrah/2608899/",
+      "published": "2026-10-16",
+      "source": "Syrian Arab News Agency (SANA) — Health",
+      "source_id": "sana-health",
+      "verification_version": 2,
+      "verified_at": "2026-10-16T21:11:24+00:00",
+      "topic": "public-health",
+      "evidence": {
+        "geography": "درعا",
+        "type": "publisher-headline"
+      }
+    },
     {
       "title": "يوم علمي في مشفى كرم اللوز الوطني بحمص للتوعية بسرطان الثدي",
       "title_ar": "يوم علمي في مشفى كرم اللوز الوطني بحمص للتوعية بسرطان الثدي",
@@ -12,7 +44,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-16T11:27:08+00:00",
+      "verified_at": "2026-10-16T21:11:24+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "حمص",
@@ -28,7 +60,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-16T11:27:08+00:00",
+      "verified_at": "2026-10-16T21:11:24+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "درعا",
@@ -44,7 +76,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-16T11:27:08+00:00",
+      "verified_at": "2026-10-16T21:11:24+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "سورية",
@@ -60,7 +92,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-16T11:27:08+00:00",
+      "verified_at": "2026-10-16T21:11:24+00:00",
       "topic": "policy",
       "evidence": {
         "geography": "سوريا",
@@ -124,7 +156,7 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-16T11:27:06+00:00",
+      "verified_at": "2026-10-16T21:11:24+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "Syria",
@@ -652,7 +684,7 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-16T11:27:06+00:00",
+      "verified_at": "2026-10-16T21:11:24+00:00",
       "topic": "workforce",
       "evidence": {
         "geography": "Syria",
@@ -876,7 +908,7 @@
       "source": "WHO — Syria office",
       "source_id": "who-syria-news",
       "verification_version": 2,
-      "verified_at": "2026-10-16T11:27:08+00:00",
+      "verified_at": "2026-10-16T21:11:25+00:00",
       "topic": "policy",
       "evidence": {
         "geography": "Syria",
@@ -928,38 +960,6 @@
       "topic": "public-health",
       "evidence": {
         "geography": "حمص",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "حملة إغاثية لجراحة قلب الأطفال في مشفى الأطفال الجامعي بدمشق",
-      "title_ar": "حملة إغاثية لجراحة قلب الأطفال في مشفى الأطفال الجامعي بدمشق",
-      "language": "ar",
-      "url": "https://sana.sy/health/2597981/",
-      "published": "2026-10-05",
-      "source": "Syrian Arab News Agency (SANA) — Health",
-      "source_id": "sana-health",
-      "verification_version": 2,
-      "verified_at": "2026-10-06T22:40:06+00:00",
-      "topic": "hospitals",
-      "evidence": {
-        "geography": "دمشق",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "يواصل قسم القثطرة القلبية في مشفى درعا الوطني تقديم خدماته",
-      "title_ar": "يواصل قسم القثطرة القلبية في مشفى درعا الوطني تقديم خدماته",
-      "language": "ar",
-      "url": "https://moh.gov.sy/news/%D9%8A%D9%88%D8%A7%D8%B5%D9%84-%D9%82%D8%B3%D9%85-%D8%A7%D9%84%D9%82%D8%AB%D8%B7%D8%B1%D8%A9-%D8%A7%D9%84%D9%82%D9%84%D8%A8%D9%8A%D8%A9-%D9%81%D9%8A-%D9%85%D8%B4%D9%81%D9%89-%D8%AF%D8%B1%D8%B9%D8%A7-%D8%A7%D9%84%D9%88%D8%B7%D9%86%D9%8A-%D8%AA%D9%82%D8%AF%D9%8A%D9%85-%D8%AE%D8%AF%D9%85%D8%A7%D8%AA%D9%87",
-      "published": "2026-10-04",
-      "source": "Syrian Ministry of Health",
-      "source_id": "sy-moh-news",
-      "verification_version": 2,
-      "verified_at": "2026-10-10T21:46:10+00:00",
-      "topic": "hospitals",
-      "evidence": {
-        "geography": "درعا",
         "type": "publisher-headline"
       }
     }
