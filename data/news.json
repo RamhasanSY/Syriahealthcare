@@ -1,8 +1,40 @@
 {
-  "updated": "2026-10-16T21:11:53+00:00",
-  "checked_at": "2026-10-16T21:11:53+00:00",
+  "updated": "2026-10-17T10:47:07+00:00",
+  "checked_at": "2026-10-17T10:47:07+00:00",
   "status": "partial",
   "items": [
+    {
+      "title": "افتتاح قسم الرنين المغناطيسي وإجراء عمليات نوعية في مستشفى دير الزور الوطني",
+      "title_ar": "افتتاح قسم الرنين المغناطيسي وإجراء عمليات نوعية في مستشفى دير الزور الوطني",
+      "language": "ar",
+      "url": "https://sana.sy/governorates/dayer-al-zoor/2609132/",
+      "published": "2026-10-16",
+      "source": "Syrian Arab News Agency (SANA) — Health",
+      "source_id": "sana-health",
+      "verification_version": 2,
+      "verified_at": "2026-10-17T10:46:35+00:00",
+      "topic": "hospitals",
+      "evidence": {
+        "geography": "دير الزور",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "معرض للأدوية والأجهزة الطبية ضمن فعاليات المؤتمر الطبي السوري الفرنسي في دير الزور",
+      "title_ar": "معرض للأدوية والأجهزة الطبية ضمن فعاليات المؤتمر الطبي السوري الفرنسي في دير الزور",
+      "language": "ar",
+      "url": "https://sana.sy/governorates/dayer-al-zoor/2609131/",
+      "published": "2026-10-16",
+      "source": "Syrian Arab News Agency (SANA) — Health",
+      "source_id": "sana-health",
+      "verification_version": 2,
+      "verified_at": "2026-10-17T10:46:35+00:00",
+      "topic": "public-health",
+      "evidence": {
+        "geography": "دير الزور",
+        "type": "publisher-headline"
+      }
+    },
     {
       "title": "بمشاركة 800 طبيب.. انطلاق أعمال المؤتمر الطبي السوري الفرنسي بدير الزور",
       "title_ar": "بمشاركة 800 طبيب.. انطلاق أعمال المؤتمر الطبي السوري الفرنسي بدير الزور",
@@ -12,7 +44,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-16T21:11:24+00:00",
+      "verified_at": "2026-10-17T10:46:35+00:00",
       "topic": "workforce",
       "evidence": {
         "geography": "دير الزور",
@@ -28,7 +60,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-16T21:11:24+00:00",
+      "verified_at": "2026-10-17T10:46:35+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "درعا",
@@ -44,7 +76,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-16T21:11:24+00:00",
+      "verified_at": "2026-10-17T10:46:35+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "حمص",
@@ -60,7 +92,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-16T21:11:24+00:00",
+      "verified_at": "2026-10-17T10:46:35+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "درعا",
@@ -156,7 +188,7 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-16T21:11:24+00:00",
+      "verified_at": "2026-10-17T10:46:34+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "Syria",
@@ -684,7 +716,7 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-16T21:11:24+00:00",
+      "verified_at": "2026-10-17T10:46:34+00:00",
       "topic": "workforce",
       "evidence": {
         "geography": "Syria",
@@ -908,7 +940,7 @@
       "source": "WHO — Syria office",
       "source_id": "who-syria-news",
       "verification_version": 2,
-      "verified_at": "2026-10-16T21:11:25+00:00",
+      "verified_at": "2026-10-17T10:46:37+00:00",
       "topic": "policy",
       "evidence": {
         "geography": "Syria",
@@ -928,38 +960,6 @@
       "topic": "hospitals",
       "evidence": {
         "geography": "درعا",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "في “الشهر الوردي”.. وزارة الصحة تكثف جهود الكشف المبكر ‏عن سرطان الثدي",
-      "title_ar": "في “الشهر الوردي”.. وزارة الصحة تكثف جهود الكشف المبكر ‏عن سرطان الثدي",
-      "language": "ar",
-      "url": "https://sana.sy/health/2598533/",
-      "published": "2026-10-05",
-      "source": "Syrian Arab News Agency (SANA) — Health",
-      "source_id": "sana-health",
-      "verification_version": 2,
-      "verified_at": "2026-10-07T13:26:59+00:00",
-      "topic": "public-health",
-      "evidence": {
-        "geography": "دمشق",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "حملة للكشف المبكر عن سرطان الثدي في حمص بخدمات تشخيص وعلاج مجاناً",
-      "title_ar": "حملة للكشف المبكر عن سرطان الثدي في حمص بخدمات تشخيص وعلاج مجاناً",
-      "language": "ar",
-      "url": "https://sana.sy/governorates/2598079/",
-      "published": "2026-10-05",
-      "source": "Syrian Arab News Agency (SANA) — Health",
-      "source_id": "sana-health",
-      "verification_version": 2,
-      "verified_at": "2026-10-07T13:26:59+00:00",
-      "topic": "public-health",
-      "evidence": {
-        "geography": "حمص",
         "type": "publisher-headline"
       }
     }
