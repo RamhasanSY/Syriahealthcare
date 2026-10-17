@@ -1,6 +1,6 @@
 {
-  "updated": "2026-10-17T10:47:07+00:00",
-  "checked_at": "2026-10-17T10:47:07+00:00",
+  "updated": "2026-10-17T20:38:42+00:00",
+  "checked_at": "2026-10-17T20:38:42+00:00",
   "status": "partial",
   "items": [
     {
@@ -12,7 +12,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-17T10:46:35+00:00",
+      "verified_at": "2026-10-17T20:38:12+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "دير الزور",
@@ -28,7 +28,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-17T10:46:35+00:00",
+      "verified_at": "2026-10-17T20:38:12+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "دير الزور",
@@ -44,7 +44,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-17T10:46:35+00:00",
+      "verified_at": "2026-10-17T20:38:12+00:00",
       "topic": "workforce",
       "evidence": {
         "geography": "دير الزور",
@@ -60,7 +60,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-17T10:46:35+00:00",
+      "verified_at": "2026-10-17T20:38:12+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "درعا",
@@ -76,7 +76,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-17T10:46:35+00:00",
+      "verified_at": "2026-10-17T20:38:12+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "حمص",
@@ -188,7 +188,7 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-17T10:46:34+00:00",
+      "verified_at": "2026-10-17T20:38:10+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "Syria",
@@ -716,7 +716,7 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-17T10:46:34+00:00",
+      "verified_at": "2026-10-17T20:38:10+00:00",
       "topic": "workforce",
       "evidence": {
         "geography": "Syria",
@@ -940,7 +940,7 @@
       "source": "WHO — Syria office",
       "source_id": "who-syria-news",
       "verification_version": 2,
-      "verified_at": "2026-10-17T10:46:37+00:00",
+      "verified_at": "2026-10-17T20:38:13+00:00",
       "topic": "policy",
       "evidence": {
         "geography": "Syria",
