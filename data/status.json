@@ -1,12 +1,12 @@
 {
-  "checked_at": "2026-10-17T20:38:42+00:00",
+  "checked_at": "2026-10-18T11:08:53+00:00",
   "sources": [
     {
       "id": "drc-jobs",
       "kind": "jobs",
       "state": "ok",
-      "checked_at": "2026-10-17T20:38:13+00:00",
-      "fetched": 73,
+      "checked_at": "2026-10-18T11:08:26+00:00",
+      "fetched": 78,
       "accepted": 1,
       "latest_published": "2026-10-14"
     },
@@ -14,16 +14,16 @@
       "id": "ida-jobs",
       "kind": "jobs",
       "state": "ok",
-      "checked_at": "2026-10-17T20:38:42+00:00",
+      "checked_at": "2026-10-18T11:08:53+00:00",
       "fetched": 10,
-      "accepted": 9,
-      "latest_published": "2026-10-15"
+      "accepted": 10,
+      "latest_published": "2026-10-18"
     },
     {
       "id": "ida-news",
       "kind": "news",
       "state": "ok",
-      "checked_at": "2026-10-17T20:38:13+00:00",
+      "checked_at": "2026-10-18T11:08:25+00:00",
       "fetched": 10,
       "accepted": 0,
       "latest_published": null
@@ -32,7 +32,7 @@
       "id": "nrc-jobs",
       "kind": "jobs",
       "state": "ok",
-      "checked_at": "2026-10-17T20:38:13+00:00",
+      "checked_at": "2026-10-18T11:08:25+00:00",
       "fetched": 13,
       "accepted": 3,
       "latest_published": "2026-10-12"
@@ -41,7 +41,7 @@
       "id": "reliefweb-jobs",
       "kind": "jobs",
       "state": "error",
-      "checked_at": "2026-10-17T20:38:17+00:00",
+      "checked_at": "2026-10-18T11:08:28+00:00",
       "error": "Empty response (HTTP 202)",
       "accepted": 0
     },
@@ -49,7 +49,7 @@
       "id": "sams-jobs",
       "kind": "jobs",
       "state": "ok",
-      "checked_at": "2026-10-17T20:38:12+00:00",
+      "checked_at": "2026-10-18T11:08:25+00:00",
       "fetched": 546,
       "accepted": 2,
       "latest_published": "2026-10-13"
@@ -58,7 +58,7 @@
       "id": "sams-news",
       "kind": "news",
       "state": "ok",
-      "checked_at": "2026-10-17T20:38:10+00:00",
+      "checked_at": "2026-10-18T11:08:22+00:00",
       "fetched": 10,
       "accepted": 9,
       "latest_published": "2026-10-13"
@@ -67,16 +67,16 @@
       "id": "sana-health",
       "kind": "news",
       "state": "ok",
-      "checked_at": "2026-10-17T20:38:12+00:00",
+      "checked_at": "2026-10-18T11:08:24+00:00",
       "fetched": 10,
-      "accepted": 5,
-      "latest_published": "2026-10-16"
+      "accepted": 4,
+      "latest_published": "2026-10-17"
     },
     {
       "id": "sarc-news",
       "kind": "news",
       "state": "ok",
-      "checked_at": "2026-10-17T20:38:12+00:00",
+      "checked_at": "2026-10-18T11:08:24+00:00",
       "fetched": 10,
       "accepted": 0,
       "latest_published": null
@@ -85,7 +85,7 @@
       "id": "sy-moh-news",
       "kind": "news",
       "state": "error",
-      "checked_at": "2026-10-17T20:38:11+00:00",
+      "checked_at": "2026-10-18T11:08:23+00:00",
       "error": "Ministry news card is missing a title or valid publication date",
       "accepted": 0
     },
@@ -93,7 +93,7 @@
       "id": "un-health",
       "kind": "news",
       "state": "ok",
-      "checked_at": "2026-10-17T20:38:12+00:00",
+      "checked_at": "2026-10-18T11:08:24+00:00",
       "fetched": 30,
       "accepted": 0,
       "latest_published": null
@@ -102,7 +102,7 @@
       "id": "uossm-news",
       "kind": "news",
       "state": "ok",
-      "checked_at": "2026-10-17T20:38:12+00:00",
+      "checked_at": "2026-10-18T11:08:24+00:00",
       "fetched": 10,
       "accepted": 0,
       "latest_published": null
@@ -111,8 +111,8 @@
       "id": "who-news",
       "kind": "news",
       "state": "ok",
-      "checked_at": "2026-10-17T20:38:12+00:00",
-      "fetched": 193,
+      "checked_at": "2026-10-18T11:08:24+00:00",
+      "fetched": 190,
       "accepted": 0,
       "latest_published": null
     },
@@ -120,7 +120,7 @@
       "id": "who-syria-news",
       "kind": "news",
       "state": "ok",
-      "checked_at": "2026-10-17T20:38:13+00:00",
+      "checked_at": "2026-10-18T11:08:26+00:00",
       "fetched": 10,
       "accepted": 4,
       "latest_published": "2026-10-05"
