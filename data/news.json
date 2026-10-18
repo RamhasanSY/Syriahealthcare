@@ -1,8 +1,72 @@
 {
-  "updated": "2026-10-18T11:08:53+00:00",
-  "checked_at": "2026-10-18T11:08:53+00:00",
+  "updated": "2026-10-18T20:46:43+00:00",
+  "checked_at": "2026-10-18T20:46:43+00:00",
   "status": "partial",
   "items": [
+    {
+      "title": "عمليات جراحية نوعية للأطفال في الرقة ضمن أعمال المؤتمر الطبي السوري الفرنسي",
+      "title_ar": "عمليات جراحية نوعية للأطفال في الرقة ضمن أعمال المؤتمر الطبي السوري الفرنسي",
+      "language": "ar",
+      "url": "https://sana.sy/governorates/alrakkah/2610885/",
+      "published": "2026-10-18",
+      "source": "Syrian Arab News Agency (SANA) — Health",
+      "source_id": "sana-health",
+      "verification_version": 2,
+      "verified_at": "2026-10-18T20:46:14+00:00",
+      "topic": "hospitals",
+      "evidence": {
+        "geography": "الرقة",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "مشفى عين عيسى الوطني بالرقة.. خدمات طبية لـ 150 ألف نسمة واحتياجات ‏لتطويرها",
+      "title_ar": "مشفى عين عيسى الوطني بالرقة.. خدمات طبية لـ 150 ألف نسمة واحتياجات ‏لتطويرها",
+      "language": "ar",
+      "url": "https://sana.sy/health/2610639/",
+      "published": "2026-10-18",
+      "source": "Syrian Arab News Agency (SANA) — Health",
+      "source_id": "sana-health",
+      "verification_version": 2,
+      "verified_at": "2026-10-18T20:46:14+00:00",
+      "topic": "hospitals",
+      "evidence": {
+        "geography": "الرقة",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "حملة طبية وعمليات جراحية نوعية ضمن المؤتمر السوري الفرنسي بدير الزور",
+      "title_ar": "حملة طبية وعمليات جراحية نوعية ضمن المؤتمر السوري الفرنسي بدير الزور",
+      "language": "ar",
+      "url": "https://sana.sy/governorates/2610506/",
+      "published": "2026-10-18",
+      "source": "Syrian Arab News Agency (SANA) — Health",
+      "source_id": "sana-health",
+      "verification_version": 2,
+      "verified_at": "2026-10-18T20:46:14+00:00",
+      "topic": "hospitals",
+      "evidence": {
+        "geography": "دير الزور",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "جامعة حمص تطلق فعالية توعوية للكشف المبكر عن سرطان الثدي",
+      "title_ar": "جامعة حمص تطلق فعالية توعوية للكشف المبكر عن سرطان الثدي",
+      "language": "ar",
+      "url": "https://sana.sy/governorates/homs/2610450/",
+      "published": "2026-10-18",
+      "source": "Syrian Arab News Agency (SANA) — Health",
+      "source_id": "sana-health",
+      "verification_version": 2,
+      "verified_at": "2026-10-18T20:46:14+00:00",
+      "topic": "hospitals",
+      "evidence": {
+        "geography": "حمص",
+        "type": "publisher-headline"
+      }
+    },
     {
       "title": "اختتام المحاضرات النظرية ضمن فعاليات المؤتمر الطبي السوري الفرنسي بدير الزور",
       "title_ar": "اختتام المحاضرات النظرية ضمن فعاليات المؤتمر الطبي السوري الفرنسي بدير الزور",
@@ -12,7 +76,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-18T11:08:24+00:00",
+      "verified_at": "2026-10-18T20:46:14+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "دير الزور",
@@ -204,7 +268,7 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-18T11:08:22+00:00",
+      "verified_at": "2026-10-18T20:46:10+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "Syria",
@@ -732,7 +796,7 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-18T11:08:22+00:00",
+      "verified_at": "2026-10-18T20:46:10+00:00",
       "topic": "workforce",
       "evidence": {
         "geography": "Syria",
@@ -896,70 +960,6 @@
       "topic": "hospitals",
       "evidence": {
         "geography": "سورية",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "وزارة الصحة تطلق حملة وطنية للكشف المبكر عن سرطان الثدي",
-      "title_ar": "وزارة الصحة تطلق حملة وطنية للكشف المبكر عن سرطان الثدي",
-      "language": "ar",
-      "url": "https://sana.sy/health/2599533/",
-      "published": "2026-10-07",
-      "source": "Syrian Arab News Agency (SANA) — Health",
-      "source_id": "sana-health",
-      "verification_version": 2,
-      "verified_at": "2026-10-07T23:06:40+00:00",
-      "topic": "public-health",
-      "evidence": {
-        "geography": "دمشق",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "بنك الدم في حلب ينظم المراجعات ويعزز جاهزيته لتلبية احتياجات المشافي",
-      "title_ar": "بنك الدم في حلب ينظم المراجعات ويعزز جاهزيته لتلبية احتياجات المشافي",
-      "language": "ar",
-      "url": "https://sana.sy/governorates/2599467/",
-      "published": "2026-10-07",
-      "source": "Syrian Arab News Agency (SANA) — Health",
-      "source_id": "sana-health",
-      "verification_version": 2,
-      "verified_at": "2026-10-07T23:06:40+00:00",
-      "topic": "public-health",
-      "evidence": {
-        "geography": "حلب",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "تعزيز خدمات الكشف المبكر عن سرطان الثدي في درعا وطرطوس خلال ‌‏”الشهر الوردي”‏",
-      "title_ar": "تعزيز خدمات الكشف المبكر عن سرطان الثدي في درعا وطرطوس خلال ‌‏”الشهر الوردي”‏",
-      "language": "ar",
-      "url": "https://sana.sy/health/2599109/",
-      "published": "2026-10-06",
-      "source": "Syrian Arab News Agency (SANA) — Health",
-      "source_id": "sana-health",
-      "verification_version": 2,
-      "verified_at": "2026-10-07T23:06:40+00:00",
-      "topic": "hospitals",
-      "evidence": {
-        "geography": "درعا",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "On the ground in Syria: seeing health care through the people who deliver it",
-      "title_en": "On the ground in Syria: seeing health care through the people who deliver it",
-      "language": "en",
-      "url": "https://www.emro.who.int/syria/news/on-the-ground-in-syria-seeing-health-care-through-the-people-who-deliver-it.html",
-      "published": "2026-10-05",
-      "source": "WHO — Syria office",
-      "source_id": "who-syria-news",
-      "verification_version": 2,
-      "verified_at": "2026-10-18T11:08:26+00:00",
-      "topic": "policy",
-      "evidence": {
-        "geography": "Syria",
         "type": "publisher-headline"
       }
     }
