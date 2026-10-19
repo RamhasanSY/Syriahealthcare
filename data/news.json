@@ -1,8 +1,88 @@
 {
-  "updated": "2026-10-19T13:20:28+00:00",
-  "checked_at": "2026-10-19T13:20:28+00:00",
+  "updated": "2026-10-19T22:22:57+00:00",
+  "checked_at": "2026-10-19T22:22:57+00:00",
   "status": "partial",
   "items": [
+    {
+      "title": "صحة الرقة تنظم ورشة عمل لتعزيز مهارات القابلات في دعم الصحة النفسية ‏للأمهات",
+      "title_ar": "صحة الرقة تنظم ورشة عمل لتعزيز مهارات القابلات في دعم الصحة النفسية ‏للأمهات",
+      "language": "ar",
+      "url": "https://sana.sy/health/2611867/",
+      "published": "2026-10-19",
+      "source": "Syrian Arab News Agency (SANA) — Health",
+      "source_id": "sana-health",
+      "verification_version": 2,
+      "verified_at": "2026-10-19T22:22:39+00:00",
+      "topic": "public-health",
+      "evidence": {
+        "geography": "الرقة",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "حملة طبية مجانية في الرقة تستهدف مرضى القلب وتصلب الشرايين",
+      "title_ar": "حملة طبية مجانية في الرقة تستهدف مرضى القلب وتصلب الشرايين",
+      "language": "ar",
+      "url": "https://sana.sy/governorates/alrakkah/2611791/",
+      "published": "2026-10-19",
+      "source": "Syrian Arab News Agency (SANA) — Health",
+      "source_id": "sana-health",
+      "verification_version": 2,
+      "verified_at": "2026-10-19T22:22:39+00:00",
+      "topic": "hospitals",
+      "evidence": {
+        "geography": "الرقة",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "حملة “معكم” الطبية لتعزيز مهارات الكوادر الصحية في مشفى الحسكة الوطني",
+      "title_ar": "حملة “معكم” الطبية لتعزيز مهارات الكوادر الصحية في مشفى الحسكة الوطني",
+      "language": "ar",
+      "url": "https://sana.sy/health/2611736/",
+      "published": "2026-10-19",
+      "source": "Syrian Arab News Agency (SANA) — Health",
+      "source_id": "sana-health",
+      "verification_version": 2,
+      "verified_at": "2026-10-19T22:22:39+00:00",
+      "topic": "hospitals",
+      "evidence": {
+        "geography": "دير الزور",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "افتتاح أول مركز للتنظير الرئوي المدعم بالموجات فوق الصوتية في مشفى البر بحمص",
+      "title_ar": "افتتاح أول مركز للتنظير الرئوي المدعم بالموجات فوق الصوتية في مشفى البر بحمص",
+      "language": "ar",
+      "url": "https://sana.sy/health/2611586/",
+      "published": "2026-10-19",
+      "source": "Syrian Arab News Agency (SANA) — Health",
+      "source_id": "sana-health",
+      "verification_version": 2,
+      "verified_at": "2026-10-19T22:22:39+00:00",
+      "topic": "hospitals",
+      "evidence": {
+        "geography": "حمص",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "مؤتمر طب وجراحة التجميل يوصي بتعزيز جودة الخدمات الطبية وسلامة المرضى",
+      "title_ar": "مؤتمر طب وجراحة التجميل يوصي بتعزيز جودة الخدمات الطبية وسلامة المرضى",
+      "language": "ar",
+      "url": "https://sana.sy/health/2611560/",
+      "published": "2026-10-19",
+      "source": "Syrian Arab News Agency (SANA) — Health",
+      "source_id": "sana-health",
+      "verification_version": 2,
+      "verified_at": "2026-10-19T22:22:39+00:00",
+      "topic": "hospitals",
+      "evidence": {
+        "geography": "دمشق",
+        "type": "publisher-headline"
+      }
+    },
     {
       "title": "الكشف المبكر عن سرطان الثدي بحلب.. خدمات مجانية وتحديات تقلل من الوصول إليها",
       "title_ar": "الكشف المبكر عن سرطان الثدي بحلب.. خدمات مجانية وتحديات تقلل من الوصول إليها",
@@ -12,7 +92,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-19T13:19:57+00:00",
+      "verified_at": "2026-10-19T22:22:39+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "حلب",
@@ -28,7 +108,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-19T13:19:57+00:00",
+      "verified_at": "2026-10-19T22:22:39+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "الرقة",
@@ -44,7 +124,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-19T13:19:57+00:00",
+      "verified_at": "2026-10-19T22:22:39+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "الرقة",
@@ -284,7 +364,7 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-19T13:19:56+00:00",
+      "verified_at": "2026-10-19T22:22:29+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "Syria",
@@ -812,7 +892,7 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-19T13:19:56+00:00",
+      "verified_at": "2026-10-19T22:22:29+00:00",
       "topic": "workforce",
       "evidence": {
         "geography": "Syria",
@@ -880,86 +960,6 @@
       "topic": "hospitals",
       "evidence": {
         "geography": "سوريا",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "انطلاق المؤتمر العلمي الحادي عشر لهيئة مخابر التحاليل الطبية في سوريا",
-      "title_ar": "انطلاق المؤتمر العلمي الحادي عشر لهيئة مخابر التحاليل الطبية في سوريا",
-      "language": "ar",
-      "url": "https://sana.sy/health/2600649/",
-      "published": "2026-10-08",
-      "source": "Syrian Arab News Agency (SANA) — Health",
-      "source_id": "sana-health",
-      "verification_version": 2,
-      "verified_at": "2026-10-09T22:40:15+00:00",
-      "topic": "workforce",
-      "evidence": {
-        "geography": "سوريا",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "صحة دمشق تنظم يوماً علمياً للتوعية بسرطان الثدي في مشفى الزهراوي",
-      "title_ar": "صحة دمشق تنظم يوماً علمياً للتوعية بسرطان الثدي في مشفى الزهراوي",
-      "language": "ar",
-      "url": "https://sana.sy/health/2600522/",
-      "published": "2026-10-08",
-      "source": "Syrian Arab News Agency (SANA) — Health",
-      "source_id": "sana-health",
-      "verification_version": 2,
-      "verified_at": "2026-10-08T23:22:28+00:00",
-      "topic": "hospitals",
-      "evidence": {
-        "geography": "دمشق",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "الرعاية القلبية في مشفى دمشق لأمراض و جراحة القلب",
-      "title_ar": "الرعاية القلبية في مشفى دمشق لأمراض و جراحة القلب",
-      "language": "ar",
-      "url": "https://moh.gov.sy/news/%D8%A7%D9%84%D8%B1%D8%B9%D8%A7%D9%8A%D8%A9-%D8%A7%D9%84%D9%82%D9%84%D8%A8%D9%8A%D8%A9-%D9%81%D9%8A-%D9%85%D8%B4%D9%81%D9%89-%D8%AF%D9%85%D8%B4%D9%82-%D9%84%D8%A3%D9%85%D8%B1%D8%A7%D8%B6-%D9%88-%D8%AC%D8%B1%D8%A7%D8%AD%D8%A9-%D8%A7%D9%84%D9%82%D9%84%D8%A8",
-      "published": "2026-10-07",
-      "source": "Syrian Ministry of Health",
-      "source_id": "sy-moh-news",
-      "verification_version": 2,
-      "verified_at": "2026-10-13T00:42:15+00:00",
-      "topic": "hospitals",
-      "evidence": {
-        "geography": "دمشق",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "وزارة الصحة تُطلق الحملة الوطنية للكشف المبكّر عن سرطان الثدي تحت شعار «فحص أبكر.. أمل أكبر»",
-      "title_ar": "وزارة الصحة تُطلق الحملة الوطنية للكشف المبكّر عن سرطان الثدي تحت شعار «فحص أبكر.. أمل أكبر»",
-      "language": "ar",
-      "url": "https://moh.gov.sy/news/%D9%88%D8%B2%D8%A7%D8%B1%D8%A9-%D8%A7%D9%84%D8%B5%D8%AD%D8%A9-%D8%AA%D9%8F%D8%B7%D9%84%D9%82-%D8%A7%D9%84%D8%AD%D9%85%D9%84%D8%A9-%D8%A7%D9%84%D9%88%D8%B7%D9%86%D9%8A%D8%A9-%D9%84%D9%84%D9%83%D8%B4%D9%81-%D8%A7%D9%84%D9%85%D8%A8%D9%83%D9%91%D8%B1-%D8%B9%D9%86-%D8%B3%D8%B1%D8%B7%D8%A7%D9%86-%D8%A7%D9%84%D8%AB%D8%AF%D9%8A-%D8%AA%D8%AD%D8%AA-%D8%B4%D8%B9%D8%A7%D8%B1-%C2%AB%D9%81%D8%AD%D8%B5-%D8%A3%D8%A8%D9%83%D8%B1..-%D8%A3%D9%85%D9%84-%D8%A3%D9%83%D8%A8%D8%B1%C2%BB",
-      "published": "2026-10-07",
-      "source": "Syrian Ministry of Health",
-      "source_id": "sy-moh-news",
-      "verification_version": 2,
-      "verified_at": "2026-10-11T21:59:31+00:00",
-      "topic": "public-health",
-      "evidence": {
-        "geography": "دمشق",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "مشفى دمشق لأمراض وجراحة القلب.. رعاية مجانية متكاملة",
-      "title_ar": "مشفى دمشق لأمراض وجراحة القلب.. رعاية مجانية متكاملة",
-      "language": "ar",
-      "url": "https://moh.gov.sy/news/%D9%85%D8%B4%D9%81%D9%89-%D8%AF%D9%85%D8%B4%D9%82-%D9%84%D8%A3%D9%85%D8%B1%D8%A7%D8%B6-%D9%88%D8%AC%D8%B1%D8%A7%D8%AD%D8%A9-%D8%A7%D9%84%D9%82%D9%84%D8%A8..-%D8%B1%D8%B9%D8%A7%D9%8A%D8%A9-%D9%85%D8%AC%D8%A7%D9%86%D9%8A%D8%A9-%D9%85%D8%AA%D9%83%D8%A7%D9%85%D9%84%D8%A9-1",
-      "published": "2026-10-07",
-      "source": "Syrian Ministry of Health",
-      "source_id": "sy-moh-news",
-      "verification_version": 2,
-      "verified_at": "2026-10-11T21:59:31+00:00",
-      "topic": "hospitals",
-      "evidence": {
-        "geography": "دمشق",
         "type": "publisher-headline"
       }
     }
