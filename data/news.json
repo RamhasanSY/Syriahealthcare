@@ -1,8 +1,24 @@
 {
-  "updated": "2026-10-18T20:46:43+00:00",
-  "checked_at": "2026-10-18T20:46:43+00:00",
+  "updated": "2026-10-19T13:20:28+00:00",
+  "checked_at": "2026-10-19T13:20:28+00:00",
   "status": "partial",
   "items": [
+    {
+      "title": "الكشف المبكر عن سرطان الثدي بحلب.. خدمات مجانية وتحديات تقلل من الوصول إليها",
+      "title_ar": "الكشف المبكر عن سرطان الثدي بحلب.. خدمات مجانية وتحديات تقلل من الوصول إليها",
+      "language": "ar",
+      "url": "https://sana.sy/governorates/aleppo/2611011/",
+      "published": "2026-10-18",
+      "source": "Syrian Arab News Agency (SANA) — Health",
+      "source_id": "sana-health",
+      "verification_version": 2,
+      "verified_at": "2026-10-19T13:19:57+00:00",
+      "topic": "public-health",
+      "evidence": {
+        "geography": "حلب",
+        "type": "publisher-headline"
+      }
+    },
     {
       "title": "عمليات جراحية نوعية للأطفال في الرقة ضمن أعمال المؤتمر الطبي السوري الفرنسي",
       "title_ar": "عمليات جراحية نوعية للأطفال في الرقة ضمن أعمال المؤتمر الطبي السوري الفرنسي",
@@ -12,7 +28,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-18T20:46:14+00:00",
+      "verified_at": "2026-10-19T13:19:57+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "الرقة",
@@ -28,7 +44,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-18T20:46:14+00:00",
+      "verified_at": "2026-10-19T13:19:57+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "الرقة",
@@ -44,7 +60,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-18T20:46:14+00:00",
+      "verified_at": "2026-10-19T13:19:57+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "دير الزور",
@@ -60,7 +76,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-18T20:46:14+00:00",
+      "verified_at": "2026-10-19T13:19:57+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "حمص",
@@ -76,7 +92,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-18T20:46:14+00:00",
+      "verified_at": "2026-10-19T13:19:57+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "دير الزور",
@@ -268,7 +284,7 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-18T20:46:10+00:00",
+      "verified_at": "2026-10-19T13:19:56+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "Syria",
@@ -796,7 +812,7 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-18T20:46:10+00:00",
+      "verified_at": "2026-10-19T13:19:56+00:00",
       "topic": "workforce",
       "evidence": {
         "geography": "Syria",
@@ -944,22 +960,6 @@
       "topic": "hospitals",
       "evidence": {
         "geography": "دمشق",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "طرطوس.. مؤتمر طبي يناقش أحدث مستجدات طب الأطفال وجراحته",
-      "title_ar": "طرطوس.. مؤتمر طبي يناقش أحدث مستجدات طب الأطفال وجراحته",
-      "language": "ar",
-      "url": "https://sana.sy/health/2599817/",
-      "published": "2026-10-07",
-      "source": "Syrian Arab News Agency (SANA) — Health",
-      "source_id": "sana-health",
-      "verification_version": 2,
-      "verified_at": "2026-10-08T13:32:58+00:00",
-      "topic": "hospitals",
-      "evidence": {
-        "geography": "سورية",
         "type": "publisher-headline"
       }
     }
