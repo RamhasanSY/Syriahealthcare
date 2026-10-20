@@ -1,8 +1,24 @@
 {
-  "updated": "2026-10-19T22:22:57+00:00",
-  "checked_at": "2026-10-19T22:22:57+00:00",
+  "updated": "2026-10-20T11:41:32+00:00",
+  "checked_at": "2026-10-20T11:41:32+00:00",
   "status": "partial",
   "items": [
+    {
+      "title": "For dialysis patients in Syria, accessing treatment closer to home changes everything",
+      "title_en": "For dialysis patients in Syria, accessing treatment closer to home changes everything",
+      "language": "en",
+      "url": "https://www.emro.who.int/syria/news/for-dialysis-patients-in-syria-accessing-treatment-closer-to-home-changes-everything.html",
+      "published": "2026-10-20",
+      "source": "WHO — Syria office",
+      "source_id": "who-syria-news",
+      "verification_version": 2,
+      "verified_at": "2026-10-20T11:40:15+00:00",
+      "topic": "policy",
+      "evidence": {
+        "geography": "Syria",
+        "type": "publisher-headline"
+      }
+    },
     {
       "title": "صحة الرقة تنظم ورشة عمل لتعزيز مهارات القابلات في دعم الصحة النفسية ‏للأمهات",
       "title_ar": "صحة الرقة تنظم ورشة عمل لتعزيز مهارات القابلات في دعم الصحة النفسية ‏للأمهات",
@@ -12,7 +28,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-19T22:22:39+00:00",
+      "verified_at": "2026-10-20T11:40:14+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "الرقة",
@@ -28,7 +44,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-19T22:22:39+00:00",
+      "verified_at": "2026-10-20T11:40:14+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "الرقة",
@@ -44,7 +60,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-19T22:22:39+00:00",
+      "verified_at": "2026-10-20T11:40:14+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "دير الزور",
@@ -60,7 +76,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-19T22:22:39+00:00",
+      "verified_at": "2026-10-20T11:40:14+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "حمص",
@@ -76,7 +92,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-19T22:22:39+00:00",
+      "verified_at": "2026-10-20T11:40:14+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "دمشق",
@@ -92,7 +108,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-19T22:22:39+00:00",
+      "verified_at": "2026-10-20T11:40:14+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "حلب",
@@ -108,7 +124,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-19T22:22:39+00:00",
+      "verified_at": "2026-10-20T11:40:14+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "الرقة",
@@ -124,7 +140,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-19T22:22:39+00:00",
+      "verified_at": "2026-10-20T11:40:14+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "الرقة",
@@ -364,7 +380,7 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-19T22:22:29+00:00",
+      "verified_at": "2026-10-20T11:40:13+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "Syria",
@@ -892,7 +908,7 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-19T22:22:29+00:00",
+      "verified_at": "2026-10-20T11:40:13+00:00",
       "topic": "workforce",
       "evidence": {
         "geography": "Syria",
@@ -942,22 +958,6 @@
       "verification_version": 2,
       "verified_at": "2026-10-14T21:42:48+00:00",
       "topic": "workforce",
-      "evidence": {
-        "geography": "سوريا",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "انطلاق المؤتمر الطبي السنوي الأول لمشفى الأطفال الوطني في طرطوس",
-      "title_ar": "انطلاق المؤتمر الطبي السنوي الأول لمشفى الأطفال الوطني في طرطوس",
-      "language": "ar",
-      "url": "https://moh.gov.sy/news/%D8%A7%D9%86%D8%B7%D9%84%D8%A7%D9%82-%D8%A7%D9%84%D9%85%D8%A4%D8%AA%D9%85%D8%B1-%D8%A7%D9%84%D8%B7%D8%A8%D9%8A-%D8%A7%D9%84%D8%B3%D9%86%D9%88%D9%8A-%D8%A7%D9%84%D8%A3%D9%88%D9%84-%D9%84%D9%85%D8%B4%D9%81%D9%89-%D8%A7%D9%84%D8%A3%D8%B7%D9%81%D8%A7%D9%84-%D8%A7%D9%84%D9%88%D8%B7%D9%86%D9%8A-%D9%81%D9%8A-%D8%B7%D8%B1%D8%B7%D9%88%D8%B3",
-      "published": "2026-10-08",
-      "source": "Syrian Ministry of Health",
-      "source_id": "sy-moh-news",
-      "verification_version": 2,
-      "verified_at": "2026-10-13T00:42:15+00:00",
-      "topic": "hospitals",
       "evidence": {
         "geography": "سوريا",
         "type": "publisher-headline"
