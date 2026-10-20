@@ -1,8 +1,40 @@
 {
-  "updated": "2026-10-20T11:41:32+00:00",
-  "checked_at": "2026-10-20T11:41:32+00:00",
-  "status": "partial",
+  "updated": "2026-10-20T21:39:12+00:00",
+  "checked_at": "2026-10-20T21:39:12+00:00",
+  "status": "ok",
   "items": [
+    {
+      "title": "الصحة تعزز ثقافة الكشف المبكر عن سرطان الثدي عبر جلسات توعوية",
+      "title_ar": "الصحة تعزز ثقافة الكشف المبكر عن سرطان الثدي عبر جلسات توعوية",
+      "language": "ar",
+      "url": "https://sana.sy/health/2612748/",
+      "published": "2026-10-20",
+      "source": "Syrian Arab News Agency (SANA) — Health",
+      "source_id": "sana-health",
+      "verification_version": 2,
+      "verified_at": "2026-10-20T21:38:42+00:00",
+      "topic": "public-health",
+      "evidence": {
+        "geography": "دمشق",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "محاضرة توعوية في حرستا حول الكشف المبكر عن سرطان الثدي وسبل الوقاية",
+      "title_ar": "محاضرة توعوية في حرستا حول الكشف المبكر عن سرطان الثدي وسبل الوقاية",
+      "language": "ar",
+      "url": "https://sana.sy/health/2612491/",
+      "published": "2026-10-20",
+      "source": "Syrian Arab News Agency (SANA) — Health",
+      "source_id": "sana-health",
+      "verification_version": 2,
+      "verified_at": "2026-10-20T21:38:42+00:00",
+      "topic": "public-health",
+      "evidence": {
+        "geography": "دمشق",
+        "type": "publisher-headline"
+      }
+    },
     {
       "title": "For dialysis patients in Syria, accessing treatment closer to home changes everything",
       "title_en": "For dialysis patients in Syria, accessing treatment closer to home changes everything",
@@ -12,7 +44,7 @@
       "source": "WHO — Syria office",
       "source_id": "who-syria-news",
       "verification_version": 2,
-      "verified_at": "2026-10-20T11:40:15+00:00",
+      "verified_at": "2026-10-20T21:38:44+00:00",
       "topic": "policy",
       "evidence": {
         "geography": "Syria",
@@ -28,7 +60,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-20T11:40:14+00:00",
+      "verified_at": "2026-10-20T21:38:42+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "الرقة",
@@ -44,7 +76,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-20T11:40:14+00:00",
+      "verified_at": "2026-10-20T21:38:42+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "الرقة",
@@ -60,7 +92,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-20T11:40:14+00:00",
+      "verified_at": "2026-10-20T21:38:42+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "دير الزور",
@@ -76,7 +108,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-20T11:40:14+00:00",
+      "verified_at": "2026-10-20T21:38:42+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "حمص",
@@ -92,10 +124,26 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-20T11:40:14+00:00",
+      "verified_at": "2026-10-20T21:38:42+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "دمشق",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "تعزيزاً للرعاية الصحية الأولية.. إعادة تفعيل 6 عيادات متنقلة في القنيطرة وريف درعا",
+      "title_ar": "تعزيزاً للرعاية الصحية الأولية.. إعادة تفعيل 6 عيادات متنقلة في القنيطرة وريف درعا",
+      "language": "ar",
+      "url": "https://moh.gov.sy/news/%D8%AA%D8%B9%D8%B2%D9%8A%D8%B2%D8%A7%D9%8B-%D9%84%D9%84%D8%B1%D8%B9%D8%A7%D9%8A%D8%A9-%D8%A7%D9%84%D8%B5%D8%AD%D9%8A%D8%A9-%D8%A7%D9%84%D8%A3%D9%88%D9%84%D9%8A%D8%A9..-%D8%A5%D8%B9%D8%A7%D8%AF%D8%A9-%D8%AA%D9%81%D8%B9%D9%8A%D9%84-6-%D8%B9%D9%8A%D8%A7%D8%AF%D8%A7%D8%AA-%D9%85%D8%AA%D9%86%D9%82%D9%84%D8%A9-%D9%81%D9%8A-%D8%A7%D9%84%D9%82%D9%86%D9%8A%D8%B7%D8%B1%D8%A9-%D9%88%D8%B1%D9%8A%D9%81-%D8%AF%D8%B1%D8%B9%D8%A7",
+      "published": "2026-10-18",
+      "source": "Syrian Ministry of Health",
+      "source_id": "sy-moh-news",
+      "verification_version": 2,
+      "verified_at": "2026-10-20T21:38:42+00:00",
+      "topic": "public-health",
+      "evidence": {
+        "geography": "درعا",
         "type": "publisher-headline"
       }
     },
@@ -180,6 +228,22 @@
       }
     },
     {
+      "title": "افتتاح المعرض الطبي المرافق للمؤتمر الطبي السوري الفرنسي في دير الزور",
+      "title_ar": "افتتاح المعرض الطبي المرافق للمؤتمر الطبي السوري الفرنسي في دير الزور",
+      "language": "ar",
+      "url": "https://moh.gov.sy/news/%D8%A7%D9%81%D8%AA%D8%AA%D8%A7%D8%AD-%D8%A7%D9%84%D9%85%D8%B9%D8%B1%D8%B6-%D8%A7%D9%84%D8%B7%D8%A8%D9%8A-%D8%A7%D9%84%D9%85%D8%B1%D8%A7%D9%81%D9%82-%D9%84%D9%84%D9%85%D8%A4%D8%AA%D9%85%D8%B1-%D8%A7%D9%84%D8%B7%D8%A8%D9%8A-%D8%A7%D9%84%D8%B3%D9%88%D8%B1%D9%8A-%D8%A7%D9%84%D9%81%D8%B1%D9%86%D8%B3%D9%8A-%D9%81%D9%8A-%D8%AF%D9%8A%D8%B1-%D8%A7%D9%84%D8%B2%D9%88%D8%B1",
+      "published": "2026-10-17",
+      "source": "Syrian Ministry of Health",
+      "source_id": "sy-moh-news",
+      "verification_version": 2,
+      "verified_at": "2026-10-20T21:38:42+00:00",
+      "topic": "workforce",
+      "evidence": {
+        "geography": "دير الزور",
+        "type": "publisher-headline"
+      }
+    },
+    {
       "title": "اختتام المحاضرات النظرية ضمن فعاليات المؤتمر الطبي السوري الفرنسي بدير الزور",
       "title_ar": "اختتام المحاضرات النظرية ضمن فعاليات المؤتمر الطبي السوري الفرنسي بدير الزور",
       "language": "ar",
@@ -192,6 +256,38 @@
       "topic": "hospitals",
       "evidence": {
         "geography": "دير الزور",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "افتتاح قسم الرنين المغناطيسي والعيادة الفكية في مستشفى دير الزور الوطني",
+      "title_ar": "افتتاح قسم الرنين المغناطيسي والعيادة الفكية في مستشفى دير الزور الوطني",
+      "language": "ar",
+      "url": "https://moh.gov.sy/news/%D8%A7%D9%81%D8%AA%D8%AA%D8%A7%D8%AD-%D9%82%D8%B3%D9%85-%D8%A7%D9%84%D8%B1%D9%86%D9%8A%D9%86-%D8%A7%D9%84%D9%85%D8%BA%D9%86%D8%A7%D8%B7%D9%8A%D8%B3%D9%8A-%D9%88%D8%A7%D9%84%D8%B9%D9%8A%D8%A7%D8%AF%D8%A9-%D8%A7%D9%84%D9%81%D9%83%D9%8A%D8%A9-%D9%81%D9%8A-%D9%85%D8%B3%D8%AA%D8%B4%D9%81%D9%89-%D8%AF%D9%8A%D8%B1-%D8%A7%D9%84%D8%B2%D9%88%D8%B1-%D8%A7%D9%84%D9%88%D8%B7%D9%86%D9%8A",
+      "published": "2026-10-16",
+      "source": "Syrian Ministry of Health",
+      "source_id": "sy-moh-news",
+      "verification_version": 2,
+      "verified_at": "2026-10-20T21:38:42+00:00",
+      "topic": "hospitals",
+      "evidence": {
+        "geography": "دير الزور",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "الصحة تطلق تدريبات الصحة المجتمعية في أربع محافظات",
+      "title_ar": "الصحة تطلق تدريبات الصحة المجتمعية في أربع محافظات",
+      "language": "ar",
+      "url": "https://moh.gov.sy/news/%D8%A7%D9%84%D8%B5%D8%AD%D8%A9-%D8%AA%D8%B7%D9%84%D9%82-%D8%AA%D8%AF%D8%B1%D9%8A%D8%A8%D8%A7%D8%AA-%D8%A7%D9%84%D8%B5%D8%AD%D8%A9-%D8%A7%D9%84%D9%85%D8%AC%D8%AA%D9%85%D8%B9%D9%8A%D8%A9-%D9%81%D9%8A-%D8%A3%D8%B1%D8%A8%D8%B9-%D9%85%D8%AD%D8%A7%D9%81%D8%B8%D8%A7%D8%AA",
+      "published": "2026-10-16",
+      "source": "Syrian Ministry of Health",
+      "source_id": "sy-moh-news",
+      "verification_version": 2,
+      "verified_at": "2026-10-20T21:38:42+00:00",
+      "topic": "workforce",
+      "evidence": {
+        "geography": "حلب",
         "type": "publisher-headline"
       }
     },
@@ -276,6 +372,54 @@
       }
     },
     {
+      "title": "وزير الصحة يبحث مع تحالف جافي تعزيز دعم برنامج التلقيح الوطني في سوريا",
+      "title_ar": "وزير الصحة يبحث مع تحالف جافي تعزيز دعم برنامج التلقيح الوطني في سوريا",
+      "language": "ar",
+      "url": "https://moh.gov.sy/news/%D9%88%D8%B2%D9%8A%D8%B1-%D8%A7%D9%84%D8%B5%D8%AD%D8%A9-%D9%8A%D8%A8%D8%AD%D8%AB-%D9%85%D8%B9-%D8%AA%D8%AD%D8%A7%D9%84%D9%81-%D8%AC%D8%A7%D9%81%D9%8A-%D8%AA%D8%B9%D8%B2%D9%8A%D8%B2-%D8%AF%D8%B9%D9%85-%D8%A8%D8%B1%D9%86%D8%A7%D9%85%D8%AC-%D8%A7%D9%84%D8%AA%D9%84%D9%82%D9%8A%D8%AD-%D8%A7%D9%84%D9%88%D8%B7%D9%86%D9%8A-%D9%81%D9%8A-%D8%B3%D9%88%D8%B1%D9%8A%D8%A7",
+      "published": "2026-10-15",
+      "source": "Syrian Ministry of Health",
+      "source_id": "sy-moh-news",
+      "verification_version": 2,
+      "verified_at": "2026-10-20T21:38:42+00:00",
+      "topic": "public-health",
+      "evidence": {
+        "geography": "سوريا",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "3 عمليات لتبديل مفاصل الورك والركبة في مشفى دير الزور الوطني",
+      "title_ar": "3 عمليات لتبديل مفاصل الورك والركبة في مشفى دير الزور الوطني",
+      "language": "ar",
+      "url": "https://moh.gov.sy/news/3-%D8%B9%D9%85%D9%84%D9%8A%D8%A7%D8%AA-%D9%84%D8%AA%D8%A8%D8%AF%D9%8A%D9%84-%D9%85%D9%81%D8%A7%D8%B5%D9%84-%D8%A7%D9%84%D9%88%D8%B1%D9%83-%D9%88%D8%A7%D9%84%D8%B1%D9%83%D8%A8%D8%A9-%D9%81%D9%8A-%D9%85%D8%B4%D9%81%D9%89-%D8%AF%D9%8A%D8%B1-%D8%A7%D9%84%D8%B2%D9%88%D8%B1-%D8%A7%D9%84%D9%88%D8%B7%D9%86%D9%8A",
+      "published": "2026-10-15",
+      "source": "Syrian Ministry of Health",
+      "source_id": "sy-moh-news",
+      "verification_version": 2,
+      "verified_at": "2026-10-20T21:38:42+00:00",
+      "topic": "hospitals",
+      "evidence": {
+        "geography": "دير الزور",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "وزارة الصحة تشارك بفاعلية في الدورة الـ73 للجنة الإقليمية لمنظمة الصحة العالمية لشرق المتوسط",
+      "title_ar": "وزارة الصحة تشارك بفاعلية في الدورة الـ73 للجنة الإقليمية لمنظمة الصحة العالمية لشرق المتوسط",
+      "language": "ar",
+      "url": "https://moh.gov.sy/news/%D9%88%D8%B2%D8%A7%D8%B1%D8%A9-%D8%A7%D9%84%D8%B5%D8%AD%D8%A9-%D8%AA%D8%B4%D8%A7%D8%B1%D9%83-%D8%A8%D9%81%D8%A7%D8%B9%D9%84%D9%8A%D8%A9-%D9%81%D9%8A-%D8%A7%D9%84%D8%AF%D9%88%D8%B1%D8%A9-%D8%A7%D9%84%D9%8073-%D9%84%D9%84%D8%AC%D9%86%D8%A9-%D8%A7%D9%84%D8%A5%D9%82%D9%84%D9%8A%D9%85%D9%8A%D8%A9-%D9%84%D9%85%D9%86%D8%B8%D9%85%D8%A9-%D8%A7%D9%84%D8%B5%D8%AD%D8%A9-%D8%A7%D9%84%D8%B9%D8%A7%D9%84%D9%85%D9%8A%D8%A9-%D9%84%D8%B4%D8%B1%D9%82-%D8%A7%D9%84%D9%85%D8%AA%D9%88%D8%B3%D8%B7",
+      "published": "2026-10-15",
+      "source": "Syrian Ministry of Health",
+      "source_id": "sy-moh-news",
+      "verification_version": 2,
+      "verified_at": "2026-10-20T21:38:42+00:00",
+      "topic": "public-health",
+      "evidence": {
+        "geography": "سوريا",
+        "type": "publisher-headline"
+      }
+    },
+    {
       "title": "صحة درعا تواصل تأهيل وتوسعة قسم الإسعاف بمشفى إزرع الوطني لزيادة طاقته",
       "title_ar": "صحة درعا تواصل تأهيل وتوسعة قسم الإسعاف بمشفى إزرع الوطني لزيادة طاقته",
       "language": "ar",
@@ -311,15 +455,31 @@
       "title": "وزير الصحة: سوريا تنتقل من الاستجابة الطارئة إلى التعافي الصحي المستدام",
       "title_ar": "وزير الصحة: سوريا تنتقل من الاستجابة الطارئة إلى التعافي الصحي المستدام",
       "language": "ar",
-      "url": "https://sana.sy/health/2606963/",
+      "url": "https://moh.gov.sy/news/%D9%88%D8%B2%D9%8A%D8%B1-%D8%A7%D9%84%D8%B5%D8%AD%D8%A9:-%D8%B3%D9%88%D8%B1%D9%8A%D8%A7-%D8%AA%D9%86%D8%AA%D9%82%D9%84-%D9%85%D9%86-%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D8%AC%D8%A7%D8%A8%D8%A9-%D8%A7%D9%84%D8%B7%D8%A7%D8%B1%D8%A6%D8%A9-%D8%A5%D9%84%D9%89-%D8%A7%D9%84%D8%AA%D8%B9%D8%A7%D9%81%D9%8A-%D8%A7%D9%84%D8%B5%D8%AD%D9%8A-%D8%A7%D9%84%D9%85%D8%B3%D8%AA%D8%AF%D8%A7%D9%85",
       "published": "2026-10-14",
-      "source": "Syrian Arab News Agency (SANA) — Health",
-      "source_id": "sana-health",
+      "source": "Syrian Ministry of Health",
+      "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-16T21:11:24+00:00",
+      "verified_at": "2026-10-20T21:38:42+00:00",
       "topic": "policy",
       "evidence": {
         "geography": "سوريا",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "صحة حلب تطلق مشروعاً لدعم القطاع الصحي في السفيرة",
+      "title_ar": "صحة حلب تطلق مشروعاً لدعم القطاع الصحي في السفيرة",
+      "language": "ar",
+      "url": "https://moh.gov.sy/news/%D8%B5%D8%AD%D8%A9-%D8%AD%D9%84%D8%A8-%D8%AA%D8%B7%D9%84%D9%82-%D9%85%D8%B4%D8%B1%D9%88%D8%B9%D8%A7%D9%8B-%D9%84%D8%AF%D8%B9%D9%85-%D8%A7%D9%84%D9%82%D8%B7%D8%A7%D8%B9-%D8%A7%D9%84%D8%B5%D8%AD%D9%8A-%D9%81%D9%8A-%D8%A7%D9%84%D8%B3%D9%81%D9%8A%D8%B1%D8%A9",
+      "published": "2026-10-14",
+      "source": "Syrian Ministry of Health",
+      "source_id": "sy-moh-news",
+      "verification_version": 2,
+      "verified_at": "2026-10-20T21:38:42+00:00",
+      "topic": "public-health",
+      "evidence": {
+        "geography": "حلب",
         "type": "publisher-headline"
       }
     },
@@ -380,7 +540,7 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-20T11:40:13+00:00",
+      "verified_at": "2026-10-20T21:38:41+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "Syria",
@@ -800,166 +960,6 @@
       "topic": "public-health",
       "evidence": {
         "geography": "سورية",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "مسير توعوي في سلمية بمناسبة الشهر الوردي لسرطان الثدي واليوم العالمي للصحة ‏النفسية",
-      "title_ar": "مسير توعوي في سلمية بمناسبة الشهر الوردي لسرطان الثدي واليوم العالمي للصحة ‏النفسية",
-      "language": "ar",
-      "url": "https://sana.sy/locals/2602881/",
-      "published": "2026-10-10",
-      "source": "Syrian Arab News Agency (SANA) — Health",
-      "source_id": "sana-health",
-      "verification_version": 2,
-      "verified_at": "2026-10-11T21:59:31+00:00",
-      "topic": "public-health",
-      "evidence": {
-        "geography": "حماة",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "ليست وحدها في المعاناة.. سانا تضيء على التكافل النفسي والدعم لمريضات سرطان ‏الثدي",
-      "title_ar": "ليست وحدها في المعاناة.. سانا تضيء على التكافل النفسي والدعم لمريضات سرطان ‏الثدي",
-      "language": "ar",
-      "url": "https://sana.sy/reports/2602970/",
-      "published": "2026-10-10",
-      "source": "Syrian Arab News Agency (SANA) — Health",
-      "source_id": "sana-health",
-      "verification_version": 2,
-      "verified_at": "2026-10-11T21:59:31+00:00",
-      "topic": "public-health",
-      "evidence": {
-        "geography": "دمشق",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "مشفى الشدادي الوطني بريف الحسكة يتسلّم تجهيزات طبية حديثة",
-      "title_ar": "مشفى الشدادي الوطني بريف الحسكة يتسلّم تجهيزات طبية حديثة",
-      "language": "ar",
-      "url": "https://sana.sy/governorates/alhassakeh/2602857/",
-      "published": "2026-10-10",
-      "source": "Syrian Arab News Agency (SANA) — Health",
-      "source_id": "sana-health",
-      "verification_version": 2,
-      "verified_at": "2026-10-11T12:52:57+00:00",
-      "topic": "hospitals",
-      "evidence": {
-        "geography": "سوريا",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "نقص في الدواء المستخدم لغسيل الكلى بمشفى بصرى الشام الوطني وجهود ‏لتأمينه",
-      "title_ar": "نقص في الدواء المستخدم لغسيل الكلى بمشفى بصرى الشام الوطني وجهود ‏لتأمينه",
-      "language": "ar",
-      "url": "https://sana.sy/governorates/daraa/2602868/",
-      "published": "2026-10-10",
-      "source": "Syrian Arab News Agency (SANA) — Health",
-      "source_id": "sana-health",
-      "verification_version": 2,
-      "verified_at": "2026-10-11T12:52:57+00:00",
-      "topic": "hospitals",
-      "evidence": {
-        "geography": "درعا",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "معرض مخابر التحاليل الطبية بدمشق يعرض أحدث تقنيات التشخيص المخبري",
-      "title_ar": "معرض مخابر التحاليل الطبية بدمشق يعرض أحدث تقنيات التشخيص المخبري",
-      "language": "ar",
-      "url": "https://sana.sy/video/2602697/",
-      "published": "2026-10-10",
-      "source": "Syrian Arab News Agency (SANA) — Health",
-      "source_id": "sana-health",
-      "verification_version": 2,
-      "verified_at": "2026-10-11T12:52:57+00:00",
-      "topic": "public-health",
-      "evidence": {
-        "geography": "دمشق",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "الصحة النفسية في سوريا.. ما أبرز المشكلات وطرق ‏العلاج؟",
-      "title_ar": "الصحة النفسية في سوريا.. ما أبرز المشكلات وطرق ‏العلاج؟",
-      "language": "ar",
-      "url": "https://sana.sy/health/2602446/",
-      "published": "2026-10-10",
-      "source": "Syrian Arab News Agency (SANA) — Health",
-      "source_id": "sana-health",
-      "verification_version": 2,
-      "verified_at": "2026-10-11T12:52:57+00:00",
-      "topic": "public-health",
-      "evidence": {
-        "geography": "سوريا",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "October 2026: Bridging Medicine & Hope Across Syria and Beyond",
-      "title_en": "October 2026: Bridging Medicine & Hope Across Syria and Beyond",
-      "language": "en",
-      "url": "https://sams-usa.net/october-2026-bridging-medicine-hope-across-syria-and-beyond/",
-      "published": "2026-10-09",
-      "source": "Syrian American Medical Society (SAMS)",
-      "source_id": "sams-news",
-      "verification_version": 2,
-      "verified_at": "2026-10-20T11:40:13+00:00",
-      "topic": "workforce",
-      "evidence": {
-        "geography": "Syria",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "باليوم العالمي للبصر.. مشفى العيون بدمشق خدمات علاجية وتشخيصية متكاملة",
-      "title_ar": "باليوم العالمي للبصر.. مشفى العيون بدمشق خدمات علاجية وتشخيصية متكاملة",
-      "language": "ar",
-      "url": "https://sana.sy/health/2601795/",
-      "published": "2026-10-09",
-      "source": "Syrian Arab News Agency (SANA) — Health",
-      "source_id": "sana-health",
-      "verification_version": 2,
-      "verified_at": "2026-10-11T12:52:57+00:00",
-      "topic": "hospitals",
-      "evidence": {
-        "geography": "دمشق",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "بعد إعادة تأهيله.. مركز بلدة المنصورة الصحي بالرقة يعود لتقديم خدماته",
-      "title_ar": "بعد إعادة تأهيله.. مركز بلدة المنصورة الصحي بالرقة يعود لتقديم خدماته",
-      "language": "ar",
-      "url": "https://sana.sy/health/2601748/",
-      "published": "2026-10-09",
-      "source": "Syrian Arab News Agency (SANA) — Health",
-      "source_id": "sana-health",
-      "verification_version": 2,
-      "verified_at": "2026-10-10T21:46:10+00:00",
-      "topic": "public-health",
-      "evidence": {
-        "geography": "الرقة",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "بعد انقطاع 7 سنوات ... هيئة المخابر التحاليل الطبية تستأنف نشاطها العلمي",
-      "title_ar": "بعد انقطاع 7 سنوات ... هيئة المخابر التحاليل الطبية تستأنف نشاطها العلمي",
-      "language": "ar",
-      "url": "https://moh.gov.sy/news/%D8%A8%D8%B9%D8%AF-%D8%A7%D9%86%D9%82%D8%B7%D8%A7%D8%B9-7-%D8%B3%D9%86%D9%88%D8%A7%D8%AA-...-%D9%87%D9%8A%D8%A6%D8%A9-%D8%A7%D9%84%D9%85%D8%AE%D8%A7%D8%A8%D8%B1-%D8%A7%D9%84%D8%AA%D8%AD%D8%A7%D9%84%D9%8A%D9%84-%D8%A7%D9%84%D8%B7%D8%A8%D9%8A%D8%A9-%D8%AA%D8%B3%D8%AA%D8%A3%D9%86%D9%81-%D9%86%D8%B4%D8%A7%D8%B7%D9%87%D8%A7-%D8%A7%D9%84%D8%B9%D9%84%D9%85%D9%8A",
-      "published": "2026-10-08",
-      "source": "Syrian Ministry of Health",
-      "source_id": "sy-moh-news",
-      "verification_version": 2,
-      "verified_at": "2026-10-14T21:42:48+00:00",
-      "topic": "workforce",
-      "evidence": {
-        "geography": "سوريا",
         "type": "publisher-headline"
       }
     }
