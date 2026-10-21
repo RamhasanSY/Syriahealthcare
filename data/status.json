@@ -1,12 +1,12 @@
 {
-  "checked_at": "2026-10-20T21:39:12+00:00",
+  "checked_at": "2026-10-21T11:52:25+00:00",
   "sources": [
     {
       "id": "drc-jobs",
       "kind": "jobs",
       "state": "ok",
-      "checked_at": "2026-10-20T21:38:48+00:00",
-      "fetched": 87,
+      "checked_at": "2026-10-21T11:51:58+00:00",
+      "fetched": 85,
       "accepted": 4,
       "latest_published": "2026-10-20"
     },
@@ -14,16 +14,16 @@
       "id": "ida-jobs",
       "kind": "jobs",
       "state": "ok",
-      "checked_at": "2026-10-20T21:39:12+00:00",
+      "checked_at": "2026-10-21T11:52:25+00:00",
       "fetched": 10,
-      "accepted": 10,
+      "accepted": 6,
       "latest_published": "2026-10-18"
     },
     {
       "id": "ida-news",
       "kind": "news",
       "state": "ok",
-      "checked_at": "2026-10-20T21:38:44+00:00",
+      "checked_at": "2026-10-21T11:51:57+00:00",
       "fetched": 10,
       "accepted": 0,
       "latest_published": null
@@ -32,16 +32,16 @@
       "id": "nrc-jobs",
       "kind": "jobs",
       "state": "ok",
-      "checked_at": "2026-10-20T21:38:45+00:00",
-      "fetched": 13,
-      "accepted": 4,
-      "latest_published": "2026-10-19"
+      "checked_at": "2026-10-21T11:51:57+00:00",
+      "fetched": 16,
+      "accepted": 7,
+      "latest_published": "2026-10-21"
     },
     {
       "id": "reliefweb-jobs",
       "kind": "jobs",
       "state": "error",
-      "checked_at": "2026-10-20T21:38:48+00:00",
+      "checked_at": "2026-10-21T11:52:00+00:00",
       "error": "Empty response (HTTP 202)",
       "accepted": 0
     },
@@ -49,7 +49,7 @@
       "id": "sams-jobs",
       "kind": "jobs",
       "state": "ok",
-      "checked_at": "2026-10-20T21:38:44+00:00",
+      "checked_at": "2026-10-21T11:51:57+00:00",
       "fetched": 547,
       "accepted": 1,
       "latest_published": "2026-10-19"
@@ -58,7 +58,7 @@
       "id": "sams-news",
       "kind": "news",
       "state": "ok",
-      "checked_at": "2026-10-20T21:38:41+00:00",
+      "checked_at": "2026-10-21T11:51:54+00:00",
       "fetched": 10,
       "accepted": 9,
       "latest_published": "2026-10-13"
@@ -67,16 +67,16 @@
       "id": "sana-health",
       "kind": "news",
       "state": "ok",
-      "checked_at": "2026-10-20T21:38:42+00:00",
+      "checked_at": "2026-10-21T11:51:56+00:00",
       "fetched": 10,
-      "accepted": 7,
+      "accepted": 6,
       "latest_published": "2026-10-20"
     },
     {
       "id": "sarc-news",
       "kind": "news",
       "state": "ok",
-      "checked_at": "2026-10-20T21:38:44+00:00",
+      "checked_at": "2026-10-21T11:51:57+00:00",
       "fetched": 10,
       "accepted": 0,
       "latest_published": null
@@ -85,16 +85,16 @@
       "id": "sy-moh-news",
       "kind": "news",
       "state": "ok",
-      "checked_at": "2026-10-20T21:38:42+00:00",
+      "checked_at": "2026-10-21T11:51:56+00:00",
       "fetched": 12,
       "accepted": 9,
-      "latest_published": "2026-10-18"
+      "latest_published": "2026-10-21"
     },
     {
       "id": "un-health",
       "kind": "news",
       "state": "ok",
-      "checked_at": "2026-10-20T21:38:48+00:00",
+      "checked_at": "2026-10-21T11:51:56+00:00",
       "fetched": 30,
       "accepted": 0,
       "latest_published": null
@@ -103,7 +103,7 @@
       "id": "uossm-news",
       "kind": "news",
       "state": "ok",
-      "checked_at": "2026-10-20T21:38:46+00:00",
+      "checked_at": "2026-10-21T11:51:56+00:00",
       "fetched": 10,
       "accepted": 0,
       "latest_published": null
@@ -112,7 +112,7 @@
       "id": "who-news",
       "kind": "news",
       "state": "ok",
-      "checked_at": "2026-10-20T21:38:43+00:00",
+      "checked_at": "2026-10-21T11:51:57+00:00",
       "fetched": 126,
       "accepted": 0,
       "latest_published": null
@@ -121,7 +121,7 @@
       "id": "who-syria-news",
       "kind": "news",
       "state": "ok",
-      "checked_at": "2026-10-20T21:38:44+00:00",
+      "checked_at": "2026-10-21T11:51:56+00:00",
       "fetched": 10,
       "accepted": 5,
       "latest_published": "2026-10-20"
