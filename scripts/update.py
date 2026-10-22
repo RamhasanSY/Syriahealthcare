@@ -415,6 +415,12 @@ def update_platform_doctors():
     platform_url = platform_base_url()
     if not platform_url:
         return None
+def update_platform_doctors():
+    platform_url = os.environ.get('PLATFORM_URL', '').strip().rstrip('/')
+    if not platform_url:
+        return None
+    if urlsplit(platform_url).scheme != 'https' and not platform_url.startswith('http://127.0.0.1'):
+        raise ValueError('PLATFORM_URL must use https')
     catalog = json.loads(fetch(platform_url + '/api/catalog'))
     payload = json.loads(fetch(platform_url + '/api/doctors'))
     if not isinstance(payload.get('doctors'), list):

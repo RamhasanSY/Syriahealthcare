@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-12T20:07:26+00:00",
+  "updated": "2026-10-22T11:56:26+00:00",
   "source": "OpenStreetMap contributors (ODbL)",
   "items": [
     {
@@ -1057,6 +1057,17 @@
       "emergency": false,
       "osm": true,
       "source_url": "https://www.openstreetmap.org/node/10061009418"
+    },
+    {
+      "name": "مستشفى الحكمة التخصصي",
+      "name_ar": "مستشفى الحكمة التخصصي",
+      "city": "Aleppo",
+      "city_ar": "حلب",
+      "address": "طريق دوار القلعة, أعزاز",
+      "phone": "",
+      "emergency": false,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/14292918492"
     },
     {
       "name": "مستشفى الدكتور محمد ضبيط",
