@@ -150,3 +150,7 @@ a.btn.ghost{width:auto}
 input[type=search]{width:100%;font:inherit;font-size:17px;padding:11px 14px;min-height:48px;border:1px solid #9fb2a4;border-radius:10px;background:var(--white);color:var(--ink)}
 .top-actions .btn{min-height:44px;padding:8px 14px;font-size:14px;white-space:nowrap}
 @media(max-width:420px){.brand span{font-size:15px}.top-actions{gap:6px}.lang{padding:8px 10px}}
+.appt-head{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px}
+.appt-time{font-size:18px;font-variant-numeric:tabular-nums}
+.appt .actions{margin-top:12px}
+.day-group h2{font-size:18px;margin:22px 0 10px}

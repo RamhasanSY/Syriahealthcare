@@ -2,7 +2,7 @@
 
 Accounts and (in later steps) appointment booking for patients and doctors. It runs on the company's own server at `app.syriahealthcare.com`, separately from the public website, which stays on GitHub Pages.
 
-**Status: Stage 1, steps 1–4 of 6 done:** accounts and sign-in, doctor profiles and approval, opening hours, and patient booking. Next: doctor dashboard (confirm/decline), public doctor list on syriahealthcare.com.
+**Status: Stage 1, steps 1–5 of 6 done:** accounts and sign-in, doctor profiles and approval, opening hours, patient booking, and the doctor dashboard. Next: show approved doctors and a booking link on syriahealthcare.com.
 
 ## What works now
 
@@ -39,7 +39,18 @@ A preview shows exactly which free appointments patients will see over the next 
 - **My appointments** (`/appointments`): upcoming and past appointments with the clinic's address and phone. Patients can cancel any upcoming appointment, after confirming on the card, and the time becomes free again.
 - **No double bookings:** a database constraint refuses two active bookings that overlap for the same doctor, or for the same patient, even when two people click at the same moment. The losing patient is told the time is gone and sees the updated times.
 - **Fair use:** at most 5 upcoming appointments per patient, 2 with the same doctor, and 10 booking requests per hour. A time is accepted only if it is currently one of the doctor's free slots.
-- New requests start as "waiting for the doctor to confirm"; doctors confirm or decline in step 5.
+- New requests start as "waiting for the doctor to confirm". If the doctor never answers, the patient sees "not confirmed in time" once the time has passed.
+
+### Doctor dashboard (step 5)
+
+At `/dashboard` doctors see three tabs:
+- **Requests:** confirm, or decline with an optional message.
+- **Upcoming:** grouped by day, with today first. Cancel with a required reason; once an appointment has started, mark it "done" or "patient did not come".
+- **Past:** the last 60 days.
+
+Each card shows the patient's name, phone and reason. Doctors only see their own patients. The page checks for new requests every minute (not while the doctor is typing), and "My account" shows the number of new requests.
+
+When the doctor confirms, declines or cancels, the patient gets a bilingual SMS with the date and time in Syria time, plus the clinic address or the doctor's message. If an SMS fails, it is logged and the doctor's decision still stands.
 
 Five wrong passwords lock an account for 15 minutes. Sessions last 30 days for patients, 7 for doctors and 1 for admins. Every page is in Arabic and English.
 
@@ -64,7 +75,16 @@ npm run dev          # http://127.0.0.1:3000
 npm test             # uses postgres://postgres@127.0.0.1:54329/shc_test (or TEST_DATABASE_URL); it wipes that database
 ```
 
-In development, SMS codes are not sent. They appear in the server log as `[development SMS]`.
+In development, SMS codes are not sent. They appear in the server log as `[development SMS]` and, to make testing easy, on the sign-in screen ("Test mode"). The server refuses to start in production with this setting.
+
+**Local preview with demo data:** create an empty database (e.g. `shc_preview`), then run:
+
+```sh
+DATABASE_URL=postgres://postgres@127.0.0.1:54329/shc_preview npm run seed:demo
+DATABASE_URL=postgres://postgres@127.0.0.1:54329/shc_preview npm start
+```
+
+Open http://127.0.0.1:3000. The demo data has three approved doctors marked [DEMO]. The doctor login is `demo-doctor@demo.local` / `demo doctor 123`, and the admin login is `demo-admin@demo.local` / `demo admin 123`. Patients sign in with any mobile number. `seed:demo` refuses to run in production.
 
 ## Install on the company server
 
