@@ -1,37 +1,21 @@
 {
-  "updated": "2026-10-22T11:55:50+00:00",
-  "checked_at": "2026-10-22T11:55:50+00:00",
+  "updated": "2026-10-22T21:37:49+00:00",
+  "checked_at": "2026-10-22T21:37:49+00:00",
   "status": "partial",
   "items": [
     {
-      "title": "المستشفى التخصصي للأمراض الجلدية بدمشق",
-      "title_ar": "المستشفى التخصصي للأمراض الجلدية بدمشق",
+      "title": "القطاع الصحي في درعا يعزز خدماته ويستقطب 1541 موظفاً خلال عامين",
+      "title_ar": "القطاع الصحي في درعا يعزز خدماته ويستقطب 1541 موظفاً خلال عامين",
       "language": "ar",
-      "url": "https://moh.gov.sy/news/%D8%A7%D9%84%D9%85%D8%B3%D8%AA%D8%B4%D9%81%D9%89-%D8%A7%D9%84%D8%AA%D8%AE%D8%B5%D8%B5%D9%8A-%D9%84%D9%84%D8%A3%D9%85%D8%B1%D8%A7%D8%B6-%D8%A7%D9%84%D8%AC%D9%84%D8%AF%D9%8A%D8%A9-%D8%A8%D8%AF%D9%85%D8%B4%D9%82",
-      "published": "2026-10-21",
-      "source": "Syrian Ministry of Health",
-      "source_id": "sy-moh-news",
+      "url": "https://sana.sy/health/2614618/",
+      "published": "2026-10-22",
+      "source": "Syrian Arab News Agency (SANA) — Health",
+      "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-22T11:55:32+00:00",
-      "topic": "hospitals",
+      "verified_at": "2026-10-22T21:37:32+00:00",
+      "topic": "public-health",
       "evidence": {
-        "geography": "دمشق",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "تمهيداً لإطلاق حملة \"بصر\" في مستشفى الرقة الوطني",
-      "title_ar": "تمهيداً لإطلاق حملة \"بصر\" في مستشفى الرقة الوطني",
-      "language": "ar",
-      "url": "https://moh.gov.sy/news/%D8%AA%D9%85%D9%87%D9%8A%D8%AF%D8%A7%D9%8B-%D9%84%D8%A5%D8%B7%D9%84%D8%A7%D9%82-%D8%AD%D9%85%D9%84%D8%A9-%22%D8%A8%D8%B5%D8%B1%22-%D9%81%D9%8A-%D9%85%D8%B3%D8%AA%D8%B4%D9%81%D9%89-%D8%A7%D9%84%D8%B1%D9%82%D8%A9-%D8%A7%D9%84%D9%88%D8%B7%D9%86%D9%8A",
-      "published": "2026-10-21",
-      "source": "Syrian Ministry of Health",
-      "source_id": "sy-moh-news",
-      "verification_version": 2,
-      "verified_at": "2026-10-22T11:55:32+00:00",
-      "topic": "hospitals",
-      "evidence": {
-        "geography": "الرقة",
+        "geography": "درعا",
         "type": "publisher-headline"
       }
     },
@@ -44,7 +28,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-22T11:55:32+00:00",
+      "verified_at": "2026-10-22T21:37:32+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "دمشق",
@@ -60,7 +44,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-22T11:55:32+00:00",
+      "verified_at": "2026-10-22T21:37:32+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "سورية",
@@ -76,10 +60,42 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-22T11:55:32+00:00",
+      "verified_at": "2026-10-22T21:37:32+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "حمص",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "المستشفى التخصصي للأمراض الجلدية بدمشق",
+      "title_ar": "المستشفى التخصصي للأمراض الجلدية بدمشق",
+      "language": "ar",
+      "url": "https://moh.gov.sy/news/%D8%A7%D9%84%D9%85%D8%B3%D8%AA%D8%B4%D9%81%D9%89-%D8%A7%D9%84%D8%AA%D8%AE%D8%B5%D8%B5%D9%8A-%D9%84%D9%84%D8%A3%D9%85%D8%B1%D8%A7%D8%B6-%D8%A7%D9%84%D8%AC%D9%84%D8%AF%D9%8A%D8%A9-%D8%A8%D8%AF%D9%85%D8%B4%D9%82",
+      "published": "2026-10-21",
+      "source": "Syrian Ministry of Health",
+      "source_id": "sy-moh-news",
+      "verification_version": 2,
+      "verified_at": "2026-10-22T21:37:32+00:00",
+      "topic": "hospitals",
+      "evidence": {
+        "geography": "دمشق",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "تمهيداً لإطلاق حملة \"بصر\" في مستشفى الرقة الوطني",
+      "title_ar": "تمهيداً لإطلاق حملة \"بصر\" في مستشفى الرقة الوطني",
+      "language": "ar",
+      "url": "https://moh.gov.sy/news/%D8%AA%D9%85%D9%87%D9%8A%D8%AF%D8%A7%D9%8B-%D9%84%D8%A5%D8%B7%D9%84%D8%A7%D9%82-%D8%AD%D9%85%D9%84%D8%A9-%22%D8%A8%D8%B5%D8%B1%22-%D9%81%D9%8A-%D9%85%D8%B3%D8%AA%D8%B4%D9%81%D9%89-%D8%A7%D9%84%D8%B1%D9%82%D8%A9-%D8%A7%D9%84%D9%88%D8%B7%D9%86%D9%8A",
+      "published": "2026-10-21",
+      "source": "Syrian Ministry of Health",
+      "source_id": "sy-moh-news",
+      "verification_version": 2,
+      "verified_at": "2026-10-22T21:37:32+00:00",
+      "topic": "hospitals",
+      "evidence": {
+        "geography": "الرقة",
         "type": "publisher-headline"
       }
     },
@@ -92,10 +108,26 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-22T11:55:32+00:00",
+      "verified_at": "2026-10-22T21:37:32+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "سورية",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "For dialysis patients in Syria, accessing treatment closer to home changes everything",
+      "title_en": "For dialysis patients in Syria, accessing treatment closer to home changes everything",
+      "language": "en",
+      "url": "https://www.emro.who.int/syria/news/for-dialysis-patients-in-syria-accessing-treatment-closer-to-home-changes-everything.html",
+      "published": "2026-10-20",
+      "source": "WHO — Syria office",
+      "source_id": "who-syria-news",
+      "verification_version": 2,
+      "verified_at": "2026-10-22T21:37:34+00:00",
+      "topic": "policy",
+      "evidence": {
+        "geography": "Syria",
         "type": "publisher-headline"
       }
     },
@@ -128,22 +160,6 @@
       "topic": "public-health",
       "evidence": {
         "geography": "دمشق",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "For dialysis patients in Syria, accessing treatment closer to home changes everything",
-      "title_en": "For dialysis patients in Syria, accessing treatment closer to home changes everything",
-      "language": "en",
-      "url": "https://www.emro.who.int/syria/news/for-dialysis-patients-in-syria-accessing-treatment-closer-to-home-changes-everything.html",
-      "published": "2026-10-20",
-      "source": "WHO — Syria office",
-      "source_id": "who-syria-news",
-      "verification_version": 2,
-      "verified_at": "2026-10-22T11:55:33+00:00",
-      "topic": "policy",
-      "evidence": {
-        "geography": "Syria",
         "type": "publisher-headline"
       }
     },
@@ -236,7 +252,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-22T11:55:32+00:00",
+      "verified_at": "2026-10-22T21:37:32+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "درعا",
@@ -332,7 +348,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-22T11:55:32+00:00",
+      "verified_at": "2026-10-22T21:37:32+00:00",
       "topic": "workforce",
       "evidence": {
         "geography": "دير الزور",
@@ -364,7 +380,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-22T11:55:32+00:00",
+      "verified_at": "2026-10-22T21:37:32+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "دير الزور",
@@ -380,7 +396,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-22T11:55:32+00:00",
+      "verified_at": "2026-10-22T21:37:32+00:00",
       "topic": "workforce",
       "evidence": {
         "geography": "حلب",
@@ -476,7 +492,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-22T11:55:32+00:00",
+      "verified_at": "2026-10-22T21:37:32+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "سوريا",
@@ -636,7 +652,7 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-22T11:55:31+00:00",
+      "verified_at": "2026-10-22T21:37:31+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "Syria",
@@ -944,22 +960,6 @@
       "topic": "public-health",
       "evidence": {
         "geography": "الرقة",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "الصحة تدعو مالكي التطبيقات الطبية والصحية لاستكمال الترخيص قبل 2 كانون ‏الأول",
-      "title_ar": "الصحة تدعو مالكي التطبيقات الطبية والصحية لاستكمال الترخيص قبل 2 كانون ‏الأول",
-      "language": "ar",
-      "url": "https://sana.sy/health/2604072/",
-      "published": "2026-10-11",
-      "source": "Syrian Arab News Agency (SANA) — Health",
-      "source_id": "sana-health",
-      "verification_version": 2,
-      "verified_at": "2026-10-12T17:09:04+00:00",
-      "topic": "workforce",
-      "evidence": {
-        "geography": "دمشق",
         "type": "publisher-headline"
       }
     }
