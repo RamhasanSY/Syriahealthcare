@@ -480,20 +480,22 @@
     };
     const directories = {
         doctors: {
-            valid: d => value(d, 'name') && value(d, 'specialty') && value(d, 'city') && availability[d.availability],
+            // Platform doctors are bookable online; hand-added entries state their availability.
+            valid: d => value(d, 'name') && value(d, 'specialty') && value(d, 'city') && (safeURL(d.booking_url) || availability[d.availability]),
             text: d => [d.name, d.name_ar, d.specialty, d.specialty_ar, d.city, d.city_ar, d.address],
             filters: {
                 Specialty: {all: ['All specialties', 'جميع الاختصاصات'], values: d => [value(d, 'specialty')]},
                 City: {all: ['All cities', 'جميع المدن'], values: d => [value(d, 'city')]},
-                Availability: {all: ['Any availability', 'أي توفر'], values: d => [availability[d.availability][lang === 'ar' ? 1 : 0]]}
+                Availability: {all: ['Any availability', 'أي توفر'], values: d => [safeURL(d.booking_url) ? tr('Book online', 'حجز عبر الإنترنت') : availability[d.availability][lang === 'ar' ? 1 : 0]]}
             },
             count: n => tr(n === 1 ? '1 doctor found' : `${n} doctors found`, `${n} أطباء`),
             card: (li, d) => {
                 const tags = node('div', 'job-tags');
-                tags.append(node('span', 'pill' + (d.availability === 'accepting' ? '' : ' warm'), availability[d.availability][lang === 'ar' ? 1 : 0]));
-                li.append(node('p', 'job-organisation', value(d, 'specialty')), heading(value(d, 'name')), node('p', 'job-location', value(d, 'city')), tags);
+                const online = safeURL(d.booking_url);
+                tags.append(online ? node('span', 'pill', tr('Online booking', 'حجز إلكتروني')) : node('span', 'pill' + (d.availability === 'accepting' ? '' : ' warm'), availability[d.availability][lang === 'ar' ? 1 : 0]));
+                li.append(node('p', 'job-organisation', value(d, 'specialty')), heading(value(d, 'name')), node('p', 'job-location', [value(d, 'city'), d.address].filter(Boolean).join(' · ')), tags);
                 if (value(d, 'hours')) li.append(node('p', 'job-reference', value(d, 'hours')));
-                contact(li, d);
+                contact(li, d, online ? link(tr('Book online ↗', 'احجز موعداً ↖'), online, 'apply-link') : undefined);
             }
         },
         labs: {
@@ -624,10 +626,19 @@
         }
     }
 
+    // Once the booking platform is connected, the Doctors page invites patients to book online.
+    function renderBookingBanner(platformUrl) {
+        const banner = $('bookingBanner'), url = safeURL(platformUrl || '');
+        if (!banner || !url) return;
+        $('bookingLink').href = new URL('/doctors', url).href;
+        banner.hidden = false;
+    }
+
     function loadDirectory(kind) {
         json(`data/${kind}.json`).then(data => {
             if (!Array.isArray(data.items)) throw new Error('Invalid directory');
             directoryState[kind].items = data.items.filter(i => i && typeof i === 'object');
+            if (kind === 'doctors') renderBookingBanner(data.platform_url);
         }).catch(() => {
             directoryState[kind].error = true;
         }).finally(() => {

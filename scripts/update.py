@@ -382,6 +382,44 @@ def update_hospitals():
     return len(hospitals)
 
 
+# Approved doctors from the booking platform (app.syriahealthcare.com), with a link to book each one.
+# Runs only when PLATFORM_URL is set, so the website never links to a platform that is not online yet.
+def platform_doctors(platform_url, catalog, doctors):
+    base = platform_url.rstrip('/')
+    specialties, governorates = catalog.get('specialties', {}), catalog.get('governorates', {})
+    result = []
+    for d in doctors:
+        doctor_id = str(d.get('id', ''))
+        if not re.fullmatch(r'[0-9a-f-]{36}', doctor_id) or not d.get('name') or d.get('specialty') not in specialties or d.get('governorate') not in governorates:
+            continue
+        specialty, governorate = specialties[d['specialty']], governorates[d['governorate']]
+        record = {'name': d['name'], 'specialty': specialty[0], 'specialty_ar': specialty[1], 'city': governorate[0], 'city_ar': governorate[1],
+                  'address': ', '.join(x for x in (d.get('clinic_name'), d.get('clinic_address'), d.get('area')) if x),
+                  'phone': d.get('clinic_phone') or '', 'booking_url': f'{base}/book?doctor={doctor_id}', 'platform': True}
+        if d.get('bio'):
+            record['hours'] = d['bio'][:300]  # shown as a short line under the doctor's name
+        result.append(record)
+    result.sort(key=lambda r: (r['city'], r['name'].casefold()))
+    return result
+
+
+def update_platform_doctors():
+    platform_url = os.environ.get('PLATFORM_URL', '').strip().rstrip('/')
+    if not platform_url:
+        return None
+    if urlsplit(platform_url).scheme != 'https' and not platform_url.startswith('http://127.0.0.1'):
+        raise ValueError('PLATFORM_URL must use https')
+    catalog = json.loads(fetch(platform_url + '/api/catalog'))
+    payload = json.loads(fetch(platform_url + '/api/doctors'))
+    if not isinstance(payload.get('doctors'), list):
+        raise ValueError('Platform doctor list has changed')
+    path = DATA / 'doctors.json'
+    manual = [d for d in read(path, {}).get('items', []) if isinstance(d, dict) and not d.get('platform')]
+    doctors = platform_doctors(platform_url, catalog, payload['doctors'])
+    write(path, {'updated': now().isoformat(timespec='seconds'), 'platform_url': platform_url, 'items': manual + doctors})
+    return len(doctors)
+
+
 def job_valid(item):
     deadline, published = parse_date(item.get('deadline')), parse_date(item.get('published'))
     exact_deadline = item.get('deadline_at') or (item.get('deadline') if 'T' in str(item.get('deadline')) else None)
@@ -661,6 +699,11 @@ def main():
         print(f'openstreetmap-hospitals: ok, {update_hospitals()} accepted', flush=True)
     except Exception as error:  # Keep the previous hospital list; this never blocks jobs and news.
         print(f'::warning::openstreetmap-hospitals: {error}', flush=True)
+    try:
+        count = update_platform_doctors()
+        print('platform-doctors: ' + ('not configured (PLATFORM_URL is empty)' if count is None else f'ok, {count} accepted'), flush=True)
+    except Exception as error:  # Keep the previous doctor list when the platform is unreachable.
+        print(f'::warning::platform-doctors: {error}', flush=True)
     write(DATA / 'status.json', {'checked_at': checked, 'sources': sorted(status_rows, key=lambda s: s['id']), 'version': VERSION})
     summary = '\n'.join(f"- {s['id']}: {s['state']} — {s['accepted']} eligible items" for s in status_rows)
     if os.environ.get('GITHUB_STEP_SUMMARY'):

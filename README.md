@@ -96,6 +96,10 @@ ReliefWeb's public RSS blocks GitHub's servers, so jobs from it only arrive thro
 
 Entries missing a required field are not shown. The pregnancy planner computes dates in the browser only and stores nothing.
 
+### Booking platform doctors
+
+The booking platform (`platform/`, at app.syriahealthcare.com) has its own README. Once it is online, add a repository variable `PLATFORM_URL` (for example `https://app.syriahealthcare.com`) under GitHub Settings → Secrets and variables → Actions → Variables. From then on, every collection run copies the platform's approved doctors (public details only) into `data/doctors.json` with a "Book online" link for each, and the Doctors page shows a "Book online with verified doctors" banner. Until `PLATFORM_URL` is set, nothing is fetched and the site never links to the platform. Hand-added entries in `data/doctors.json` (without `"platform": true`) are kept.
+
 ## LinkedIn publishing
 
 The public RSS feed at https://syriahealthcare.com/data/news.xml is rebuilt with each collection. It contains original headlines, publisher attribution, original article links, publication dates and stable URL identifiers. Refreshing source verification does not create a new feed item. No full article text is republished.
