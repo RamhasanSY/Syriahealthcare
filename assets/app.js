@@ -506,20 +506,23 @@
                 City: {all: ['All cities', 'جميع المدن'], values: l => [value(l, 'city')]}
             },
             count: n => tr(n === 1 ? '1 lab found' : `${n} labs found`, `${n} مخابر`),
+            rank: l => l.platform === true ? 1 : 0,
             card: (li, l) => {
-                li.append(node('p', 'job-organisation', value(l, 'city')), heading(value(l, 'name')), node('p', 'job-location', value(l, 'address')));
+                li.append(node('p', 'job-organisation', [value(l, 'type'), value(l, 'city')].filter(Boolean).join(' · ')), heading(value(l, 'name')), node('p', 'job-location', value(l, 'address')));
                 const tests = (lang === 'ar' && l.tests_ar) || l.tests || [];
-                if (tests.length) {
+                if (tests.length || l.platform === true) {
                     const tags = node('div', 'job-tags');
+                    if (l.platform === true) tags.append(verifiedPill());
                     tests.forEach(t => tags.append(node('span', 'pill', t)));
                     li.append(tags);
                 }
+                if (value(l, 'hours')) li.append(node('p', 'job-reference', value(l, 'hours')));
                 contact(li, l);
             }
         },
         hospitals: {
             valid: h => value(h, 'name') && value(h, 'city'),
-            rank: h => (h.phone ? 4 : 0) + (h.emergency === true ? 2 : 0) + (h.address ? 1 : 0),
+            rank: h => (h.platform === true ? 8 : 0) + (h.phone ? 4 : 0) + (h.emergency === true ? 2 : 0) + (h.address ? 1 : 0),
             text: h => [h.name, h.name_ar, h.city, h.city_ar, h.address, h.address_ar],
             filters: {
                 City: {all: ['All governorates', 'جميع المحافظات'], values: h => [value(h, 'city')]}
@@ -527,13 +530,17 @@
             count: n => tr(n === 1 ? '1 hospital found' : `${n} hospitals found`, `${n} مشافٍ`),
             card: (li, h) => {
                 const address = value(h, 'address');
-                li.append(node('p', 'job-organisation', value(h, 'city')), heading(value(h, 'name')));
+                li.append(node('p', 'job-organisation', [value(h, 'type'), value(h, 'city')].filter(Boolean).join(' · ')), heading(value(h, 'name')));
                 if (address) li.append(node('p', 'job-location', address));
-                if (h.emergency === true) {
+                const services = (lang === 'ar' && h.services_ar) || h.services || [];
+                if (h.emergency === true || h.platform === true || services.length) {
                     const tags = node('div', 'job-tags');
-                    tags.append(node('span', 'pill warm', tr('Emergency department', 'قسم إسعاف')));
+                    if (h.platform === true) tags.append(verifiedPill());
+                    if (h.emergency === true) tags.append(node('span', 'pill warm', tr('Emergency department', 'قسم إسعاف')));
+                    services.forEach(s => tags.append(node('span', 'pill', s)));
                     li.append(tags);
                 }
+                if (value(h, 'hours')) li.append(node('p', 'job-reference', value(h, 'hours')));
                 contact(li, h, link(tr('Open in Google Maps ↗', 'افتح في خرائط Google ↖'), mapsURL(h), 'apply-link'));
             }
         }
@@ -541,6 +548,9 @@
     const directoryState = Object.fromEntries(Object.keys(directories).map(k => [k, {items: [], loading: true, error: false, query: '', picks: {}, limit: 12}]));
 
     // A plain Maps search URL from the stored address fields: no API key, no coordinates.
+    // Entries that came from the platform: their operating licence was checked by our team.
+    const verifiedPill = () => node('span', 'pill verified', tr('Verified licence', 'ترخيص موثَّق'));
+
     function mapsURL(h) {
         return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent([h.name, h.address, h.city, h.country || 'Syria'].filter(Boolean).join(', '));
     }
@@ -634,11 +644,20 @@
         banner.hidden = false;
     }
 
+    const joinPaths = {doctors: '/staff#register', labs: '/staff#register-lab', hospitals: '/staff#register-hospital'};
+    function renderJoinLink(kind, platformUrl) {
+        const box = $(kind + 'Join'), url = safeURL(platformUrl || '');
+        if (!box || !url) return;
+        $(kind + 'JoinLink').href = new URL(joinPaths[kind], url).href;
+        box.hidden = false;
+    }
+
     function loadDirectory(kind) {
         json(`data/${kind}.json`).then(data => {
             if (!Array.isArray(data.items)) throw new Error('Invalid directory');
             directoryState[kind].items = data.items.filter(i => i && typeof i === 'object');
             if (kind === 'doctors') renderBookingBanner(data.platform_url);
+            renderJoinLink(kind, data.platform_url);
         }).catch(() => {
             directoryState[kind].error = true;
         }).finally(() => {

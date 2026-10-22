@@ -38,8 +38,29 @@ for (const d of doctors) {
         await pool.query("INSERT INTO weekly_hours (doctor_id, weekday, starts_at, ends_at) VALUES ($1, $2, '10:00', '14:00'), ($1, $2, '17:00', '20:00')", [user.id, weekday]);
     }
 }
+// One approved demo lab and hospital, and one lab waiting for review so the admin queue is not empty.
+const facilities = [
+    {email: 'demo-lab@demo.local', status: 'approved', kind: 'lab', name: '[DEMO] Al Shifa Laboratory', governorate: 'aleppo', area: 'Al Furqan',
+        address: 'Al Furqan Street 9 (demo address)', phone: '+963210000010', services: ['blood_count', 'hormones', 'diabetes'], hours: 'Sat–Thu 08:00–20:00'},
+    {email: 'demo-hospital@demo.local', status: 'approved', kind: 'hospital', name: '[DEMO] Al Amal Hospital', governorate: 'damascus', area: 'Kafr Sousa',
+        address: 'Kafr Sousa Roundabout (demo address)', phone: '+963110000011', services: ['emergency_care', 'surgery', 'maternity'], hours: 'Open 24 hours', emergency: true},
+    {email: 'demo-imaging@demo.local', status: 'pending', kind: 'imaging', name: '[DEMO] Homs Imaging Centre', governorate: 'homs', area: 'Al Waer',
+        address: 'Al Waer Street 3 (demo address)', phone: '+963310000012', services: ['xray', 'ultrasound', 'ct'], hours: 'Sat–Thu 09:00–17:00'}
+];
+const facilityHash = await hashPassword('demo facility 123');
+for (const f of facilities) {
+    const {rows: [user]} = await pool.query(
+        `INSERT INTO users (role, name, email, password_hash, consented_at) VALUES ('facility', '[DEMO] Contact Person', $1, $2, now())
+         ON CONFLICT (email) DO UPDATE SET name = EXCLUDED.name RETURNING id`, [f.email, facilityHash]);
+    await pool.query(
+        `INSERT INTO facility_profiles (user_id, kind, status, facility_name, governorate, area, address, phone, licence_number, services, emergency, opening_hours, submitted_at, reviewed_at)
+         VALUES ($1, $2, $3::doctor_status, $4, $5, $6, $7, $8, 'DEMO-0000', $9, $10, $11, now(), CASE WHEN $3::doctor_status = 'approved' THEN now() END)
+         ON CONFLICT (user_id) DO UPDATE SET kind = $2, status = $3::doctor_status, facility_name = $4, governorate = $5, area = $6, address = $7, phone = $8,
+             services = $9, emergency = $10, opening_hours = $11`,
+        [user.id, f.kind, f.status, f.name, f.governorate, f.area, f.address, f.phone, f.services, f.emergency === true, f.hours]);
+}
 await pool.query(
     `INSERT INTO users (role, name, email, password_hash, consented_at) VALUES ('admin', '[DEMO] Admin', 'demo-admin@demo.local', $1, now())
      ON CONFLICT (email) DO NOTHING`, [await hashPassword('demo admin 123')]);
-console.log('Demo data ready: 3 approved demo doctors and a demo admin.');
+console.log('Demo data ready: 3 approved demo doctors, 2 approved demo facilities, 1 facility waiting for review, and a demo admin.');
 await pool.end();

@@ -1,3 +1,4 @@
+import {facilityKinds} from './catalog.js';
 import {audit, transaction} from './db.js';
 import {dummyPasswordHash, hashPassword, newOtp, newToken, normalizeEmail, normalizePhone, otpHash, passwordProblem, sameHash, sha256, verifyPassword} from './security.js';
 
@@ -119,14 +120,17 @@ export default async function authRoutes(app) {
         return {user: publicUser(user)};
     });
 
-    // Doctors: create an account. Approval (step 2) is required before they appear publicly.
-    app.post('/api/auth/doctor/register', {
+    // Doctors and facilities (labs, imaging centres, hospitals, clinics) create their own accounts.
+    // Approval is required before they appear publicly.
+    const registerSchema = extra => ({
         config: ipLimit(20),
-        schema: {body: {type: 'object', required: ['name', 'email', 'password', 'consent'], properties: {
+        schema: {body: {type: 'object', required: ['name', 'email', 'password', 'consent', ...Object.keys(extra)], properties: {
             name: {type: 'string', maxLength: 120}, email: {type: 'string', maxLength: 254}, password: {type: 'string', maxLength: 200},
-            consent: {type: 'boolean'}, language: {enum: ['ar', 'en']}
+            consent: {type: 'boolean'}, language: {enum: ['ar', 'en']}, ...extra
         }}}
-    }, async (request, reply) => {
+    });
+
+    async function register(request, reply, role, createProfile) {
         const email = normalizeEmail(request.body.email), name = request.body.name.trim();
         if (!email) throw new HttpError(400, 'invalid_email', 'Enter a valid email address.');
         if (name.length < 2) throw new HttpError(400, 'invalid_name', 'Enter your full name.');
@@ -136,19 +140,26 @@ export default async function authRoutes(app) {
         const hash = await hashPassword(request.body.password);
         const user = await transaction(app.pg, async db => {
             const {rows: [created]} = await db.query(
-                `INSERT INTO users (role, name, email, password_hash, language, consented_at) VALUES ('doctor', $1, $2, $3, $4, now())
-                 ON CONFLICT (email) DO NOTHING RETURNING *`, [name, email, hash, request.body.language || 'ar']);
+                `INSERT INTO users (role, name, email, password_hash, language, consented_at) VALUES ($1, $2, $3, $4, $5, now())
+                 ON CONFLICT (email) DO NOTHING RETURNING *`, [role, name, email, hash, request.body.language || 'ar']);
             if (!created) throw new HttpError(409, 'email_taken', 'An account with this email already exists. Please sign in.');
-            await db.query('INSERT INTO doctor_profiles (user_id) VALUES ($1)', [created.id]);
-            await audit(db, {actorId: created.id, action: 'doctor.registered', targetId: created.id, ip: request.ip});
+            await createProfile(db, created.id);
+            await audit(db, {actorId: created.id, action: `${role}.registered`, targetId: created.id, ip: request.ip});
             return created;
         });
         await startSession(app, request, reply, user);
         reply.code(201);
         return {user: publicUser(user)};
-    });
+    }
 
-    // Doctors and admins: email and password.
+    app.post('/api/auth/doctor/register', registerSchema({}), (request, reply) =>
+        register(request, reply, 'doctor', (db, id) => db.query('INSERT INTO doctor_profiles (user_id) VALUES ($1)', [id])));
+
+    // The account holder is the facility's contact person; the facility's own name is part of its profile.
+    app.post('/api/auth/facility/register', registerSchema({kind: {enum: Object.keys(facilityKinds)}}), (request, reply) =>
+        register(request, reply, 'facility', (db, id) => db.query('INSERT INTO facility_profiles (user_id, kind) VALUES ($1, $2)', [id, request.body.kind])));
+
+    // Doctors, facilities and admins: email and password.
     app.post('/api/auth/login', {
         config: ipLimit(30),
         schema: {body: {type: 'object', required: ['email', 'password'], properties: {
@@ -159,7 +170,7 @@ export default async function authRoutes(app) {
         const {rows: [failures]} = await app.pg.query(
             'SELECT count(*)::int AS n FROM login_failures WHERE email = $1 AND created_at > now() - make_interval(mins => $2)', [email, LOGIN_WINDOW_MINUTES]);
         if (failures.n >= LOGIN_MAX_FAILURES) throw new HttpError(429, 'locked', 'Too many failed attempts. Please wait 15 minutes and try again.');
-        const {rows: [user]} = await app.pg.query("SELECT * FROM users WHERE email = $1 AND role IN ('doctor', 'admin')", [email]);
+        const {rows: [user]} = await app.pg.query("SELECT * FROM users WHERE email = $1 AND role IN ('doctor', 'facility', 'admin')", [email]);
         const valid = await verifyPassword(request.body.password, user?.password_hash || dummyPasswordHash);
         if (!user || !valid || user.disabled_at) {
             await app.pg.query('INSERT INTO login_failures (email, ip) VALUES ($1, $2)', [email, request.ip]);
@@ -176,7 +187,7 @@ export default async function authRoutes(app) {
         return {signedOut: true};
     });
 
-    app.get('/api/me', {preHandler: requireRole('patient', 'doctor', 'admin')}, async request => ({user: publicUser(request.user)}));
+    app.get('/api/me', {preHandler: requireRole('patient', 'doctor', 'facility', 'admin')}, async request => ({user: publicUser(request.user)}));
 }
 
 export {HttpError};

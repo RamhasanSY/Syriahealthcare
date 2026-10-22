@@ -65,6 +65,39 @@ class CollectorTests(unittest.TestCase):
         self.assertNotIn('email', row)
         self.assertTrue(row['platform'])
 
+    def test_platform_facilities_split_into_labs_and_hospitals(self):
+        catalog = {'governorates': {'aleppo': ['Aleppo', 'حلب']},
+                   'facilityKinds': {'lab': ['Medical laboratory', 'مخبر تحاليل طبية'], 'hospital': ['Hospital', 'مشفى']},
+                   'facilityServices': {'lab': {'hormones': ['Hormones', 'هرمونات']}, 'hospital': {'surgery': ['Surgery', 'جراحة']}}}
+        lab = {'id': '0b6f1d1e-3c55-4a43-9f6e-5d3c2a1b0c9d', 'kind': 'lab', 'facility_name': 'Al Shifa Lab', 'governorate': 'aleppo',
+               'area': 'Al Furqan', 'address': 'Street 9', 'phone': '+963210000010', 'services': ['hormones', 'unknown'],
+               'opening_hours': 'Sat–Thu 08:00–20:00', 'licence_number': 'LAB-1', 'email': 'private@example.org'}
+        hospital = {**lab, 'id': '1b6f1d1e-3c55-4a43-9f6e-5d3c2a1b0c9d', 'kind': 'hospital', 'facility_name': 'Al Amal Hospital',
+                    'services': ['surgery'], 'emergency': True}
+        labs, hospitals = u.platform_facilities(catalog, [lab, hospital, {**lab, 'kind': 'pharmacy'}, {**lab, 'id': '../x'}, {**lab, 'facility_name': ''}])
+        self.assertEqual((len(labs), len(hospitals)), (1, 1))
+        self.assertEqual((labs[0]['tests'], labs[0]['tests_ar'], labs[0]['type']), (['Hormones'], ['هرمونات'], 'Medical laboratory'))
+        self.assertEqual((labs[0]['address'], labs[0]['city_ar'], labs[0]['hours']), ('Street 9, Al Furqan', 'حلب', 'Sat–Thu 08:00–20:00'))
+        self.assertTrue(labs[0]['platform'] and hospitals[0]['emergency'])
+        self.assertEqual(hospitals[0]['services_ar'], ['جراحة'])
+        for secret in ('email', 'licence_number', 'id'):
+            self.assertNotIn(secret, labs[0])
+
+    def test_platform_facilities_replace_only_platform_entries(self):
+        with tempfile.TemporaryDirectory() as folder, patch.object(u, 'DATA', Path(folder)), \
+                patch.dict(u.os.environ, {'PLATFORM_URL': 'https://app.example.org'}):
+            osm = {'name': 'Mouasat Hospital', 'city': 'Damascus', 'osm': True}
+            u.write(Path(folder) / 'hospitals.json', {'updated': 'x', 'source': 'OSM', 'items': [{'name': 'Old platform', 'city': 'Aleppo', 'platform': True}, osm]})
+            catalog = {'governorates': {'aleppo': ['Aleppo', 'حلب']}, 'facilityKinds': {'hospital': ['Hospital', 'مشفى']}, 'facilityServices': {}}
+            facility = {'id': '1b6f1d1e-3c55-4a43-9f6e-5d3c2a1b0c9d', 'kind': 'hospital', 'facility_name': 'Al Amal Hospital', 'governorate': 'aleppo'}
+            replies = {'https://app.example.org/api/catalog': catalog, 'https://app.example.org/api/facilities': {'facilities': [facility]}}
+            with patch.object(u, 'fetch', side_effect=lambda url, **_: json.dumps(replies[url])):
+                self.assertEqual(u.update_platform_facilities(), (0, 1))
+            saved = u.read(Path(folder) / 'hospitals.json', {})
+            self.assertEqual([h['name'] for h in saved['items']], ['Al Amal Hospital', 'Mouasat Hospital'])
+            self.assertEqual((saved['source'], saved['platform_url']), ('OSM', 'https://app.example.org'))
+            self.assertEqual(u.read(Path(folder) / 'labs.json', {})['items'], [])
+
     def test_platform_doctors_skipped_until_configured(self):
         with patch.dict(u.os.environ, {'PLATFORM_URL': ''}), patch.object(u, 'fetch') as fetch:
             self.assertIsNone(u.update_platform_doctors())

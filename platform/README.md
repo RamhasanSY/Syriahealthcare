@@ -2,7 +2,7 @@
 
 Accounts and (in later steps) appointment booking for patients and doctors. It runs on the company's own server at `app.syriahealthcare.com`, separately from the public website, which stays on GitHub Pages.
 
-**Status: Stage 1, steps 1–5 of 6 done:** accounts and sign-in, doctor profiles and approval, opening hours, patient booking, and the doctor dashboard. Next: show approved doctors and a booking link on syriahealthcare.com.
+**Status: Stage 1, steps 1–5 of 6 done:** accounts and sign-in, doctor profiles and approval, opening hours, patient booking, and the doctor dashboard. Labs, imaging centres, hospitals and clinics can also register and get listed on syriahealthcare.com after review.
 
 ## What works now
 
@@ -10,6 +10,7 @@ Accounts and (in later steps) appointment booking for patients and doctors. It r
 |---|---|---|
 | Patient | Mobile number and a 6-digit SMS code | Max 3 codes per number per 15 min; a code is valid for 5 minutes, works once, and allows 5 tries. New patients give their name and accept the privacy policy. |
 | Doctor | Email and password (at least 10 characters), self-registration | Fills in a profile and uploads a licence; must be approved by an admin before patients can see them. |
+| Lab, imaging centre, hospital or clinic | Email and password, self-registration (same sign-in page as doctors) | Fills in the facility's details and uploads its operating licence; must be approved by an admin before it is listed on syriahealthcare.com. |
 | Admin | Email and password, created on the server only | `npm run create-admin -- you@company.com "Your Name"` |
 
 ### Doctor verification (step 2)
@@ -20,6 +21,15 @@ Accounts and (in later steps) appointment booking for patients and doctors. It r
 4. **Admin** (`/admin`) sees doctors by status, opens the documents (every opening is logged), and either approves the doctor or asks for changes with a note the doctor sees.
 5. A doctor who changes an approved profile goes back to "waiting for review", so patients only ever see reviewed details. Documents are locked after approval.
 6. **Admin** can suspend an approved doctor with a reason, and reinstate them later. Every step appears in the doctor's history.
+
+### Labs, imaging centres, hospitals and clinics
+
+1. **Facility** registers at `/staff` and chooses its type (laboratory, imaging centre, hospital, or medical centre/clinic). The account holder is the contact person; the facility's name goes in its profile. `/staff#register-lab` and `/staff#register-hospital` open the form with the type already chosen.
+2. **Facility** (`/facility`) fills in its name, governorate, area, address, phone and licence number, and optionally its services (a fixed list per type, e.g. hormones or PCR for labs, CT or MRI for imaging), an emergency department (hospitals and clinics), opening hours and a short description.
+3. **Facility** uploads its operating licence (required) and sends the profile for review. Documents follow the same rules as doctors' documents: PDF, JPG or PNG up to 5 MB, encrypted at rest, locked after approval.
+4. **Admin** (`/admin`, tab "Labs, hospitals and clinics") approves, asks for changes or suspends, with the same notes and history as for doctors.
+5. Changing an approved profile sends it back for review. `GET /api/facilities` lists approved facilities with public details only: never the contact person, email, licence number or documents.
+6. The website's collector copies them to syriahealthcare.com: labs and imaging centres to the Labs page, hospitals and clinics to the Hospitals page, each marked "Verified licence".
 
 ### Opening hours (step 3)
 
@@ -52,7 +62,7 @@ Each card shows the patient's name, phone and reason. Doctors only see their own
 
 When the doctor confirms, declines or cancels, the patient gets a bilingual SMS with the date and time in Syria time, plus the clinic address or the doctor's message. If an SMS fails, it is logged and the doctor's decision still stands.
 
-Five wrong passwords lock an account for 15 minutes. Sessions last 30 days for patients, 7 for doctors and 1 for admins. Every page is in Arabic and English.
+Five wrong passwords lock an account for 15 minutes. Sessions last 30 days for patients, 7 for doctors and facilities, and 1 for admins. Every page is in Arabic and English.
 
 ### Security built in
 - Passwords stored with scrypt; SMS codes and session tokens stored only as hashes.
@@ -84,7 +94,7 @@ DATABASE_URL=postgres://postgres@127.0.0.1:54329/shc_preview npm run seed:demo
 DATABASE_URL=postgres://postgres@127.0.0.1:54329/shc_preview npm start
 ```
 
-Open http://127.0.0.1:3000. The demo data has three approved doctors marked [DEMO]. The doctor login is `demo-doctor@demo.local` / `demo doctor 123`, and the admin login is `demo-admin@demo.local` / `demo admin 123`. Patients sign in with any mobile number. `seed:demo` refuses to run in production.
+Open http://127.0.0.1:3000. The demo data has three approved doctors, an approved lab and hospital, and an imaging centre waiting for review, all marked [DEMO]. The doctor login is `demo-doctor@demo.local` / `demo doctor 123`, the lab login is `demo-lab@demo.local` / `demo facility 123`, and the admin login is `demo-admin@demo.local` / `demo admin 123`. Patients sign in with any mobile number. `seed:demo` refuses to run in production.
 
 ## Install on the company server
 

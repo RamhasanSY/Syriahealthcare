@@ -1,7 +1,7 @@
 // Doctor profiles and documents (doctor side), and the review workflow (admin side).
 import multipart from '@fastify/multipart';
 import {HttpError, requireRole} from './auth.js';
-import {governorates, specialties} from './catalog.js';
+import {facilityKinds, facilityServices, governorates, specialties} from './catalog.js';
 import {audit, transaction} from './db.js';
 import {MAX_DOCUMENT_BYTES, sniffType} from './documents.js';
 import {normalizePhone} from './security.js';
@@ -16,7 +16,7 @@ const profileView = p => ({
     clinic_address: p.clinic_address, clinic_phone: p.clinic_phone, licence_number: p.licence_number, bio: p.bio,
     submitted_at: p.submitted_at, reviewed_at: p.reviewed_at, review_note: p.review_note, updated_at: p.updated_at
 });
-const documentView = d => ({id: d.id, kind: d.kind, filename: d.filename, mime: d.mime, size_bytes: d.size_bytes, uploaded_at: d.uploaded_at});
+export const documentView = d => ({id: d.id, kind: d.kind, filename: d.filename, mime: d.mime, size_bytes: d.size_bytes, uploaded_at: d.uploaded_at});
 
 // Checks and cleans the fields a doctor sends. Empty strings clear a field.
 function cleanProfile(body) {
@@ -49,15 +49,51 @@ async function loadProfile(db, userId, lock = false) {
     return profile;
 }
 
-const listDocuments = async (db, doctorId) =>
+export const listDocuments = async (db, doctorId) =>
     (await db.query('SELECT * FROM doctor_documents WHERE doctor_id = $1 ORDER BY uploaded_at', [doctorId])).rows;
+
+// Stores one uploaded file for the signed-in account (doctor or facility). The caller checks the profile status first.
+export async function saveUpload(app, request, kinds) {
+    if ((await listDocuments(app.pg, request.user.id)).length >= MAX_DOCUMENTS) throw new HttpError(400, 'too_many_documents', `You can upload up to ${MAX_DOCUMENTS} documents.`);
+    const part = await request.file().catch(() => null);
+    if (!part) throw new HttpError(400, 'no_file', 'Choose a file to upload.');
+    const kind = part.fields.kind?.value;
+    if (!kinds.includes(kind)) throw new HttpError(400, 'invalid_kind', 'Choose the document type.');
+    const buffer = await part.toBuffer().catch(error => {
+        if (error.code === 'FST_REQ_FILE_TOO_LARGE') throw new HttpError(413, 'file_too_large', 'The file is larger than 5 MB.');
+        throw error;
+    });
+    const mime = sniffType(buffer);
+    if (!mime) throw new HttpError(400, 'invalid_file_type', 'Upload a PDF, JPG or PNG file.');
+    const stored = await app.documents.save(buffer);
+    const filename = String(part.filename || 'document').replace(/[^\p{L}\p{N}._ -]/gu, '_').slice(0, 200);
+    try {
+        const {rows: [doc]} = await app.pg.query(
+            `INSERT INTO doctor_documents (doctor_id, kind, filename, mime, size_bytes, sha256, storage_key, iv, auth_tag)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *`,
+            [request.user.id, kind, filename, mime, buffer.length, stored.sha256, stored.storageKey, stored.iv, stored.authTag]);
+        await audit(app.pg, {actorId: request.user.id, action: 'document.uploaded', targetId: doc.id, details: {kind, size: buffer.length}, ip: request.ip});
+        return documentView(doc);
+    } catch (error) {
+        await app.documents.remove(stored.storageKey);
+        throw error;
+    }
+}
+
+export async function deleteDocument(app, request) {
+    const {rows: [doc]} = await app.pg.query('DELETE FROM doctor_documents WHERE id = $1 AND doctor_id = $2 RETURNING *', [request.params.id, request.user.id]);
+    if (!doc) throw new HttpError(404, 'not_found', 'Document not found.');
+    await app.documents.remove(doc.storage_key);
+    await audit(app.pg, {actorId: request.user.id, action: 'document.deleted', targetId: doc.id, ip: request.ip});
+    return {deleted: true};
+}
 
 export default async function doctorRoutes(app) {
     await app.register(multipart, {limits: {fileSize: MAX_DOCUMENT_BYTES, files: 1, fields: 2, fieldSize: 100}});
     const doctorOnly = {preHandler: requireRole('doctor')};
     const adminOnly = {preHandler: requireRole('admin')};
 
-    app.get('/api/catalog', async () => ({specialties, governorates}));
+    app.get('/api/catalog', async () => ({specialties, governorates, facilityKinds, facilityServices}));
 
     // ---- Doctor side ----
 
@@ -92,41 +128,14 @@ export default async function doctorRoutes(app) {
     app.post('/api/doctor/documents', doctorOnly, async (request, reply) => {
         const profile = await loadProfile(app.pg, request.user.id);
         if (!['draft', 'pending', 'rejected'].includes(profile.status)) throw new HttpError(403, 'documents_locked', 'Documents can only be changed before approval. Please contact support.');
-        if ((await listDocuments(app.pg, request.user.id)).length >= MAX_DOCUMENTS) throw new HttpError(400, 'too_many_documents', `You can upload up to ${MAX_DOCUMENTS} documents.`);
-        const part = await request.file().catch(() => null);
-        if (!part) throw new HttpError(400, 'no_file', 'Choose a file to upload.');
-        const kind = part.fields.kind?.value;
-        if (!['licence', 'syndicate', 'other'].includes(kind)) throw new HttpError(400, 'invalid_kind', 'Choose the document type.');
-        const buffer = await part.toBuffer().catch(error => {
-            if (error.code === 'FST_REQ_FILE_TOO_LARGE') throw new HttpError(413, 'file_too_large', 'The file is larger than 5 MB.');
-            throw error;
-        });
-        const mime = sniffType(buffer);
-        if (!mime) throw new HttpError(400, 'invalid_file_type', 'Upload a PDF, JPG or PNG file.');
-        const stored = await app.documents.save(buffer);
-        const filename = String(part.filename || 'document').replace(/[^\p{L}\p{N}._ -]/gu, '_').slice(0, 200);
-        try {
-            const {rows: [doc]} = await app.pg.query(
-                `INSERT INTO doctor_documents (doctor_id, kind, filename, mime, size_bytes, sha256, storage_key, iv, auth_tag)
-                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *`,
-                [request.user.id, kind, filename, mime, buffer.length, stored.sha256, stored.storageKey, stored.iv, stored.authTag]);
-            await audit(app.pg, {actorId: request.user.id, action: 'document.uploaded', targetId: doc.id, details: {kind, size: buffer.length}, ip: request.ip});
-            reply.code(201);
-            return {document: documentView(doc)};
-        } catch (error) {
-            await app.documents.remove(stored.storageKey);
-            throw error;
-        }
+        reply.code(201);
+        return {document: await saveUpload(app, request, ['licence', 'syndicate', 'other'])};
     });
 
     app.delete('/api/doctor/documents/:id', {...doctorOnly, schema: {params: {type: 'object', properties: {id: {type: 'string', format: 'uuid'}}}}}, async request => {
         const profile = await loadProfile(app.pg, request.user.id);
         if (!['draft', 'pending', 'rejected'].includes(profile.status)) throw new HttpError(403, 'documents_locked', 'Documents can only be changed before approval. Please contact support.');
-        const {rows: [doc]} = await app.pg.query('DELETE FROM doctor_documents WHERE id = $1 AND doctor_id = $2 RETURNING *', [request.params.id, request.user.id]);
-        if (!doc) throw new HttpError(404, 'not_found', 'Document not found.');
-        await app.documents.remove(doc.storage_key);
-        await audit(app.pg, {actorId: request.user.id, action: 'document.deleted', targetId: doc.id, ip: request.ip});
-        return {deleted: true};
+        return deleteDocument(app, request);
     });
 
     app.post('/api/doctor/submit', doctorOnly, async request => {

@@ -13,7 +13,7 @@ export const pool = createPool(process.env.TEST_DATABASE_URL || 'postgres://post
 const documentDir = await mkdtemp(path.join(tmpdir(), 'shc-docs-'));
 export const config = {
     production: false, appOrigin: origin, otpSecret: 'test-secret-test-secret-test-secret', smsProvider: 'test',
-    documentKey: 'ab'.repeat(32), documentDir, sessionDays: {patient: 30, doctor: 7, admin: 1}, trustProxy: false
+    documentKey: 'ab'.repeat(32), documentDir, sessionDays: {patient: 30, doctor: 7, facility: 7, admin: 1}, trustProxy: false
 };
 
 let migrated = false;
