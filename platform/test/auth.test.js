@@ -124,6 +124,21 @@ describe('doctor and admin sign-in', () => {
     });
 });
 
+describe('local preview mode', () => {
+    test('the sign-in code is shown on screen only in development with console SMS', async () => {
+        const {buildApp} = await import('../src/app.js');
+        const {config} = await import('./helpers.js');
+        for (const [production, provider, shown] of [[false, 'console', true], [false, 'test', false]]) {
+            const preview = await buildApp({config: {...config, production, smsProvider: provider}, pool, sms: {send: async () => {}}, logger: false});
+            const res = await preview.inject({method: 'POST', url: '/api/auth/otp/request', payload: {phone: '0912345678'}, headers: {origin: config.appOrigin}});
+            assert.equal('previewCode' in res.json(), shown, `${provider}/${production}`);
+            await preview.close();
+            await pool.query('DELETE FROM otp_codes');
+        }
+        // In production the server refuses to start with console SMS at all (see src/config.js).
+    });
+});
+
 describe('request safety', () => {
     test('requests from other websites are blocked', async () => {
         const res = await post('/api/auth/otp/request', {phone: '0912345678'}, {origin: 'https://evil.example'});
