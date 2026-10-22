@@ -154,3 +154,8 @@ input[type=search]{width:100%;font:inherit;font-size:17px;padding:11px 14px;min-
 .appt-time{font-size:18px;font-variant-numeric:tabular-nums}
 .appt .actions{margin-top:12px}
 .day-group h2{font-size:18px;margin:22px 0 10px}
+/* Facility services: a compact grid of checkboxes */
+fieldset.services{border:0;padding:0;margin:0 0 16px;min-width:0}
+fieldset.services legend{font-weight:600;margin-bottom:8px;padding:0}
+.service-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:0 16px}
+.service-grid .check{margin-bottom:8px}

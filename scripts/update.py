@@ -377,7 +377,8 @@ def update_hospitals():
     hospitals = osm_hospitals(payload.get('elements', []))
     if len(hospitals) < 100:
         raise ValueError(f'OpenStreetMap returned only {len(hospitals)} hospitals')
-    write(path, {'updated': now().isoformat(timespec='seconds'), 'source': 'OpenStreetMap contributors (ODbL)',
+    # Platform hospitals and the platform address are kept; they are refreshed by update_platform_facilities.
+    write(path, {**old, 'updated': now().isoformat(timespec='seconds'), 'source': 'OpenStreetMap contributors (ODbL)',
                  'items': manual + hospitals})
     return len(hospitals)
 
@@ -403,12 +404,17 @@ def platform_doctors(platform_url, catalog, doctors):
     return result
 
 
-def update_platform_doctors():
+def platform_base_url():
     platform_url = os.environ.get('PLATFORM_URL', '').strip().rstrip('/')
+    if platform_url and urlsplit(platform_url).scheme != 'https' and not platform_url.startswith('http://127.0.0.1'):
+        raise ValueError('PLATFORM_URL must use https')
+    return platform_url
+
+
+def update_platform_doctors():
+    platform_url = platform_base_url()
     if not platform_url:
         return None
-    if urlsplit(platform_url).scheme != 'https' and not platform_url.startswith('http://127.0.0.1'):
-        raise ValueError('PLATFORM_URL must use https')
     catalog = json.loads(fetch(platform_url + '/api/catalog'))
     payload = json.loads(fetch(platform_url + '/api/doctors'))
     if not isinstance(payload.get('doctors'), list):
@@ -418,6 +424,48 @@ def update_platform_doctors():
     doctors = platform_doctors(platform_url, catalog, payload['doctors'])
     write(path, {'updated': now().isoformat(timespec='seconds'), 'platform_url': platform_url, 'items': manual + doctors})
     return len(doctors)
+
+
+# Approved labs, imaging centres, hospitals and clinics from the platform. Labs and imaging go to the Labs page,
+# hospitals and clinics to the Hospitals page, each marked as verified. Only public fields are copied.
+def platform_facilities(catalog, facilities):
+    kinds, governorates, services = catalog.get('facilityKinds', {}), catalog.get('governorates', {}), catalog.get('facilityServices', {})
+    labs, hospitals = [], []
+    for f in facilities:
+        kind = f.get('kind')
+        if not re.fullmatch(r'[0-9a-f-]{36}', str(f.get('id', ''))) or kind not in kinds or f.get('governorate') not in governorates or not f.get('facility_name'):
+            continue
+        governorate, offered = governorates[f['governorate']], [services.get(kind, {}).get(s) for s in f.get('services') or []]
+        offered = [s for s in offered if s]
+        record = {'name': f['facility_name'], 'city': governorate[0], 'city_ar': governorate[1],
+                  'address': ', '.join(x for x in (f.get('address'), f.get('area')) if x), 'phone': f.get('phone') or '',
+                  'type': kinds[kind][0], 'type_ar': kinds[kind][1], 'platform': True}
+        if f.get('opening_hours'):
+            record['hours'] = f['opening_hours'][:200]
+        if kind in ('lab', 'imaging'):
+            labs.append({**record, 'tests': [s[0] for s in offered], 'tests_ar': [s[1] for s in offered]})
+        else:
+            hospitals.append({**record, 'emergency': f.get('emergency') is True, 'services': [s[0] for s in offered], 'services_ar': [s[1] for s in offered]})
+    for rows in (labs, hospitals):
+        rows.sort(key=lambda r: (r['city'], r['name'].casefold()))
+    return labs, hospitals
+
+
+def update_platform_facilities():
+    platform_url = platform_base_url()
+    if not platform_url:
+        return None
+    catalog = json.loads(fetch(platform_url + '/api/catalog'))
+    payload = json.loads(fetch(platform_url + '/api/facilities'))
+    if not isinstance(payload.get('facilities'), list):
+        raise ValueError('Platform facility list has changed')
+    labs, hospitals = platform_facilities(catalog, payload['facilities'])
+    for name, rows in (('labs', labs), ('hospitals', hospitals)):
+        path = DATA / f'{name}.json'
+        old = read(path, {})
+        kept = [x for x in old.get('items', []) if isinstance(x, dict) and not x.get('platform')]
+        write(path, {**old, 'platform_url': platform_url, 'items': rows + kept})
+    return len(labs), len(hospitals)
 
 
 def job_valid(item):
@@ -704,6 +752,11 @@ def main():
         print('platform-doctors: ' + ('not configured (PLATFORM_URL is empty)' if count is None else f'ok, {count} accepted'), flush=True)
     except Exception as error:  # Keep the previous doctor list when the platform is unreachable.
         print(f'::warning::platform-doctors: {error}', flush=True)
+    try:
+        counts = update_platform_facilities()
+        print('platform-facilities: ' + ('not configured (PLATFORM_URL is empty)' if counts is None else f'ok, {counts[0]} labs and {counts[1]} hospitals or clinics'), flush=True)
+    except Exception as error:  # Keep the previous lists when the platform is unreachable.
+        print(f'::warning::platform-facilities: {error}', flush=True)
     write(DATA / 'status.json', {'checked_at': checked, 'sources': sorted(status_rows, key=lambda s: s['id']), 'version': VERSION})
     summary = '\n'.join(f"- {s['id']}: {s['state']} — {s['accepted']} eligible items" for s in status_rows)
     if os.environ.get('GITHUB_STEP_SUMMARY'):

@@ -1,8 +1,8 @@
 <!doctype html>
-<html lang="ar" dir="rtl" data-title-en="Doctor sign-in — Syria Healthcare" data-title-ar="دخول الأطباء — الرعاية الصحية في سوريا">
+<html lang="ar" dir="rtl" data-title-en="Doctors, labs and hospitals — Syria Healthcare" data-title-ar="الأطباء والمخابر والمشافي — الرعاية الصحية في سوريا">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#173e36">
-<title>دخول الأطباء — الرعاية الصحية في سوريا</title>
+<title>الأطباء والمخابر والمشافي — الرعاية الصحية في سوريا</title>
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/assets/app.css">
 <script src="/assets/common.js" defer></script><script src="/assets/staff.js" defer></script>
 </head>
@@ -10,12 +10,12 @@
 <a class="skip" href="#main" data-en="Skip to content" data-ar="انتقل إلى المحتوى">انتقل إلى المحتوى</a>
 <header class="top"><div class="top-inner"><a class="brand" href="/"><img src="/assets/logo.svg" alt=""><span data-en="Syria Healthcare" data-ar="الرعاية الصحية في سوريا">الرعاية الصحية في سوريا</span></a><div class="top-actions"><button class="lang" id="langToggle" type="button">English</button></div></div></header>
 <main id="main" class="wrap">
-  <h1 data-en="Doctors and staff" data-ar="الأطباء والموظفون">الأطباء والموظفون</h1>
-  <p class="lead" data-en="Sign in with your email and password, or create a doctor account. We check every new doctor before patients can book." data-ar="سجّل الدخول ببريدك الإلكتروني وكلمة المرور، أو أنشئ حساب طبيب. نتحقق من كل طبيب جديد قبل أن يتمكن المرضى من الحجز.">سجّل الدخول ببريدك الإلكتروني وكلمة المرور، أو أنشئ حساب طبيب. نتحقق من كل طبيب جديد قبل أن يتمكن المرضى من الحجز.</p>
+  <h1 data-en="Doctors, labs and hospitals" data-ar="الأطباء والمخابر والمشافي">الأطباء والمخابر والمشافي</h1>
+  <p class="lead" data-en="Sign in with your email and password, or create a free account for your practice, lab, imaging centre, hospital or clinic. We check every licence before anything is shown to patients." data-ar="سجّل الدخول ببريدك الإلكتروني وكلمة المرور، أو أنشئ حساباً مجانياً لعيادتك أو مخبرك أو مركز الأشعة أو المشفى أو المركز الطبي. نتحقق من كل ترخيص قبل أن يظهر أي شيء للمرضى.">سجّل الدخول ببريدك الإلكتروني وكلمة المرور، أو أنشئ حساباً مجانياً لعيادتك أو مخبرك أو مركز الأشعة أو المشفى أو المركز الطبي. نتحقق من كل ترخيص قبل أن يظهر أي شيء للمرضى.</p>
   <div class="card">
     <div class="tabs" role="tablist">
       <button type="button" role="tab" id="tabLogin" aria-controls="loginForm" aria-selected="true" data-en="Sign in" data-ar="تسجيل الدخول">تسجيل الدخول</button>
-      <button type="button" role="tab" id="tabRegister" aria-controls="registerForm" aria-selected="false" tabindex="-1" data-en="Create doctor account" data-ar="إنشاء حساب طبيب">إنشاء حساب طبيب</button>
+      <button type="button" role="tab" id="tabRegister" aria-controls="registerForm" aria-selected="false" tabindex="-1" data-en="Create account" data-ar="إنشاء حساب">إنشاء حساب</button>
     </div>
     <form id="loginForm" role="tabpanel" aria-labelledby="tabLogin" novalidate>
       <div class="msg error" id="loginError" role="alert" tabindex="-1" hidden></div>
@@ -25,7 +25,13 @@
     </form>
     <form id="registerForm" role="tabpanel" aria-labelledby="tabRegister" novalidate hidden>
       <div class="msg error" id="registerError" role="alert" tabindex="-1" hidden></div>
-      <label class="field"><span data-en="Full name, as on your licence" data-ar="الاسم الكامل كما في ترخيصك">الاسم الكامل كما في ترخيصك</span><input type="text" id="regName" autocomplete="name" maxlength="120" required></label>
+      <label class="field"><span data-en="I am registering" data-ar="أسجّل">أسجّل</span><select id="regType">
+        <option value="doctor" data-en="Myself, as a doctor" data-ar="نفسي كطبيب">نفسي كطبيب</option>
+        <option value="lab" data-en="A medical laboratory" data-ar="مخبر تحاليل طبية">مخبر تحاليل طبية</option>
+        <option value="imaging" data-en="An imaging centre" data-ar="مركز أشعة">مركز أشعة</option>
+        <option value="hospital" data-en="A hospital" data-ar="مشفى">مشفى</option>
+        <option value="clinic" data-en="A medical centre or clinic" data-ar="مركزاً طبياً أو مستوصفاً">مركزاً طبياً أو مستوصفاً</option></select></label>
+      <label class="field"><span id="regNameDoctor" data-en="Full name, as on your licence" data-ar="الاسم الكامل كما في ترخيصك">الاسم الكامل كما في ترخيصك</span><span id="regNameFacility" hidden data-en="Your full name (contact person)" data-ar="اسمك الكامل (الشخص المسؤول عن التواصل)">اسمك الكامل (الشخص المسؤول عن التواصل)</span><input type="text" id="regName" autocomplete="name" maxlength="120" required><small id="regFacilityHint" hidden data-en="You add the name of the lab, centre or hospital in the next step." data-ar="تضيف اسم المخبر أو المركز أو المشفى في الخطوة التالية.">تضيف اسم المخبر أو المركز أو المشفى في الخطوة التالية.</small></label>
       <label class="field"><span data-en="Email" data-ar="البريد الإلكتروني">البريد الإلكتروني</span><input type="email" id="regEmail" autocomplete="email" dir="ltr" required></label>
       <label class="field"><span data-en="Password" data-ar="كلمة المرور">كلمة المرور</span><input type="password" id="regPassword" autocomplete="new-password" minlength="10" dir="ltr" required aria-describedby="pwHint"><small id="pwHint" data-en="At least 10 characters. A short sentence is easy to remember." data-ar="10 أحرف على الأقل. جملة قصيرة يسهل تذكرها.">10 أحرف على الأقل. جملة قصيرة يسهل تذكرها.</small></label>
       <label class="check"><input type="checkbox" id="regConsent"><span><span data-en="I agree to the" data-ar="أوافق على">أوافق على</span> <a href="/privacy" target="_blank" data-en="terms and privacy policy" data-ar="الشروط وسياسة الخصوصية">الشروط وسياسة الخصوصية</a>.</span></label>

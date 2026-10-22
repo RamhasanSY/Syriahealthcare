@@ -25,7 +25,7 @@ export const config = {
     // Licence documents: encrypted with DOCUMENT_KEY (64 hex characters) and stored in DOCUMENT_DIR.
     documentKey: required('DOCUMENT_KEY', '0'.repeat(64)),
     documentDir: env.DOCUMENT_DIR || fileURLToPath(new URL('../storage/documents/', import.meta.url)),
-    sessionDays: {patient: 30, doctor: 7, admin: 1},
+    sessionDays: {patient: 30, doctor: 7, facility: 7, admin: 1},
     trustProxy: env.TRUST_PROXY === 'true'
 };
 

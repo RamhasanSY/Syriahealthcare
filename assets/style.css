@@ -1895,3 +1895,8 @@ body[dir=rtl] .section-head h2 {
 .booking-banner strong{font:600 22px/1.25 var(--serif)}
 .booking-banner p{margin:6px 0 0;opacity:.9;max-width:60ch}
 .booking-banner .button{background:var(--lime);color:var(--ink)}
+
+/* Platform listings: verified tag and the invitation for doctors, labs and hospitals to join */
+.pill.verified{background:var(--ink);color:#fff}
+.join-cta{margin:22px 0 0;padding:16px 20px;border:1px dashed var(--rule);border-radius:14px;color:var(--muted)}
+.join-cta a{font-weight:600;color:var(--ink);white-space:nowrap}
