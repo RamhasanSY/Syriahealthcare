@@ -1,8 +1,24 @@
 {
-  "updated": "2026-10-23T11:41:58+00:00",
-  "checked_at": "2026-10-23T11:41:58+00:00",
+  "updated": "2026-10-23T21:26:16+00:00",
+  "checked_at": "2026-10-23T21:26:16+00:00",
   "status": "partial",
   "items": [
+    {
+      "title": "وزير الصحة يبحث مع السفير التركي تعزيز التعاون في القطاع الصحي",
+      "title_ar": "وزير الصحة يبحث مع السفير التركي تعزيز التعاون في القطاع الصحي",
+      "language": "ar",
+      "url": "https://sana.sy/health/2615402/",
+      "published": "2026-10-23",
+      "source": "Syrian Arab News Agency (SANA) — Health",
+      "source_id": "sana-health",
+      "verification_version": 2,
+      "verified_at": "2026-10-23T21:25:58+00:00",
+      "topic": "hospitals",
+      "evidence": {
+        "geography": "دمشق",
+        "type": "publisher-headline"
+      }
+    },
     {
       "title": "القطاع الصحي في درعا يعزز خدماته ويستقطب 1541 موظفاً خلال عامين",
       "title_ar": "القطاع الصحي في درعا يعزز خدماته ويستقطب 1541 موظفاً خلال عامين",
@@ -12,7 +28,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-23T11:41:40+00:00",
+      "verified_at": "2026-10-23T21:25:58+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "درعا",
@@ -28,7 +44,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-23T11:41:40+00:00",
+      "verified_at": "2026-10-23T21:25:58+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "دمشق",
@@ -44,7 +60,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-23T11:41:40+00:00",
+      "verified_at": "2026-10-23T21:25:58+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "الرقة",
@@ -60,7 +76,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-23T11:41:40+00:00",
+      "verified_at": "2026-10-23T21:25:58+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "دمشق",
@@ -76,7 +92,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-23T11:41:40+00:00",
+      "verified_at": "2026-10-23T21:25:58+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "سورية",
@@ -92,7 +108,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-23T11:41:40+00:00",
+      "verified_at": "2026-10-23T21:25:58+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "حمص",
@@ -108,7 +124,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-23T11:41:40+00:00",
+      "verified_at": "2026-10-23T21:25:58+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "سورية",
@@ -124,7 +140,7 @@
       "source": "WHO — Syria office",
       "source_id": "who-syria-news",
       "verification_version": 2,
-      "verified_at": "2026-10-23T11:41:41+00:00",
+      "verified_at": "2026-10-23T21:25:59+00:00",
       "topic": "policy",
       "evidence": {
         "geography": "Syria",
@@ -252,7 +268,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-23T11:41:40+00:00",
+      "verified_at": "2026-10-23T21:25:58+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "درعا",
@@ -348,7 +364,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-23T11:41:40+00:00",
+      "verified_at": "2026-10-23T21:25:58+00:00",
       "topic": "workforce",
       "evidence": {
         "geography": "دير الزور",
@@ -380,7 +396,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-23T11:41:40+00:00",
+      "verified_at": "2026-10-23T21:25:58+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "دير الزور",
@@ -396,7 +412,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-23T11:41:40+00:00",
+      "verified_at": "2026-10-23T21:25:58+00:00",
       "topic": "workforce",
       "evidence": {
         "geography": "حلب",
@@ -492,7 +508,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-23T11:41:40+00:00",
+      "verified_at": "2026-10-23T21:25:58+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "سوريا",
@@ -652,7 +668,7 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-23T11:41:39+00:00",
+      "verified_at": "2026-10-23T21:25:56+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "Syria",
@@ -944,22 +960,6 @@
       "topic": "hospitals",
       "evidence": {
         "geography": "دمشق",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "بعد إعادة تأهيله.. افتتاح مركز بلدة المنصورة الصحي بريف الرقة",
-      "title_ar": "بعد إعادة تأهيله.. افتتاح مركز بلدة المنصورة الصحي بريف الرقة",
-      "language": "ar",
-      "url": "https://moh.gov.sy/news/%D8%A8%D8%B9%D8%AF-%D8%A5%D8%B9%D8%A7%D8%AF%D8%A9-%D8%AA%D8%A3%D9%87%D9%8A%D9%84%D9%87..-%D8%A7%D9%81%D8%AA%D8%AA%D8%A7%D8%AD-%D9%85%D8%B1%D9%83%D8%B2-%D8%A8%D9%84%D8%AF%D8%A9-%D8%A7%D9%84%D9%85%D9%86%D8%B5%D9%88%D8%B1%D8%A9-%D8%A7%D9%84%D8%B5%D8%AD%D9%8A-%D8%A8%D8%B1%D9%8A%D9%81-%D8%A7%D9%84%D8%B1%D9%82%D8%A9",
-      "published": "2026-10-11",
-      "source": "Syrian Ministry of Health",
-      "source_id": "sy-moh-news",
-      "verification_version": 2,
-      "verified_at": "2026-10-14T21:42:48+00:00",
-      "topic": "public-health",
-      "evidence": {
-        "geography": "الرقة",
         "type": "publisher-headline"
       }
     }
