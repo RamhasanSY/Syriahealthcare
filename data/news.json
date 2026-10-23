@@ -1,69 +1,21 @@
 {
-  "updated": "2026-10-22T21:37:49+00:00",
-  "checked_at": "2026-10-22T21:37:49+00:00",
+  "updated": "2026-10-23T11:41:58+00:00",
+  "checked_at": "2026-10-23T11:41:58+00:00",
   "status": "partial",
   "items": [
     {
       "title": "القطاع الصحي في درعا يعزز خدماته ويستقطب 1541 موظفاً خلال عامين",
       "title_ar": "القطاع الصحي في درعا يعزز خدماته ويستقطب 1541 موظفاً خلال عامين",
       "language": "ar",
-      "url": "https://sana.sy/health/2614618/",
+      "url": "https://sana.sy/video/2614618/",
       "published": "2026-10-22",
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-22T21:37:32+00:00",
+      "verified_at": "2026-10-23T11:41:40+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "درعا",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "الصحة: بدء استقبال طلبات الاستفادة بدمشق من حملة “بصر 5” لإزالة ‏الساد",
-      "title_ar": "الصحة: بدء استقبال طلبات الاستفادة بدمشق من حملة “بصر 5” لإزالة ‏الساد",
-      "language": "ar",
-      "url": "https://sana.sy/health/2613362/",
-      "published": "2026-10-21",
-      "source": "Syrian Arab News Agency (SANA) — Health",
-      "source_id": "sana-health",
-      "verification_version": 2,
-      "verified_at": "2026-10-22T21:37:32+00:00",
-      "topic": "hospitals",
-      "evidence": {
-        "geography": "دمشق",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "انطلاق المؤتمر السنوي الـ33 لجمعية أطباء الأطفال السورية في طرطوس",
-      "title_ar": "انطلاق المؤتمر السنوي الـ33 لجمعية أطباء الأطفال السورية في طرطوس",
-      "language": "ar",
-      "url": "https://sana.sy/governorates/tartus/2613332/",
-      "published": "2026-10-21",
-      "source": "Syrian Arab News Agency (SANA) — Health",
-      "source_id": "sana-health",
-      "verification_version": 2,
-      "verified_at": "2026-10-22T21:37:32+00:00",
-      "topic": "hospitals",
-      "evidence": {
-        "geography": "سورية",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "مشفى الزهراء بحمص يعزز التوعية بالكشف المبكر عن سرطان الثدي",
-      "title_ar": "مشفى الزهراء بحمص يعزز التوعية بالكشف المبكر عن سرطان الثدي",
-      "language": "ar",
-      "url": "https://sana.sy/health/2613320/",
-      "published": "2026-10-21",
-      "source": "Syrian Arab News Agency (SANA) — Health",
-      "source_id": "sana-health",
-      "verification_version": 2,
-      "verified_at": "2026-10-22T21:37:32+00:00",
-      "topic": "hospitals",
-      "evidence": {
-        "geography": "حمص",
         "type": "publisher-headline"
       }
     },
@@ -76,7 +28,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-22T21:37:32+00:00",
+      "verified_at": "2026-10-23T11:41:40+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "دمشق",
@@ -92,10 +44,58 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-22T21:37:32+00:00",
+      "verified_at": "2026-10-23T11:41:40+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "الرقة",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "الصحة: بدء استقبال طلبات الاستفادة بدمشق من حملة “بصر 5” لإزالة ‏الساد",
+      "title_ar": "الصحة: بدء استقبال طلبات الاستفادة بدمشق من حملة “بصر 5” لإزالة ‏الساد",
+      "language": "ar",
+      "url": "https://sana.sy/health/2613362/",
+      "published": "2026-10-21",
+      "source": "Syrian Arab News Agency (SANA) — Health",
+      "source_id": "sana-health",
+      "verification_version": 2,
+      "verified_at": "2026-10-23T11:41:40+00:00",
+      "topic": "hospitals",
+      "evidence": {
+        "geography": "دمشق",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "انطلاق المؤتمر السنوي الـ33 لجمعية أطباء الأطفال السورية في طرطوس",
+      "title_ar": "انطلاق المؤتمر السنوي الـ33 لجمعية أطباء الأطفال السورية في طرطوس",
+      "language": "ar",
+      "url": "https://sana.sy/governorates/tartus/2613332/",
+      "published": "2026-10-21",
+      "source": "Syrian Arab News Agency (SANA) — Health",
+      "source_id": "sana-health",
+      "verification_version": 2,
+      "verified_at": "2026-10-23T11:41:40+00:00",
+      "topic": "hospitals",
+      "evidence": {
+        "geography": "سورية",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "مشفى الزهراء بحمص يعزز التوعية بالكشف المبكر عن سرطان الثدي",
+      "title_ar": "مشفى الزهراء بحمص يعزز التوعية بالكشف المبكر عن سرطان الثدي",
+      "language": "ar",
+      "url": "https://sana.sy/health/2613320/",
+      "published": "2026-10-21",
+      "source": "Syrian Arab News Agency (SANA) — Health",
+      "source_id": "sana-health",
+      "verification_version": 2,
+      "verified_at": "2026-10-23T11:41:40+00:00",
+      "topic": "hospitals",
+      "evidence": {
+        "geography": "حمص",
         "type": "publisher-headline"
       }
     },
@@ -108,7 +108,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-22T21:37:32+00:00",
+      "verified_at": "2026-10-23T11:41:40+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "سورية",
@@ -124,7 +124,7 @@
       "source": "WHO — Syria office",
       "source_id": "who-syria-news",
       "verification_version": 2,
-      "verified_at": "2026-10-22T21:37:34+00:00",
+      "verified_at": "2026-10-23T11:41:41+00:00",
       "topic": "policy",
       "evidence": {
         "geography": "Syria",
@@ -252,7 +252,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-22T21:37:32+00:00",
+      "verified_at": "2026-10-23T11:41:40+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "درعا",
@@ -348,7 +348,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-22T21:37:32+00:00",
+      "verified_at": "2026-10-23T11:41:40+00:00",
       "topic": "workforce",
       "evidence": {
         "geography": "دير الزور",
@@ -380,7 +380,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-22T21:37:32+00:00",
+      "verified_at": "2026-10-23T11:41:40+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "دير الزور",
@@ -396,7 +396,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-22T21:37:32+00:00",
+      "verified_at": "2026-10-23T11:41:40+00:00",
       "topic": "workforce",
       "evidence": {
         "geography": "حلب",
@@ -492,7 +492,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-22T21:37:32+00:00",
+      "verified_at": "2026-10-23T11:41:40+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "سوريا",
@@ -652,7 +652,7 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-22T21:37:31+00:00",
+      "verified_at": "2026-10-23T11:41:39+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "Syria",
