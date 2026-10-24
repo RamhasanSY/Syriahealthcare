@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-23T21:26:59+00:00",
+  "updated": "2026-10-24T11:05:56+00:00",
   "source": "OpenStreetMap contributors (ODbL)",
   "items": [
     {
@@ -1618,6 +1618,17 @@
       "emergency": false,
       "osm": true,
       "source_url": "https://www.openstreetmap.org/node/6035931386"
+    },
+    {
+      "name": "Al-Tabqa National Hospital",
+      "name_ar": "مشفى الطبقة الوطني",
+      "city": "Ar-Raqqa",
+      "city_ar": "الرقة",
+      "address": "",
+      "phone": "",
+      "emergency": false,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/way/492655105"
     },
     {
       "name": "Alteb Alhadeth Hospital",
