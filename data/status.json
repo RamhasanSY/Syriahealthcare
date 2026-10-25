@@ -1,29 +1,29 @@
 {
-  "checked_at": "2026-10-25T11:33:29+00:00",
+  "checked_at": "2026-10-25T20:53:35+00:00",
   "sources": [
     {
       "id": "drc-jobs",
       "kind": "jobs",
       "state": "ok",
-      "checked_at": "2026-10-25T11:33:15+00:00",
-      "fetched": 84,
-      "accepted": 3,
-      "latest_published": "2026-10-20"
+      "checked_at": "2026-10-25T20:53:02+00:00",
+      "fetched": 85,
+      "accepted": 4,
+      "latest_published": "2026-10-25"
     },
     {
       "id": "ida-jobs",
       "kind": "jobs",
       "state": "ok",
-      "checked_at": "2026-10-25T11:33:29+00:00",
+      "checked_at": "2026-10-25T20:53:19+00:00",
       "fetched": 10,
-      "accepted": 2,
+      "accepted": 3,
       "latest_published": "2026-10-22"
     },
     {
       "id": "ida-news",
       "kind": "news",
       "state": "ok",
-      "checked_at": "2026-10-25T11:33:14+00:00",
+      "checked_at": "2026-10-25T20:53:02+00:00",
       "fetched": 10,
       "accepted": 0,
       "latest_published": null
@@ -32,16 +32,16 @@
       "id": "nrc-jobs",
       "kind": "jobs",
       "state": "ok",
-      "checked_at": "2026-10-25T11:33:15+00:00",
-      "fetched": 16,
-      "accepted": 6,
-      "latest_published": "2026-10-21"
+      "checked_at": "2026-10-25T20:53:02+00:00",
+      "fetched": 17,
+      "accepted": 7,
+      "latest_published": "2026-10-25"
     },
     {
       "id": "reliefweb-jobs",
       "kind": "jobs",
       "state": "error",
-      "checked_at": "2026-10-25T11:33:18+00:00",
+      "checked_at": "2026-10-25T20:53:06+00:00",
       "error": "Empty response (HTTP 202)",
       "accepted": 0
     },
@@ -49,7 +49,7 @@
       "id": "sams-jobs",
       "kind": "jobs",
       "state": "ok",
-      "checked_at": "2026-10-25T11:33:14+00:00",
+      "checked_at": "2026-10-25T20:53:35+00:00",
       "fetched": 548,
       "accepted": 2,
       "latest_published": "2026-10-23"
@@ -58,7 +58,7 @@
       "id": "sams-news",
       "kind": "news",
       "state": "ok",
-      "checked_at": "2026-10-25T11:33:12+00:00",
+      "checked_at": "2026-10-25T20:53:01+00:00",
       "fetched": 10,
       "accepted": 9,
       "latest_published": "2026-10-13"
@@ -67,16 +67,16 @@
       "id": "sana-health",
       "kind": "news",
       "state": "ok",
-      "checked_at": "2026-10-25T11:33:13+00:00",
+      "checked_at": "2026-10-25T20:53:00+00:00",
       "fetched": 10,
-      "accepted": 5,
-      "latest_published": "2026-10-24"
+      "accepted": 4,
+      "latest_published": "2026-10-25"
     },
     {
       "id": "sarc-news",
       "kind": "news",
       "state": "error",
-      "checked_at": "2026-10-25T11:33:15+00:00",
+      "checked_at": "2026-10-25T20:53:02+00:00",
       "error": "junk after document element: line 3, column 6",
       "accepted": 0
     },
@@ -84,7 +84,7 @@
       "id": "sy-moh-news",
       "kind": "news",
       "state": "ok",
-      "checked_at": "2026-10-25T11:33:13+00:00",
+      "checked_at": "2026-10-25T20:53:00+00:00",
       "fetched": 12,
       "accepted": 8,
       "latest_published": "2026-10-24"
@@ -93,7 +93,7 @@
       "id": "un-health",
       "kind": "news",
       "state": "ok",
-      "checked_at": "2026-10-25T11:33:14+00:00",
+      "checked_at": "2026-10-25T20:53:02+00:00",
       "fetched": 30,
       "accepted": 0,
       "latest_published": null
@@ -102,7 +102,7 @@
       "id": "uossm-news",
       "kind": "news",
       "state": "error",
-      "checked_at": "2026-10-25T11:33:16+00:00",
+      "checked_at": "2026-10-25T20:53:05+00:00",
       "error": "HTTP Error 503: Service Unavailable",
       "accepted": 0
     },
@@ -110,7 +110,7 @@
       "id": "who-news",
       "kind": "news",
       "state": "ok",
-      "checked_at": "2026-10-25T11:33:14+00:00",
+      "checked_at": "2026-10-25T20:53:02+00:00",
       "fetched": 109,
       "accepted": 0,
       "latest_published": null
@@ -119,7 +119,7 @@
       "id": "who-syria-news",
       "kind": "news",
       "state": "ok",
-      "checked_at": "2026-10-25T11:33:14+00:00",
+      "checked_at": "2026-10-25T20:53:02+00:00",
       "fetched": 10,
       "accepted": 2,
       "latest_published": "2026-10-20"

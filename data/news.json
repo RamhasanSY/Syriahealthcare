@@ -1,8 +1,40 @@
 {
-  "updated": "2026-10-25T11:33:29+00:00",
-  "checked_at": "2026-10-25T11:33:29+00:00",
+  "updated": "2026-10-25T20:53:35+00:00",
+  "checked_at": "2026-10-25T20:53:35+00:00",
   "status": "partial",
   "items": [
+    {
+      "title": "صحة الرقة تتسلّم مشفى التوليد بالطبقة بعد اعتماده رسمياً ضمن منشآت ‏الوزارة ‏",
+      "title_ar": "صحة الرقة تتسلّم مشفى التوليد بالطبقة بعد اعتماده رسمياً ضمن منشآت ‏الوزارة ‏",
+      "language": "ar",
+      "url": "https://sana.sy/governorates/2616922/",
+      "published": "2026-10-25",
+      "source": "Syrian Arab News Agency (SANA) — Health",
+      "source_id": "sana-health",
+      "verification_version": 2,
+      "verified_at": "2026-10-25T20:53:00+00:00",
+      "topic": "hospitals",
+      "evidence": {
+        "geography": "الرقة",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "وزارة الصحة تختتم أعمال المؤتمر الطبي الشرعي القضائي الثاني في حلب",
+      "title_ar": "وزارة الصحة تختتم أعمال المؤتمر الطبي الشرعي القضائي الثاني في حلب",
+      "language": "ar",
+      "url": "https://moh.gov.sy/news/%D9%88%D8%B2%D8%A7%D8%B1%D8%A9-%D8%A7%D9%84%D8%B5%D8%AD%D8%A9-%D8%AA%D8%AE%D8%AA%D8%AA%D9%85-%D8%A3%D8%B9%D9%85%D8%A7%D9%84-%D8%A7%D9%84%D9%85%D8%A4%D8%AA%D9%85%D8%B1-%D8%A7%D9%84%D8%B7%D8%A8%D9%8A-%D8%A7%D9%84%D8%B4%D8%B1%D8%B9%D9%8A-%D8%A7%D9%84%D9%82%D8%B6%D8%A7%D8%A6%D9%8A-%D8%A7%D9%84%D8%AB%D8%A7%D9%86%D9%8A-%D9%81%D9%8A-%D8%AD%D9%84%D8%A8",
+      "published": "2026-10-24",
+      "source": "Syrian Ministry of Health",
+      "source_id": "sy-moh-news",
+      "verification_version": 2,
+      "verified_at": "2026-10-25T20:53:00+00:00",
+      "topic": "public-health",
+      "evidence": {
+        "geography": "حلب",
+        "type": "publisher-headline"
+      }
+    },
     {
       "title": "ندوة علمية في حلب تناقش أحدث التطورات في تشخيص أمراض القلب لدى الأطفال",
       "title_ar": "ندوة علمية في حلب تناقش أحدث التطورات في تشخيص أمراض القلب لدى الأطفال",
@@ -12,7 +44,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-25T11:33:13+00:00",
+      "verified_at": "2026-10-25T20:53:00+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "حلب",
@@ -28,7 +60,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-25T11:33:13+00:00",
+      "verified_at": "2026-10-25T20:53:00+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "الرقة",
@@ -44,7 +76,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-25T11:33:13+00:00",
+      "verified_at": "2026-10-25T20:53:00+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "سوريا",
@@ -52,18 +84,50 @@
       }
     },
     {
-      "title": "وزارة الصحة تختتم أعمال المؤتمر الطبي الشرعي القضائي الثاني في حلب",
-      "title_ar": "وزارة الصحة تختتم أعمال المؤتمر الطبي الشرعي القضائي الثاني في حلب",
+      "title": "قسم أمراض اللثة في مركز بابا عمرو الصحي بحمص",
+      "title_ar": "قسم أمراض اللثة في مركز بابا عمرو الصحي بحمص",
       "language": "ar",
-      "url": "https://moh.gov.sy/news/%D9%88%D8%B2%D8%A7%D8%B1%D8%A9-%D8%A7%D9%84%D8%B5%D8%AD%D8%A9-%D8%AA%D8%AE%D8%AA%D8%AA%D9%85-%D8%A3%D8%B9%D9%85%D8%A7%D9%84-%D8%A7%D9%84%D9%85%D8%A4%D8%AA%D9%85%D8%B1-%D8%A7%D9%84%D8%B7%D8%A8%D9%8A-%D8%A7%D9%84%D8%B4%D8%B1%D8%B9%D9%8A-%D8%A7%D9%84%D9%82%D8%B6%D8%A7%D8%A6%D9%8A-%D8%A7%D9%84%D8%AB%D8%A7%D9%86%D9%8A-%D9%81%D9%8A-%D8%AD%D9%84%D8%A8",
-      "published": "2026-10-24",
+      "url": "https://moh.gov.sy/news/%D9%82%D8%B3%D9%85-%D8%A3%D9%85%D8%B1%D8%A7%D8%B6-%D8%A7%D9%84%D9%84%D8%AB%D8%A9-%D9%81%D9%8A-%D9%85%D8%B1%D9%83%D8%B2-%D8%A8%D8%A7%D8%A8%D8%A7-%D8%B9%D9%85%D8%B1%D9%88-%D8%A7%D9%84%D8%B5%D8%AD%D9%8A-%D8%A8%D8%AD%D9%85%D8%B5",
+      "published": "2026-10-23",
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-25T11:33:13+00:00",
+      "verified_at": "2026-10-25T20:53:00+00:00",
       "topic": "public-health",
       "evidence": {
+        "geography": "حمص",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "وزير الصحة يبحث مع السفير التركي تعزيز التعاون في القطاع الصحي",
+      "title_ar": "وزير الصحة يبحث مع السفير التركي تعزيز التعاون في القطاع الصحي",
+      "language": "ar",
+      "url": "https://moh.gov.sy/news/%D9%88%D8%B2%D9%8A%D8%B1-%D8%A7%D9%84%D8%B5%D8%AD%D8%A9-%D9%8A%D8%A8%D8%AD%D8%AB-%D9%85%D8%B9-%D8%A7%D9%84%D8%B3%D9%81%D9%8A%D8%B1-%D8%A7%D9%84%D8%AA%D8%B1%D9%83%D9%8A-%D8%AA%D8%B9%D8%B2%D9%8A%D8%B2-%D8%A7%D9%84%D8%AA%D8%B9%D8%A7%D9%88%D9%86-%D9%81%D9%8A-%D8%A7%D9%84%D9%82%D8%B7%D8%A7%D8%B9-%D8%A7%D9%84%D8%B5%D8%AD%D9%8A",
+      "published": "2026-10-23",
+      "source": "Syrian Ministry of Health",
+      "source_id": "sy-moh-news",
+      "verification_version": 2,
+      "verified_at": "2026-10-25T20:53:00+00:00",
+      "topic": "hospitals",
+      "evidence": {
         "geography": "حلب",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "ضمن فعاليات المؤتمر الطبي السوري الفرنسي... إجراء 11 عملية جراحية دقيقة في الرقة",
+      "title_ar": "ضمن فعاليات المؤتمر الطبي السوري الفرنسي... إجراء 11 عملية جراحية دقيقة في الرقة",
+      "language": "ar",
+      "url": "https://moh.gov.sy/news/%D8%B6%D9%85%D9%86-%D9%81%D8%B9%D8%A7%D9%84%D9%8A%D8%A7%D8%AA-%D8%A7%D9%84%D9%85%D8%A4%D8%AA%D9%85%D8%B1-%D8%A7%D9%84%D8%B7%D8%A8%D9%8A-%D8%A7%D9%84%D8%B3%D9%88%D8%B1%D9%8A-%D8%A7%D9%84%D9%81%D8%B1%D9%86%D8%B3%D9%8A...-%D8%A5%D8%AC%D8%B1%D8%A7%D8%A1-11-%D8%B9%D9%85%D9%84%D9%8A%D8%A9-%D8%AC%D8%B1%D8%A7%D8%AD%D9%8A%D8%A9-%D8%AF%D9%82%D9%8A%D9%82%D8%A9-%D9%81%D9%8A-%D8%A7%D9%84%D8%B1%D9%82%D8%A9",
+      "published": "2026-10-23",
+      "source": "Syrian Ministry of Health",
+      "source_id": "sy-moh-news",
+      "verification_version": 2,
+      "verified_at": "2026-10-25T20:53:00+00:00",
+      "topic": "hospitals",
+      "evidence": {
+        "geography": "الرقة",
         "type": "publisher-headline"
       }
     },
@@ -84,54 +148,6 @@
       }
     },
     {
-      "title": "وزير الصحة يبحث مع السفير التركي تعزيز التعاون في القطاع الصحي",
-      "title_ar": "وزير الصحة يبحث مع السفير التركي تعزيز التعاون في القطاع الصحي",
-      "language": "ar",
-      "url": "https://sana.sy/health/2615402/",
-      "published": "2026-10-23",
-      "source": "Syrian Arab News Agency (SANA) — Health",
-      "source_id": "sana-health",
-      "verification_version": 2,
-      "verified_at": "2026-10-25T11:33:13+00:00",
-      "topic": "hospitals",
-      "evidence": {
-        "geography": "دمشق",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "قسم أمراض اللثة في مركز بابا عمرو الصحي بحمص",
-      "title_ar": "قسم أمراض اللثة في مركز بابا عمرو الصحي بحمص",
-      "language": "ar",
-      "url": "https://moh.gov.sy/news/%D9%82%D8%B3%D9%85-%D8%A3%D9%85%D8%B1%D8%A7%D8%B6-%D8%A7%D9%84%D9%84%D8%AB%D8%A9-%D9%81%D9%8A-%D9%85%D8%B1%D9%83%D8%B2-%D8%A8%D8%A7%D8%A8%D8%A7-%D8%B9%D9%85%D8%B1%D9%88-%D8%A7%D9%84%D8%B5%D8%AD%D9%8A-%D8%A8%D8%AD%D9%85%D8%B5",
-      "published": "2026-10-23",
-      "source": "Syrian Ministry of Health",
-      "source_id": "sy-moh-news",
-      "verification_version": 2,
-      "verified_at": "2026-10-25T11:33:13+00:00",
-      "topic": "public-health",
-      "evidence": {
-        "geography": "حمص",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "ضمن فعاليات المؤتمر الطبي السوري الفرنسي... إجراء 11 عملية جراحية دقيقة في الرقة",
-      "title_ar": "ضمن فعاليات المؤتمر الطبي السوري الفرنسي... إجراء 11 عملية جراحية دقيقة في الرقة",
-      "language": "ar",
-      "url": "https://moh.gov.sy/news/%D8%B6%D9%85%D9%86-%D9%81%D8%B9%D8%A7%D9%84%D9%8A%D8%A7%D8%AA-%D8%A7%D9%84%D9%85%D8%A4%D8%AA%D9%85%D8%B1-%D8%A7%D9%84%D8%B7%D8%A8%D9%8A-%D8%A7%D9%84%D8%B3%D9%88%D8%B1%D9%8A-%D8%A7%D9%84%D9%81%D8%B1%D9%86%D8%B3%D9%8A...-%D8%A5%D8%AC%D8%B1%D8%A7%D8%A1-11-%D8%B9%D9%85%D9%84%D9%8A%D8%A9-%D8%AC%D8%B1%D8%A7%D8%AD%D9%8A%D8%A9-%D8%AF%D9%82%D9%8A%D9%82%D8%A9-%D9%81%D9%8A-%D8%A7%D9%84%D8%B1%D9%82%D8%A9",
-      "published": "2026-10-23",
-      "source": "Syrian Ministry of Health",
-      "source_id": "sy-moh-news",
-      "verification_version": 2,
-      "verified_at": "2026-10-25T11:33:13+00:00",
-      "topic": "hospitals",
-      "evidence": {
-        "geography": "الرقة",
-        "type": "publisher-headline"
-      }
-    },
-    {
       "title": "انطلاق المؤتمر السوري الثاني لطب الطوارئ والعناية الحرجة لتعزيز جاهزية المنظومة الصحية",
       "title_ar": "انطلاق المؤتمر السوري الثاني لطب الطوارئ والعناية الحرجة لتعزيز جاهزية المنظومة الصحية",
       "language": "ar",
@@ -140,7 +156,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-25T11:33:13+00:00",
+      "verified_at": "2026-10-25T20:53:00+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "سورية",
@@ -156,7 +172,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-25T11:33:13+00:00",
+      "verified_at": "2026-10-25T20:53:00+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "حلب",
@@ -188,7 +204,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-25T11:33:13+00:00",
+      "verified_at": "2026-10-25T20:53:00+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "دمشق",
@@ -204,7 +220,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-25T11:33:13+00:00",
+      "verified_at": "2026-10-25T20:53:00+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "الرقة",
@@ -268,7 +284,7 @@
       "source": "WHO — Syria office",
       "source_id": "who-syria-news",
       "verification_version": 2,
-      "verified_at": "2026-10-25T11:33:14+00:00",
+      "verified_at": "2026-10-25T20:53:02+00:00",
       "topic": "policy",
       "evidence": {
         "geography": "Syria",
@@ -812,7 +828,7 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-25T11:33:12+00:00",
+      "verified_at": "2026-10-25T20:53:01+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "Syria",
@@ -944,22 +960,6 @@
       "topic": "hospitals",
       "evidence": {
         "geography": "درعا",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "انطلاق حملة “تعافي 2” في دير الزور.. استشارات طبية وعمليات جراحية للمرضى",
-      "title_ar": "انطلاق حملة “تعافي 2” في دير الزور.. استشارات طبية وعمليات جراحية للمرضى",
-      "language": "ar",
-      "url": "https://sana.sy/video/2604983/",
-      "published": "2026-10-12",
-      "source": "Syrian Arab News Agency (SANA) — Health",
-      "source_id": "sana-health",
-      "verification_version": 2,
-      "verified_at": "2026-10-13T22:46:50+00:00",
-      "topic": "hospitals",
-      "evidence": {
-        "geography": "دير الزور",
         "type": "publisher-headline"
       }
     }
