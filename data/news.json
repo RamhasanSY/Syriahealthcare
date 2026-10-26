@@ -1,8 +1,40 @@
 {
-  "updated": "2026-10-26T13:06:45+00:00",
-  "checked_at": "2026-10-26T13:06:45+00:00",
+  "updated": "2026-10-26T22:42:23+00:00",
+  "checked_at": "2026-10-26T22:42:23+00:00",
   "status": "partial",
   "items": [
+    {
+      "title": "صحة دير الزور تتخذ إجراءات بشأن أدوية منتهية الصلاحية في مشفى ‏الكسرة",
+      "title_ar": "صحة دير الزور تتخذ إجراءات بشأن أدوية منتهية الصلاحية في مشفى ‏الكسرة",
+      "language": "ar",
+      "url": "https://sana.sy/health/2618142/",
+      "published": "2026-10-26",
+      "source": "Syrian Arab News Agency (SANA) — Health",
+      "source_id": "sana-health",
+      "verification_version": 2,
+      "verified_at": "2026-10-26T22:41:05+00:00",
+      "topic": "hospitals",
+      "evidence": {
+        "geography": "دير الزور",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "صحة الرقة تتسلّم مشفى التوليد بالطبقة بعد اعتماده رسمياً ضمن منشآت ‏الوزارة ‏",
+      "title_ar": "صحة الرقة تتسلّم مشفى التوليد بالطبقة بعد اعتماده رسمياً ضمن منشآت ‏الوزارة ‏",
+      "language": "ar",
+      "url": "https://sana.sy/governorates/2616922/",
+      "published": "2026-10-25",
+      "source": "Syrian Arab News Agency (SANA) — Health",
+      "source_id": "sana-health",
+      "verification_version": 2,
+      "verified_at": "2026-10-26T22:41:05+00:00",
+      "topic": "hospitals",
+      "evidence": {
+        "geography": "الرقة",
+        "type": "publisher-headline"
+      }
+    },
     {
       "title": "افتتح مدير صحة الرقة الدكتور عبد الله الحمود مشفى دار التوليد في مدينة الثورة",
       "title_ar": "افتتح مدير صحة الرقة الدكتور عبد الله الحمود مشفى دار التوليد في مدينة الثورة",
@@ -20,15 +52,31 @@
       }
     },
     {
-      "title": "صحة الرقة تتسلّم مشفى التوليد بالطبقة بعد اعتماده رسمياً ضمن منشآت ‏الوزارة ‏",
-      "title_ar": "صحة الرقة تتسلّم مشفى التوليد بالطبقة بعد اعتماده رسمياً ضمن منشآت ‏الوزارة ‏",
+      "title": "ندوة علمية في حلب تناقش أحدث التطورات في تشخيص أمراض القلب لدى الأطفال",
+      "title_ar": "ندوة علمية في حلب تناقش أحدث التطورات في تشخيص أمراض القلب لدى الأطفال",
       "language": "ar",
-      "url": "https://sana.sy/governorates/2616922/",
-      "published": "2026-10-25",
+      "url": "https://sana.sy/health/2616154/",
+      "published": "2026-10-24",
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-26T13:06:27+00:00",
+      "verified_at": "2026-10-26T22:41:05+00:00",
+      "topic": "hospitals",
+      "evidence": {
+        "geography": "حلب",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "نجاح أول عمل جراحي نوعي للعمود الفقري في المشفى الوطني بالرقة",
+      "title_ar": "نجاح أول عمل جراحي نوعي للعمود الفقري في المشفى الوطني بالرقة",
+      "language": "ar",
+      "url": "https://sana.sy/governorates/alrakkah/2616106/",
+      "published": "2026-10-24",
+      "source": "Syrian Arab News Agency (SANA) — Health",
+      "source_id": "sana-health",
+      "verification_version": 2,
+      "verified_at": "2026-10-26T22:41:05+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "الرقة",
@@ -48,38 +96,6 @@
       "topic": "public-health",
       "evidence": {
         "geography": "حلب",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "ندوة علمية في حلب تناقش أحدث التطورات في تشخيص أمراض القلب لدى الأطفال",
-      "title_ar": "ندوة علمية في حلب تناقش أحدث التطورات في تشخيص أمراض القلب لدى الأطفال",
-      "language": "ar",
-      "url": "https://sana.sy/health/2616154/",
-      "published": "2026-10-24",
-      "source": "Syrian Arab News Agency (SANA) — Health",
-      "source_id": "sana-health",
-      "verification_version": 2,
-      "verified_at": "2026-10-26T13:06:27+00:00",
-      "topic": "hospitals",
-      "evidence": {
-        "geography": "حلب",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "نجاح أول عمل جراحي نوعي للعمود الفقري في المشفى الوطني بالرقة",
-      "title_ar": "نجاح أول عمل جراحي نوعي للعمود الفقري في المشفى الوطني بالرقة",
-      "language": "ar",
-      "url": "https://sana.sy/governorates/alrakkah/2616106/",
-      "published": "2026-10-24",
-      "source": "Syrian Arab News Agency (SANA) — Health",
-      "source_id": "sana-health",
-      "verification_version": 2,
-      "verified_at": "2026-10-26T13:06:27+00:00",
-      "topic": "hospitals",
-      "evidence": {
-        "geography": "الرقة",
         "type": "publisher-headline"
       }
     },
@@ -300,7 +316,7 @@
       "source": "WHO — Syria office",
       "source_id": "who-syria-news",
       "verification_version": 2,
-      "verified_at": "2026-10-26T13:06:29+00:00",
+      "verified_at": "2026-10-26T22:41:05+00:00",
       "topic": "policy",
       "evidence": {
         "geography": "Syria",
@@ -684,7 +700,7 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-26T13:06:25+00:00",
+      "verified_at": "2026-10-26T22:41:05+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "Syria",
@@ -860,7 +876,7 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-26T13:06:25+00:00",
+      "verified_at": "2026-10-26T22:41:05+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "Syria",
@@ -944,22 +960,6 @@
       "topic": "public-health",
       "evidence": {
         "geography": "إدلب",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "دمشق.. نجاح أول عملية لتركيب معصرة بولية صناعية في المشافي العامة",
-      "title_ar": "دمشق.. نجاح أول عملية لتركيب معصرة بولية صناعية في المشافي العامة",
-      "language": "ar",
-      "url": "https://sana.sy/health/2605602/",
-      "published": "2026-10-13",
-      "source": "Syrian Arab News Agency (SANA) — Health",
-      "source_id": "sana-health",
-      "verification_version": 2,
-      "verified_at": "2026-10-14T11:55:37+00:00",
-      "topic": "hospitals",
-      "evidence": {
-        "geography": "دمشق",
         "type": "publisher-headline"
       }
     }
