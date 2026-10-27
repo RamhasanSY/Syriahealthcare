@@ -1,21 +1,69 @@
 {
-  "updated": "2026-10-27T12:15:10+00:00",
-  "checked_at": "2026-10-27T12:15:10+00:00",
+  "updated": "2026-10-27T22:15:44+00:00",
+  "checked_at": "2026-10-27T22:15:44+00:00",
   "status": "partial",
   "items": [
     {
-      "title": "دمشق .. انطلاق فعاليات مؤتمر طبي حول الرعاية الصحية في سوريا",
-      "title_ar": "دمشق .. انطلاق فعاليات مؤتمر طبي حول الرعاية الصحية في سوريا",
+      "title": "صحة دير الزور تبحث مع منظمة الصحة العالمية تفعيل المشافي وسد الفجوات ‏القائمة",
+      "title_ar": "صحة دير الزور تبحث مع منظمة الصحة العالمية تفعيل المشافي وسد الفجوات ‏القائمة",
+      "language": "ar",
+      "url": "https://sana.sy/governorates/dayer-al-zoor/2618971/",
+      "published": "2026-10-27",
+      "source": "Syrian Arab News Agency (SANA) — Health",
+      "source_id": "sana-health",
+      "verification_version": 2,
+      "verified_at": "2026-10-27T22:15:27+00:00",
+      "topic": "hospitals",
+      "evidence": {
+        "geography": "دير الزور",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "الصحة تعيد افتتاح قسم العناية المشددة في مشفى جيرود وتدخل جهاز طبقي محوري بالخدمة",
+      "title_ar": "الصحة تعيد افتتاح قسم العناية المشددة في مشفى جيرود وتدخل جهاز طبقي محوري بالخدمة",
+      "language": "ar",
+      "url": "https://sana.sy/governorates/reef-dimashak/2618866/",
+      "published": "2026-10-27",
+      "source": "Syrian Arab News Agency (SANA) — Health",
+      "source_id": "sana-health",
+      "verification_version": 2,
+      "verified_at": "2026-10-27T22:15:27+00:00",
+      "topic": "hospitals",
+      "evidence": {
+        "geography": "دمشق",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "نقص الخدمات الطبية في مشفى هجين بريف دير الزور يفاقم معاناة الأهالي ‏",
+      "title_ar": "نقص الخدمات الطبية في مشفى هجين بريف دير الزور يفاقم معاناة الأهالي ‏",
+      "language": "ar",
+      "url": "https://sana.sy/health/2618625/",
+      "published": "2026-10-27",
+      "source": "Syrian Arab News Agency (SANA) — Health",
+      "source_id": "sana-health",
+      "verification_version": 2,
+      "verified_at": "2026-10-27T22:15:27+00:00",
+      "topic": "hospitals",
+      "evidence": {
+        "geography": "دير الزور",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "مؤتمر طبي يبحث دعم الخدمات الصحية في مشفيي درعا وإدلب",
+      "title_ar": "مؤتمر طبي يبحث دعم الخدمات الصحية في مشفيي درعا وإدلب",
       "language": "ar",
       "url": "https://sana.sy/health/2618449/",
       "published": "2026-10-27",
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-27T12:14:46+00:00",
-      "topic": "public-health",
+      "verified_at": "2026-10-27T22:15:27+00:00",
+      "topic": "workforce",
       "evidence": {
-        "geography": "دمشق",
+        "geography": "درعا",
         "type": "publisher-headline"
       }
     },
@@ -28,7 +76,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-27T12:14:46+00:00",
+      "verified_at": "2026-10-27T22:15:27+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "دير الزور",
@@ -44,7 +92,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-27T12:14:46+00:00",
+      "verified_at": "2026-10-27T22:15:27+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "الرقة",
@@ -76,7 +124,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-27T12:14:46+00:00",
+      "verified_at": "2026-10-27T22:15:27+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "حلب",
@@ -140,7 +188,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-27T12:14:46+00:00",
+      "verified_at": "2026-10-27T22:15:27+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "حمص",
@@ -156,7 +204,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-27T12:14:46+00:00",
+      "verified_at": "2026-10-27T22:15:27+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "حلب",
@@ -172,7 +220,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-27T12:14:46+00:00",
+      "verified_at": "2026-10-27T22:15:27+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "الرقة",
@@ -204,7 +252,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-27T12:14:46+00:00",
+      "verified_at": "2026-10-27T22:15:27+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "سورية",
@@ -220,7 +268,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-27T12:14:46+00:00",
+      "verified_at": "2026-10-27T22:15:27+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "حلب",
@@ -252,7 +300,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-27T12:14:46+00:00",
+      "verified_at": "2026-10-27T22:15:27+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "دمشق",
@@ -268,7 +316,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-27T12:14:46+00:00",
+      "verified_at": "2026-10-27T22:15:27+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "الرقة",
@@ -332,7 +380,7 @@
       "source": "WHO — Syria office",
       "source_id": "who-syria-news",
       "verification_version": 2,
-      "verified_at": "2026-10-27T12:14:48+00:00",
+      "verified_at": "2026-10-27T22:15:29+00:00",
       "topic": "policy",
       "evidence": {
         "geography": "Syria",
@@ -716,7 +764,7 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-27T12:14:46+00:00",
+      "verified_at": "2026-10-27T22:15:25+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "Syria",
@@ -892,7 +940,7 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-27T12:14:46+00:00",
+      "verified_at": "2026-10-27T22:15:25+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "Syria",
@@ -912,54 +960,6 @@
       "topic": "workforce",
       "evidence": {
         "geography": "دير الزور",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "سوريا تشارك في الدورة الـ 73 للجنة الإقليمية للصحة العالمية بالقاهرة",
-      "title_ar": "سوريا تشارك في الدورة الـ 73 للجنة الإقليمية للصحة العالمية بالقاهرة",
-      "language": "ar",
-      "url": "https://sana.sy/health/2606116/",
-      "published": "2026-10-13",
-      "source": "Syrian Arab News Agency (SANA) — Health",
-      "source_id": "sana-health",
-      "verification_version": 2,
-      "verified_at": "2026-10-15T11:32:06+00:00",
-      "topic": "public-health",
-      "evidence": {
-        "geography": "سوريا",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "الملتقى السوري الألماني للهندسة الطبية يدعو لتوحيد المعايير الفنية بالمنشآت ‏الصحية",
-      "title_ar": "الملتقى السوري الألماني للهندسة الطبية يدعو لتوحيد المعايير الفنية بالمنشآت ‏الصحية",
-      "language": "ar",
-      "url": "https://sana.sy/syria-and-the-world/2605908/",
-      "published": "2026-10-13",
-      "source": "Syrian Arab News Agency (SANA) — Health",
-      "source_id": "sana-health",
-      "verification_version": 2,
-      "verified_at": "2026-10-15T11:32:06+00:00",
-      "topic": "workforce",
-      "evidence": {
-        "geography": "دمشق",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "الصحة تشارك في جلسة حول تعافي القطاع الصحي السوري ضمن قمة برلين 2026",
-      "title_ar": "الصحة تشارك في جلسة حول تعافي القطاع الصحي السوري ضمن قمة برلين 2026",
-      "language": "ar",
-      "url": "https://moh.gov.sy/news/%D8%A7%D9%84%D8%B5%D8%AD%D8%A9-%D8%AA%D8%B4%D8%A7%D8%B1%D9%83-%D9%81%D9%8A-%D8%AC%D9%84%D8%B3%D8%A9-%D8%AD%D9%88%D9%84-%D8%AA%D8%B9%D8%A7%D9%81%D9%8A-%D8%A7%D9%84%D9%82%D8%B7%D8%A7%D8%B9-%D8%A7%D9%84%D8%B5%D8%AD%D9%8A-%D8%A7%D9%84%D8%B3%D9%88%D8%B1%D9%8A-%D8%B6%D9%85%D9%86-%D9%82%D9%85%D8%A9-%D8%A8%D8%B1%D9%84%D9%8A%D9%86-2026",
-      "published": "2026-10-13",
-      "source": "Syrian Ministry of Health",
-      "source_id": "sy-moh-news",
-      "verification_version": 2,
-      "verified_at": "2026-10-14T21:42:48+00:00",
-      "topic": "policy",
-      "evidence": {
-        "geography": "سوريا",
         "type": "publisher-headline"
       }
     }
