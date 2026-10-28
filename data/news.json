@@ -1,8 +1,24 @@
 {
-  "updated": "2026-10-27T22:15:44+00:00",
-  "checked_at": "2026-10-27T22:15:44+00:00",
+  "updated": "2026-10-28T12:57:49+00:00",
+  "checked_at": "2026-10-28T12:57:49+00:00",
   "status": "partial",
   "items": [
+    {
+      "title": "وزير الصحة يتفقد جرحى القصف في مستشفى الصنمين ويزور ذوي الشهداء في اللجاة",
+      "title_ar": "وزير الصحة يتفقد جرحى القصف في مستشفى الصنمين ويزور ذوي الشهداء في اللجاة",
+      "language": "ar",
+      "url": "https://moh.gov.sy/news/%D9%88%D8%B2%D9%8A%D8%B1-%D8%A7%D9%84%D8%B5%D8%AD%D8%A9-%D9%8A%D8%AA%D9%81%D9%82%D8%AF-%D8%AC%D8%B1%D8%AD%D9%89-%D8%A7%D9%84%D9%82%D8%B5%D9%81-%D9%81%D9%8A-%D9%85%D8%B3%D8%AA%D8%B4%D9%81%D9%89-%D8%A7%D9%84%D8%B5%D9%86%D9%85%D9%8A%D9%86-%D9%88%D9%8A%D8%B2%D9%88%D8%B1-%D8%B0%D9%88%D9%8A-%D8%A7%D9%84%D8%B4%D9%87%D8%AF%D8%A7%D8%A1-%D9%81%D9%8A-%D8%A7%D9%84%D9%84%D8%AC%D8%A7%D8%A9",
+      "published": "2026-10-27",
+      "source": "Syrian Ministry of Health",
+      "source_id": "sy-moh-news",
+      "verification_version": 2,
+      "verified_at": "2026-10-28T12:57:40+00:00",
+      "topic": "hospitals",
+      "evidence": {
+        "geography": "درعا",
+        "type": "publisher-headline"
+      }
+    },
     {
       "title": "صحة دير الزور تبحث مع منظمة الصحة العالمية تفعيل المشافي وسد الفجوات ‏القائمة",
       "title_ar": "صحة دير الزور تبحث مع منظمة الصحة العالمية تفعيل المشافي وسد الفجوات ‏القائمة",
@@ -12,7 +28,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-27T22:15:27+00:00",
+      "verified_at": "2026-10-28T12:57:40+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "دير الزور",
@@ -28,7 +44,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-27T22:15:27+00:00",
+      "verified_at": "2026-10-28T12:57:40+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "دمشق",
@@ -44,7 +60,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-27T22:15:27+00:00",
+      "verified_at": "2026-10-28T12:57:40+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "دير الزور",
@@ -60,7 +76,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-27T22:15:27+00:00",
+      "verified_at": "2026-10-28T12:57:40+00:00",
       "topic": "workforce",
       "evidence": {
         "geography": "درعا",
@@ -76,7 +92,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-27T22:15:27+00:00",
+      "verified_at": "2026-10-28T12:57:40+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "دير الزور",
@@ -92,7 +108,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-27T22:15:27+00:00",
+      "verified_at": "2026-10-28T12:57:40+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "الرقة",
@@ -124,7 +140,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-27T22:15:27+00:00",
+      "verified_at": "2026-10-28T12:57:40+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "حلب",
@@ -188,7 +204,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-27T22:15:27+00:00",
+      "verified_at": "2026-10-28T12:57:40+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "حمص",
@@ -204,7 +220,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-27T22:15:27+00:00",
+      "verified_at": "2026-10-28T12:57:40+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "حلب",
@@ -220,7 +236,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-27T22:15:27+00:00",
+      "verified_at": "2026-10-28T12:57:40+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "الرقة",
@@ -252,7 +268,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-27T22:15:27+00:00",
+      "verified_at": "2026-10-28T12:57:40+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "سورية",
@@ -380,7 +396,7 @@
       "source": "WHO — Syria office",
       "source_id": "who-syria-news",
       "verification_version": 2,
-      "verified_at": "2026-10-27T22:15:29+00:00",
+      "verified_at": "2026-10-28T12:57:41+00:00",
       "topic": "policy",
       "evidence": {
         "geography": "Syria",
@@ -764,7 +780,7 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-27T22:15:25+00:00",
+      "verified_at": "2026-10-28T12:57:39+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "Syria",
@@ -940,26 +956,10 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-27T22:15:25+00:00",
+      "verified_at": "2026-10-28T12:57:39+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "Syria",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "دير الزور تستضيف المؤتمر الطبي السوري الفرنسي الأول يومي 16 و17 تشرين ‏الأول الجاري",
-      "title_ar": "دير الزور تستضيف المؤتمر الطبي السوري الفرنسي الأول يومي 16 و17 تشرين ‏الأول الجاري",
-      "language": "ar",
-      "url": "https://sana.sy/governorates/dayer-al-zoor/2606250/",
-      "published": "2026-10-13",
-      "source": "Syrian Arab News Agency (SANA) — Health",
-      "source_id": "sana-health",
-      "verification_version": 2,
-      "verified_at": "2026-10-15T11:32:06+00:00",
-      "topic": "workforce",
-      "evidence": {
-        "geography": "دير الزور",
         "type": "publisher-headline"
       }
     }
