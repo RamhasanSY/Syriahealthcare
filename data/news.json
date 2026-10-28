@@ -1,8 +1,24 @@
 {
-  "updated": "2026-10-28T12:57:49+00:00",
-  "checked_at": "2026-10-28T12:57:49+00:00",
+  "updated": "2026-10-28T22:37:19+00:00",
+  "checked_at": "2026-10-28T22:37:19+00:00",
   "status": "partial",
   "items": [
+    {
+      "title": "مباحثات سورية برازيلية لتعزيز التعاون في المجال ‌‏الصحي ‏",
+      "title_ar": "مباحثات سورية برازيلية لتعزيز التعاون في المجال ‌‏الصحي ‏",
+      "language": "ar",
+      "url": "https://sana.sy/syria-and-the-world/2619749/",
+      "published": "2026-10-28",
+      "source": "Syrian Arab News Agency (SANA) — Health",
+      "source_id": "sana-health",
+      "verification_version": 2,
+      "verified_at": "2026-10-28T22:37:00+00:00",
+      "topic": "policy",
+      "evidence": {
+        "geography": "سورية",
+        "type": "publisher-headline"
+      }
+    },
     {
       "title": "وزير الصحة يتفقد جرحى القصف في مستشفى الصنمين ويزور ذوي الشهداء في اللجاة",
       "title_ar": "وزير الصحة يتفقد جرحى القصف في مستشفى الصنمين ويزور ذوي الشهداء في اللجاة",
@@ -12,7 +28,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-28T12:57:40+00:00",
+      "verified_at": "2026-10-28T22:37:00+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "درعا",
@@ -28,7 +44,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-28T12:57:40+00:00",
+      "verified_at": "2026-10-28T22:37:00+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "دير الزور",
@@ -44,7 +60,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-28T12:57:40+00:00",
+      "verified_at": "2026-10-28T22:37:00+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "دمشق",
@@ -60,7 +76,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-28T12:57:40+00:00",
+      "verified_at": "2026-10-28T22:37:00+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "دير الزور",
@@ -76,7 +92,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-28T12:57:40+00:00",
+      "verified_at": "2026-10-28T22:37:00+00:00",
       "topic": "workforce",
       "evidence": {
         "geography": "درعا",
@@ -92,7 +108,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-28T12:57:40+00:00",
+      "verified_at": "2026-10-28T22:37:00+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "دير الزور",
@@ -108,7 +124,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-28T12:57:40+00:00",
+      "verified_at": "2026-10-28T22:37:00+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "الرقة",
@@ -140,7 +156,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-28T12:57:40+00:00",
+      "verified_at": "2026-10-28T22:37:00+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "حلب",
@@ -204,7 +220,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-28T12:57:40+00:00",
+      "verified_at": "2026-10-28T22:37:00+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "حمص",
@@ -220,7 +236,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-28T12:57:40+00:00",
+      "verified_at": "2026-10-28T22:37:00+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "حلب",
@@ -236,7 +252,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-28T12:57:40+00:00",
+      "verified_at": "2026-10-28T22:37:00+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "الرقة",
@@ -268,7 +284,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-28T12:57:40+00:00",
+      "verified_at": "2026-10-28T22:37:00+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "سورية",
@@ -396,7 +412,7 @@
       "source": "WHO — Syria office",
       "source_id": "who-syria-news",
       "verification_version": 2,
-      "verified_at": "2026-10-28T12:57:41+00:00",
+      "verified_at": "2026-10-28T22:37:01+00:00",
       "topic": "policy",
       "evidence": {
         "geography": "Syria",
@@ -780,7 +796,7 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-28T12:57:39+00:00",
+      "verified_at": "2026-10-28T22:37:00+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "Syria",
@@ -944,22 +960,6 @@
       "topic": "workforce",
       "evidence": {
         "geography": "دمشق",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "Support SAMS’ Upcoming Medical Mission to Syria’s Coastal Region",
-      "title_en": "Support SAMS’ Upcoming Medical Mission to Syria’s Coastal Region",
-      "language": "en",
-      "url": "https://sams-usa.net/support-sams-upcoming-medical-mission-to-syrias-coastal-region/",
-      "published": "2026-10-13",
-      "source": "Syrian American Medical Society (SAMS)",
-      "source_id": "sams-news",
-      "verification_version": 2,
-      "verified_at": "2026-10-28T12:57:39+00:00",
-      "topic": "public-health",
-      "evidence": {
-        "geography": "Syria",
         "type": "publisher-headline"
       }
     }
