@@ -1,8 +1,24 @@
 {
-  "updated": "2026-10-28T22:37:19+00:00",
-  "checked_at": "2026-10-28T22:37:19+00:00",
+  "updated": "2026-10-29T13:05:41+00:00",
+  "checked_at": "2026-10-29T13:05:41+00:00",
   "status": "partial",
   "items": [
+    {
+      "title": "منسق القسم الطبي",
+      "title_ar": "منسق القسم الطبي",
+      "language": "ar",
+      "url": "https://sarc.sy/59378-2/",
+      "published": "2026-10-29",
+      "source": "Syrian Arab Red Crescent",
+      "source_id": "sarc-news",
+      "verification_version": 2,
+      "verified_at": "2026-10-29T13:04:24+00:00",
+      "topic": "public-health",
+      "evidence": {
+        "geography": "دمشق",
+        "type": "publisher-headline"
+      }
+    },
     {
       "title": "مباحثات سورية برازيلية لتعزيز التعاون في المجال ‌‏الصحي ‏",
       "title_ar": "مباحثات سورية برازيلية لتعزيز التعاون في المجال ‌‏الصحي ‏",
@@ -12,26 +28,10 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-28T22:37:00+00:00",
+      "verified_at": "2026-10-29T13:04:23+00:00",
       "topic": "policy",
       "evidence": {
         "geography": "سورية",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "وزير الصحة يتفقد جرحى القصف في مستشفى الصنمين ويزور ذوي الشهداء في اللجاة",
-      "title_ar": "وزير الصحة يتفقد جرحى القصف في مستشفى الصنمين ويزور ذوي الشهداء في اللجاة",
-      "language": "ar",
-      "url": "https://moh.gov.sy/news/%D9%88%D8%B2%D9%8A%D8%B1-%D8%A7%D9%84%D8%B5%D8%AD%D8%A9-%D9%8A%D8%AA%D9%81%D9%82%D8%AF-%D8%AC%D8%B1%D8%AD%D9%89-%D8%A7%D9%84%D9%82%D8%B5%D9%81-%D9%81%D9%8A-%D9%85%D8%B3%D8%AA%D8%B4%D9%81%D9%89-%D8%A7%D9%84%D8%B5%D9%86%D9%85%D9%8A%D9%86-%D9%88%D9%8A%D8%B2%D9%88%D8%B1-%D8%B0%D9%88%D9%8A-%D8%A7%D9%84%D8%B4%D9%87%D8%AF%D8%A7%D8%A1-%D9%81%D9%8A-%D8%A7%D9%84%D9%84%D8%AC%D8%A7%D8%A9",
-      "published": "2026-10-27",
-      "source": "Syrian Ministry of Health",
-      "source_id": "sy-moh-news",
-      "verification_version": 2,
-      "verified_at": "2026-10-28T22:37:00+00:00",
-      "topic": "hospitals",
-      "evidence": {
-        "geography": "درعا",
         "type": "publisher-headline"
       }
     },
@@ -44,7 +44,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-28T22:37:00+00:00",
+      "verified_at": "2026-10-29T13:04:23+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "دير الزور",
@@ -60,7 +60,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-28T22:37:00+00:00",
+      "verified_at": "2026-10-29T13:04:23+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "دمشق",
@@ -76,7 +76,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-28T22:37:00+00:00",
+      "verified_at": "2026-10-29T13:04:23+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "دير الزور",
@@ -92,8 +92,24 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-28T22:37:00+00:00",
+      "verified_at": "2026-10-29T13:04:23+00:00",
       "topic": "workforce",
+      "evidence": {
+        "geography": "درعا",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "وزير الصحة يتفقد جرحى القصف في مستشفى الصنمين ويزور ذوي الشهداء في اللجاة",
+      "title_ar": "وزير الصحة يتفقد جرحى القصف في مستشفى الصنمين ويزور ذوي الشهداء في اللجاة",
+      "language": "ar",
+      "url": "https://moh.gov.sy/news/%D9%88%D8%B2%D9%8A%D8%B1-%D8%A7%D9%84%D8%B5%D8%AD%D8%A9-%D9%8A%D8%AA%D9%81%D9%82%D8%AF-%D8%AC%D8%B1%D8%AD%D9%89-%D8%A7%D9%84%D9%82%D8%B5%D9%81-%D9%81%D9%8A-%D9%85%D8%B3%D8%AA%D8%B4%D9%81%D9%89-%D8%A7%D9%84%D8%B5%D9%86%D9%85%D9%8A%D9%86-%D9%88%D9%8A%D8%B2%D9%88%D8%B1-%D8%B0%D9%88%D9%8A-%D8%A7%D9%84%D8%B4%D9%87%D8%AF%D8%A7%D8%A1-%D9%81%D9%8A-%D8%A7%D9%84%D9%84%D8%AC%D8%A7%D8%A9",
+      "published": "2026-10-27",
+      "source": "Syrian Ministry of Health",
+      "source_id": "sy-moh-news",
+      "verification_version": 2,
+      "verified_at": "2026-10-28T22:37:00+00:00",
+      "topic": "hospitals",
       "evidence": {
         "geography": "درعا",
         "type": "publisher-headline"
@@ -412,7 +428,7 @@
       "source": "WHO — Syria office",
       "source_id": "who-syria-news",
       "verification_version": 2,
-      "verified_at": "2026-10-28T22:37:01+00:00",
+      "verified_at": "2026-10-29T13:04:25+00:00",
       "topic": "policy",
       "evidence": {
         "geography": "Syria",
@@ -796,7 +812,7 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-28T22:37:00+00:00",
+      "verified_at": "2026-10-29T13:04:23+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "Syria",
@@ -944,22 +960,6 @@
       "topic": "hospitals",
       "evidence": {
         "geography": "الرقة",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "وزارة الصحة تحذر من ممارسة مهن التغذية والتجميل دون ترخيص رسمي",
-      "title_ar": "وزارة الصحة تحذر من ممارسة مهن التغذية والتجميل دون ترخيص رسمي",
-      "language": "ar",
-      "url": "https://sana.sy/health/2606471/",
-      "published": "2026-10-14",
-      "source": "Syrian Arab News Agency (SANA) — Health",
-      "source_id": "sana-health",
-      "verification_version": 2,
-      "verified_at": "2026-10-16T11:27:08+00:00",
-      "topic": "workforce",
-      "evidence": {
-        "geography": "دمشق",
         "type": "publisher-headline"
       }
     }

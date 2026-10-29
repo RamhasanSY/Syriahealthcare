@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-28T22:38:03+00:00",
+  "updated": "2026-10-29T13:06:24+00:00",
   "source": "OpenStreetMap contributors (ODbL)",
   "items": [
     {
@@ -3620,17 +3620,6 @@
       "emergency": false,
       "osm": true,
       "source_url": "https://www.openstreetmap.org/node/5101100321"
-    },
-    {
-      "name": "Ibn Sina National Hospital",
-      "name_ar": "المستشفى الوطني ابن سينا",
-      "city": "Idleb",
-      "city_ar": "إدلب",
-      "address": "إدلب",
-      "phone": "",
-      "emergency": true,
-      "osm": true,
-      "source_url": "https://www.openstreetmap.org/way/492404936"
     },
     {
       "name": "Idlib University Mustashfa",
