@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-29T13:06:24+00:00",
+  "updated": "2026-10-29T22:47:41+00:00",
   "source": "OpenStreetMap contributors (ODbL)",
   "items": [
     {
@@ -3534,6 +3534,17 @@
       "source_url": "https://www.openstreetmap.org/node/13346560358"
     },
     {
+      "name": "Al-Jisr Hospital (Kidney)",
+      "name_ar": "مشفى الجسر (الكلاوي)",
+      "city": "Idleb",
+      "city_ar": "إدلب",
+      "address": "",
+      "phone": "",
+      "emergency": false,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/3668956404"
+    },
+    {
       "name": "Al-ZIRA'A hospital",
       "name_ar": "مستشفى الزراعة",
       "city": "Idleb",
@@ -3631,6 +3642,17 @@
       "emergency": false,
       "osm": true,
       "source_url": "https://www.openstreetmap.org/node/8615761617"
+    },
+    {
+      "name": "Jisr al-Shughur Specialized Hospital",
+      "name_ar": "مشفى جسر الشغور التخصصي",
+      "city": "Idleb",
+      "city_ar": "إدلب",
+      "address": "",
+      "phone": "",
+      "emergency": false,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/13898137603"
     },
     {
       "name": "Kafar drian",
@@ -3732,17 +3754,6 @@
       "source_url": "https://www.openstreetmap.org/node/4462436892"
     },
     {
-      "name": "مشفى الجسر (الكلاوي)",
-      "name_ar": "مشفى الجسر (الكلاوي)",
-      "city": "Idleb",
-      "city_ar": "إدلب",
-      "address": "",
-      "phone": "",
-      "emergency": false,
-      "osm": true,
-      "source_url": "https://www.openstreetmap.org/node/3668956404"
-    },
-    {
       "name": "مشفى الدانا حريتان",
       "name_ar": "مشفى الدانا حريتان",
       "city": "Idleb",
@@ -3785,17 +3796,6 @@
       "emergency": false,
       "osm": true,
       "source_url": "https://www.openstreetmap.org/node/4315550591"
-    },
-    {
-      "name": "مشفى جسر الشغور التخصصي",
-      "name_ar": "مشفى جسر الشغور التخصصي",
-      "city": "Idleb",
-      "city_ar": "إدلب",
-      "address": "",
-      "phone": "",
-      "emergency": false,
-      "osm": true,
-      "source_url": "https://www.openstreetmap.org/node/13898137603"
     },
     {
       "name": "مشفى دار الحكمة",
