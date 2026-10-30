@@ -1,8 +1,40 @@
 {
-  "updated": "2026-10-30T12:58:23+00:00",
-  "checked_at": "2026-10-30T12:58:23+00:00",
+  "updated": "2026-10-30T22:23:06+00:00",
+  "checked_at": "2026-10-30T22:23:06+00:00",
   "status": "partial",
   "items": [
+    {
+      "title": "حملة للتبرع بالدم في مشفى دوما دعماً لمخزون بنك الدم واحتياجات المرضى",
+      "title_ar": "حملة للتبرع بالدم في مشفى دوما دعماً لمخزون بنك الدم واحتياجات المرضى",
+      "language": "ar",
+      "url": "https://sana.sy/governorates/reef-dimashak/2621805/",
+      "published": "2026-10-30",
+      "source": "Syrian Arab News Agency (SANA) — Health",
+      "source_id": "sana-health",
+      "verification_version": 2,
+      "verified_at": "2026-10-30T22:22:50+00:00",
+      "topic": "hospitals",
+      "evidence": {
+        "geography": "دمشق",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "سوريا تشارك في أعمال “المؤتمر الطبي التركي الثاني عشر” بإسطنبول",
+      "title_ar": "سوريا تشارك في أعمال “المؤتمر الطبي التركي الثاني عشر” بإسطنبول",
+      "language": "ar",
+      "url": "https://sana.sy/syria-and-the-world/2621586/",
+      "published": "2026-10-30",
+      "source": "Syrian Arab News Agency (SANA) — Health",
+      "source_id": "sana-health",
+      "verification_version": 2,
+      "verified_at": "2026-10-30T22:22:50+00:00",
+      "topic": "public-health",
+      "evidence": {
+        "geography": "سوريا",
+        "type": "publisher-headline"
+      }
+    },
     {
       "title": "حماة.. اختتام فعاليات الشهر الوردي للتوعية بأهمية الكشف المبكر عن سرطان الثدي",
       "title_ar": "حماة.. اختتام فعاليات الشهر الوردي للتوعية بأهمية الكشف المبكر عن سرطان الثدي",
@@ -12,7 +44,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-30T12:58:02+00:00",
+      "verified_at": "2026-10-30T22:22:50+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "حماة",
@@ -28,7 +60,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-30T12:58:02+00:00",
+      "verified_at": "2026-10-30T22:22:50+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "دمشق",
@@ -44,7 +76,7 @@
       "source": "Syrian Arab Red Crescent",
       "source_id": "sarc-news",
       "verification_version": 2,
-      "verified_at": "2026-10-30T12:58:03+00:00",
+      "verified_at": "2026-10-30T22:22:50+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "دمشق",
@@ -60,7 +92,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-30T12:58:02+00:00",
+      "verified_at": "2026-10-30T22:22:49+00:00",
       "topic": "policy",
       "evidence": {
         "geography": "سوريا",
@@ -76,7 +108,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-30T12:58:02+00:00",
+      "verified_at": "2026-10-30T22:22:49+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "حماة",
@@ -108,7 +140,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-30T12:58:02+00:00",
+      "verified_at": "2026-10-30T22:22:49+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "درعا",
@@ -204,7 +236,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-30T12:58:02+00:00",
+      "verified_at": "2026-10-30T22:22:49+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "الرقة",
@@ -236,7 +268,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-30T12:58:02+00:00",
+      "verified_at": "2026-10-30T22:22:49+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "حلب",
@@ -300,7 +332,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-10-30T12:58:02+00:00",
+      "verified_at": "2026-10-30T22:22:49+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "حمص",
@@ -492,7 +524,7 @@
       "source": "WHO — Syria office",
       "source_id": "who-syria-news",
       "verification_version": 2,
-      "verified_at": "2026-10-30T12:58:04+00:00",
+      "verified_at": "2026-10-30T22:22:51+00:00",
       "topic": "policy",
       "evidence": {
         "geography": "Syria",
@@ -876,7 +908,7 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-30T12:58:00+00:00",
+      "verified_at": "2026-10-30T22:22:50+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "Syria",
@@ -928,38 +960,6 @@
       "topic": "public-health",
       "evidence": {
         "geography": "سوريا",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "صحة درعا تواصل تأهيل وتوسعة قسم الإسعاف بمشفى إزرع الوطني لزيادة طاقته",
-      "title_ar": "صحة درعا تواصل تأهيل وتوسعة قسم الإسعاف بمشفى إزرع الوطني لزيادة طاقته",
-      "language": "ar",
-      "url": "https://sana.sy/governorates/daraa/2608193/",
-      "published": "2026-10-15",
-      "source": "Syrian Arab News Agency (SANA) — Health",
-      "source_id": "sana-health",
-      "verification_version": 2,
-      "verified_at": "2026-10-17T10:46:35+00:00",
-      "topic": "hospitals",
-      "evidence": {
-        "geography": "درعا",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "الصحة تشارك في القاهرة باجتماعات اللجنة الإقليمية لمنظمة الصحة العالمية ‏",
-      "title_ar": "الصحة تشارك في القاهرة باجتماعات اللجنة الإقليمية لمنظمة الصحة العالمية ‏",
-      "language": "ar",
-      "url": "https://sana.sy/health/2607622/",
-      "published": "2026-10-15",
-      "source": "Syrian Arab News Agency (SANA) — Health",
-      "source_id": "sana-health",
-      "verification_version": 2,
-      "verified_at": "2026-10-16T21:11:24+00:00",
-      "topic": "public-health",
-      "evidence": {
-        "geography": "سورية",
         "type": "publisher-headline"
       }
     }

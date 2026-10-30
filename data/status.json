@@ -1,12 +1,12 @@
 {
-  "checked_at": "2026-10-30T12:58:23+00:00",
+  "checked_at": "2026-10-30T22:23:06+00:00",
   "sources": [
     {
       "id": "drc-jobs",
       "kind": "jobs",
       "state": "ok",
-      "checked_at": "2026-10-30T12:58:05+00:00",
-      "fetched": 85,
+      "checked_at": "2026-10-30T22:22:51+00:00",
+      "fetched": 87,
       "accepted": 4,
       "latest_published": "2026-10-28"
     },
@@ -14,7 +14,7 @@
       "id": "ida-jobs",
       "kind": "jobs",
       "state": "ok",
-      "checked_at": "2026-10-30T12:58:23+00:00",
+      "checked_at": "2026-10-30T22:23:06+00:00",
       "fetched": 10,
       "accepted": 0,
       "latest_published": null
@@ -23,7 +23,7 @@
       "id": "ida-news",
       "kind": "news",
       "state": "ok",
-      "checked_at": "2026-10-30T12:58:04+00:00",
+      "checked_at": "2026-10-30T22:22:51+00:00",
       "fetched": 10,
       "accepted": 0,
       "latest_published": null
@@ -32,8 +32,8 @@
       "id": "nrc-jobs",
       "kind": "jobs",
       "state": "ok",
-      "checked_at": "2026-10-30T12:58:04+00:00",
-      "fetched": 17,
+      "checked_at": "2026-10-30T22:22:51+00:00",
+      "fetched": 18,
       "accepted": 8,
       "latest_published": "2026-10-29"
     },
@@ -41,7 +41,7 @@
       "id": "reliefweb-jobs",
       "kind": "jobs",
       "state": "error",
-      "checked_at": "2026-10-30T12:58:08+00:00",
+      "checked_at": "2026-10-30T22:22:54+00:00",
       "error": "Empty response (HTTP 202)",
       "accepted": 0
     },
@@ -49,7 +49,7 @@
       "id": "sams-jobs",
       "kind": "jobs",
       "state": "ok",
-      "checked_at": "2026-10-30T12:58:03+00:00",
+      "checked_at": "2026-10-30T22:22:51+00:00",
       "fetched": 549,
       "accepted": 4,
       "latest_published": "2026-10-29"
@@ -58,7 +58,7 @@
       "id": "sams-news",
       "kind": "news",
       "state": "ok",
-      "checked_at": "2026-10-30T12:58:00+00:00",
+      "checked_at": "2026-10-30T22:22:50+00:00",
       "fetched": 10,
       "accepted": 8,
       "latest_published": "2026-10-15"
@@ -67,16 +67,16 @@
       "id": "sana-health",
       "kind": "news",
       "state": "ok",
-      "checked_at": "2026-10-30T12:58:02+00:00",
+      "checked_at": "2026-10-30T22:22:50+00:00",
       "fetched": 10,
-      "accepted": 3,
-      "latest_published": "2026-10-29"
+      "accepted": 4,
+      "latest_published": "2026-10-30"
     },
     {
       "id": "sarc-news",
       "kind": "news",
       "state": "ok",
-      "checked_at": "2026-10-30T12:58:03+00:00",
+      "checked_at": "2026-10-30T22:22:50+00:00",
       "fetched": 10,
       "accepted": 1,
       "latest_published": "2026-10-29"
@@ -85,7 +85,7 @@
       "id": "sy-moh-news",
       "kind": "news",
       "state": "ok",
-      "checked_at": "2026-10-30T12:58:02+00:00",
+      "checked_at": "2026-10-30T22:22:49+00:00",
       "fetched": 12,
       "accepted": 6,
       "latest_published": "2026-10-28"
@@ -94,7 +94,7 @@
       "id": "un-health",
       "kind": "news",
       "state": "ok",
-      "checked_at": "2026-10-30T12:58:03+00:00",
+      "checked_at": "2026-10-30T22:22:50+00:00",
       "fetched": 30,
       "accepted": 0,
       "latest_published": null
@@ -103,7 +103,7 @@
       "id": "uossm-news",
       "kind": "news",
       "state": "error",
-      "checked_at": "2026-10-30T12:58:05+00:00",
+      "checked_at": "2026-10-30T22:22:54+00:00",
       "error": "HTTP Error 503: Service Unavailable",
       "accepted": 0
     },
@@ -111,7 +111,7 @@
       "id": "who-news",
       "kind": "news",
       "state": "ok",
-      "checked_at": "2026-10-30T12:58:03+00:00",
+      "checked_at": "2026-10-30T22:22:50+00:00",
       "fetched": 109,
       "accepted": 0,
       "latest_published": null
@@ -120,7 +120,7 @@
       "id": "who-syria-news",
       "kind": "news",
       "state": "ok",
-      "checked_at": "2026-10-30T12:58:04+00:00",
+      "checked_at": "2026-10-30T22:22:51+00:00",
       "fetched": 10,
       "accepted": 2,
       "latest_published": "2026-10-20"
