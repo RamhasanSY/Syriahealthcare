@@ -1,10 +1,10 @@
 // Creates (or resets the password of) an admin account:
 //   npm run create-admin -- admin@example.com "Full Name"
 // The password is typed in hidden, or taken from ADMIN_PASSWORD for automated setups.
-import {createInterface} from 'node:readline';
 import {config} from './config.js';
 import {audit, createPool} from './db.js';
 import {migrate} from './migrate.js';
+import {askHidden} from './prompt.js';
 import {hashPassword, normalizeEmail, passwordProblem} from './security.js';
 
 const [rawEmail, ...nameParts] = process.argv.slice(2);
@@ -12,18 +12,6 @@ const email = normalizeEmail(rawEmail), name = nameParts.join(' ').trim() || 'Ad
 if (!email) {
     console.error('Usage: npm run create-admin -- admin@example.com "Full Name"');
     process.exit(1);
-}
-
-function askHidden(question) {
-    return new Promise(resolve => {
-        const rl = createInterface({input: process.stdin, output: process.stdout, terminal: true});
-        rl._writeToOutput = text => rl.output.write(text.includes(question) ? text : '');
-        rl.question(question, answer => {
-            rl.close();
-            process.stdout.write('\n');
-            resolve(answer);
-        });
-    });
 }
 
 const password = process.env.ADMIN_PASSWORD || await askHidden('Admin password (at least 10 characters): ');

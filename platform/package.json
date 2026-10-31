@@ -10,6 +10,7 @@
     "dev": "node --watch src/server.js",
     "migrate": "node src/migrate.js",
     "create-admin": "node src/create-admin.js",
+    "test-mail": "node src/test-mail.js",
     "test": "node --test --test-concurrency=1 \"test/**/*.test.js\"",
     "seed:demo": "node src/seed-demo.js"
   },
