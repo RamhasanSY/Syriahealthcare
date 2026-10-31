@@ -62,6 +62,26 @@ Each card shows the patient's name, phone and reason. Doctors only see their own
 
 When the doctor confirms, declines or cancels, the patient gets a bilingual SMS with the date and time in Syria time, plus the clinic address or the doctor's message. If an SMS fails, it is logged and the doctor's decision still stands.
 
+### Forgot password and emails
+
+Doctors, labs, hospitals, clinics and admins who forget their password use **"Forgot your password?"** on the sign-in page (`/forgot`). They get an email with a link to `/reset`, where they choose a new password. Saving it signs out every device and signs them in again.
+
+- The link works once, for 30 minutes, and only the newest link works. At most three links per account per hour.
+- The answer is the same whether or not an email has an account, so nobody can find out who is registered.
+- The token is in the link's `#` part, which browsers never send to servers or in Referer headers, and the page removes it from the address bar at once. Only its SHA-256 hash is stored.
+- A reset also lifts a lockout after too many wrong passwords. Patients do not need it: they sign in with an SMS code.
+
+Emails (Arabic and English, the account's language first, plain text only):
+
+| When | To |
+|---|---|
+| A doctor or facility creates an account | them: welcome and next steps |
+| A profile is sent for review | every admin, with a link to `/admin` |
+| Approved, changes needed, suspended | the doctor or facility, with the admin's note |
+| Forgot password, password changed | the account holder |
+
+If an email cannot be sent, it is logged and the action still stands. In development the emails appear in the server log as `[development email]`.
+
 Five wrong passwords lock an account for 15 minutes. Sessions last 30 days for patients, 7 for doctors and facilities, and 1 for admins. Every page is in Arabic and English.
 
 ### Security built in
@@ -86,7 +106,7 @@ npm run dev          # http://127.0.0.1:3000
 npm test             # uses postgres://postgres@127.0.0.1:54329/shc_test (or TEST_DATABASE_URL); it wipes that database
 ```
 
-In development, SMS codes are not sent. They appear in the server log as `[development SMS]` and, to make testing easy, on the sign-in screen ("Test mode"). The server refuses to start in production with this setting.
+In development, SMS codes and emails are not sent. They appear in the server log as `[development SMS]` and `[development email]`; SMS codes also appear on the sign-in screen ("Test mode") to make testing easy. The server refuses to start in production with these settings.
 
 **Local preview with demo data:** create an empty database (e.g. `shc_preview`), then run:
 
@@ -111,6 +131,8 @@ Backups: a compressed database dump and an archive of the encrypted documents ar
 Updates: `git pull && docker compose up -d --build`. Database changes in `migrations/` are applied automatically on start.
 
 ## Before going live
+- Create a mailbox for sending (e.g. `noreply@syriahealthcare.com` at STRATO, its own mailbox rather than an alias, with Catchall off) and put its SMTP details in `.env`. The server does not start without them. Check it with `npm run test-mail -- you@example.com` (asks for the password, hidden), or on the server with `docker compose exec app node src/test-mail.js you@example.com`.
+- Add the domain's SPF record (`v=spf1 redirect=_spf.strato.com`) and a DMARC record (`_dmarc`: `v=DMARC1; p=none; rua=mailto:webmaster@syriahealthcare.com`), so emails do not land in spam. STRATO's DKIM is already active.
 - Choose an SMS provider that delivers to Syrian numbers, and adapt `src/sms.js` to its API if it is not "POST JSON with a bearer token".
 - Complete and legally review `public/privacy.html` (it is marked DRAFT).
 - Check the Ministry of Health's health-app licensing requirements: https://moh.gov.sy/health-app-licensing

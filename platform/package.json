@@ -10,6 +10,7 @@
     "dev": "node --watch src/server.js",
     "migrate": "node src/migrate.js",
     "create-admin": "node src/create-admin.js",
+    "test-mail": "node src/test-mail.js",
     "test": "node --test --test-concurrency=1 \"test/**/*.test.js\"",
     "seed:demo": "node src/seed-demo.js"
   },
@@ -19,6 +20,7 @@
     "@fastify/rate-limit": "^10.3.0",
     "@fastify/static": "^10.1.6",
     "fastify": "^5.12.5",
+    "nodemailer": "^10.3.1",
     "pg": "^8.23.1"
   }
 }

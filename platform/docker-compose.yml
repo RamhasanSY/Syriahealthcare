@@ -35,6 +35,12 @@ services:
       SMS_HTTP_URL: ${SMS_HTTP_URL:-}
       SMS_HTTP_TOKEN: ${SMS_HTTP_TOKEN:-}
       SMS_SENDER: ${SMS_SENDER:-SyriaHealth}
+      MAIL_PROVIDER: smtp
+      SMTP_HOST: ${SMTP_HOST:?Set SMTP_HOST in .env}
+      SMTP_PORT: ${SMTP_PORT:-465}
+      SMTP_USER: ${SMTP_USER:?Set SMTP_USER in .env}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:?Set SMTP_PASSWORD in .env}
+      MAIL_FROM: ${MAIL_FROM:?Set MAIL_FROM in .env}
     volumes:
       - documents:/data/documents
 

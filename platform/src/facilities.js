@@ -6,6 +6,7 @@ import {facilityKinds, facilityServices, governorates} from './catalog.js';
 import {audit, transaction} from './db.js';
 import {deleteDocument, documentView, listDocuments, saveUpload} from './doctors.js';
 import {MAX_DOCUMENT_BYTES} from './documents.js';
+import {decisionEmail, notifyAdminsOfSubmission, sendEmail} from './notify.js';
 import {normalizePhone} from './security.js';
 
 const TEXT_FIELDS = {facility_name: 160, area: 120, address: 300, licence_number: 60, opening_hours: 200, description: 600};
@@ -134,6 +135,7 @@ export default async function facilityRoutes(app) {
             await audit(db, {actorId: request.user.id, action: 'facility.submitted', targetId: request.user.id, ip: request.ip});
             return updated;
         });
+        await notifyAdminsOfSubmission(app, request.user, profile.kind, profile.facility_name);
         return {profile: profileView(profile)};
     });
 
@@ -176,6 +178,8 @@ export default async function facilityRoutes(app) {
             await audit(db, {actorId: request.user.id, action: `facility.${to}`, targetId: request.params.id, details: note ? {note} : {}, ip: request.ip});
             return updated;
         });
+        const {rows: [user]} = await app.pg.query('SELECT name, email, language FROM users WHERE id = $1', [request.params.id]);
+        await sendEmail(app, user.email, decisionEmail(user, profile.kind, to, note, app.config.appOrigin));
         return {profile: profileView(profile)};
     };
     const decisionSchema = {...adminOnly, schema: {...uuidParam, body: {type: 'object', properties: {note: {type: 'string', maxLength: 1000}}}}};

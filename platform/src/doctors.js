@@ -4,6 +4,7 @@ import {HttpError, requireRole} from './auth.js';
 import {facilityKinds, facilityServices, governorates, specialties} from './catalog.js';
 import {audit, transaction} from './db.js';
 import {MAX_DOCUMENT_BYTES, sniffType} from './documents.js';
+import {decisionEmail, notifyAdminsOfSubmission, sendEmail} from './notify.js';
 import {normalizePhone} from './security.js';
 
 const MAX_DOCUMENTS = 6;
@@ -151,6 +152,7 @@ export default async function doctorRoutes(app) {
             await audit(db, {actorId: request.user.id, action: 'doctor.submitted', targetId: request.user.id, ip: request.ip});
             return updated;
         });
+        await notifyAdminsOfSubmission(app, request.user, 'doctor', request.user.name);
         return {profile: profileView(profile)};
     });
 
@@ -206,6 +208,8 @@ export default async function doctorRoutes(app) {
             await audit(db, {actorId: request.user.id, action: `doctor.${to}`, targetId: request.params.id, details: note ? {note} : {}, ip: request.ip});
             return updated;
         });
+        const {rows: [user]} = await app.pg.query('SELECT name, email, language FROM users WHERE id = $1', [request.params.id]);
+        await sendEmail(app, user.email, decisionEmail(user, 'doctor', to, note, app.config.appOrigin));
         return {profile: profileView(profile)};
     };
     const decisionSchema = {...adminOnly, schema: {

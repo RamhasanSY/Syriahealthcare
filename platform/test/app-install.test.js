@@ -47,7 +47,7 @@ describe('installable app', () => {
     });
 
     test('every page links the manifest and the iPhone icon', async () => {
-        for (const page of ['/', '/login', '/staff', '/account', '/doctors', '/doctor', '/book', '/appointments', '/dashboard', '/schedule', '/facility', '/admin', '/privacy', '/offline']) {
+        for (const page of ['/', '/login', '/staff', '/account', '/doctors', '/doctor', '/book', '/appointments', '/dashboard', '/schedule', '/facility', '/admin', '/privacy', '/offline', '/forgot', '/reset']) {
             const res = await app.inject({url: page});
             assert.equal(res.statusCode, 200, page);
             assert.match(res.body, /<link rel="manifest" href="\/manifest\.webmanifest">/, page);
