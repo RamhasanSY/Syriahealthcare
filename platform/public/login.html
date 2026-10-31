@@ -12,7 +12,7 @@
 <header class="top"><div class="top-inner"><a class="brand" href="/"><img src="/assets/logo.svg" alt=""><span data-en="Syria Healthcare" data-ar="الرعاية الصحية في سوريا">الرعاية الصحية في سوريا</span></a><div class="top-actions"><button class="lang" id="langToggle" type="button">English</button></div></div></header>
 <main id="main" class="wrap">
   <h1 data-en="Patient sign-in" data-ar="دخول المرضى">دخول المرضى</h1>
-  <p class="lead" data-en="No password needed. We send a 6-digit code to your mobile." data-ar="لا حاجة لكلمة مرور. نرسل رمزاً من 6 أرقام إلى جوالك.">لا حاجة لكلمة مرور. نرسل رمزاً من 6 أرقام إلى جوالك.</p>
+  <p class="lead" data-en="No password needed. We send a 6-digit code to your mobile, by WhatsApp or SMS." data-ar="لا حاجة لكلمة مرور. نرسل رمزاً من 6 أرقام إلى جوالك عبر واتساب أو برسالة SMS.">لا حاجة لكلمة مرور. نرسل رمزاً من 6 أرقام إلى جوالك عبر واتساب أو برسالة SMS.</p>
 
   <form class="card" id="phoneForm" novalidate>
     <div class="msg error" id="phoneError" role="alert" tabindex="-1" hidden></div>
@@ -33,6 +33,7 @@
       <label class="check"><input type="checkbox" id="consent"><span><span data-en="I agree to the" data-ar="أوافق على">أوافق على</span> <a href="/privacy" target="_blank" data-en="privacy policy" data-ar="سياسة الخصوصية">سياسة الخصوصية</a>.</span></label>
     </div>
     <button class="btn" type="submit" id="verify" data-en="Sign in" data-ar="دخول">دخول</button>
+    <button class="link-btn" type="button" id="smsInstead" hidden data-en="No WhatsApp message? Send the code by SMS" data-ar="لم تصلك رسالة واتساب؟ أرسل الرمز برسالة SMS">لم تصلك رسالة واتساب؟ أرسل الرمز برسالة SMS</button>
     <button class="link-btn" type="button" id="changeNumber" data-en="Use a different number" data-ar="استخدم رقماً آخر">استخدم رقماً آخر</button>
   </form>
 </main>

@@ -1,5 +1,6 @@
 import {facilityKinds} from './catalog.js';
 import {audit, transaction} from './db.js';
+import {sendCode} from './messaging.js';
 import {passwordChangedEmail, resetEmail, sendEmail, welcomeEmail} from './notify.js';
 import {dummyPasswordHash, hashPassword, newOtp, newToken, normalizeEmail, normalizePhone, otpHash, passwordProblem, sameHash, sha256, verifyPassword} from './security.js';
 
@@ -51,10 +52,12 @@ export function requireRole(...roles) {
 const ipLimit = max => ({rateLimit: {max, timeWindow: '15 minutes'}});
 
 export default async function authRoutes(app) {
-    // Patients: request an SMS code.
+    // Patients: request a sign-in code, by WhatsApp where possible, otherwise by SMS.
     app.post('/api/auth/otp/request', {
         config: ipLimit(30),
-        schema: {body: {type: 'object', required: ['phone'], properties: {phone: {type: 'string', maxLength: 30}}}}
+        schema: {body: {type: 'object', required: ['phone'], properties: {
+            phone: {type: 'string', maxLength: 30}, language: {enum: ['ar', 'en']}, channel: {enum: ['whatsapp', 'sms']}
+        }}}
     }, async (request, reply) => {
         const phone = normalizePhone(request.body.phone);
         if (!phone) throw new HttpError(400, 'invalid_phone', 'Enter a valid mobile number, for example 0912 345 678.');
@@ -65,8 +68,11 @@ export default async function authRoutes(app) {
         const {rows: [otp]} = await app.pg.query(
             'INSERT INTO otp_codes (phone, code_hash, expires_at, ip) VALUES ($1, $2, now() + make_interval(mins => $3), $4) RETURNING id',
             [phone, otpHash(app.config.otpSecret, phone, code), OTP_MINUTES, request.ip]);
+        let channel;
         try {
-            await app.sms.send(phone, `رمز الدخول إلى الرعاية الصحية في سوريا: ${code} (صالح ${OTP_MINUTES} دقائق)\nSyria Healthcare sign-in code: ${code}`);
+            const {rows: [known]} = await app.pg.query('SELECT language FROM users WHERE phone = $1', [phone]);
+            channel = await sendCode(app, request, phone, code,
+                {language: known?.language || request.body.language || 'ar', minutes: OTP_MINUTES, channel: request.body.channel});
         } catch (error) {
             request.log.error({err: error}, 'SMS delivery failed');
             await app.pg.query('UPDATE otp_codes SET consumed_at = now() WHERE id = $1', [otp.id]);
@@ -75,7 +81,7 @@ export default async function authRoutes(app) {
         reply.code(202);
         // Local preview only: SMS_PROVIDER=console (refused in production) shows the code on screen.
         const preview = app.config.smsProvider === 'console' && !app.config.production ? {previewCode: code} : {};
-        return {sent: true, phone, expiresInMinutes: OTP_MINUTES, ...preview};
+        return {sent: true, phone, channel, expiresInMinutes: OTP_MINUTES, ...preview};
     });
 
     // Patients: verify the code. New patients also send their name and consent.

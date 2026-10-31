@@ -1,7 +1,8 @@
 // Doctor dashboard: incoming requests, upcoming and past appointments, and the decisions on them.
-// Patients get an SMS when the doctor confirms, declines or cancels.
+// Patients get a WhatsApp message (or an SMS where WhatsApp is not possible) when the doctor confirms, declines or cancels.
 import {HttpError, requireRole} from './auth.js';
 import {audit} from './db.js';
+import {sendAppointmentUpdate} from './messaging.js';
 
 const TZ = 'Asia/Damascus';
 const uuidParam = {params: {type: 'object', properties: {id: {type: 'string', format: 'uuid'}}}};
@@ -74,15 +75,21 @@ export default async function dashboardRoutes(app) {
     }
 }
 
-// The decision is already saved; a failed SMS is logged but does not undo it.
+// The decision is already saved; a failed message is logged but does not undo it.
 async function notifyPatient(app, request, appointment) {
     const {rows: [info]} = await app.pg.query(
-        `SELECT p.phone, d.name AS doctor_name, dp.clinic_address FROM users p, users d, doctor_profiles dp
+        `SELECT p.phone, p.language, d.name AS doctor_name, dp.clinic_address FROM users p, users d, doctor_profiles dp
          WHERE p.id = $1 AND d.id = $2 AND dp.user_id = $2`, [appointment.patient_id, appointment.doctor_id]);
     if (!info?.phone) return;
+    const when = smsTime(appointment.starts_at), status = appointment.status;
+    const reason = appointment.status_note || (info.language === 'en' ? 'no reason given' : 'دون ذكر سبب');
     try {
-        await app.sms.send(info.phone, MESSAGES[appointment.status]({...info, status_note: appointment.status_note}, smsTime(appointment.starts_at)));
+        await sendAppointmentUpdate(app, request, info.phone, {
+            status, language: info.language,
+            params: status === 'confirmed' ? [info.doctor_name, when, info.clinic_address] : [info.doctor_name, when, reason],
+            smsText: MESSAGES[status]({...info, status_note: appointment.status_note}, when)
+        });
     } catch (error) {
-        request.log.error({err: error, appointment: appointment.id}, 'Patient SMS failed');
+        request.log.error({err: error, appointment: appointment.id}, 'Patient message failed');
     }
 }

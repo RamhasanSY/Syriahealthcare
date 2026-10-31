@@ -6,6 +6,7 @@ import {fileURLToPath} from 'node:url';
 import authRoutes, {loadSession} from './auth.js';
 import {createSms} from './sms.js';
 import {createMail} from './mail.js';
+import {createWhatsApp} from './whatsapp.js';
 import doctorRoutes from './doctors.js';
 import scheduleRoutes from './schedule.js';
 import appointmentRoutes from './appointments.js';
@@ -15,11 +16,12 @@ import {createDocumentStore} from './documents.js';
 
 const UNSAFE = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
 
-export async function buildApp({config, pool, sms, mail, documents, logger = true}) {
+export async function buildApp({config, pool, sms, whatsapp, mail, documents, logger = true}) {
     const app = Fastify({logger, trustProxy: config.trustProxy, bodyLimit: 64 * 1024});
     app.decorate('config', config);
     app.decorate('pg', pool);
     app.decorate('sms', sms || createSms(config, app.log));
+    app.decorate('whatsapp', whatsapp === undefined ? createWhatsApp(config) : whatsapp);
     app.decorate('mail', mail || createMail(config, app.log));
     app.decorate('documents', documents || createDocumentStore({dir: config.documentDir, keyHex: config.documentKey}));
     app.decorateRequest('user', null);
