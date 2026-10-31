@@ -72,6 +72,7 @@ Five wrong passwords lock an account for 15 minutes. Sessions last 30 days for p
 - Unknown emails get the same answer and the same delay as wrong passwords.
 - An audit log records registrations and admin actions.
 - No medical data is stored.
+- Installable as an app (`public/manifest.webmanifest`, `public/sw.js`). The service worker saves only page frames, styles, scripts and icons; nothing under `/api/` is ever stored on the phone, so appointments, profiles and licences are always fresh and leave no copy on a shared device. Without internet, the app shows an offline notice.
 
 ## Run it on this computer
 

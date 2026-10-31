@@ -159,3 +159,7 @@ fieldset.services{border:0;padding:0;margin:0 0 16px;min-width:0}
 fieldset.services legend{font-weight:600;margin-bottom:8px;padding:0}
 .service-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:0 16px}
 .service-grid .check{margin-bottom:8px}
+/* Installing the platform as an app (shown only where the device supports it) */
+.install-app{margin-top:28px;color:var(--muted)}
+.install-app[hidden],.install-app [hidden]{display:none}
+.install-app p{margin:0}

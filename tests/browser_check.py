@@ -46,7 +46,8 @@ jobs['items'].extend([
 
 with sync_playwright() as p:
     browser = p.chromium.launch()
-    page = browser.new_page(viewport={"width": 1440, "height": 1100})
+    # The service worker would answer some requests itself, so the mocked feeds below run without it; it is checked at the end.
+    page = browser.new_page(viewport={"width": 1440, "height": 1100}, service_workers="block")
     errors = []
     page.on("pageerror", lambda error: errors.append(str(error)))
     page.goto(NEWS, wait_until="networkidle")
@@ -201,7 +202,7 @@ with sync_playwright() as p:
     expect(page.locator('#search')).to_be_focused()
 
     # Storage restrictions must not stop rendering.
-    restricted = browser.new_context()
+    restricted = browser.new_context(service_workers="block")
     restricted.add_init_script("Object.defineProperty(window, 'localStorage', {get() {throw new Error('blocked')}})")
     restricted_page = restricted.new_page()
     restricted_page.goto(NEWS, wait_until="networkidle")
@@ -211,5 +212,27 @@ with sync_playwright() as p:
     restricted_page.locator("#langToggle").click()
     expect(restricted_page.locator("html")).to_have_attribute("lang", "ar")
     assert not errors, errors
+
+    # Installed app: valid manifest and icons, and saved pages, directories and an offline notice without internet.
+    app = browser.new_context(viewport={"width": 390, "height": 844})
+    app_page = app.new_page()
+    app_page.on("pageerror", lambda error: errors.append(str(error)))
+    app_page.goto(HOME, wait_until="networkidle")
+    manifest = app_page.evaluate("fetch(document.querySelector('link[rel=manifest]').href).then(r => r.json())")
+    assert manifest['display'] == 'standalone' and manifest['start_url'] == './', manifest
+    for icon in manifest['icons'] + [{'src': 'assets/apple-touch-icon.png'}]:
+        assert app_page.request.get(BASE + '/' + icon['src']).headers['content-type'] == 'image/png', icon
+    app_page.evaluate("navigator.serviceWorker.ready")
+    app_page.wait_for_function("navigator.serviceWorker.controller !== null")
+    app_page.wait_for_function("caches.keys().then(k => k.some(n => n.startsWith('shc-site-')))")
+    app.set_offline(True)
+    app_page.goto(BASE + '/hospitals.html')
+    expect(app_page.locator('#hospitalsList li').first).to_be_visible()
+    app_page.goto(BASE + '/never-saved.html')
+    expect(app_page.locator('h1')).to_have_text('You are offline.')
+    app_page.locator('#langToggle').click()
+    expect(app_page.locator('h1')).to_have_text('أنت غير متصل بالإنترنت.')
+    app.set_offline(False)
+    assert not errors, errors
     browser.close()
-print("Browser checks passed: all pages in English/Arabic, old-link redirects, search, filters, exact deadlines, automatic expiration, safe links, refresh failures, timeouts, keyboard focus, persistence and restricted storage.")
+print("Browser checks passed: all pages in English/Arabic, old-link redirects, search, filters, exact deadlines, automatic expiration, safe links, refresh failures, timeouts, keyboard focus, persistence, restricted storage and the installed app offline.")

@@ -1900,3 +1900,9 @@ body[dir=rtl] .section-head h2 {
 .pill.verified{background:var(--ink);color:#fff}
 .join-cta{margin:22px 0 0;padding:16px 20px;border:1px dashed var(--rule);border-radius:14px;color:var(--muted)}
 .join-cta a{font-weight:600;color:var(--ink);white-space:nowrap}
+
+/* Installing the site as an app (shown only where the device supports it) */
+.install-app{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding-top:18px;margin-top:18px;border-top:1px solid var(--rule);font-size:13px;color:var(--muted)}
+.install-app[hidden],.install-app [hidden]{display:none}
+.install-app p{margin:0}
+.install-app button{font-family:inherit;cursor:pointer}
