@@ -924,6 +924,30 @@
         renderEditor();
     }).catch(() => {});
     setInterval(refresh, 15 * 60 * 1000);
+    // The site can be installed like an app; sw.js then also opens saved pages and directories without internet.
+    if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+    let installPrompt = null;
+    const showInstall = (button, ios) => {
+        $('installButton').hidden = !button;
+        $('installIos').hidden = !ios;
+        $('installApp').hidden = !button && !ios;
+    };
+    const installed = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+    // iPhones have no install prompt: point to Share → Add to Home Screen in Safari.
+    if (!installed && /iPhone|iPod/.test(navigator.userAgent)) showInstall(false, true);
+    window.addEventListener('beforeinstallprompt', event => {
+        event.preventDefault();
+        installPrompt = event;
+        showInstall(true, false);
+    });
+    $('installButton').onclick = async () => {
+        if (!installPrompt) return;
+        installPrompt.prompt();
+        await installPrompt.userChoice.catch(() => {});
+        installPrompt = null;
+        showInstall(false, false);
+    };
+    window.addEventListener('appinstalled', () => showInstall(false, false));
     // Expire loaded records even while the visitor leaves the tab open.
     setInterval(() => {
         const news = openNews(), jobs = openJobs();

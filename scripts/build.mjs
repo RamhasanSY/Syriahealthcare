@@ -6,7 +6,7 @@ import path from 'node:path';
 const root = fileURLToPath(new URL('../', import.meta.url));
 const output = path.join(root, 'dist');
 const site = 'https://syriahealthcare.com/';
-const files = ['sources.json', 'CNAME', 'assets', 'data'];
+const files = ['sources.json', 'CNAME', 'manifest.webmanifest', 'assets', 'data'];
 
 // Every page shares pages/_layout.html; `nav` pages appear in the header menu, all pages in the footer.
 const pages = [
@@ -36,7 +36,11 @@ const pages = [
     description: ['Who we are, how we select jobs and news, and the original sources we check twice daily.', 'من نحن، وكيف نختار الوظائف والأخبار، والمصادر الأصلية التي نفحصها مرتين يومياً.']},
   {name: '404', nav: false, footer: false, sitemap: false, label: ['Page not found', 'الصفحة غير موجودة'],
     title: ['Page not found — Syria Healthcare', 'الصفحة غير موجودة — الرعاية الصحية في سوريا'],
-    description: ['This page could not be found.', 'تعذر العثور على هذه الصفحة.']}
+    description: ['This page could not be found.', 'تعذر العثور على هذه الصفحة.']},
+  // Shown by the installed app (sw.js) when a page was never opened before and there is no connection.
+  {name: 'offline', nav: false, footer: false, sitemap: false, label: ['Offline', 'دون اتصال'],
+    title: ['You are offline — Syria Healthcare', 'أنت غير متصل — الرعاية الصحية في سوريا'],
+    description: ['This page needs an internet connection.', 'تحتاج هذه الصفحة إلى اتصال بالإنترنت.']}
 ];
 
 const escape = text => text.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
@@ -61,6 +65,7 @@ const hash = createHash('sha256');
 for (const file of ['assets/app.js', 'assets/style.css']) hash.update(await readFile(path.join(root, file)));
 const version = hash.digest('hex').slice(0, 10);
 const layout = await readFile(path.join(root, 'pages', '_layout.html'), 'utf8');
+const shellHash = createHash('sha256');
 for (const page of pages) {
   const body = await readFile(path.join(root, 'pages', page.name + '.html'), 'utf8');
   const fields = {
@@ -74,9 +79,19 @@ for (const page of pages) {
     return fields[key];
   });
   await writeFile(path.join(output, page.name + '.html'), html);
+  shellHash.update(html);
 }
+// The installed app saves every page, the shared style and script, and the directories for offline use.
+// Its version follows every page and asset, so phones pick up each release.
+const shell = [...pages.filter(p => p.name !== '404').map(p => p.name === 'index' ? './' : p.name + '.html'),
+  `assets/style.css?v=${version}`, `assets/app.js?v=${version}`, 'assets/logo.svg', 'assets/favicon.svg?v=2', 'assets/icon-192.png',
+  'manifest.webmanifest', 'data/hospitals.json', 'data/labs.json', 'data/doctors.json'];
+const worker = await readFile(path.join(root, 'scripts', 'sw.js'), 'utf8');
+shellHash.update(version + worker + await readFile(path.join(root, 'manifest.webmanifest'), 'utf8'));
+await writeFile(path.join(output, 'sw.js'), `const VERSION = '${shellHash.digest('hex').slice(0, 10)}', SHELL = ${JSON.stringify(shell)};
+${worker}`);
 const urls = pages.filter(p => p.sitemap !== false).map(p => `  <url><loc>${site}${p.name === 'index' ? '' : p.name + '.html'}</loc></url>`);
 await writeFile(path.join(output, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join('\n')}\n</urlset>\n`);
 await writeFile(path.join(output, 'robots.txt'), `User-agent: *\nAllow: /\n\nSitemap: ${site}sitemap.xml\n`);
 await writeFile(path.join(output, '.nojekyll'), '');
-console.log(`Built ${pages.length} pages in dist/ (assets v${version}, feeds, sitemap and custom domain).`);
+console.log(`Built ${pages.length} pages in dist/ (assets v${version}, feeds, sitemap, app manifest, service worker and custom domain).`);

@@ -109,6 +109,36 @@ const Shc = (() => {
             applyLanguage();
         });
         applyLanguage();
+        setUpInstall();
     });
+
+    // The platform can be installed like an app. sw.js saves only page frames, never data from /api/.
+    if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}));
+    function setUpInstall() {
+        const box = $('installApp');
+        if (!box) return;
+        let prompt = null;
+        const show = (button, ios) => {
+            $('installButton').hidden = !button;
+            $('installIos').hidden = !ios;
+            box.hidden = !button && !ios;
+        };
+        const installed = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+        // iPhones have no install prompt: point to Share → Add to Home Screen in Safari.
+        if (!installed && /iPhone|iPod/.test(navigator.userAgent)) show(false, true);
+        window.addEventListener('beforeinstallprompt', event => {
+            event.preventDefault();
+            prompt = event;
+            show(true, false);
+        });
+        $('installButton').addEventListener('click', async () => {
+            if (!prompt) return;
+            prompt.prompt();
+            await prompt.userChoice.catch(() => {});
+            prompt = null;
+            show(false, false);
+        });
+        window.addEventListener('appinstalled', () => show(false, false));
+    }
     return {$, tr, api, showError, busy, get lang() { return lang; }};
 })();

@@ -40,6 +40,8 @@ For failed-run notifications, enable GitHub Actions notifications in your own Gi
 
 The site has eight pages: Home, Jobs, Doctors, Hospitals, Labs, Pregnancy, News and About, plus a "page not found" page. Each page's content is in `pages/<name>.html`; the shared head, header, menu and footer are in `pages/_layout.html`. Page titles, descriptions and menu labels (English and Arabic) are listed at the top of `scripts/build.mjs`. The build stitches them together into `dist/`, highlights the current page in the menu, adds `sitemap.xml` and `robots.txt`, and versions the CSS and JavaScript automatically, so there is no `?v=` number to update by hand. Old one-page links such as `/#jobs` forward to the new page.
 
+**Install as an app.** Phones and computers can add the site to the home screen (`manifest.webmanifest`). Android and desktop Chrome show an "Install the app" button in the footer; iPhones show how to add it from Safari's Share menu. The installed site keeps working without internet: `scripts/sw.js` (built to `dist/sw.js`) always tries the network first, so jobs and news stay current, and falls back to the saved copy when the connection is down or slower than six seconds. All pages and the hospital, lab and doctor directories are saved on install; a page never opened before shows an offline notice. The icons are rendered from `assets/logo.svg` with `python scripts/app_icons.py`.
+
 ## Preview and tests
 
 The website is plain HTML, CSS and JavaScript. The npm commands below use Node and Python directly and require no npm dependency installation. `npm run build` validates the public JSON, builds the pages and copies only the public website files into `dist/`, including the custom domain and `.nojekyll` marker.
