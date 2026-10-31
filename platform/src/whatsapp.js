@@ -2,7 +2,8 @@
 // template that Meta has approved, so every message here is a template name plus its {{1}}, {{2}}, ... values.
 // The templates to create in WhatsApp Manager are listed in README.md.
 
-// Meta does not deliver to WhatsApp users in sanctioned countries (Syria, Cuba, Iran, North Korea); those numbers get SMS.
+// Meta does not deliver to WhatsApp users in sanctioned countries (Syria, Cuba, Iran, North Korea); those numbers get
+// their code by Telegram or SMS instead.
 // Remove a prefix from WHATSAPP_BLOCKED_PREFIXES as soon as Meta allows it.
 export const DEFAULT_BLOCKED_PREFIXES = ['+963', '+53', '+98', '+850'];
 

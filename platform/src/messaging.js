@@ -1,18 +1,28 @@
-// Chooses how a patient is reached: WhatsApp when it is set up and Meta delivers to that number, otherwise SMS.
-// If WhatsApp refuses a message, it goes out by SMS instead, so a patient is never left without their code.
+// Chooses how a patient is reached. Sign-in codes: WhatsApp where Meta delivers, then Telegram (Telegram Gateway) where the
+// number has Telegram, then SMS. Appointment updates: WhatsApp, then SMS (the Telegram Gateway carries codes only).
+// If one channel refuses a message, the next one is tried, so a patient is never left without their code.
 
 export const whatsappReaches = (app, phone) =>
     Boolean(app.whatsapp) && !app.config.whatsapp.blockedPrefixes.some(prefix => phone.startsWith(prefix));
 
-// Sends a sign-in code. Returns the channel that was used: 'whatsapp' or 'sms'.
-// `channel: 'sms'` forces SMS, for "I did not get it on WhatsApp" (e.g. a number without WhatsApp).
+// Sends a sign-in code. Returns the channel that was used: 'whatsapp', 'telegram' or 'sms'.
+// `channel: 'sms'` forces SMS, for "I did not get the message" (e.g. WhatsApp or Telegram not opened on this phone).
 export async function sendCode(app, request, phone, code, {language, minutes, channel}) {
     if (channel !== 'sms' && whatsappReaches(app, phone)) {
         try {
             await app.whatsapp.sendTemplate(phone, {name: app.config.whatsapp.templates.code, language, params: [code], copyCode: code});
             return 'whatsapp';
         } catch (error) {
-            request.log.error({err: error}, 'WhatsApp code failed, sending SMS instead');
+            request.log.error({err: error}, 'WhatsApp code failed, trying the next channel');
+        }
+    }
+    if (channel !== 'sms' && app.telegram) {
+        try {
+            await app.telegram.sendCode(phone, code, minutes * 60);
+            return 'telegram';
+        } catch (error) {
+            // Usually just a number without Telegram; checking that costs nothing.
+            request.log.warn({err: error}, 'Telegram code not possible, sending SMS instead');
         }
     }
     await app.sms.send(phone, `رمز الدخول إلى الرعاية الصحية في سوريا: ${code} (صالح ${minutes} دقائق)\nSyria Healthcare sign-in code: ${code}`);

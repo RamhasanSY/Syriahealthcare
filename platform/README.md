@@ -8,7 +8,7 @@ Accounts and (in later steps) appointment booking for patients and doctors. It r
 
 | Who | How they sign in | Rules |
 |---|---|---|
-| Patient | Mobile number and a 6-digit code by WhatsApp or SMS | Max 3 codes per number per 15 min; a code is valid for 5 minutes, works once, and allows 5 tries. New patients give their name and accept the privacy policy. |
+| Patient | Mobile number and a 6-digit code by WhatsApp, Telegram or SMS | Max 3 codes per number per 15 min; a code is valid for 5 minutes, works once, and allows 5 tries. New patients give their name and accept the privacy policy. |
 | Doctor | Email and password (at least 10 characters), self-registration | Fills in a profile and uploads a licence; must be approved by an admin before patients can see them. |
 | Lab, imaging centre, hospital or clinic | Email and password, self-registration (same sign-in page as doctors) | Fills in the facility's details and uploads its operating licence; must be approved by an admin before it is listed on syriahealthcare.com. |
 | Admin | Email and password, created on the server only | `npm run create-admin -- you@company.com "Your Name"` |
@@ -84,6 +84,17 @@ Patients get their sign-in code and the doctor's decisions (confirmed, declined,
 | `shc_appointment_cancelled` | Utility | نعتذر، ألغى {{1}} موعدك في {{2}}: {{3}}. / Sorry, {{1}} cancelled your appointment on {{2}}: {{3}}. |
 
 5. Create a system user with the permission `whatsapp_business_messaging` and a permanent token. Put `WHATSAPP_PROVIDER=cloud`, `WHATSAPP_PHONE_NUMBER_ID` and `WHATSAPP_TOKEN` in `.env`. Keep the token secret: with it, anyone can send messages in the platform's name.
+
+### Telegram for sign-in codes
+
+When WhatsApp cannot reach a number (for now: every Syrian number), the sign-in code goes by **Telegram** through the [Telegram Gateway API](https://core.telegram.org/gateway) before falling back to SMS. The order is: WhatsApp → Telegram → SMS.
+
+- The platform first asks Telegram whether the number has Telegram. If not, that check is free and the code goes by SMS.
+- Telegram charges about $0.01 per code, only for codes delivered before they expire (5 minutes); undelivered codes are refunded automatically.
+- The Telegram Gateway carries verification codes only, so appointment updates still go by WhatsApp or SMS.
+- The platform makes and checks the code itself; Telegram only delivers it.
+
+**Setup:** sign in at gateway.telegram.org with the Telegram account of the operator, add credit, copy the API token from the account settings and put it in `.env` as `TELEGRAM_GATEWAY_TOKEN`. Test once with your own number (free). Telegram's documentation names no country restrictions, but whether codes reach +963 numbers is only certain after that first test.
 
 ### Forgot password and emails
 

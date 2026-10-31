@@ -7,6 +7,7 @@ import {createPool} from '../src/db.js';
 import {migrate} from '../src/migrate.js';
 import {createMail} from '../src/mail.js';
 import {createSms} from '../src/sms.js';
+import {createTelegramGateway} from '../src/telegram.js';
 import {createWhatsApp, DEFAULT_BLOCKED_PREFIXES, TEMPLATES} from '../src/whatsapp.js';
 import {hashPassword} from '../src/security.js';
 
@@ -16,12 +17,12 @@ const documentDir = await mkdtemp(path.join(tmpdir(), 'shc-docs-'));
 export const config = {
     production: false, appOrigin: origin, otpSecret: 'test-secret-test-secret-test-secret', smsProvider: 'test', mailProvider: 'test',
     documentKey: 'ab'.repeat(32), documentDir,
-    whatsapp: {provider: '', blockedPrefixes: DEFAULT_BLOCKED_PREFIXES, templates: TEMPLATES}, sessionDays: {patient: 30, doctor: 7, facility: 7, admin: 1}, trustProxy: false
+    whatsapp: {provider: '', blockedPrefixes: DEFAULT_BLOCKED_PREFIXES, templates: TEMPLATES}, telegram: {provider: ''}, sessionDays: {patient: 30, doctor: 7, facility: 7, admin: 1}, trustProxy: false
 };
 
 let migrated = false;
-// With {whatsapp: true}, patients are reached by WhatsApp (captured in `whatsapp.sent`) where Meta delivers.
-export async function setup({whatsapp: withWhatsApp = false} = {}) {
+// With {whatsapp: true} or {telegram: true}, patients are reached on those channels (captured in `whatsapp.sent`, `telegram.sent`).
+export async function setup({whatsapp: withWhatsApp = false, telegram: withTelegram = false} = {}) {
     if (!migrated) {
         await pool.query('DROP SCHEMA public CASCADE; CREATE SCHEMA public');
         await migrate(pool);
@@ -30,9 +31,10 @@ export async function setup({whatsapp: withWhatsApp = false} = {}) {
     await pool.query('TRUNCATE users, otp_codes, sessions, login_failures, audit_log RESTART IDENTITY CASCADE');
     const sms = createSms(config), mail = createMail(config);
     const whatsapp = withWhatsApp ? createWhatsApp({whatsapp: {provider: 'test'}}) : null;
-    const app = await buildApp({config, pool, sms, whatsapp, mail, logger: false});
+    const telegram = withTelegram ? createTelegramGateway({telegram: {provider: 'test'}}) : null;
+    const app = await buildApp({config, pool, sms, whatsapp, telegram, mail, logger: false});
     const post = (url, payload, headers = {}) => app.inject({method: 'POST', url, payload, headers: {origin, ...headers}});
-    return {app, sms, whatsapp, mail, post};
+    return {app, sms, whatsapp, telegram, mail, post};
 }
 
 export async function teardown(app) {

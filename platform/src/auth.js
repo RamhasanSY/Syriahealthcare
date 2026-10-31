@@ -52,7 +52,7 @@ export function requireRole(...roles) {
 const ipLimit = max => ({rateLimit: {max, timeWindow: '15 minutes'}});
 
 export default async function authRoutes(app) {
-    // Patients: request a sign-in code, by WhatsApp where possible, otherwise by SMS.
+    // Patients: request a sign-in code, by WhatsApp or Telegram where possible, otherwise by SMS.
     app.post('/api/auth/otp/request', {
         config: ipLimit(30),
         schema: {body: {type: 'object', required: ['phone'], properties: {

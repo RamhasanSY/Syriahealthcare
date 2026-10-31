@@ -32,6 +32,8 @@ export const config = {
             : env.WHATSAPP_BLOCKED_PREFIXES.split(',').map(p => p.trim()).filter(Boolean),
         templates: TEMPLATES
     },
+    // Telegram Gateway for sign-in codes (core.telegram.org/gateway); empty token = not used.
+    telegram: {provider: env.TELEGRAM_GATEWAY_TOKEN ? 'gateway' : '', token: env.TELEGRAM_GATEWAY_TOKEN},
     // Emails (password reset, review decisions). "console" prints them to the server log (development only); "smtp" sends them,
     // e.g. through STRATO: SMTP_HOST=smtp.strato.de, SMTP_PORT=465. Port 465 uses TLS from the start; other ports must offer STARTTLS.
     mailProvider: env.MAIL_PROVIDER || (production ? 'smtp' : 'console'),

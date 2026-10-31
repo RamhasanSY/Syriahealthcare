@@ -1,4 +1,4 @@
-// Patient sign-in: phone number, then a code by WhatsApp or SMS (plus name and consent the first time).
+// Patient sign-in: phone number, then a code by WhatsApp, Telegram or SMS (plus name and consent the first time).
 document.addEventListener('DOMContentLoaded', () => {
     const {$, tr, api, showError, busy} = Shc;
     let phone = '', newPatient = false, sentInfo = null;
@@ -7,10 +7,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!sentInfo) return;
         // Keep "+49…" in left-to-right order inside Arabic text.
         const number = `\u2066${sentInfo.phone}\u2069`;
-        $('codeInfo').textContent = sentInfo.channel === 'whatsapp'
-            ? tr(`We sent a code by WhatsApp to ${number}. It is valid for ${sentInfo.minutes} minutes.`, `أرسلنا رمزاً عبر واتساب إلى ${number}، صالحاً لمدة ${sentInfo.minutes} دقائق.`)
-            : tr(`We sent a code by SMS to ${number}. It is valid for ${sentInfo.minutes} minutes.`, `أرسلنا رمزاً برسالة SMS إلى ${number}، صالحاً لمدة ${sentInfo.minutes} دقائق.`);
-        $('smsInstead').hidden = sentInfo.channel !== 'whatsapp';
+        const via = {whatsapp: ['by WhatsApp', 'عبر واتساب'], telegram: ['by Telegram', 'عبر تيليغرام'], sms: ['by SMS', 'برسالة SMS']}[sentInfo.channel];
+        $('codeInfo').textContent = tr(`We sent a code ${via[0]} to ${number}. It is valid for ${sentInfo.minutes} minutes.`,
+            `أرسلنا رمزاً ${via[1]} إلى ${number}، صالحاً لمدة ${sentInfo.minutes} دقائق.`);
+        $('smsInstead').hidden = sentInfo.channel === 'sms';
         if (sentInfo.previewCode) $('codeInfo').textContent += tr(` (Test mode, no SMS sent: your code is ${sentInfo.previewCode}.)`, ` (وضع التجربة، لم تُرسل رسالة: رمزك هو ${sentInfo.previewCode}.)`);
     };
     document.addEventListener('shc:language', renderInfo);
