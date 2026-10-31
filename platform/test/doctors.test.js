@@ -4,10 +4,10 @@ import {readdir, readFile} from 'node:fs/promises';
 import path from 'node:path';
 import {config, origin, pool, setup, signIn, teardown} from './helpers.js';
 
-let app, post;
+let app, mail, post;
 beforeEach(async () => {
     await app?.close();
-    ({app, post} = await setup());
+    ({app, mail, post} = await setup());
 });
 after(() => teardown(app));
 
@@ -146,6 +146,24 @@ describe('admin review', () => {
         assert.equal(mine.json().profile.review_note, 'The licence photo is unreadable.');
         await upload(cookie, 'licence', PNG, 'better.png', 'image/png');
         assert.equal((await post('/api/doctor/submit', {}, {cookie})).json().profile.status, 'pending');
+    });
+
+    test('admins get an email for each submission; the doctor for each decision, with the reason', async () => {
+        const admin = await signIn(post, 'admin', 'admin@example.org', 'Review Admin');
+        mail.sent.length = 0;
+        const {cookie, id} = await submittedDoctor();
+        const toAdmin = mail.sent.find(m => m.to === 'admin@example.org');
+        assert.match(toAdmin.text, /Dr\. Rana Saleh/);
+        assert.match(toAdmin.text, /\/admin/);
+        await post(`/api/admin/doctors/${id}/reject`, {note: 'The licence photo is unreadable.'}, {cookie: admin});
+        const rejected = mail.sent.at(-1);
+        assert.equal(rejected.to, 'dr@example.org');
+        assert.match(rejected.text, /The licence photo is unreadable\./);
+        assert.match(rejected.text, /\/doctor/);
+        assert.equal((await post('/api/doctor/submit', {}, {cookie})).statusCode, 200);
+        await post(`/api/admin/doctors/${id}/approve`, {}, {cookie: admin});
+        assert.match(mail.sent.at(-1).subject, /اعتماد|approved/);
+        assert.ok(mail.sent.every(m => !/SY-12345/.test(m.text)), 'licence numbers are never emailed');
     });
 
     test('editing an approved profile sends it back for review', async () => {

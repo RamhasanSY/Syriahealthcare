@@ -22,6 +22,11 @@ export const config = {
     // "console" prints codes to the server log (development only); "http" posts to an SMS gateway.
     smsProvider: env.SMS_PROVIDER || (production ? 'http' : 'console'),
     smsHttp: {url: env.SMS_HTTP_URL, token: env.SMS_HTTP_TOKEN, sender: env.SMS_SENDER || 'SyriaHealth'},
+    // Emails (password reset, review decisions). "console" prints them to the server log (development only); "smtp" sends them,
+    // e.g. through STRATO: SMTP_HOST=smtp.strato.de, SMTP_PORT=465. Port 465 uses TLS from the start; other ports must offer STARTTLS.
+    mailProvider: env.MAIL_PROVIDER || (production ? 'smtp' : 'console'),
+    smtp: {host: env.SMTP_HOST, port: Number(env.SMTP_PORT || 465), user: env.SMTP_USER, password: env.SMTP_PASSWORD},
+    mailFrom: env.MAIL_FROM || (production ? undefined : 'Syria Healthcare <noreply@localhost>'),
     // Licence documents: encrypted with DOCUMENT_KEY (64 hex characters) and stored in DOCUMENT_DIR.
     documentKey: required('DOCUMENT_KEY', '0'.repeat(64)),
     documentDir: env.DOCUMENT_DIR || fileURLToPath(new URL('../storage/documents/', import.meta.url)),
@@ -32,3 +37,5 @@ export const config = {
 if (production && config.otpSecret.length < 32) throw new Error('OTP_SECRET must be at least 32 characters');
 if (production && /^0+$/.test(config.documentKey)) throw new Error('DOCUMENT_KEY must be a random key in production');
 if (production && config.smsProvider === 'console') throw new Error('SMS_PROVIDER=console is not allowed in production');
+if (production && config.mailProvider === 'console') throw new Error('MAIL_PROVIDER=console is not allowed in production');
+if (production && !config.mailFrom) throw new Error('Missing required setting MAIL_FROM');

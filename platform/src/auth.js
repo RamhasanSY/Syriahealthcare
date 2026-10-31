@@ -1,10 +1,13 @@
 import {facilityKinds} from './catalog.js';
 import {audit, transaction} from './db.js';
+import {passwordChangedEmail, resetEmail, sendEmail, welcomeEmail} from './notify.js';
 import {dummyPasswordHash, hashPassword, newOtp, newToken, normalizeEmail, normalizePhone, otpHash, passwordProblem, sameHash, sha256, verifyPassword} from './security.js';
 
 export const SESSION_COOKIE = 'shc_session';
 const OTP_MINUTES = 5, OTP_PER_PHONE = 3, OTP_WINDOW_MINUTES = 15, OTP_MAX_ATTEMPTS = 5;
 const LOGIN_MAX_FAILURES = 5, LOGIN_WINDOW_MINUTES = 15;
+const RESET_MINUTES = 30, RESET_PER_HOUR = 3;
+const STAFF = "role IN ('doctor', 'facility', 'admin')";
 
 const publicUser = u => ({id: u.id, role: u.role, name: u.name, phone: u.phone, email: u.email, language: u.language});
 
@@ -148,6 +151,7 @@ export default async function authRoutes(app) {
             return created;
         });
         await startSession(app, request, reply, user);
+        await sendEmail(app, user.email, welcomeEmail(user, app.config.appOrigin));
         reply.code(201);
         return {user: publicUser(user)};
     }
@@ -170,7 +174,7 @@ export default async function authRoutes(app) {
         const {rows: [failures]} = await app.pg.query(
             'SELECT count(*)::int AS n FROM login_failures WHERE email = $1 AND created_at > now() - make_interval(mins => $2)', [email, LOGIN_WINDOW_MINUTES]);
         if (failures.n >= LOGIN_MAX_FAILURES) throw new HttpError(429, 'locked', 'Too many failed attempts. Please wait 15 minutes and try again.');
-        const {rows: [user]} = await app.pg.query("SELECT * FROM users WHERE email = $1 AND role IN ('doctor', 'facility', 'admin')", [email]);
+        const {rows: [user]} = await app.pg.query(`SELECT * FROM users WHERE email = $1 AND ${STAFF}`, [email]);
         const valid = await verifyPassword(request.body.password, user?.password_hash || dummyPasswordHash);
         if (!user || !valid || user.disabled_at) {
             await app.pg.query('INSERT INTO login_failures (email, ip) VALUES ($1, $2)', [email, request.ip]);
@@ -178,6 +182,65 @@ export default async function authRoutes(app) {
         }
         await app.pg.query('DELETE FROM login_failures WHERE email = $1', [email]);
         await startSession(app, request, reply, user);
+        return {user: publicUser(user)};
+    });
+
+    // Doctors, facilities and admins: "forgot password". The answer is the same whether or not the email has an
+    // account, so nobody can find out who is registered. The link goes only to the account's own email address.
+    app.post('/api/auth/password/forgot', {
+        config: ipLimit(20),
+        schema: {body: {type: 'object', required: ['email'], properties: {email: {type: 'string', maxLength: 254}}}}
+    }, async (request, reply) => {
+        const email = normalizeEmail(request.body.email);
+        if (!email) throw new HttpError(400, 'invalid_email', 'Enter a valid email address.');
+        const {rows: [user]} = await app.pg.query(`SELECT * FROM users WHERE email = $1 AND ${STAFF} AND disabled_at IS NULL`, [email]);
+        if (user) {
+            const {rows: [recent]} = await app.pg.query(
+                "SELECT count(*)::int AS n FROM password_resets WHERE user_id = $1 AND created_at > now() - interval '1 hour'", [user.id]);
+            if (recent.n < RESET_PER_HOUR) {
+                const token = newToken();
+                await transaction(app.pg, async db => {
+                    // Only the newest link works.
+                    await db.query('UPDATE password_resets SET used_at = now() WHERE user_id = $1 AND used_at IS NULL', [user.id]);
+                    await db.query('INSERT INTO password_resets (token_hash, user_id, expires_at, ip) VALUES ($1, $2, now() + make_interval(mins => $3), $4)',
+                        [sha256(token), user.id, RESET_MINUTES, request.ip]);
+                    await audit(db, {actorId: user.id, action: 'password.reset_requested', targetId: user.id, ip: request.ip});
+                });
+                // Not awaited: waiting for the mail server would reveal that the account exists.
+                // The token is in the #fragment, which browsers never send to servers or in Referer headers.
+                void sendEmail(app, user.email, resetEmail(user, `${app.config.appOrigin}/reset#${token}`, RESET_MINUTES));
+            }
+        }
+        reply.code(202);
+        return {sent: true};
+    });
+
+    // Sets the new password from the emailed link, signs out every device and signs in here.
+    app.post('/api/auth/password/reset', {
+        config: ipLimit(30),
+        schema: {body: {type: 'object', required: ['token', 'password'], properties: {
+            token: {type: 'string', pattern: '^[A-Za-z0-9_-]{43}$'}, password: {type: 'string', maxLength: 200}
+        }}}
+    }, async (request, reply) => {
+        const problem = passwordProblem(request.body.password);
+        if (problem) throw new HttpError(400, 'weak_password', problem);
+        const hash = await hashPassword(request.body.password);
+        const user = await transaction(app.pg, async db => {
+            // Single use: a second request with the same link finds it already used.
+            const {rows: [account]} = await db.query(
+                `UPDATE password_resets r SET used_at = now() FROM users u
+                 WHERE r.token_hash = $1 AND r.used_at IS NULL AND r.expires_at > now() AND u.id = r.user_id AND u.disabled_at IS NULL AND u.${STAFF}
+                 RETURNING u.*`, [sha256(request.body.token)]);
+            if (!account) throw new HttpError(400, 'reset_invalid', 'This link is invalid or has expired. Please request a new one.');
+            await db.query('UPDATE users SET password_hash = $2 WHERE id = $1', [account.id, hash]);
+            await db.query('UPDATE password_resets SET used_at = now() WHERE user_id = $1 AND used_at IS NULL', [account.id]);
+            await db.query('DELETE FROM sessions WHERE user_id = $1', [account.id]);
+            await db.query('DELETE FROM login_failures WHERE email = $1', [account.email]);
+            await audit(db, {actorId: account.id, action: 'password.reset', targetId: account.id, ip: request.ip});
+            return account;
+        });
+        await startSession(app, request, reply, user);
+        await sendEmail(app, user.email, passwordChangedEmail(user, app.config.appOrigin));
         return {user: publicUser(user)};
     });
 

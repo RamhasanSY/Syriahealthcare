@@ -163,3 +163,5 @@ fieldset.services legend{font-weight:600;margin-bottom:8px;padding:0}
 .install-app{margin-top:28px;color:var(--muted)}
 .install-app[hidden],.install-app [hidden]{display:none}
 .install-app p{margin:0}
+/* "Forgot your password?" under the staff sign-in */
+.forgot-link{margin:14px 0 0;text-align:center;font-size:15px}

@@ -2,10 +2,10 @@ import {after, beforeEach, describe, test} from 'node:test';
 import assert from 'node:assert/strict';
 import {cookieOf, origin, pool, setup, signIn, teardown} from './helpers.js';
 
-let app, post;
+let app, mail, post;
 beforeEach(async () => {
     await app?.close();
-    ({app, post} = await setup());
+    ({app, mail, post} = await setup());
 });
 after(() => teardown(app));
 
@@ -129,6 +129,21 @@ describe('facility review and public list', () => {
         assert.equal((await app.inject({url: '/api/facilities?kind=hospital'})).json().facilities.length, 0);
         assert.equal((await app.inject({url: '/api/facilities?kind=lab'})).json().facilities.length, 1);
         assert.equal((await upload(lab.cookie, 'other')).json().error, 'documents_locked');
+    });
+
+    test('admins get an email naming the facility; the facility gets the decision', async () => {
+        const admin = await signIn(post, 'admin', 'admin@example.org');
+        mail.sent.length = 0;
+        const lab = await submittedFacility();
+        const toAdmin = mail.sent.find(m => m.to === 'admin@example.org');
+        assert.match(toAdmin.subject, /Medical laboratory/);
+        assert.match(toAdmin.text, /Al Shifa Laboratory/);
+        await post(`/api/admin/facilities/${lab.id}/approve`, {}, {cookie: admin});
+        const approved = mail.sent.at(-1);
+        assert.equal(approved.to, 'lab@example.org');
+        assert.match(approved.text, /syriahealthcare\.com/);
+        await post(`/api/admin/facilities/${lab.id}/suspend`, {note: 'Licence expired in September.'}, {cookie: admin});
+        assert.match(mail.sent.at(-1).text, /Licence expired in September\./);
     });
 
     test('changes after approval go back to review; reject and suspend need a note', async () => {
