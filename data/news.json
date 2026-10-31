@@ -1,8 +1,40 @@
 {
-  "updated": "2026-10-31T12:34:24+00:00",
-  "checked_at": "2026-10-31T12:34:24+00:00",
+  "updated": "2026-10-31T21:38:22+00:00",
+  "checked_at": "2026-10-31T21:38:22+00:00",
   "status": "partial",
   "items": [
+    {
+      "title": "وزير الصحة يبحث مع نظيره التركي تعزيز التعاون ومتابعة المشاريع الطبية",
+      "title_ar": "وزير الصحة يبحث مع نظيره التركي تعزيز التعاون ومتابعة المشاريع الطبية",
+      "language": "ar",
+      "url": "https://sana.sy/health/2622603/",
+      "published": "2026-10-31",
+      "source": "Syrian Arab News Agency (SANA) — Health",
+      "source_id": "sana-health",
+      "verification_version": 2,
+      "verified_at": "2026-10-31T21:37:03+00:00",
+      "topic": "hospitals",
+      "evidence": {
+        "geography": "حلب",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "بعد إعادة تأهيلها.. وضع 22 مركزاً صحياً في حماة بالخدمة ‏",
+      "title_ar": "بعد إعادة تأهيلها.. وضع 22 مركزاً صحياً في حماة بالخدمة ‏",
+      "language": "ar",
+      "url": "https://sana.sy/health/2622332/",
+      "published": "2026-10-31",
+      "source": "Syrian Arab News Agency (SANA) — Health",
+      "source_id": "sana-health",
+      "verification_version": 2,
+      "verified_at": "2026-10-31T21:37:03+00:00",
+      "topic": "public-health",
+      "evidence": {
+        "geography": "حماة",
+        "type": "publisher-headline"
+      }
+    },
     {
       "title": "حملة للتبرع بالدم في مشفى دوما دعماً لمخزون بنك الدم واحتياجات المرضى",
       "title_ar": "حملة للتبرع بالدم في مشفى دوما دعماً لمخزون بنك الدم واحتياجات المرضى",
@@ -12,7 +44,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-31T12:34:06+00:00",
+      "verified_at": "2026-10-31T21:37:03+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "دمشق",
@@ -28,10 +60,26 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-10-31T12:34:06+00:00",
+      "verified_at": "2026-10-31T21:37:03+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "سوريا",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "منسق القسم الطبي",
+      "title_ar": "منسق القسم الطبي",
+      "language": "ar",
+      "url": "https://sarc.sy/59378-2/",
+      "published": "2026-10-29",
+      "source": "Syrian Arab Red Crescent",
+      "source_id": "sarc-news",
+      "verification_version": 2,
+      "verified_at": "2026-10-31T21:37:04+00:00",
+      "topic": "public-health",
+      "evidence": {
+        "geography": "دمشق",
         "type": "publisher-headline"
       }
     },
@@ -62,22 +110,6 @@
       "verification_version": 2,
       "verified_at": "2026-10-31T12:34:06+00:00",
       "topic": "hospitals",
-      "evidence": {
-        "geography": "دمشق",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "منسق القسم الطبي",
-      "title_ar": "منسق القسم الطبي",
-      "language": "ar",
-      "url": "https://sarc.sy/59378-2/",
-      "published": "2026-10-29",
-      "source": "Syrian Arab Red Crescent",
-      "source_id": "sarc-news",
-      "verification_version": 2,
-      "verified_at": "2026-10-31T12:34:07+00:00",
-      "topic": "public-health",
       "evidence": {
         "geography": "دمشق",
         "type": "publisher-headline"
@@ -908,7 +940,7 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-10-31T12:34:05+00:00",
+      "verified_at": "2026-10-31T21:37:02+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "Syria",
@@ -925,38 +957,6 @@
       "source_id": "sy-moh-news",
       "verification_version": 2,
       "verified_at": "2026-10-24T20:52:01+00:00",
-      "topic": "public-health",
-      "evidence": {
-        "geography": "سوريا",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "3 عمليات لتبديل مفاصل الورك والركبة في مشفى دير الزور الوطني",
-      "title_ar": "3 عمليات لتبديل مفاصل الورك والركبة في مشفى دير الزور الوطني",
-      "language": "ar",
-      "url": "https://moh.gov.sy/news/3-%D8%B9%D9%85%D9%84%D9%8A%D8%A7%D8%AA-%D9%84%D8%AA%D8%A8%D8%AF%D9%8A%D9%84-%D9%85%D9%81%D8%A7%D8%B5%D9%84-%D8%A7%D9%84%D9%88%D8%B1%D9%83-%D9%88%D8%A7%D9%84%D8%B1%D9%83%D8%A8%D8%A9-%D9%81%D9%8A-%D9%85%D8%B4%D9%81%D9%89-%D8%AF%D9%8A%D8%B1-%D8%A7%D9%84%D8%B2%D9%88%D8%B1-%D8%A7%D9%84%D9%88%D8%B7%D9%86%D9%8A",
-      "published": "2026-10-15",
-      "source": "Syrian Ministry of Health",
-      "source_id": "sy-moh-news",
-      "verification_version": 2,
-      "verified_at": "2026-10-21T21:44:24+00:00",
-      "topic": "hospitals",
-      "evidence": {
-        "geography": "دير الزور",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "وزارة الصحة تشارك بفاعلية في الدورة الـ73 للجنة الإقليمية لمنظمة الصحة العالمية لشرق المتوسط",
-      "title_ar": "وزارة الصحة تشارك بفاعلية في الدورة الـ73 للجنة الإقليمية لمنظمة الصحة العالمية لشرق المتوسط",
-      "language": "ar",
-      "url": "https://moh.gov.sy/news/%D9%88%D8%B2%D8%A7%D8%B1%D8%A9-%D8%A7%D9%84%D8%B5%D8%AD%D8%A9-%D8%AA%D8%B4%D8%A7%D8%B1%D9%83-%D8%A8%D9%81%D8%A7%D8%B9%D9%84%D9%8A%D8%A9-%D9%81%D9%8A-%D8%A7%D9%84%D8%AF%D9%88%D8%B1%D8%A9-%D8%A7%D9%84%D9%8073-%D9%84%D9%84%D8%AC%D9%86%D8%A9-%D8%A7%D9%84%D8%A5%D9%82%D9%84%D9%8A%D9%85%D9%8A%D8%A9-%D9%84%D9%85%D9%86%D8%B8%D9%85%D8%A9-%D8%A7%D9%84%D8%B5%D8%AD%D8%A9-%D8%A7%D9%84%D8%B9%D8%A7%D9%84%D9%85%D9%8A%D8%A9-%D9%84%D8%B4%D8%B1%D9%82-%D8%A7%D9%84%D9%85%D8%AA%D9%88%D8%B3%D8%B7",
-      "published": "2026-10-15",
-      "source": "Syrian Ministry of Health",
-      "source_id": "sy-moh-news",
-      "verification_version": 2,
-      "verified_at": "2026-10-21T21:44:24+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "سوريا",
