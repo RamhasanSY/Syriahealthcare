@@ -1,4 +1,5 @@
 import {fileURLToPath} from 'node:url';
+import {DEFAULT_BLOCKED_PREFIXES, TEMPLATES} from './whatsapp.js';
 
 // All settings come from environment variables (see .env.example). Missing secrets stop the server in production.
 const env = process.env;
@@ -22,6 +23,17 @@ export const config = {
     // "console" prints codes to the server log (development only); "http" posts to an SMS gateway.
     smsProvider: env.SMS_PROVIDER || (production ? 'http' : 'console'),
     smsHttp: {url: env.SMS_HTTP_URL, token: env.SMS_HTTP_TOKEN, sender: env.SMS_SENDER || 'SyriaHealth'},
+    // WhatsApp for patients (sign-in codes, appointment updates) through Meta's WhatsApp Cloud API; empty = SMS only.
+    // Numbers starting with a blocked prefix always get SMS, because Meta does not deliver there (see src/whatsapp.js).
+    whatsapp: {
+        provider: env.WHATSAPP_PROVIDER || '', phoneNumberId: env.WHATSAPP_PHONE_NUMBER_ID, token: env.WHATSAPP_TOKEN,
+        apiVersion: env.WHATSAPP_API_VERSION || 'v24.0',
+        blockedPrefixes: env.WHATSAPP_BLOCKED_PREFIXES === undefined ? DEFAULT_BLOCKED_PREFIXES
+            : env.WHATSAPP_BLOCKED_PREFIXES.split(',').map(p => p.trim()).filter(Boolean),
+        templates: TEMPLATES
+    },
+    // Telegram Gateway for sign-in codes (core.telegram.org/gateway); empty token = not used.
+    telegram: {provider: env.TELEGRAM_GATEWAY_TOKEN ? 'gateway' : '', token: env.TELEGRAM_GATEWAY_TOKEN},
     // Emails (password reset, review decisions). "console" prints them to the server log (development only); "smtp" sends them,
     // e.g. through STRATO: SMTP_HOST=smtp.strato.de, SMTP_PORT=465. Port 465 uses TLS from the start; other ports must offer STARTTLS.
     mailProvider: env.MAIL_PROVIDER || (production ? 'smtp' : 'console'),

@@ -1,11 +1,16 @@
-// Patient sign-in: phone number, then SMS code (plus name and consent the first time).
+// Patient sign-in: phone number, then a code by WhatsApp, Telegram or SMS (plus name and consent the first time).
 document.addEventListener('DOMContentLoaded', () => {
     const {$, tr, api, showError, busy} = Shc;
     let phone = '', newPatient = false, sentInfo = null;
 
     const renderInfo = () => {
         if (!sentInfo) return;
-        $('codeInfo').textContent = tr(`We sent a code to ${sentInfo.phone}. It is valid for ${sentInfo.minutes} minutes.`, `أرسلنا رمزاً إلى ${sentInfo.phone}، صالحاً لمدة ${sentInfo.minutes} دقائق.`);
+        // Keep "+49…" in left-to-right order inside Arabic text.
+        const number = `\u2066${sentInfo.phone}\u2069`;
+        const via = {whatsapp: ['by WhatsApp', 'عبر واتساب'], telegram: ['by Telegram', 'عبر تيليغرام'], sms: ['by SMS', 'برسالة SMS']}[sentInfo.channel];
+        $('codeInfo').textContent = tr(`We sent a code ${via[0]} to ${number}. It is valid for ${sentInfo.minutes} minutes.`,
+            `أرسلنا رمزاً ${via[1]} إلى ${number}، صالحاً لمدة ${sentInfo.minutes} دقائق.`);
+        $('smsInstead').hidden = sentInfo.channel === 'sms';
         if (sentInfo.previewCode) $('codeInfo').textContent += tr(` (Test mode, no SMS sent: your code is ${sentInfo.previewCode}.)`, ` (وضع التجربة، لم تُرسل رسالة: رمزك هو ${sentInfo.previewCode}.)`);
     };
     document.addEventListener('shc:language', renderInfo);
@@ -14,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
         event.preventDefault();
         $('phoneError').hidden = true;
         busy($('sendCode'), true);
-        const res = await api('/api/auth/otp/request', {phone: $('phone').value});
+        const res = await api('/api/auth/otp/request', {phone: $('phone').value, language: Shc.lang});
         busy($('sendCode'), false);
         if (!res.ok) {
             $('phone').setAttribute('aria-invalid', 'true');
@@ -22,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         $('phone').removeAttribute('aria-invalid');
         phone = res.data.phone;
-        sentInfo = {phone, minutes: res.data.expiresInMinutes, previewCode: res.data.previewCode};
+        sentInfo = {phone, channel: res.data.channel, minutes: res.data.expiresInMinutes, previewCode: res.data.previewCode};
         renderInfo();
         $('phoneForm').hidden = true;
         $('codeForm').hidden = false;
@@ -50,6 +55,19 @@ document.addEventListener('DOMContentLoaded', () => {
             if (firstTime) return $('name').focus();
         }
         showError('codeError', res.data);
+    });
+
+    // No WhatsApp on this number, or the message did not arrive: send a new code by SMS.
+    $('smsInstead').addEventListener('click', async () => {
+        $('codeError').hidden = true;
+        busy($('smsInstead'), true);
+        const res = await api('/api/auth/otp/request', {phone, language: Shc.lang, channel: 'sms'});
+        busy($('smsInstead'), false);
+        if (!res.ok) return showError('codeError', res.data);
+        sentInfo = {phone, channel: res.data.channel, minutes: res.data.expiresInMinutes, previewCode: res.data.previewCode};
+        renderInfo();
+        $('code').value = '';
+        $('code').focus();
     });
 
     $('changeNumber').addEventListener('click', () => {

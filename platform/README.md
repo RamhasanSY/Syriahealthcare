@@ -8,7 +8,7 @@ Accounts and (in later steps) appointment booking for patients and doctors. It r
 
 | Who | How they sign in | Rules |
 |---|---|---|
-| Patient | Mobile number and a 6-digit SMS code | Max 3 codes per number per 15 min; a code is valid for 5 minutes, works once, and allows 5 tries. New patients give their name and accept the privacy policy. |
+| Patient | Mobile number and a 6-digit code by WhatsApp, Telegram or SMS | Max 3 codes per number per 15 min; a code is valid for 5 minutes, works once, and allows 5 tries. New patients give their name and accept the privacy policy. |
 | Doctor | Email and password (at least 10 characters), self-registration | Fills in a profile and uploads a licence; must be approved by an admin before patients can see them. |
 | Lab, imaging centre, hospital or clinic | Email and password, self-registration (same sign-in page as doctors) | Fills in the facility's details and uploads its operating licence; must be approved by an admin before it is listed on syriahealthcare.com. |
 | Admin | Email and password, created on the server only | `npm run create-admin -- you@company.com "Your Name"` |
@@ -61,6 +61,40 @@ At `/dashboard` doctors see three tabs:
 Each card shows the patient's name, phone and reason. Doctors only see their own patients. The page checks for new requests every minute (not while the doctor is typing), and "My account" shows the number of new requests.
 
 When the doctor confirms, declines or cancels, the patient gets a bilingual SMS with the date and time in Syria time, plus the clinic address or the doctor's message. If an SMS fails, it is logged and the doctor's decision still stands.
+
+### WhatsApp for patients
+
+Patients get their sign-in code and the doctor's decisions (confirmed, declined, cancelled) by **WhatsApp**, through Meta's official WhatsApp Cloud API. SMS is the fallback:
+
+- **Syrian numbers (+963) get SMS for now.** Meta does not deliver business messages to WhatsApp users in Syria, Cuba, Iran or North Korea ([Meta: WhatsApp support](https://developers.facebook.com/documentation/business-messaging/whatsapp/support)). As soon as Meta allows Syria, remove `+963` from `WHATSAPP_BLOCKED_PREFIXES` in `.env` and restart; no code change is needed.
+- If WhatsApp refuses a message, it goes out by SMS. On the sign-in screen, "No WhatsApp message? Send the code by SMS" sends a new code by SMS (for numbers without WhatsApp). Both share the limit of three codes per 15 minutes.
+- Unofficial WhatsApp tools (remote-controlling a normal WhatsApp account) are not used: they break WhatsApp's terms, and a blocked number would stop every sign-in.
+
+**Setup at Meta** (once):
+1. Create a Meta Business account at business.facebook.com and verify the business (the operator's company documents).
+2. At developers.facebook.com, create an app of type "Business" and add the product **WhatsApp**.
+3. Add a phone number that is not used in the WhatsApp app (a German number works) and the display name "Syria Healthcare". Add a payment method.
+4. In WhatsApp Manager, create these templates, each in **Arabic (ar)** and **English (en)**:
+
+| Template name | Category | Text (Arabic / English) |
+|---|---|---|
+| `shc_login_code` | Authentication, button "Copy code" | Meta's standard code text, with "expires in 5 minutes" |
+| `shc_appointment_confirmed` | Utility | تم تأكيد موعدك لدى {{1}} في {{2}}. العنوان: {{3}}. / Your appointment with {{1}} on {{2}} is confirmed. Address: {{3}}. |
+| `shc_appointment_declined` | Utility | نعتذر، لم يتمكن {{1}} من قبول طلبك لموعد {{2}}: {{3}}. يمكنك اختيار وقت آخر. / Sorry, {{1}} could not accept your request for {{2}}: {{3}}. You can choose another time. |
+| `shc_appointment_cancelled` | Utility | نعتذر، ألغى {{1}} موعدك في {{2}}: {{3}}. / Sorry, {{1}} cancelled your appointment on {{2}}: {{3}}. |
+
+5. Create a system user with the permission `whatsapp_business_messaging` and a permanent token. Put `WHATSAPP_PROVIDER=cloud`, `WHATSAPP_PHONE_NUMBER_ID` and `WHATSAPP_TOKEN` in `.env`. Keep the token secret: with it, anyone can send messages in the platform's name.
+
+### Telegram for sign-in codes
+
+When WhatsApp cannot reach a number (for now: every Syrian number), the sign-in code goes by **Telegram** through the [Telegram Gateway API](https://core.telegram.org/gateway) before falling back to SMS. The order is: WhatsApp → Telegram → SMS.
+
+- The platform first asks Telegram whether the number has Telegram. If not, that check is free and the code goes by SMS.
+- Telegram charges about $0.01 per code, only for codes delivered before they expire (5 minutes); undelivered codes are refunded automatically.
+- The Telegram Gateway carries verification codes only, so appointment updates still go by WhatsApp or SMS.
+- The platform makes and checks the code itself; Telegram only delivers it.
+
+**Setup:** sign in at gateway.telegram.org with the Telegram account of the operator, add credit, copy the API token from the account settings and put it in `.env` as `TELEGRAM_GATEWAY_TOKEN`. Test once with your own number (free). Telegram's documentation names no country restrictions, but whether codes reach +963 numbers is only certain after that first test.
 
 ### Forgot password and emails
 
