@@ -1,21 +1,21 @@
 {
-  "updated": "2026-11-01T13:27:33+00:00",
-  "checked_at": "2026-11-01T13:27:33+00:00",
+  "updated": "2026-11-01T22:04:00+00:00",
+  "checked_at": "2026-11-01T22:04:00+00:00",
   "status": "partial",
   "items": [
     {
-      "title": "ختام حملة الكشف المبكّر عن سرطان الثدي في إدلب",
-      "title_ar": "ختام حملة الكشف المبكّر عن سرطان الثدي في إدلب",
+      "title": "مشفى الحراك الوطني في درعا يستقبل أكثر من 6 آلاف مراجع شهرياً ‏",
+      "title_ar": "مشفى الحراك الوطني في درعا يستقبل أكثر من 6 آلاف مراجع شهرياً ‏",
       "language": "ar",
-      "url": "https://moh.gov.sy/news/%D8%AE%D8%AA%D8%A7%D9%85-%D8%AD%D9%85%D9%84%D8%A9-%D8%A7%D9%84%D9%83%D8%B4%D9%81-%D8%A7%D9%84%D9%85%D8%A8%D9%83%D9%91%D8%B1-%D8%B9%D9%86-%D8%B3%D8%B1%D8%B7%D8%A7%D9%86-%D8%A7%D9%84%D8%AB%D8%AF%D9%8A-%D9%81%D9%8A-%D8%A5%D8%AF%D9%84%D8%A8",
+      "url": "https://sana.sy/governorates/daraa/2623368/",
       "published": "2026-11-01",
-      "source": "Syrian Ministry of Health",
-      "source_id": "sy-moh-news",
+      "source": "Syrian Arab News Agency (SANA) — Health",
+      "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-11-01T13:27:15+00:00",
-      "topic": "public-health",
+      "verified_at": "2026-11-01T22:03:41+00:00",
+      "topic": "hospitals",
       "evidence": {
-        "geography": "إدلب",
+        "geography": "درعا",
         "type": "publisher-headline"
       }
     },
@@ -28,7 +28,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-11-01T13:27:16+00:00",
+      "verified_at": "2026-11-01T22:03:41+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "حمص",
@@ -36,18 +36,18 @@
       }
     },
     {
-      "title": "وزير الصحة يبحث مع نظيره التركي تسريع تنفيذ مشروع مستشفى الأورام في حلب وتعزيز التعاون الصحي",
-      "title_ar": "وزير الصحة يبحث مع نظيره التركي تسريع تنفيذ مشروع مستشفى الأورام في حلب وتعزيز التعاون الصحي",
+      "title": "ختام حملة الكشف المبكّر عن سرطان الثدي في إدلب",
+      "title_ar": "ختام حملة الكشف المبكّر عن سرطان الثدي في إدلب",
       "language": "ar",
-      "url": "https://moh.gov.sy/news/%D9%88%D8%B2%D9%8A%D8%B1-%D8%A7%D9%84%D8%B5%D8%AD%D8%A9-%D9%8A%D8%A8%D8%AD%D8%AB-%D9%85%D8%B9-%D9%86%D8%B8%D9%8A%D8%B1%D9%87-%D8%A7%D9%84%D8%AA%D8%B1%D9%83%D9%8A-%D8%AA%D8%B3%D8%B1%D9%8A%D8%B9-%D8%AA%D9%86%D9%81%D9%8A%D8%B0-%D9%85%D8%B4%D8%B1%D9%88%D8%B9-%D9%85%D8%B3%D8%AA%D8%B4%D9%81%D9%89-%D8%A7%D9%84%D8%A3%D9%88%D8%B1%D8%A7%D9%85-%D9%81%D9%8A-%D8%AD%D9%84%D8%A8-%D9%88%D8%AA%D8%B9%D8%B2%D9%8A%D8%B2-%D8%A7%D9%84%D8%AA%D8%B9%D8%A7%D9%88%D9%86-%D8%A7%D9%84%D8%B5%D8%AD%D9%8A",
-      "published": "2026-10-31",
+      "url": "https://moh.gov.sy/news/%D8%AE%D8%AA%D8%A7%D9%85-%D8%AD%D9%85%D9%84%D8%A9-%D8%A7%D9%84%D9%83%D8%B4%D9%81-%D8%A7%D9%84%D9%85%D8%A8%D9%83%D9%91%D8%B1-%D8%B9%D9%86-%D8%B3%D8%B1%D8%B7%D8%A7%D9%86-%D8%A7%D9%84%D8%AB%D8%AF%D9%8A-%D9%81%D9%8A-%D8%A5%D8%AF%D9%84%D8%A8",
+      "published": "2026-11-01",
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-11-01T13:27:15+00:00",
-      "topic": "hospitals",
+      "verified_at": "2026-11-01T22:03:41+00:00",
+      "topic": "public-health",
       "evidence": {
-        "geography": "حلب",
+        "geography": "إدلب",
         "type": "publisher-headline"
       }
     },
@@ -60,7 +60,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-11-01T13:27:16+00:00",
+      "verified_at": "2026-11-01T22:03:41+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "دير الزور",
@@ -76,7 +76,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-11-01T13:27:16+00:00",
+      "verified_at": "2026-11-01T22:03:41+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "حلب",
@@ -92,10 +92,26 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-11-01T13:27:16+00:00",
+      "verified_at": "2026-11-01T22:03:41+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "حماة",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "وزير الصحة يبحث مع نظيره التركي تسريع تنفيذ مشروع مستشفى الأورام في حلب وتعزيز التعاون الصحي",
+      "title_ar": "وزير الصحة يبحث مع نظيره التركي تسريع تنفيذ مشروع مستشفى الأورام في حلب وتعزيز التعاون الصحي",
+      "language": "ar",
+      "url": "https://moh.gov.sy/news/%D9%88%D8%B2%D9%8A%D8%B1-%D8%A7%D9%84%D8%B5%D8%AD%D8%A9-%D9%8A%D8%A8%D8%AD%D8%AB-%D9%85%D8%B9-%D9%86%D8%B8%D9%8A%D8%B1%D9%87-%D8%A7%D9%84%D8%AA%D8%B1%D9%83%D9%8A-%D8%AA%D8%B3%D8%B1%D9%8A%D8%B9-%D8%AA%D9%86%D9%81%D9%8A%D8%B0-%D9%85%D8%B4%D8%B1%D9%88%D8%B9-%D9%85%D8%B3%D8%AA%D8%B4%D9%81%D9%89-%D8%A7%D9%84%D8%A3%D9%88%D8%B1%D8%A7%D9%85-%D9%81%D9%8A-%D8%AD%D9%84%D8%A8-%D9%88%D8%AA%D8%B9%D8%B2%D9%8A%D8%B2-%D8%A7%D9%84%D8%AA%D8%B9%D8%A7%D9%88%D9%86-%D8%A7%D9%84%D8%B5%D8%AD%D9%8A",
+      "published": "2026-10-31",
+      "source": "Syrian Ministry of Health",
+      "source_id": "sy-moh-news",
+      "verification_version": 2,
+      "verified_at": "2026-11-01T22:03:41+00:00",
+      "topic": "hospitals",
+      "evidence": {
+        "geography": "حلب",
         "type": "publisher-headline"
       }
     },
@@ -108,7 +124,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-11-01T13:27:15+00:00",
+      "verified_at": "2026-11-01T22:03:41+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "إدلب",
@@ -124,7 +140,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-11-01T13:27:15+00:00",
+      "verified_at": "2026-11-01T22:03:41+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "سوريا",
@@ -172,7 +188,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-11-01T13:27:15+00:00",
+      "verified_at": "2026-11-01T22:03:41+00:00",
       "topic": "workforce",
       "evidence": {
         "geography": "سورية",
@@ -188,7 +204,7 @@
       "source": "Syrian Arab Red Crescent",
       "source_id": "sarc-news",
       "verification_version": 2,
-      "verified_at": "2026-11-01T13:27:16+00:00",
+      "verified_at": "2026-11-01T22:03:42+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "دمشق",
@@ -236,7 +252,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-11-01T13:27:15+00:00",
+      "verified_at": "2026-11-01T22:03:41+00:00",
       "topic": "policy",
       "evidence": {
         "geography": "سوريا",
@@ -252,7 +268,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-11-01T13:27:15+00:00",
+      "verified_at": "2026-11-01T22:03:41+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "حماة",
@@ -668,7 +684,7 @@
       "source": "WHO — Syria office",
       "source_id": "who-syria-news",
       "verification_version": 2,
-      "verified_at": "2026-11-01T13:27:17+00:00",
+      "verified_at": "2026-11-01T22:03:42+00:00",
       "topic": "policy",
       "evidence": {
         "geography": "Syria",
@@ -944,22 +960,6 @@
       "topic": "hospitals",
       "evidence": {
         "geography": "دير الزور",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "الصحة تطلق تدريبات الصحة المجتمعية في أربع محافظات",
-      "title_ar": "الصحة تطلق تدريبات الصحة المجتمعية في أربع محافظات",
-      "language": "ar",
-      "url": "https://moh.gov.sy/news/%D8%A7%D9%84%D8%B5%D8%AD%D8%A9-%D8%AA%D8%B7%D9%84%D9%82-%D8%AA%D8%AF%D8%B1%D9%8A%D8%A8%D8%A7%D8%AA-%D8%A7%D9%84%D8%B5%D8%AD%D8%A9-%D8%A7%D9%84%D9%85%D8%AC%D8%AA%D9%85%D8%B9%D9%8A%D8%A9-%D9%81%D9%8A-%D8%A3%D8%B1%D8%A8%D8%B9-%D9%85%D8%AD%D8%A7%D9%81%D8%B8%D8%A7%D8%AA",
-      "published": "2026-10-16",
-      "source": "Syrian Ministry of Health",
-      "source_id": "sy-moh-news",
-      "verification_version": 2,
-      "verified_at": "2026-10-24T20:52:01+00:00",
-      "topic": "workforce",
-      "evidence": {
-        "geography": "حلب",
         "type": "publisher-headline"
       }
     }

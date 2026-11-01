@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-01T13:28:24+00:00",
+  "updated": "2026-11-01T22:04:42+00:00",
   "source": "OpenStreetMap contributors (ODbL)",
   "items": [
     {
@@ -4260,6 +4260,17 @@
       "source_url": "https://www.openstreetmap.org/way/119102090"
     },
     {
+      "name": "Ghada Private Hospital",
+      "name_ar": "مشفى غادة الخاصة",
+      "city": "Rif Dimashq",
+      "city_ar": "ريف دمشق",
+      "address": "الزبداني",
+      "phone": "",
+      "emergency": false,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/610203832"
+    },
+    {
       "name": "Hamdan Hospital",
       "name_ar": "مستشفى حمدان",
       "city": "Rif Dimashq",
@@ -4775,17 +4786,6 @@
       "emergency": false,
       "osm": true,
       "source_url": "https://www.openstreetmap.org/node/10024242259"
-    },
-    {
-      "name": "مشفى غادة الخاصة",
-      "name_ar": "مشفى غادة الخاصة",
-      "city": "Rif Dimashq",
-      "city_ar": "ريف دمشق",
-      "address": "الزبداني",
-      "phone": "",
-      "emergency": false,
-      "osm": true,
-      "source_url": "https://www.openstreetmap.org/node/610203832"
     },
     {
       "name": "مشفى قطنا الوطني",
