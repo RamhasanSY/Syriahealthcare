@@ -1,8 +1,40 @@
 {
-  "updated": "2026-11-03T14:18:10+00:00",
-  "checked_at": "2026-11-03T14:18:10+00:00",
+  "updated": "2026-11-03T23:25:12+00:00",
+  "checked_at": "2026-11-03T23:25:12+00:00",
   "status": "partial",
   "items": [
+    {
+      "title": "الصحة تنظم ورشة عمل لتطوير نظم المعلومات الصحية وتعميم نظام ‏DHIS2‌‏ على ‏المحافظات",
+      "title_ar": "الصحة تنظم ورشة عمل لتطوير نظم المعلومات الصحية وتعميم نظام ‏DHIS2‌‏ على ‏المحافظات",
+      "language": "ar",
+      "url": "https://sana.sy/health/2625164/",
+      "published": "2026-11-03",
+      "source": "Syrian Arab News Agency (SANA) — Health",
+      "source_id": "sana-health",
+      "verification_version": 2,
+      "verified_at": "2026-11-03T23:24:52+00:00",
+      "topic": "policy",
+      "evidence": {
+        "geography": "دمشق",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "رغم التحديات.. مشفى تدمر الوطني يستقبل نحو 500 مراجع يومياً",
+      "title_ar": "رغم التحديات.. مشفى تدمر الوطني يستقبل نحو 500 مراجع يومياً",
+      "language": "ar",
+      "url": "https://sana.sy/health/2625072/",
+      "published": "2026-11-03",
+      "source": "Syrian Arab News Agency (SANA) — Health",
+      "source_id": "sana-health",
+      "verification_version": 2,
+      "verified_at": "2026-11-03T23:24:52+00:00",
+      "topic": "hospitals",
+      "evidence": {
+        "geography": "حمص",
+        "type": "publisher-headline"
+      }
+    },
     {
       "title": "وزيرا المالية والصحة يبحثان مع اليونيسف تعزيز تمويل الخدمات وبرامج صحة الأطفال ‏",
       "title_ar": "وزيرا المالية والصحة يبحثان مع اليونيسف تعزيز تمويل الخدمات وبرامج صحة الأطفال ‏",
@@ -12,10 +44,26 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-11-03T14:17:54+00:00",
+      "verified_at": "2026-11-03T23:24:52+00:00",
       "topic": "workforce",
       "evidence": {
         "geography": "دمشق",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "مستشفى الرقة الوطني يبدأ إجراء عمليات الساد ضمن حملة «بصر» للعيون",
+      "title_ar": "مستشفى الرقة الوطني يبدأ إجراء عمليات الساد ضمن حملة «بصر» للعيون",
+      "language": "ar",
+      "url": "https://moh.gov.sy/news/%D9%85%D8%B3%D8%AA%D8%B4%D9%81%D9%89-%D8%A7%D9%84%D8%B1%D9%82%D8%A9-%D8%A7%D9%84%D9%88%D8%B7%D9%86%D9%8A-%D9%8A%D8%A8%D8%AF%D8%A3-%D8%A5%D8%AC%D8%B1%D8%A7%D8%A1-%D8%B9%D9%85%D9%84%D9%8A%D8%A7%D8%AA-%D8%A7%D9%84%D8%B3%D8%A7%D8%AF-%D8%B6%D9%85%D9%86-%D8%AD%D9%85%D9%84%D8%A9-%C2%AB%D8%A8%D8%B5%D8%B1%C2%BB-%D9%84%D9%84%D8%B9%D9%8A%D9%88%D9%86",
+      "published": "2026-11-02",
+      "source": "Syrian Ministry of Health",
+      "source_id": "sy-moh-news",
+      "verification_version": 2,
+      "verified_at": "2026-11-03T23:24:52+00:00",
+      "topic": "hospitals",
+      "evidence": {
+        "geography": "الرقة",
         "type": "publisher-headline"
       }
     },
@@ -28,7 +76,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-11-03T14:17:54+00:00",
+      "verified_at": "2026-11-03T23:24:52+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "دير الزور",
@@ -44,7 +92,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-11-03T14:17:54+00:00",
+      "verified_at": "2026-11-03T23:24:52+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "سوريا",
@@ -60,7 +108,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-11-03T14:17:54+00:00",
+      "verified_at": "2026-11-03T23:24:52+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "دمشق",
@@ -76,7 +124,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-11-03T14:17:54+00:00",
+      "verified_at": "2026-11-03T23:24:52+00:00",
       "topic": "workforce",
       "evidence": {
         "geography": "حماة",
@@ -100,22 +148,6 @@
       }
     },
     {
-      "title": "مستشفى الرقة الوطني يبدأ إجراء عمليات الساد ضمن حملة «بصر» للعيون",
-      "title_ar": "مستشفى الرقة الوطني يبدأ إجراء عمليات الساد ضمن حملة «بصر» للعيون",
-      "language": "ar",
-      "url": "https://moh.gov.sy/news/%D9%85%D8%B3%D8%AA%D8%B4%D9%81%D9%89-%D8%A7%D9%84%D8%B1%D9%82%D8%A9-%D8%A7%D9%84%D9%88%D8%B7%D9%86%D9%8A-%D9%8A%D8%A8%D8%AF%D8%A3-%D8%A5%D8%AC%D8%B1%D8%A7%D8%A1-%D8%B9%D9%85%D9%84%D9%8A%D8%A7%D8%AA-%D8%A7%D9%84%D8%B3%D8%A7%D8%AF-%D8%B6%D9%85%D9%86-%D8%AD%D9%85%D9%84%D8%A9-%C2%AB%D8%A8%D8%B5%D8%B1%C2%BB-%D9%84%D9%84%D8%B9%D9%8A%D9%88%D9%86",
-      "published": "2026-11-02",
-      "source": "Syrian Ministry of Health",
-      "source_id": "sy-moh-news",
-      "verification_version": 2,
-      "verified_at": "2026-11-03T14:17:54+00:00",
-      "topic": "hospitals",
-      "evidence": {
-        "geography": "الرقة",
-        "type": "publisher-headline"
-      }
-    },
-    {
       "title": "ختام حملة الكشف المبكّر عن سرطان الثدي في إدلب",
       "title_ar": "ختام حملة الكشف المبكّر عن سرطان الثدي في إدلب",
       "language": "ar",
@@ -124,7 +156,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-11-03T14:17:54+00:00",
+      "verified_at": "2026-11-03T23:24:52+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "إدلب",
@@ -172,7 +204,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-11-03T14:17:54+00:00",
+      "verified_at": "2026-11-03T23:24:52+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "حلب",
@@ -236,7 +268,7 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-11-03T14:17:54+00:00",
+      "verified_at": "2026-11-03T23:24:51+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "Idlib",
@@ -252,7 +284,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-11-03T14:17:54+00:00",
+      "verified_at": "2026-11-03T23:24:52+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "إدلب",
@@ -268,7 +300,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-11-03T14:17:54+00:00",
+      "verified_at": "2026-11-03T23:24:52+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "سوريا",
@@ -316,7 +348,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-11-03T14:17:54+00:00",
+      "verified_at": "2026-11-03T23:24:52+00:00",
       "topic": "workforce",
       "evidence": {
         "geography": "سورية",
@@ -332,7 +364,7 @@
       "source": "Syrian Arab Red Crescent",
       "source_id": "sarc-news",
       "verification_version": 2,
-      "verified_at": "2026-11-03T14:17:55+00:00",
+      "verified_at": "2026-11-03T23:24:52+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "دمشق",
@@ -380,7 +412,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-11-03T14:17:54+00:00",
+      "verified_at": "2026-11-03T23:24:52+00:00",
       "topic": "policy",
       "evidence": {
         "geography": "سوريا",
@@ -812,7 +844,7 @@
       "source": "WHO — Syria office",
       "source_id": "who-syria-news",
       "verification_version": 2,
-      "verified_at": "2026-11-03T14:17:54+00:00",
+      "verified_at": "2026-11-03T23:24:52+00:00",
       "topic": "policy",
       "evidence": {
         "geography": "Syria",
@@ -928,38 +960,6 @@
       "topic": "hospitals",
       "evidence": {
         "geography": "حمص",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "مؤتمر طب وجراحة التجميل يوصي بتعزيز جودة الخدمات الطبية وسلامة المرضى",
-      "title_ar": "مؤتمر طب وجراحة التجميل يوصي بتعزيز جودة الخدمات الطبية وسلامة المرضى",
-      "language": "ar",
-      "url": "https://sana.sy/health/2611560/",
-      "published": "2026-10-19",
-      "source": "Syrian Arab News Agency (SANA) — Health",
-      "source_id": "sana-health",
-      "verification_version": 2,
-      "verified_at": "2026-10-20T21:38:42+00:00",
-      "topic": "hospitals",
-      "evidence": {
-        "geography": "دمشق",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "تعزيزاً للرعاية الصحية الأولية.. إعادة تفعيل 6 عيادات متنقلة في القنيطرة وريف درعا",
-      "title_ar": "تعزيزاً للرعاية الصحية الأولية.. إعادة تفعيل 6 عيادات متنقلة في القنيطرة وريف درعا",
-      "language": "ar",
-      "url": "https://moh.gov.sy/news/%D8%AA%D8%B9%D8%B2%D9%8A%D8%B2%D8%A7%D9%8B-%D9%84%D9%84%D8%B1%D8%B9%D8%A7%D9%8A%D8%A9-%D8%A7%D9%84%D8%B5%D8%AD%D9%8A%D8%A9-%D8%A7%D9%84%D8%A3%D9%88%D9%84%D9%8A%D8%A9..-%D8%A5%D8%B9%D8%A7%D8%AF%D8%A9-%D8%AA%D9%81%D8%B9%D9%8A%D9%84-6-%D8%B9%D9%8A%D8%A7%D8%AF%D8%A7%D8%AA-%D9%85%D8%AA%D9%86%D9%82%D9%84%D8%A9-%D9%81%D9%8A-%D8%A7%D9%84%D9%82%D9%86%D9%8A%D8%B7%D8%B1%D8%A9-%D9%88%D8%B1%D9%8A%D9%81-%D8%AF%D8%B1%D8%B9%D8%A7",
-      "published": "2026-10-18",
-      "source": "Syrian Ministry of Health",
-      "source_id": "sy-moh-news",
-      "verification_version": 2,
-      "verified_at": "2026-10-24T20:52:01+00:00",
-      "topic": "public-health",
-      "evidence": {
-        "geography": "درعا",
         "type": "publisher-headline"
       }
     }
