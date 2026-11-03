@@ -1,8 +1,24 @@
 {
-  "updated": "2026-11-03T00:59:51+00:00",
-  "checked_at": "2026-11-03T00:59:51+00:00",
+  "updated": "2026-11-03T14:18:10+00:00",
+  "checked_at": "2026-11-03T14:18:10+00:00",
   "status": "partial",
   "items": [
+    {
+      "title": "وزيرا المالية والصحة يبحثان مع اليونيسف تعزيز تمويل الخدمات وبرامج صحة الأطفال ‏",
+      "title_ar": "وزيرا المالية والصحة يبحثان مع اليونيسف تعزيز تمويل الخدمات وبرامج صحة الأطفال ‏",
+      "language": "ar",
+      "url": "https://sana.sy/health/2624909/",
+      "published": "2026-11-03",
+      "source": "Syrian Arab News Agency (SANA) — Health",
+      "source_id": "sana-health",
+      "verification_version": 2,
+      "verified_at": "2026-11-03T14:17:54+00:00",
+      "topic": "workforce",
+      "evidence": {
+        "geography": "دمشق",
+        "type": "publisher-headline"
+      }
+    },
     {
       "title": "مشفى النور في دير الزور يستعيد نشاطه الطبي بعد إعادة تأهيله",
       "title_ar": "مشفى النور في دير الزور يستعيد نشاطه الطبي بعد إعادة تأهيله",
@@ -12,7 +28,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-11-03T00:59:31+00:00",
+      "verified_at": "2026-11-03T14:17:54+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "دير الزور",
@@ -28,7 +44,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-11-03T00:59:31+00:00",
+      "verified_at": "2026-11-03T14:17:54+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "سوريا",
@@ -44,7 +60,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-11-03T00:59:31+00:00",
+      "verified_at": "2026-11-03T14:17:54+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "دمشق",
@@ -60,7 +76,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-11-03T00:59:31+00:00",
+      "verified_at": "2026-11-03T14:17:54+00:00",
       "topic": "workforce",
       "evidence": {
         "geography": "حماة",
@@ -76,10 +92,42 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-11-03T00:59:31+00:00",
+      "verified_at": "2026-11-03T14:17:54+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "دمشق",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "مستشفى الرقة الوطني يبدأ إجراء عمليات الساد ضمن حملة «بصر» للعيون",
+      "title_ar": "مستشفى الرقة الوطني يبدأ إجراء عمليات الساد ضمن حملة «بصر» للعيون",
+      "language": "ar",
+      "url": "https://moh.gov.sy/news/%D9%85%D8%B3%D8%AA%D8%B4%D9%81%D9%89-%D8%A7%D9%84%D8%B1%D9%82%D8%A9-%D8%A7%D9%84%D9%88%D8%B7%D9%86%D9%8A-%D9%8A%D8%A8%D8%AF%D8%A3-%D8%A5%D8%AC%D8%B1%D8%A7%D8%A1-%D8%B9%D9%85%D9%84%D9%8A%D8%A7%D8%AA-%D8%A7%D9%84%D8%B3%D8%A7%D8%AF-%D8%B6%D9%85%D9%86-%D8%AD%D9%85%D9%84%D8%A9-%C2%AB%D8%A8%D8%B5%D8%B1%C2%BB-%D9%84%D9%84%D8%B9%D9%8A%D9%88%D9%86",
+      "published": "2026-11-02",
+      "source": "Syrian Ministry of Health",
+      "source_id": "sy-moh-news",
+      "verification_version": 2,
+      "verified_at": "2026-11-03T14:17:54+00:00",
+      "topic": "hospitals",
+      "evidence": {
+        "geography": "الرقة",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "ختام حملة الكشف المبكّر عن سرطان الثدي في إدلب",
+      "title_ar": "ختام حملة الكشف المبكّر عن سرطان الثدي في إدلب",
+      "language": "ar",
+      "url": "https://moh.gov.sy/news/%D8%AE%D8%AA%D8%A7%D9%85-%D8%AD%D9%85%D9%84%D8%A9-%D8%A7%D9%84%D9%83%D8%B4%D9%81-%D8%A7%D9%84%D9%85%D8%A8%D9%83%D9%91%D8%B1-%D8%B9%D9%86-%D8%B3%D8%B1%D8%B7%D8%A7%D9%86-%D8%A7%D9%84%D8%AB%D8%AF%D9%8A-%D9%81%D9%8A-%D8%A5%D8%AF%D9%84%D8%A8",
+      "published": "2026-11-01",
+      "source": "Syrian Ministry of Health",
+      "source_id": "sy-moh-news",
+      "verification_version": 2,
+      "verified_at": "2026-11-03T14:17:54+00:00",
+      "topic": "public-health",
+      "evidence": {
+        "geography": "إدلب",
         "type": "publisher-headline"
       }
     },
@@ -96,22 +144,6 @@
       "topic": "hospitals",
       "evidence": {
         "geography": "درعا",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "ختام حملة الكشف المبكّر عن سرطان الثدي في إدلب",
-      "title_ar": "ختام حملة الكشف المبكّر عن سرطان الثدي في إدلب",
-      "language": "ar",
-      "url": "https://moh.gov.sy/news/%D8%AE%D8%AA%D8%A7%D9%85-%D8%AD%D9%85%D9%84%D8%A9-%D8%A7%D9%84%D9%83%D8%B4%D9%81-%D8%A7%D9%84%D9%85%D8%A8%D9%83%D9%91%D8%B1-%D8%B9%D9%86-%D8%B3%D8%B1%D8%B7%D8%A7%D9%86-%D8%A7%D9%84%D8%AB%D8%AF%D9%8A-%D9%81%D9%8A-%D8%A5%D8%AF%D9%84%D8%A8",
-      "published": "2026-11-01",
-      "source": "Syrian Ministry of Health",
-      "source_id": "sy-moh-news",
-      "verification_version": 2,
-      "verified_at": "2026-11-03T00:59:31+00:00",
-      "topic": "public-health",
-      "evidence": {
-        "geography": "إدلب",
         "type": "publisher-headline"
       }
     },
@@ -140,7 +172,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-11-03T00:59:31+00:00",
+      "verified_at": "2026-11-03T14:17:54+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "حلب",
@@ -204,7 +236,7 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-11-03T00:59:30+00:00",
+      "verified_at": "2026-11-03T14:17:54+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "Idlib",
@@ -220,7 +252,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-11-03T00:59:31+00:00",
+      "verified_at": "2026-11-03T14:17:54+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "إدلب",
@@ -236,7 +268,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-11-03T00:59:31+00:00",
+      "verified_at": "2026-11-03T14:17:54+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "سوريا",
@@ -284,7 +316,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-11-03T00:59:31+00:00",
+      "verified_at": "2026-11-03T14:17:54+00:00",
       "topic": "workforce",
       "evidence": {
         "geography": "سورية",
@@ -300,7 +332,7 @@
       "source": "Syrian Arab Red Crescent",
       "source_id": "sarc-news",
       "verification_version": 2,
-      "verified_at": "2026-11-03T00:59:32+00:00",
+      "verified_at": "2026-11-03T14:17:55+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "دمشق",
@@ -348,7 +380,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-11-03T00:59:32+00:00",
+      "verified_at": "2026-11-03T14:17:54+00:00",
       "topic": "policy",
       "evidence": {
         "geography": "سوريا",
@@ -780,7 +812,7 @@
       "source": "WHO — Syria office",
       "source_id": "who-syria-news",
       "verification_version": 2,
-      "verified_at": "2026-11-03T00:59:32+00:00",
+      "verified_at": "2026-11-03T14:17:54+00:00",
       "topic": "policy",
       "evidence": {
         "geography": "Syria",
@@ -928,38 +960,6 @@
       "topic": "public-health",
       "evidence": {
         "geography": "درعا",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "الكشف المبكر عن سرطان الثدي بحلب.. خدمات مجانية وتحديات تقلل من الوصول إليها",
-      "title_ar": "الكشف المبكر عن سرطان الثدي بحلب.. خدمات مجانية وتحديات تقلل من الوصول إليها",
-      "language": "ar",
-      "url": "https://sana.sy/governorates/aleppo/2611011/",
-      "published": "2026-10-18",
-      "source": "Syrian Arab News Agency (SANA) — Health",
-      "source_id": "sana-health",
-      "verification_version": 2,
-      "verified_at": "2026-10-20T11:40:14+00:00",
-      "topic": "public-health",
-      "evidence": {
-        "geography": "حلب",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "عمليات جراحية نوعية للأطفال في الرقة ضمن أعمال المؤتمر الطبي السوري الفرنسي",
-      "title_ar": "عمليات جراحية نوعية للأطفال في الرقة ضمن أعمال المؤتمر الطبي السوري الفرنسي",
-      "language": "ar",
-      "url": "https://sana.sy/governorates/alrakkah/2610885/",
-      "published": "2026-10-18",
-      "source": "Syrian Arab News Agency (SANA) — Health",
-      "source_id": "sana-health",
-      "verification_version": 2,
-      "verified_at": "2026-10-20T11:40:14+00:00",
-      "topic": "hospitals",
-      "evidence": {
-        "geography": "الرقة",
         "type": "publisher-headline"
       }
     }
