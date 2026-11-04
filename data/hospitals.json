@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-03T23:25:52+00:00",
+  "updated": "2026-11-04T14:37:04+00:00",
   "source": "OpenStreetMap contributors (ODbL)",
   "items": [
     {
@@ -4797,6 +4797,17 @@
       "emergency": false,
       "osm": true,
       "source_url": "https://www.openstreetmap.org/way/1412999863"
+    },
+    {
+      "name": "مشفى محمد بن زايد الميداني",
+      "name_ar": "مشفى محمد بن زايد الميداني",
+      "city": "Rif Dimashq",
+      "city_ar": "ريف دمشق",
+      "address": "",
+      "phone": "",
+      "emergency": false,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/14347721398"
     },
     {
       "name": "مشفى يبرود",

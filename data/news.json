@@ -1,6 +1,6 @@
 {
-  "updated": "2026-11-03T23:25:12+00:00",
-  "checked_at": "2026-11-03T23:25:12+00:00",
+  "updated": "2026-11-04T14:36:20+00:00",
+  "checked_at": "2026-11-04T14:36:20+00:00",
   "status": "partial",
   "items": [
     {
@@ -12,7 +12,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-11-03T23:24:52+00:00",
+      "verified_at": "2026-11-04T14:34:58+00:00",
       "topic": "policy",
       "evidence": {
         "geography": "دمشق",
@@ -28,7 +28,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-11-03T23:24:52+00:00",
+      "verified_at": "2026-11-04T14:34:58+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "حمص",
@@ -44,8 +44,56 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-11-03T23:24:52+00:00",
+      "verified_at": "2026-11-04T14:34:58+00:00",
       "topic": "workforce",
+      "evidence": {
+        "geography": "دمشق",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "مشفى النور في دير الزور يستعيد نشاطه الطبي بعد إعادة تأهيله",
+      "title_ar": "مشفى النور في دير الزور يستعيد نشاطه الطبي بعد إعادة تأهيله",
+      "language": "ar",
+      "url": "https://sana.sy/governorates/dayer-al-zoor/2624632/",
+      "published": "2026-11-02",
+      "source": "Syrian Arab News Agency (SANA) — Health",
+      "source_id": "sana-health",
+      "verification_version": 2,
+      "verified_at": "2026-11-04T14:34:58+00:00",
+      "topic": "hospitals",
+      "evidence": {
+        "geography": "دير الزور",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "مشفى طرطوس الوطني يقيم يوماً علمياً حول أحدث تقنيات جراحة الأوعية ‏الدموية",
+      "title_ar": "مشفى طرطوس الوطني يقيم يوماً علمياً حول أحدث تقنيات جراحة الأوعية ‏الدموية",
+      "language": "ar",
+      "url": "https://sana.sy/governorates/tartus/2624369/",
+      "published": "2026-11-02",
+      "source": "Syrian Arab News Agency (SANA) — Health",
+      "source_id": "sana-health",
+      "verification_version": 2,
+      "verified_at": "2026-11-04T14:34:58+00:00",
+      "topic": "hospitals",
+      "evidence": {
+        "geography": "سوريا",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "حملة للتبرع بالدم في جرمانا بريف دمشق لتعزيز مخزون بنك الدم ودعم المرضى",
+      "title_ar": "حملة للتبرع بالدم في جرمانا بريف دمشق لتعزيز مخزون بنك الدم ودعم المرضى",
+      "language": "ar",
+      "url": "https://sana.sy/health/2624329/",
+      "published": "2026-11-02",
+      "source": "Syrian Arab News Agency (SANA) — Health",
+      "source_id": "sana-health",
+      "verification_version": 2,
+      "verified_at": "2026-11-04T14:34:58+00:00",
+      "topic": "public-health",
       "evidence": {
         "geography": "دمشق",
         "type": "publisher-headline"
@@ -64,54 +112,6 @@
       "topic": "hospitals",
       "evidence": {
         "geography": "الرقة",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "مشفى النور في دير الزور يستعيد نشاطه الطبي بعد إعادة تأهيله",
-      "title_ar": "مشفى النور في دير الزور يستعيد نشاطه الطبي بعد إعادة تأهيله",
-      "language": "ar",
-      "url": "https://sana.sy/governorates/dayer-al-zoor/2624632/",
-      "published": "2026-11-02",
-      "source": "Syrian Arab News Agency (SANA) — Health",
-      "source_id": "sana-health",
-      "verification_version": 2,
-      "verified_at": "2026-11-03T23:24:52+00:00",
-      "topic": "hospitals",
-      "evidence": {
-        "geography": "دير الزور",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "مشفى طرطوس الوطني يقيم يوماً علمياً حول أحدث تقنيات جراحة الأوعية ‏الدموية",
-      "title_ar": "مشفى طرطوس الوطني يقيم يوماً علمياً حول أحدث تقنيات جراحة الأوعية ‏الدموية",
-      "language": "ar",
-      "url": "https://sana.sy/governorates/tartus/2624369/",
-      "published": "2026-11-02",
-      "source": "Syrian Arab News Agency (SANA) — Health",
-      "source_id": "sana-health",
-      "verification_version": 2,
-      "verified_at": "2026-11-03T23:24:52+00:00",
-      "topic": "hospitals",
-      "evidence": {
-        "geography": "سوريا",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "حملة للتبرع بالدم في جرمانا بريف دمشق لتعزيز مخزون بنك الدم ودعم المرضى",
-      "title_ar": "حملة للتبرع بالدم في جرمانا بريف دمشق لتعزيز مخزون بنك الدم ودعم المرضى",
-      "language": "ar",
-      "url": "https://sana.sy/health/2624329/",
-      "published": "2026-11-02",
-      "source": "Syrian Arab News Agency (SANA) — Health",
-      "source_id": "sana-health",
-      "verification_version": 2,
-      "verified_at": "2026-11-03T23:24:52+00:00",
-      "topic": "public-health",
-      "evidence": {
-        "geography": "دمشق",
         "type": "publisher-headline"
       }
     },
@@ -268,7 +268,7 @@
       "source": "Syrian American Medical Society (SAMS)",
       "source_id": "sams-news",
       "verification_version": 2,
-      "verified_at": "2026-11-03T23:24:51+00:00",
+      "verified_at": "2026-11-04T14:34:56+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "Idlib",
@@ -340,6 +340,22 @@
       }
     },
     {
+      "title": "منسق القسم الطبي",
+      "title_ar": "منسق القسم الطبي",
+      "language": "ar",
+      "url": "https://sarc.sy/59378-2/",
+      "published": "2026-10-29",
+      "source": "Syrian Arab Red Crescent",
+      "source_id": "sarc-news",
+      "verification_version": 2,
+      "verified_at": "2026-11-04T14:35:34+00:00",
+      "topic": "public-health",
+      "evidence": {
+        "geography": "دمشق",
+        "type": "publisher-headline"
+      }
+    },
+    {
       "title": "بدء تطبيق نظام DHIS2 لتطوير منظومة المعلومات الصحية في سورية",
       "title_ar": "بدء تطبيق نظام DHIS2 لتطوير منظومة المعلومات الصحية في سورية",
       "language": "ar",
@@ -352,22 +368,6 @@
       "topic": "workforce",
       "evidence": {
         "geography": "سورية",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "منسق القسم الطبي",
-      "title_ar": "منسق القسم الطبي",
-      "language": "ar",
-      "url": "https://sarc.sy/59378-2/",
-      "published": "2026-10-29",
-      "source": "Syrian Arab Red Crescent",
-      "source_id": "sarc-news",
-      "verification_version": 2,
-      "verified_at": "2026-11-03T23:24:52+00:00",
-      "topic": "public-health",
-      "evidence": {
-        "geography": "دمشق",
         "type": "publisher-headline"
       }
     },
@@ -844,7 +844,7 @@
       "source": "WHO — Syria office",
       "source_id": "who-syria-news",
       "verification_version": 2,
-      "verified_at": "2026-11-03T23:24:52+00:00",
+      "verified_at": "2026-11-04T14:34:59+00:00",
       "topic": "policy",
       "evidence": {
         "geography": "Syria",
