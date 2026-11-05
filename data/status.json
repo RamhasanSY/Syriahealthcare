@@ -1,12 +1,12 @@
 {
-  "checked_at": "2026-11-04T23:41:10+00:00",
+  "checked_at": "2026-11-05T14:41:16+00:00",
   "sources": [
     {
       "id": "drc-jobs",
       "kind": "jobs",
       "state": "ok",
-      "checked_at": "2026-11-04T23:40:53+00:00",
-      "fetched": 63,
+      "checked_at": "2026-11-05T14:41:00+00:00",
+      "fetched": 68,
       "accepted": 9,
       "latest_published": "2026-11-03"
     },
@@ -14,16 +14,16 @@
       "id": "ida-jobs",
       "kind": "jobs",
       "state": "ok",
-      "checked_at": "2026-11-04T23:41:10+00:00",
+      "checked_at": "2026-11-05T14:41:16+00:00",
       "fetched": 10,
-      "accepted": 1,
-      "latest_published": "2026-11-02"
+      "accepted": 10,
+      "latest_published": "2026-11-05"
     },
     {
       "id": "ida-news",
       "kind": "news",
       "state": "ok",
-      "checked_at": "2026-11-04T23:40:52+00:00",
+      "checked_at": "2026-11-05T14:40:58+00:00",
       "fetched": 10,
       "accepted": 0,
       "latest_published": null
@@ -32,7 +32,7 @@
       "id": "nrc-jobs",
       "kind": "jobs",
       "state": "ok",
-      "checked_at": "2026-11-04T23:40:52+00:00",
+      "checked_at": "2026-11-05T14:41:00+00:00",
       "fetched": 9,
       "accepted": 5,
       "latest_published": "2026-11-03"
@@ -41,7 +41,7 @@
       "id": "reliefweb-jobs",
       "kind": "jobs",
       "state": "error",
-      "checked_at": "2026-11-04T23:40:55+00:00",
+      "checked_at": "2026-11-05T14:41:03+00:00",
       "error": "Empty response (HTTP 202)",
       "accepted": 0
     },
@@ -49,8 +49,8 @@
       "id": "sams-jobs",
       "kind": "jobs",
       "state": "ok",
-      "checked_at": "2026-11-04T23:40:52+00:00",
-      "fetched": 550,
+      "checked_at": "2026-11-05T14:40:59+00:00",
+      "fetched": 551,
       "accepted": 4,
       "latest_published": "2026-11-04"
     },
@@ -58,7 +58,7 @@
       "id": "sams-news",
       "kind": "news",
       "state": "ok",
-      "checked_at": "2026-11-04T23:40:50+00:00",
+      "checked_at": "2026-11-05T14:40:57+00:00",
       "fetched": 10,
       "accepted": 7,
       "latest_published": "2026-10-30"
@@ -67,16 +67,16 @@
       "id": "sana-health",
       "kind": "news",
       "state": "ok",
-      "checked_at": "2026-11-04T23:40:51+00:00",
-      "fetched": 10,
-      "accepted": 5,
-      "latest_published": "2026-11-04"
+      "checked_at": "2026-11-05T14:40:59+00:00",
+      "fetched": 150,
+      "accepted": 87,
+      "latest_published": "2026-11-05"
     },
     {
       "id": "sarc-news",
       "kind": "news",
       "state": "ok",
-      "checked_at": "2026-11-04T23:40:51+00:00",
+      "checked_at": "2026-11-05T14:40:59+00:00",
       "fetched": 10,
       "accepted": 1,
       "latest_published": "2026-10-29"
@@ -85,7 +85,7 @@
       "id": "sy-moh-news",
       "kind": "news",
       "state": "ok",
-      "checked_at": "2026-11-04T23:40:51+00:00",
+      "checked_at": "2026-11-05T14:40:59+00:00",
       "fetched": 12,
       "accepted": 7,
       "latest_published": "2026-11-04"
@@ -94,7 +94,7 @@
       "id": "un-health",
       "kind": "news",
       "state": "ok",
-      "checked_at": "2026-11-04T23:40:51+00:00",
+      "checked_at": "2026-11-05T14:40:59+00:00",
       "fetched": 30,
       "accepted": 0,
       "latest_published": null
@@ -103,7 +103,7 @@
       "id": "uossm-news",
       "kind": "news",
       "state": "error",
-      "checked_at": "2026-11-04T23:40:50+00:00",
+      "checked_at": "2026-11-05T14:40:57+00:00",
       "error": "unclosed token: line 1, column 0",
       "accepted": 0
     },
@@ -111,7 +111,7 @@
       "id": "who-news",
       "kind": "news",
       "state": "ok",
-      "checked_at": "2026-11-04T23:40:52+00:00",
+      "checked_at": "2026-11-05T14:40:59+00:00",
       "fetched": 83,
       "accepted": 0,
       "latest_published": null
@@ -120,7 +120,7 @@
       "id": "who-syria-news",
       "kind": "news",
       "state": "error",
-      "checked_at": "2026-11-04T23:40:55+00:00",
+      "checked_at": "2026-11-05T14:41:02+00:00",
       "error": "HTTP Error 502: Bad Gateway",
       "accepted": 0
     }
