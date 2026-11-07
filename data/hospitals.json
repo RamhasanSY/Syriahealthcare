@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-07T13:05:22+00:00",
+  "updated": "2026-11-07T21:54:21+00:00",
   "source": "OpenStreetMap contributors (ODbL)",
   "items": [
     {
@@ -388,17 +388,6 @@
       "source_url": "https://www.openstreetmap.org/node/10074890311"
     },
     {
-      "name": "Al-Basel Hospital",
-      "name_ar": "مشفى الباسل",
-      "city": "Aleppo",
-      "city_ar": "حلب",
-      "address": "",
-      "phone": "",
-      "emergency": false,
-      "osm": true,
-      "source_url": "https://www.openstreetmap.org/way/257738349"
-    },
-    {
       "name": "Al-Kinana Hospital",
       "name_ar": "مشفى الكنانة",
       "city": "Aleppo",
@@ -639,6 +628,17 @@
       "emergency": false,
       "osm": true,
       "source_url": "https://www.openstreetmap.org/way/410365733"
+    },
+    {
+      "name": "Manbij National Hospital",
+      "name_ar": "مشفى منبج الوطني",
+      "city": "Aleppo",
+      "city_ar": "حلب",
+      "address": "",
+      "phone": "",
+      "emergency": false,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/way/257738349"
     },
     {
       "name": "Martini Hospital",
