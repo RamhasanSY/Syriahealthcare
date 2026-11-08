@@ -40,7 +40,9 @@ document.addEventListener('DOMContentLoaded', () => {
         busy($('loginButton'), true);
         const res = await api('/api/auth/login', {email: $('loginEmail').value, password: $('loginPassword').value});
         busy($('loginButton'), false);
-        if (res.ok) return window.location.assign('/account');
+        // Pages that need a signed-in doctor or lab send people here with ?next=/page; only plain local paths are followed.
+        const next = new URLSearchParams(window.location.search).get('next');
+        if (res.ok) return window.location.assign(/^\/[a-z]+$/.test(next || '') ? next : '/account');
         $('loginPassword').value = '';
         showError('loginError', res.data);
     });

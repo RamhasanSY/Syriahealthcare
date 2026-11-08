@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="ar" dir="rtl" data-title-en="Scan a lab result — Syria Healthcare" data-title-ar="مسح نتيجة تحليل — الرعاية الصحية في سوريا">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#173e36">
+<title>مسح نتيجة تحليل — الرعاية الصحية في سوريا</title>
+<link rel="manifest" href="/manifest.webmanifest"><link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/assets/app.css">
+<script src="/assets/common.js" defer></script><script src="/assets/scan.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#main" data-en="Skip to content" data-ar="انتقل إلى المحتوى">انتقل إلى المحتوى</a>
+<header class="top"><div class="top-inner"><a class="brand" href="/account"><img src="/assets/logo.svg" alt=""><span data-en="Syria Healthcare" data-ar="الرعاية الصحية في سوريا">الرعاية الصحية في سوريا</span></a><div class="top-actions"><a class="btn ghost" href="/records" data-en="Patient files" data-ar="ملفات المرضى">ملفات المرضى</a><button class="lang" id="langToggle" type="button">English</button></div></div></header>
+<main id="main" class="wrap" aria-busy="true">
+  <h1 data-en="Scan a lab result" data-ar="مسح نتيجة تحليل">مسح نتيجة تحليل</h1>
+  <p class="lead" data-en="Point your phone camera at the QR code on the patient's paper from the lab, or type the code printed under it." data-ar="وجّه كاميرا هاتفك إلى رمز QR على ورقة المخبر التي يحملها المريض، أو اكتب الرمز المطبوع تحته.">وجّه كاميرا هاتفك إلى رمز QR على ورقة المخبر التي يحملها المريض، أو اكتب الرمز المطبوع تحته.</p>
+  <div class="msg error" id="scanError" role="alert" tabindex="-1" hidden></div>
+  <p class="sr-only" id="announce" role="status"></p>
+
+  <section class="card found" id="found" hidden tabindex="-1" aria-labelledby="foundTitle">
+    <h2 id="foundTitle" dir="auto"></h2>
+    <dl class="dl"><dt data-en="Patient" data-ar="المريض">المريض</dt><dd id="foundPatient" dir="auto"></dd><dt data-en="Mobile" data-ar="الجوال">الجوال</dt><dd id="foundPhone" dir="ltr"></dd><dt data-en="Lab" data-ar="المخبر">المخبر</dt><dd id="foundLab" dir="auto"></dd><dt data-en="Date" data-ar="التاريخ">التاريخ</dt><dd id="foundDate"></dd></dl>
+    <div id="toAdd">
+      <p class="hint" data-en="Check that this is the patient in front of you, then add the result to their file." data-ar="تأكّد أن هذا هو المريض الذي أمامك، ثم أضف النتيجة إلى ملفه.">تأكّد أن هذا هو المريض الذي أمامك، ثم أضف النتيجة إلى ملفه.</p>
+      <button class="btn" type="button" id="addButton" data-en="Add to patient file" data-ar="أضف إلى ملف المريض">أضف إلى ملف المريض</button>
+    </div>
+    <div id="added" hidden>
+      <p class="status-box ok" data-en="In your patient files." data-ar="موجودة في ملفات مرضاك.">موجودة في ملفات مرضاك.</p>
+      <div class="actions"><a class="btn" id="openLink" target="_blank" rel="noopener" data-en="Open result" data-ar="افتح النتيجة">افتح النتيجة</a><a class="btn ghost" href="/records" data-en="Patient files" data-ar="ملفات المرضى">ملفات المرضى</a></div>
+    </div>
+  </section>
+
+  <form class="card" id="codeForm" novalidate hidden>
+    <label class="field"><span data-en="Code under the QR code" data-ar="الرمز تحت رمز QR">الرمز تحت رمز QR</span><input type="text" id="code" dir="ltr" class="code" maxlength="20" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="ABCD-EFGH-JKLM"></label>
+    <button class="btn" type="submit" id="lookupButton" data-en="Look up" data-ar="ابحث">ابحث</button>
+  </form>
+</main>
+<footer><div class="wrap"><a href="/account" data-en="← My account" data-ar="حسابي ←">حسابي ←</a><a href="/dashboard" data-en="Appointments" data-ar="المواعيد">المواعيد</a></div></footer>
+</body>
+</html>

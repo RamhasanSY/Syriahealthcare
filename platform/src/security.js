@@ -32,6 +32,7 @@ export const newToken = () => randomBytes(32).toString('base64url');
 export const sha256 = value => createHash('sha256').update(value).digest('hex');
 export const newOtp = () => String(randomInt(0, 1_000_000)).padStart(6, '0');
 export const otpHash = (secret, phone, code) => createHmac('sha256', secret).update(`${phone}:${code}`).digest('hex');
+export const resultCodeHash = (secret, code) => createHmac('sha256', secret).update(`result:${code}`).digest('hex');
 
 export function sameHash(a, b) {
     const x = Buffer.from(a, 'hex'), y = Buffer.from(b, 'hex');

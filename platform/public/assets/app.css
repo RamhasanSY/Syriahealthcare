@@ -165,3 +165,17 @@ fieldset.services legend{font-weight:600;margin-bottom:8px;padding:0}
 .install-app p{margin:0}
 /* "Forgot your password?" under the staff sign-in */
 .forgot-link{margin:14px 0 0;text-align:center;font-size:15px}
+/* Lab results: the QR slip the lab prints for the patient, and the doctor's patient files */
+.slip-print{text-align:center;border:1px dashed #9fb2a4;border-radius:14px;padding:18px;margin-bottom:16px}
+.slip-print img{display:block;width:220px;height:220px;margin:8px auto}
+.slip-lab{font-weight:700;margin:0}
+.slip-code{font:700 20px/1.3 ui-monospace,Consolas,monospace;letter-spacing:.08em;margin:0 0 12px}
+.slip-print .dl{text-align:start;width:max-content;max-width:100%;margin:0 auto 12px}
+.slip-note{font-size:13px;color:var(--muted);margin:4px 0 0}
+#slip:focus{outline:none}
+@media print{body *{visibility:hidden}.slip-print,.slip-print *{visibility:visible}.slip-print{position:absolute;top:0;inset-inline-start:0;width:90mm;border:0}}
+.found:focus{outline:none}
+.found .status-box{margin-bottom:14px}
+.records-search{max-width:420px}
+.record-name{font-size:19px;margin:0}
+.doc-list bdi{white-space:nowrap}

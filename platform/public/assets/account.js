@@ -32,10 +32,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (user.role === 'facility') {
         const profile = await api('/api/facility/profile');
         if (profile.ok) facilityStatus = profile.data.profile.status;
+        // Approved labs and imaging centres send results to patients as QR codes.
+        $('resultsLink').hidden = !(profile.ok && facilityStatus === 'approved' && ['lab', 'imaging'].includes(profile.data.profile.kind));
     }
     if (user.role === 'doctor') {
         const profile = await api('/api/doctor/profile');
         if (profile.ok) doctorStatus = profile.data.profile.status;
+        $('recordsLinks').hidden = doctorStatus !== 'approved';
         const waiting = await api('/api/doctor/appointments?scope=requests');
         if (waiting.ok && waiting.data.counts.requests) {
             const n = waiting.data.counts.requests;

@@ -81,6 +81,15 @@ export async function saveUpload(app, request, kinds) {
     }
 }
 
+// Sends a decrypted file to the browser to open in place, never to be cached.
+export function sendDocument(reply, doc, content) {
+    const ascii = doc.filename.replace(/[^\x20-\x7e]/g, '_').replace(/["\\]/g, '_');
+    reply.header('Content-Type', doc.mime);
+    reply.header('Content-Disposition', `inline; filename="${ascii}"; filename*=UTF-8''${encodeURIComponent(doc.filename)}`);
+    reply.header('Cache-Control', 'no-store');
+    return content;
+}
+
 export async function deleteDocument(app, request) {
     const {rows: [doc]} = await app.pg.query('DELETE FROM doctor_documents WHERE id = $1 AND doctor_id = $2 RETURNING *', [request.params.id, request.user.id]);
     if (!doc) throw new HttpError(404, 'not_found', 'Document not found.');
@@ -188,11 +197,7 @@ export default async function doctorRoutes(app) {
         if (!doc) throw new HttpError(404, 'not_found', 'Document not found.');
         const content = await app.documents.open(doc);
         await audit(app.pg, {actorId: request.user.id, action: 'document.viewed', targetId: doc.id, ip: request.ip});
-        const ascii = doc.filename.replace(/[^\x20-\x7e]/g, '_').replace(/["\\]/g, '_');
-        reply.header('Content-Type', doc.mime);
-        reply.header('Content-Disposition', `inline; filename="${ascii}"; filename*=UTF-8''${encodeURIComponent(doc.filename)}`);
-        reply.header('Cache-Control', 'no-store');
-        return content;
+        return sendDocument(reply, doc, content);
     });
 
     const decide = (action, from, to, needsNote) => async request => {

@@ -62,6 +62,14 @@ Each card shows the patient's name, phone and reason. Doctors only see their own
 
 When the doctor confirms, declines or cancels, the patient gets a bilingual SMS with the date and time in Syria time, plus the clinic address or the doctor's message. If an SMS fails, it is logged and the doctor's decision still stands.
 
+### Lab results by QR code
+
+1. **Lab** (an approved laboratory or imaging centre, `/results`) enters the patient's name and mobile, the test, and uploads the result (PDF, JPG or PNG up to 5 MB, encrypted at rest). It prints the QR slip and gives it to the patient.
+2. The QR code holds only a link with a random code (`/scan#ABCD-EFGH-JKLM`, about 60 bits), never the result. The code is printed under the QR code to type in by hand, is valid for 90 days, and only its HMAC is stored. A lost or badly printed slip: "New QR code" replaces it and the old one stops working.
+3. **Doctor** (approved) scans the QR code with the phone camera, or types the code at `/scan`. A doctor who is not signed in comes back to the result after signing in. The page shows the patient, test, lab and date; the doctor checks them and adds the result to the patient file.
+4. **Doctor** sees the patient files at `/records`: every scanned result grouped by patient (mobile number), searchable by name or mobile. Results open from the server each time and are never saved by the app.
+5. Only a doctor who added a result can open it. Several doctors can add the same result. Uploading, adding, viewing and new codes are recorded in the audit log.
+
 ### WhatsApp for patients
 
 Patients get their sign-in code and the doctor's decisions (confirmed, declined, cancelled) by **WhatsApp**, through Meta's official WhatsApp Cloud API. SMS is the fallback:

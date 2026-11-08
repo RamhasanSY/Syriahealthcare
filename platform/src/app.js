@@ -13,6 +13,7 @@ import scheduleRoutes from './schedule.js';
 import appointmentRoutes from './appointments.js';
 import dashboardRoutes from './dashboard.js';
 import facilityRoutes from './facilities.js';
+import resultRoutes from './results.js';
 import {createDocumentStore} from './documents.js';
 
 const UNSAFE = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
@@ -73,6 +74,7 @@ export async function buildApp({config, pool, sms, whatsapp, telegram, mail, doc
     await app.register(appointmentRoutes);
     await app.register(dashboardRoutes);
     await app.register(facilityRoutes);
+    await app.register(resultRoutes);
     await app.register(fastifyStatic, {root: fileURLToPath(new URL('../public/', import.meta.url)), extensions: ['html']});
     return app;
 }
