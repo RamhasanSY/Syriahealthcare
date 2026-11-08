@@ -1,6 +1,11 @@
-# SyriaHC
+# SyriaHC and Syria Healthcare
 
-A bilingual interface for original healthcare news about Syria and current healthcare and NGO vacancies in Syria. Static HTML/CSS/JavaScript served by the company's own server at https://syriahc.com/ (next to the booking platform at app.syriahc.com).
+Two bilingual (English and Arabic) websites built from this repository, both served by the company's own server next to the booking platform at app.syriahc.com:
+
+- **https://syriahc.com/ (SyriaHC, صحة تك):** health services. Doctors, labs and hospitals in Syria, pregnancy planning, and online booking on the platform.
+- **https://syriahealthcare.com/ (Syria Healthcare):** original healthcare news about Syria and current healthcare and NGO vacancies in Syria, in the original green Syria Healthcare look.
+
+Each site links to the other in its menu. Old links are forwarded by the server: syriahc.com/jobs opens syriahealthcare.com/jobs, and syriahealthcare.com/doctors opens syriahc.com/doctors.
 
 ## How content is selected
 
@@ -32,19 +37,19 @@ Browser requests time out after 15 seconds. Failed background refreshes retain e
 
 The updater runs source requests with bounded retries and timeouts, atomically writes the content/status JSON, commits changes, rebases over concurrent repository changes, and pushes them to `main`.
 
-The website is not hosted on GitHub. The company server checks for new commits on `main` every 10 minutes, rebuilds the pages and serves them at `syriahc.com` (`platform/website/update-website.sh`, set up as described in `platform/README.md`, "Install on the company server"). New news and jobs therefore appear on the site within about 10 minutes of an update run. `.github/workflows/website.yml` only checks that the collector tests pass and the pages build, on every push and pull request.
+The website is not hosted on GitHub. The company server checks for new commits on `main` every 10 minutes, rebuilds the pages and serves them at `syriahc.com` and `syriahealthcare.com` (`platform/website/update-website.sh`, set up as described in `platform/README.md`, "Install on the company server"). New news and jobs therefore appear on the site within about 10 minutes of an update run. `.github/workflows/website.yml` only checks that the collector tests pass and the pages build, on every push and pull request.
 
 For failed-run notifications, enable GitHub Actions notifications in your own GitHub account. Detailed source results appear in each update run's summary and on the website's source list.
 
 ## Pages and editing
 
-The site has eight pages: Home, Jobs, Doctors, Hospitals, Labs, Pregnancy, News and About, plus a "page not found" page. Each page's content is in `pages/<name>.html`; the shared head, header, menu and footer are in `pages/_layout.html`. Page titles, descriptions and menu labels (English and Arabic) are listed at the top of `scripts/build.mjs`. The build stitches them together into `dist/`, highlights the current page in the menu, adds `sitemap.xml` and `robots.txt`, and versions the CSS and JavaScript automatically, so there is no `?v=` number to update by hand. Old one-page links such as `/#jobs` forward to the new page.
+SyriaHC has Home (`pages/index.html`), Doctors, Hospitals, Labs and Pregnancy. Syria Healthcare has Home (`pages/home-news.html`), Jobs, News and About. Both also have a "page not found" and an offline page. Each page's content is in `pages/<name>.html`; the shared head, header, menu and footer are in `pages/_layout.html`, with the name, logo, colours and links of each site filled in by the build. Which pages belong to which site, and their titles, descriptions and menu labels (English and Arabic), are listed at the top of `scripts/build.mjs`. The build stitches them together into `dist/` (SyriaHC) and `dist-news/` (Syria Healthcare), copies only the data each site uses, highlights the current page in the menu, adds `sitemap.xml` and `robots.txt`, and versions the CSS and JavaScript automatically, so there is no `?v=` number to update by hand. Old one-page links such as `/#jobs` forward to the new page.
 
-**Install as an app.** Phones and computers can add the site to the home screen (`manifest.webmanifest`). Android and desktop Chrome show an "Install the app" button in the footer; iPhones show how to add it from Safari's Share menu. The installed site keeps working without internet: `scripts/sw.js` (built to `dist/sw.js`) always tries the network first, so jobs and news stay current, and falls back to the saved copy when the connection is down or slower than six seconds. All pages and the hospital, lab and doctor directories are saved on install; a page never opened before shows an offline notice. The icons are rendered from `assets/logo.svg` with `python scripts/app_icons.py`.
+**Install as an app.** Phones and computers can add the site to the home screen (`manifest.webmanifest`). Android and desktop Chrome show an "Install the app" button in the footer; iPhones show how to add it from Safari's Share menu. The installed site keeps working without internet: `scripts/sw.js` (built to `dist/sw.js` and `dist-news/sw.js`) always tries the network first, so jobs and news stay current, and falls back to the saved copy when the connection is down or slower than six seconds. All pages, and on SyriaHC the hospital, lab and doctor directories, are saved on install; a page never opened before shows an offline notice. The icons are rendered from `assets/logo.svg` with `python scripts/app_icons.py`.
 
 ## Preview and tests
 
-The website is plain HTML, CSS and JavaScript. The npm commands below use Node and Python directly and require no npm dependency installation. `npm run build` validates the public JSON, builds the pages and copies only the public website files into `dist/`, including the custom domain and `.nojekyll` marker.
+The website is plain HTML, CSS and JavaScript. The npm commands below use Node and Python directly and require no npm dependency installation. `npm run build` validates the public JSON, builds both sites and copies only their public files into `dist/` (SyriaHC) and `dist-news/` (Syria Healthcare).
 
 ```sh
 npm run build
@@ -53,7 +58,7 @@ npm test
 npm run dev
 ```
 
-`npm run dev` builds the site and serves `dist/` at http://127.0.0.1:8000; run it again after editing a page. `npm run preview` serves the last build without rebuilding. With the server running, `npm run test:browser` runs the Playwright checks below.
+`npm run dev` builds both sites and serves SyriaHC (`dist/`) at http://127.0.0.1:8000; run it again after editing a page. `npm run preview` serves the last build without rebuilding, and `npm run preview:news` serves Syria Healthcare (`dist-news/`) at http://127.0.0.1:8001. With both running, `npm run test:browser` runs the Playwright checks below.
 
 ```sh
 python -m unittest discover -s tests -p 'test_*.py'
@@ -70,7 +75,7 @@ python tests/browser_check.py
 
 Browser checks cover every page at four widths in English and Arabic, old-link forwarding, search, healthcare/NGO and organization filters, exact deadline sorting, saved-job persistence, expiration, invalid verification records, safe links, retry behavior, background refresh failures, stalled request timeouts, keyboard focus, directory-note containment and restricted local storage. Screenshots are saved to ignored `.preview/`.
 
-The site uses the SyriaHC logo, the square Kufic "صحة تك" in a gold ring, as an SVG (`assets/logo.svg`); the favicon is the same file. The original artwork with the wordmark is `assets/syriahc-logo.png`. Canonical and social metadata point to the production domain. `assets/social-card.png` is the 1200 × 630 sharing image; its editable template is `scripts/social-card.html`. After changing the logo or the template, run `python scripts/app_icons.py` (needs Playwright): it renders the app icons and the social card and copies the icons and logo to the platform.
+SyriaHC uses its logo, the square Kufic "صحة تك" in a gold ring, as an SVG (`assets/logo.svg`); the favicon is the same file. Syria Healthcare keeps its original jasmine and courtyard arch logo, icons, sharing image and app manifest in `brands/syriahealthcare/`, and its original green colours: the build swaps each SyriaHC colour in `assets/style.css` for its Syria Healthcare colour (the list is in `scripts/build.mjs`), so both sites share one stylesheet. The original artwork with the wordmark is `assets/syriahc-logo.png`. Canonical and social metadata point to the production domain. `assets/social-card.png` is the 1200 × 630 sharing image; its editable template is `scripts/social-card.html`. After changing the logo or the template, run `python scripts/app_icons.py` (needs Playwright): it renders the app icons and the social card and copies the icons and logo to the platform.
 
 Run `python scripts/update.py` to collect content locally. It writes public JSON files and makes no Git commits itself.
 
@@ -110,7 +115,7 @@ The booking platform (`platform/`, at app.syriahc.com) has its own README. Once 
 
 ## LinkedIn publishing
 
-The public RSS feed at https://syriahc.com/data/news.xml is rebuilt with each collection. It contains original headlines, publisher attribution, original article links, publication dates and stable URL identifiers. Refreshing source verification does not create a new feed item. No full article text is republished.
+The public RSS feed at https://syriahealthcare.com/data/news.xml is rebuilt with each collection. It contains original headlines, publisher attribution, original article links, publication dates and stable URL identifiers. Refreshing source verification does not create a new feed item. No full article text is republished.
 
 A Page administrator can connect LinkedIn to Zapier using its sign-in authorization, then configure RSS by Zapier (New Item in Feed) to LinkedIn (Create Company Update). Map the title and description to the post text and the item link to its article URL. Enable only new items after setup; do not bulk-publish the existing archive. Test with a draft/sample before enabling publishing. This repository does not hold a LinkedIn password or token and no LinkedIn publishing connection is currently configured. Page creation and account authorization must be completed by the account owner.
 

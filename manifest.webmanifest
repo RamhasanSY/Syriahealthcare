@@ -2,7 +2,7 @@
   "id": "./",
   "name": "SyriaHC | صحة تك",
   "short_name": "SyriaHC",
-  "description": "Healthcare jobs, doctors, labs, hospitals and health news in Syria, in English and Arabic.",
+  "description": "Find doctors, labs and hospitals in Syria, book appointments online and plan a pregnancy, in English and Arabic.",
   "lang": "en",
   "dir": "auto",
   "start_url": "./",
@@ -10,16 +10,16 @@
   "display": "standalone",
   "background_color": "#fbfaf7",
   "theme_color": "#1a3a5c",
-  "categories": ["health", "medical", "news"],
+  "categories": ["health", "medical"],
   "icons": [
     {"src": "assets/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
     {"src": "assets/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
     {"src": "assets/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
   ],
   "shortcuts": [
-    {"name": "Hospitals | المشافي", "short_name": "Hospitals", "url": "hospitals.html", "icons": [{"src": "assets/icon-192.png", "sizes": "192x192"}]},
     {"name": "Doctors | الأطباء", "short_name": "Doctors", "url": "doctors.html", "icons": [{"src": "assets/icon-192.png", "sizes": "192x192"}]},
-    {"name": "Jobs | الوظائف", "short_name": "Jobs", "url": "jobs.html", "icons": [{"src": "assets/icon-192.png", "sizes": "192x192"}]},
-    {"name": "News | الأخبار", "short_name": "News", "url": "news.html", "icons": [{"src": "assets/icon-192.png", "sizes": "192x192"}]}
+    {"name": "Hospitals | المشافي", "short_name": "Hospitals", "url": "hospitals.html", "icons": [{"src": "assets/icon-192.png", "sizes": "192x192"}]},
+    {"name": "Labs | المخابر", "short_name": "Labs", "url": "labs.html", "icons": [{"src": "assets/icon-192.png", "sizes": "192x192"}]},
+    {"name": "Pregnancy | الحمل", "short_name": "Pregnancy", "url": "pregnancy.html", "icons": [{"src": "assets/icon-192.png", "sizes": "192x192"}]}
   ]
 }

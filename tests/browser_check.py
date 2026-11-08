@@ -1,4 +1,5 @@
-"""Run against the built site (npm run dev serves dist/ on port 8000); requires local Playwright."""
+"""Run against both built sites (npm run dev serves SyriaHC from dist/ on port 8000, npm run preview:news serves
+Syria Healthcare from dist-news/ on port 8001); requires local Playwright."""
 import json
 import os
 import re
@@ -7,9 +8,12 @@ from pathlib import Path
 
 from playwright.sync_api import sync_playwright, expect
 
-BASE = os.environ.get('SITE_URL', 'http://127.0.0.1:8000').rstrip('/')
+# Syria Healthcare (jobs and news) and SyriaHC (doctors, labs, hospitals, pregnancy).
+BASE = os.environ.get('SITE_URL', 'http://127.0.0.1:8001').rstrip('/')
+HEALTH = os.environ.get('HEALTH_URL', 'http://127.0.0.1:8000').rstrip('/')
 HOME, JOBS, NEWS = BASE + '/', BASE + '/jobs.html', BASE + '/news.html'
-PAGES = ['', 'jobs.html', 'doctors.html', 'hospitals.html', 'labs.html', 'pregnancy.html', 'news.html', 'about.html', '404.html']
+PAGES = ([BASE + '/' + name for name in ['', 'jobs.html', 'news.html', 'about.html', '404.html']] +
+         [HEALTH + '/' + name for name in ['', 'doctors.html', 'hospitals.html', 'labs.html', 'pregnancy.html', '404.html']])
 preview = Path(__file__).resolve().parents[1] / ".preview"
 preview.mkdir(exist_ok=True)
 now = datetime.now(timezone.utc)
@@ -60,16 +64,17 @@ with sync_playwright() as p:
     page.screenshot(path=str(preview / "desktop.png"), full_page=True)
     page.screenshot(path=str(preview / "desktop-top.png"))
     # Links shared before the site had separate pages still arrive on the right page.
-    page.goto(HOME + '#hospitals', wait_until="networkidle")
-    expect(page).to_have_url(re.compile(r'/hospitals\.html$'))
+    page.goto(HOME + '#jobs', wait_until="networkidle")
+    expect(page).to_have_url(re.compile(r'/jobs\.html$'))
     page.goto(NEWS, wait_until="networkidle")
     if len(actual_news) > 6:
         page.locator('#moreNews').click()
         expect(page.locator('#newsList li')).to_have_count(min(12, len(actual_news)))
         expect(page.locator('#newsList li').nth(6).locator('.card-title a')).to_be_focused()
     for language in ("en", "ar"):
-        for name in PAGES:
-            page.goto(BASE + '/' + name, wait_until="networkidle")
+        for url in PAGES:
+            name = ('health-' if url.startswith(HEALTH) else '') + url.rsplit('/', 1)[1]
+            page.goto(url, wait_until="networkidle")
             if page.locator("html").get_attribute("lang") != language:
                 page.locator("#langToggle").click()
             for width in (320, 390, 768, 1440):
@@ -217,18 +222,18 @@ with sync_playwright() as p:
     app = browser.new_context(viewport={"width": 390, "height": 844})
     app_page = app.new_page()
     app_page.on("pageerror", lambda error: errors.append(str(error)))
-    app_page.goto(HOME, wait_until="networkidle")
+    app_page.goto(HEALTH + '/', wait_until="networkidle")
     manifest = app_page.evaluate("fetch(document.querySelector('link[rel=manifest]').href).then(r => r.json())")
     assert manifest['display'] == 'standalone' and manifest['start_url'] == './', manifest
     for icon in manifest['icons'] + [{'src': 'assets/apple-touch-icon.png'}]:
-        assert app_page.request.get(BASE + '/' + icon['src']).headers['content-type'] == 'image/png', icon
+        assert app_page.request.get(HEALTH + '/' + icon['src']).headers['content-type'] == 'image/png', icon
     app_page.evaluate("navigator.serviceWorker.ready")
     app_page.wait_for_function("navigator.serviceWorker.controller !== null")
     app_page.wait_for_function("caches.keys().then(k => k.some(n => n.startsWith('shc-site-')))")
     app.set_offline(True)
-    app_page.goto(BASE + '/hospitals.html')
+    app_page.goto(HEALTH + '/hospitals.html')
     expect(app_page.locator('#hospitalsList li').first).to_be_visible()
-    app_page.goto(BASE + '/never-saved.html')
+    app_page.goto(HEALTH + '/never-saved.html')
     expect(app_page.locator('h1')).to_have_text('You are offline.')
     app_page.locator('#langToggle').click()
     expect(app_page.locator('h1')).to_have_text('أنت غير متصل بالإنترنت.')

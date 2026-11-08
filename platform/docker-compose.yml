@@ -59,10 +59,12 @@ services:
     environment:
       APP_DOMAIN: ${APP_DOMAIN}
       SITE_DOMAIN: ${SITE_DOMAIN:?Set SITE_DOMAIN in .env}
+      NEWS_DOMAIN: ${NEWS_DOMAIN:?Set NEWS_DOMAIN in .env}
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
-      # The public website, published by website/update-website.sh (a fixed folder, so Caddy always sees the latest files).
+      # The public websites, published by website/update-website.sh (fixed folders, so Caddy always sees the latest files).
       - /opt/www:/srv/site:ro
+      - /opt/www-news:/srv/news:ro
       - caddy-data:/data
       - caddy-config:/config
 
