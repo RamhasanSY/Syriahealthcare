@@ -16,7 +16,7 @@ const env = process.env;
 let user = env.SMTP_USER;
 if (!user) {
     const rl = createInterface({input: process.stdin, output: process.stdout});
-    user = (await rl.question('Mailbox (SMTP user), e.g. noreply@syriahealthcare.com: ')).trim();
+    user = (await rl.question('Mailbox (SMTP user), e.g. noreply@syriahc.com: ')).trim();
     rl.close();
 }
 const password = env.SMTP_PASSWORD || await askHidden(`Password of ${user}: `);

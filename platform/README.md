@@ -179,8 +179,8 @@ Backups: a compressed database dump and an archive of the encrypted documents ar
 Updates: the website updates itself (see step 4; `journalctl -u update-website` shows what it did). The platform does not: run `git pull && docker compose up -d --build` in `platform/` after platform changes. Database changes in `migrations/` are applied automatically on start.
 
 ## Before going live
-- Create a mailbox for sending (e.g. `noreply@syriahealthcare.com` at STRATO, its own mailbox rather than an alias, with Catchall off) and put its SMTP details in `.env`. The server does not start without them. Check it with `npm run test-mail -- you@example.com` (asks for the password, hidden), or on the server with `docker compose exec app node src/test-mail.js you@example.com`.
-- Add the domain's SPF record (`v=spf1 redirect=_spf.strato.com`) and a DMARC record (`_dmarc`: `v=DMARC1; p=none; rua=mailto:webmaster@syriahealthcare.com`), so emails do not land in spam. STRATO's DKIM is already active.
+- Create a mailbox for sending (e.g. `noreply@syriahc.com` at STRATO, its own mailbox rather than an alias, with Catchall off) and put its SMTP details in `.env`. The server does not start without them. Check it with `npm run test-mail -- you@example.com` (asks for the password, hidden), or on the server with `docker compose exec app node src/test-mail.js you@example.com`.
+- The sending domain needs an SPF record (`v=spf1 redirect=_spf.strato.com`), STRATO's DKIM and a DMARC record (`_dmarc`), so emails do not land in spam. syriahc.com has all three at STRATO.
 - Choose an SMS provider that delivers to Syrian numbers, and adapt `src/sms.js` to its API if it is not "POST JSON with a bearer token".
 - Complete and legally review `public/privacy.html` (it is marked DRAFT).
 - Check the Ministry of Health's health-app licensing requirements: https://moh.gov.sy/health-app-licensing
