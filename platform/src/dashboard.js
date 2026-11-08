@@ -2,7 +2,7 @@
 // Patients get an email and/or a WhatsApp message (or an SMS where WhatsApp is not possible) when the doctor confirms, declines or cancels.
 import {HttpError, requireRole} from './auth.js';
 import {audit} from './db.js';
-import {sendAppointmentUpdate} from './messaging.js';
+import {sendAppointmentUpdate, whatsappReaches} from './messaging.js';
 import {appointmentEmail, sendEmail} from './notify.js';
 
 const TZ = 'Asia/Damascus';
@@ -88,7 +88,8 @@ async function notifyPatient(app, request, appointment) {
         await sendEmail(app, info.email, appointmentEmail(info, status,
             {doctorName: info.doctor_name, when, address: info.clinic_address, note: appointment.status_note}, app.config.appOrigin));
     }
-    if (!info.phone) return;
+    // No SMS gateway yet (SMS_PROVIDER=none) and no WhatsApp for this number: there is no way to text the patient.
+    if (!info.phone || (app.sms.available === false && !whatsappReaches(app, info.phone))) return;
     const reason = appointment.status_note || (info.language === 'en' ? 'no reason given' : 'دون ذكر سبب');
     try {
         await sendAppointmentUpdate(app, request, info.phone, {

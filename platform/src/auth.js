@@ -2,7 +2,7 @@ import {facilityKinds} from './catalog.js';
 import {audit, transaction} from './db.js';
 import {phoneSignInAvailable, sendCode} from './messaging.js';
 import {emailCodeEmail, passwordChangedEmail, resetEmail, sendEmail, staffAddressEmail, welcomeEmail} from './notify.js';
-import {dummyPasswordHash, hashPassword, newOtp, newToken, normalizeEmail, normalizePhone, otpHash, passwordProblem, sameHash, sha256, verifyPassword} from './security.js';
+import {dummyPasswordHash, hashPassword, newOtp, newToken, normalizeEmail, normalizePhone, otpHash, passwordProblem, rateLimitKey, sameHash, sha256, verifyPassword} from './security.js';
 
 export const SESSION_COOKIE = 'shc_session';
 const OTP_MINUTES = 5, OTP_PER_PHONE = 3, OTP_WINDOW_MINUTES = 15, OTP_MAX_ATTEMPTS = 5;
@@ -52,7 +52,7 @@ export function requireRole(...roles) {
 
 // Per network address. Mobile carriers often share one address among many customers, so these are generous;
 // the per-phone and per-account limits above do the real protection.
-const ipLimit = max => ({rateLimit: {max, timeWindow: '15 minutes'}});
+const ipLimit = max => ({rateLimit: {max, timeWindow: '15 minutes', keyGenerator: request => rateLimitKey(request.ip)}});
 
 export default async function authRoutes(app) {
     // Patients: request a sign-in code, by WhatsApp or Telegram where possible, otherwise by SMS.
@@ -146,26 +146,36 @@ export default async function authRoutes(app) {
     }, async (request, reply) => {
         const email = normalizeEmail(request.body.email);
         if (!email) throw new HttpError(400, 'invalid_email', 'Enter a valid email address.');
-        const {rows: [counts]} = await app.pg.query(
-            `SELECT count(*) FILTER (WHERE email = $1 AND created_at > now() - make_interval(mins => $2))::int AS recent,
-                    count(*) FILTER (WHERE email = $1)::int AS today,
-                    count(*) FILTER (WHERE created_at > now() - interval '1 hour')::int AS hour
-             FROM otp_codes WHERE email IS NOT NULL AND created_at > now() - interval '1 day'`, [email, OTP_WINDOW_MINUTES]);
-        if (counts.recent >= OTP_PER_PHONE || counts.today >= EMAIL_CODES_PER_DAY) {
-            throw new HttpError(429, 'too_many_codes', 'Too many codes requested. Please wait 15 minutes and try again.');
-        }
-        if (counts.hour >= EMAIL_CODES_PER_HOUR_TOTAL) {
-            request.log.error('Hourly limit of sign-in emails reached');
-            throw new HttpError(503, 'try_later', 'Too many sign-in requests right now. Please try again in a few minutes.');
-        }
-        const {rows: [account]} = await app.pg.query('SELECT * FROM users WHERE email = $1', [email]);
-        const staff = Boolean(account) && account.role !== 'patient';
-        // Staff addresses get a row too (never usable), so the same limits stop anyone flooding their inbox.
         const code = newOtp();
-        const {rows: [otp]} = await app.pg.query(
-            `INSERT INTO otp_codes (email, code_hash, expires_at, consumed_at, ip)
-             VALUES ($1, $2, now() + make_interval(mins => $3), CASE WHEN $5 THEN now() END, $4) RETURNING id`,
-            [email, otpHash(app.config.otpSecret, 'email:' + email, code), EMAIL_CODE_MINUTES, request.ip, staff]);
+        // One request per address at a time, so parallel requests cannot all pass the count. A request that finds the
+        // address busy is refused rather than kept waiting, which would hold one of the few database connections.
+        const {account, staff, otp} = await transaction(app.pg, async db => {
+            const {rows: [lock]} = await db.query('SELECT pg_try_advisory_xact_lock(hashtext($1)) AS ok', ['otp-email:' + email]);
+            if (!lock.ok) throw new HttpError(429, 'too_many_codes', 'Too many codes requested. Please wait 15 minutes and try again.');
+            const {rows: [counts]} = await db.query(
+                `SELECT count(*) FILTER (WHERE email = $1 AND created_at > now() - make_interval(mins => $2))::int AS recent,
+                        count(*) FILTER (WHERE email = $1)::int AS today,
+                        count(*) FILTER (WHERE created_at > now() - interval '1 hour')::int AS hour
+                 FROM otp_codes WHERE email IS NOT NULL AND created_at > now() - interval '1 day'`, [email, OTP_WINDOW_MINUTES]);
+            if (counts.today >= EMAIL_CODES_PER_DAY) {
+                throw new HttpError(429, 'too_many_codes_today', 'Too many codes requested today. Please try again tomorrow.');
+            }
+            if (counts.recent >= OTP_PER_PHONE) {
+                throw new HttpError(429, 'too_many_codes', 'Too many codes requested. Please wait 15 minutes and try again.');
+            }
+            if (counts.hour >= EMAIL_CODES_PER_HOUR_TOTAL) {
+                request.log.error('Hourly limit of sign-in emails reached');
+                throw new HttpError(503, 'try_later', 'Too many sign-in requests right now. Please try again in a few minutes.');
+            }
+            const {rows: [account]} = await db.query('SELECT * FROM users WHERE email = $1', [email]);
+            const staff = Boolean(account) && account.role !== 'patient';
+            // Staff addresses get a row too, so the same limits stop anyone flooding their inbox. Its hash is of a random
+            // value that is never sent and cannot match a 6-digit code, so verifying answers exactly as for any address.
+            const {rows: [otp]} = await db.query(
+                `INSERT INTO otp_codes (email, code_hash, expires_at, ip) VALUES ($1, $2, now() + make_interval(mins => $3), $4) RETURNING id`,
+                [email, otpHash(app.config.otpSecret, 'email:' + email, staff ? newToken() : code), EMAIL_CODE_MINUTES, request.ip]);
+            return {account, staff, otp};
+        });
         try {
             // Sent directly rather than through sendEmail(), which only logs failures: the patient must know when no code is coming.
             await app.mail.send({to: email, ...(staff ? staffAddressEmail(account, app.config.appOrigin)

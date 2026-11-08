@@ -51,7 +51,21 @@ export function normalizePhone(raw, {landline = false} = {}) {
     return /^\+[1-9]\d{7,14}$/.test(digits) ? digits : null;
 }
 
+// One plain address only: mail software reads commas, semicolons, angle brackets, quotes and the like as address
+// lists or display names, so "x,victim@example.org" would reach victim@example.org past the per-address limits.
 export const normalizeEmail = raw => {
     const email = String(raw || '').trim().toLowerCase();
-    return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email) && email.length <= 254 ? email : null;
+    const part = '[^@\\s,;:<>"()\\[\\]\\\\]+';
+    return new RegExp(`^${part}@${part}\\.${part}$`).test(email) && email.length <= 254 ? email : null;
 };
+
+// Rate limits count per IPv4 address but per IPv6 /64 network: one connection usually gets a whole /64,
+// so counting single IPv6 addresses would give a single attacker billions of fresh limits.
+export function rateLimitKey(ip) {
+    const address = String(ip || '').replace(/^::ffff:(?=\d+\.)/i, '').split('%')[0];
+    if (!address.includes(':')) return address;
+    const [head, tail] = address.split('::');
+    const left = head ? head.split(':') : [], right = tail ? tail.split(':') : [];
+    const groups = tail === undefined ? left : [...left, ...Array(Math.max(0, 8 - left.length - right.length)).fill('0'), ...right];
+    return groups.slice(0, 4).map(group => (parseInt(group, 16) || 0).toString(16)).join(':') + '::/64';
+}

@@ -19,7 +19,8 @@ export function createMail(config, log) {
         });
         return {
             async send({to, subject, text}) {
-                await transport.sendMail({from: config.mailFrom, to, subject, text});
+                // An address object is used as it is; a plain string would be parsed again as a possible list of addresses.
+                await transport.sendMail({from: config.mailFrom, to: {name: '', address: to}, subject, text});
             }
         };
     }

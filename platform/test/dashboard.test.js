@@ -103,6 +103,17 @@ describe('doctor dashboard', () => {
         assert.equal(res.json().appointment.status, 'confirmed');
         await broken.close();
     });
+
+    test('without an SMS gateway, no text is attempted for a phone patient', async () => {
+        const {doctor, id} = await requested();
+        let attempts = 0;
+        const noGateway = {available: false, async send() { attempts++; throw new Error('No SMS provider is configured'); }};
+        const noSms = await buildApp({config: {...config, smsProvider: 'none'}, pool, sms: noGateway, logger: false});
+        const res = await noSms.inject({method: 'POST', url: `/api/doctor/appointments/${id}/confirm`, payload: {}, headers: {origin, cookie: doctor.cookie}});
+        assert.equal(res.json().appointment.status, 'confirmed');
+        assert.equal(attempts, 0);
+        await noSms.close();
+    });
 });
 
 describe('patients with an email address', () => {

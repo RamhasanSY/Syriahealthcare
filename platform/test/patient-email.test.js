@@ -96,7 +96,7 @@ describe('patient sign-in by email', () => {
         await pool.query("UPDATE otp_codes SET created_at = now() - interval '4 hours' WHERE created_at > now() - interval '1 hour'");
         assert.equal((await request()).statusCode, 202, 'tenth code of the day');
         await pool.query("UPDATE otp_codes SET created_at = now() - interval '5 hours' WHERE created_at > now() - interval '1 hour'");
-        assert.equal((await request()).json().error, 'too_many_codes', 'eleventh code of the day');
+        assert.equal((await request()).json().error, 'too_many_codes_today', 'eleventh code of the day');
         assert.equal((await request('other@example.org')).statusCode, 202, 'other addresses are not affected');
     });
 
@@ -108,7 +108,16 @@ describe('patient sign-in by email', () => {
         const hint = mail.sent.filter(m => m.to === 'dr@example.org').at(-1);
         assert.doesNotMatch(hint.subject + hint.text, /\b\d{6}\b/, 'no code in the email');
         assert.match(hint.text, /\/staff/);
-        assert.equal((await post('/api/auth/email/verify', {email: 'dr@example.org', code: '123456'})).json().error, 'code_expired');
+        // Checking a code must not tell a staff address apart from any other address that asked for a code.
+        await request('someone@example.org');
+        const answers = async address => {
+            const errors = [];
+            for (let i = 0; i < 6; i++) errors.push((await post('/api/auth/email/verify', {email: address, code: '123456'})).json().error);
+            return errors;
+        };
+        const expected = [...Array(5).fill('wrong_code'), 'too_many_attempts'];
+        assert.deepEqual(await answers('dr@example.org'), expected);
+        assert.deepEqual(await answers('someone@example.org'), expected);
         for (let i = 0; i < 2; i++) await request('dr@example.org');
         assert.equal((await request('dr@example.org')).json().error, 'too_many_codes', 'nobody can flood a staff inbox');
     });
@@ -125,6 +134,21 @@ describe('patient sign-in by email', () => {
         assert.equal(mail.sent.length, 0);
     });
 
+    test('parallel requests for one address cannot get past the limit', async () => {
+        const answers = await Promise.all(Array.from({length: 12}, () => request()));
+        assert.ok(answers.every(res => [202, 429].includes(res.statusCode)));
+        const {rows: [{n}]} = await pool.query('SELECT count(*)::int AS n FROM otp_codes WHERE email = $1', [EMAIL]);
+        assert.ok(n <= 3, `${n} codes`);
+        assert.equal(mail.sent.length, n);
+    });
+
+    test('an address written as a list of addresses is refused', async () => {
+        for (const address of ['x0,lina@example.org', 'x;lina@example.org', 'x<lina@example.org>', '"x"@example.org', 'x:lina@example.org']) {
+            assert.equal((await request(address)).json().error, 'invalid_email', address);
+        }
+        assert.equal(mail.sent.length, 0);
+    });
+
     test('if the email cannot be sent, the patient is told and the code cannot be used', async () => {
         const failing = {sent: [], async send() { throw new Error('SMTP down'); }};
         const broken = await buildApp({config, pool, sms: createSms(config), mail: failing, logger: false});
@@ -134,6 +158,17 @@ describe('patient sign-in by email', () => {
         const {rows: [row]} = await pool.query('SELECT consumed_at FROM otp_codes');
         assert.ok(row.consumed_at);
         await broken.close();
+    });
+});
+
+describe('rate limits', () => {
+    test('count per IPv4 address and per IPv6 /64 network', async () => {
+        const {rateLimitKey} = await import('../src/security.js');
+        assert.equal(rateLimitKey('203.0.113.5'), '203.0.113.5');
+        assert.equal(rateLimitKey('::ffff:203.0.113.5'), '203.0.113.5');
+        assert.equal(rateLimitKey('2a01:239:48f:3900::1'), '2a01:239:48f:3900::/64');
+        assert.equal(rateLimitKey('2a01:0239:048f:3900:aaaa:bbbb:cccc:dddd'), '2a01:239:48f:3900::/64');
+        assert.equal(rateLimitKey('2001:db8::1'), '2001:db8:0:0::/64');
     });
 });
 

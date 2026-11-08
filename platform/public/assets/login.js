@@ -24,8 +24,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             select(i === 0 ? 1 : 0, true);
         });
     });
-    const methods = await api('/api/auth/methods');
-    if (methods.ok && methods.data.phone) $('methodTabs').hidden = false;
+    // Not awaited: the forms below must be ready at once, or pressing Enter on a slow connection would submit the
+    // email address the browser's way, into the page address (and the server log).
+    api('/api/auth/methods').then(methods => {
+        if (methods.ok && methods.data.phone) $('methodTabs').hidden = false;
+    });
 
     // "name@gmial.com" -> "Did you mean name@gmail.com?" A typo here means the code never arrives.
     const DOMAINS = ['gmail.com', 'hotmail.com', 'outlook.com', 'yahoo.com', 'icloud.com', 'live.com'];
