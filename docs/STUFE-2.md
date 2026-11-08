@@ -199,3 +199,25 @@ Stand: 8. November 2026. Grundlage sind die Analyse der Abläufe für Patienten,
 5. **2d**: lesender Teil sofort, schreibender Teil mit Pilotlabor.
 
 Jeder Teilschritt ist ein eigener Pull Request mit Tests. Live geht er erst, wenn du zustimmst. Nur neue Migrationen, bestehende werden nie geändert. Kein Umschreiben der Git-Historie (`AGENTS.md`).
+
+## 8. Dienste je Teil (Stand der Umsetzung)
+
+Jeder Dienst ist ein Modul unter `platform/src/` mit eigenen Tests. Die Schnittstellen nutzen immer dieselbe Prüfstelle.
+
+| Teil | Dienst | Zweck | Status |
+|---|---|---|---|
+| 2.0 | `src/fhir/` (Verzeichnis, Codesysteme, Metadaten) | öffentliche FHIR-R4-Schnittstelle | ✅ live (PR #21) |
+| 2a | `src/outbox.js` (E-Mail-Warteschlange) | E-Mails mit Wiederholung und Aufgabe nach 8 Versuchen | ✅ gebaut, Branch `stage2a-outbox` |
+| 2a | Profiländerungen prüfen (`pending_changes`) | Ärzte bleiben aktiv, Admin prüft Unterschiede | ⏳ nächster Schritt |
+| 2a | Laborsuche über alle Befunde | Suche nach Name, Telefon, Test, Datum | ⏳ |
+| 2a | Admin-Zweitfaktor (E-Mail-Code) | zweiter Faktor für Admins | ⏳ |
+| 2a | Verschlüsselte Datensicherung außerhalb des Servers | restic, zweiter Anbieter | ⏳ braucht Bestellung |
+| 2b | `src/healthfile.js`: Patientenstamm, Akte, Uploads | Gesundheitsakte, Befund übernehmen mit zweitem Merkmal | ⏳ (Akte bleibt aus, bis Datenschutz geklärt) |
+| 2b | Patientennummer (`src/patient-number.js`) | SHC-XXXX-XXXX-X mit Prüfzeichen | ⏳ |
+| 2b | MDM-Stammdaten (Patient-Index, Zusammenführung) | doppelte Personen verbinden | ⏳ |
+| 2c | `src/access.js`: Prüfstelle für alle Akten-Routen | eine Stelle für `/api`, `/fhir`, `/hl7v2` | ⏳ |
+| 2c | Freigaben und Freigabecodes | Teilen einzelner Einträge, 15-Minuten-QR | ⏳ |
+| 2c | Zugriffsprotokoll (IHE BALP) | „Wer hat meine Akte geöffnet?“ | ⏳ |
+| 2d | `src/oauth.js`: OAuth 2.0 Client Credentials | Zugang für Labor- und Klinik-Software | ⏳ |
+| 2d | `src/hl7v2/`: ORU^R01, MDM^T02, ACK | Befunde und Dokumente per HL7 v2 | ⏳ |
+| 2d | FHIR schreiben (Transaktion, MHD ITI-65) | Befunde und Dokumente per FHIR | ⏳ |

@@ -7,6 +7,14 @@ const pool = createPool(config.databaseUrl);
 await migrate(pool);
 const app = await buildApp({config, pool});
 
+import {deliverDue} from './outbox.js';
+
+// Send queued emails every 5 minutes; failed ones are retried by the queue itself.
+setInterval(() => {
+    deliverDue({pool, mail: app.mail, log: app.log})
+        .catch(error => app.log.error({err: error}, 'Email queue failed'));
+}, 300_000).unref();
+
 // Remove expired sessions, codes and password links every hour.
 setInterval(() => {
     pool.query("DELETE FROM sessions WHERE expires_at < now(); DELETE FROM otp_codes WHERE created_at < now() - interval '1 day'; DELETE FROM login_failures WHERE created_at < now() - interval '1 day'; DELETE FROM password_resets WHERE created_at < now() - interval '1 day'")
