@@ -1,0 +1,9 @@
+[Unit]
+Description=Publish the public website from the repository
+After=network-online.target docker.service
+Wants=network-online.target
+Requires=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/opt/syriahealthcare/platform/website/update-website.sh

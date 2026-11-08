@@ -1,6 +1,6 @@
 # SyriaHC
 
-A bilingual interface for original healthcare news about Syria and current healthcare and NGO vacancies in Syria. Static HTML/CSS/JavaScript hosted on GitHub Pages at https://syriahc.com/.
+A bilingual interface for original healthcare news about Syria and current healthcare and NGO vacancies in Syria. Static HTML/CSS/JavaScript served by the company's own server at https://syriahc.com/ (next to the booking platform at app.syriahc.com).
 
 ## How content is selected
 
@@ -32,7 +32,7 @@ Browser requests time out after 15 seconds. Failed background refreshes retain e
 
 The updater runs source requests with bounded retries and timeouts, atomically writes the content/status JSON, commits changes, rebases over concurrent repository changes, and pushes them to `main`.
 
-`.github/workflows/deploy.yml` validates code, then deploys on a main-branch push and after an update run completes. Each run attempt uses a unique Pages artifact name so rerunning a failed deployment cannot select duplicate artifacts. The existing CNAME preserves `syriahc.com`. Pages must use GitHub Actions as its deployment source.
+The website is not hosted on GitHub. The company server checks for new commits on `main` every 10 minutes, rebuilds the pages and serves them at `syriahc.com` (`platform/website/update-website.sh`, set up as described in `platform/README.md`, "Install on the company server"). New news and jobs therefore appear on the site within about 10 minutes of an update run. `.github/workflows/website.yml` only checks that the collector tests pass and the pages build, on every push and pull request.
 
 For failed-run notifications, enable GitHub Actions notifications in your own GitHub account. Detailed source results appear in each update run's summary and on the website's source list.
 

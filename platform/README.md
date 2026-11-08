@@ -1,6 +1,6 @@
 # SyriaHC platform
 
-Accounts and (in later steps) appointment booking for patients and doctors. It runs on the company's own server at `app.syriahc.com`, separately from the public website, which stays on GitHub Pages.
+Accounts and (in later steps) appointment booking for patients and doctors. It runs on the company's own server at `app.syriahc.com`. The same server also serves the public website at `syriahc.com` (see "Install on the company server").
 
 **Status: Stage 1, steps 1–5 of 6 done:** accounts and sign-in, doctor profiles and approval, opening hours, patient booking, and the doctor dashboard. Labs, imaging centres, hospitals and clinics can also register and get listed on syriahc.com after review.
 
@@ -161,16 +161,22 @@ Open http://127.0.0.1:3000. The demo data has three approved doctors, an approve
 
 ## Install on the company server
 
-1. Use a Linux server with Docker, and open ports 80 and 443.
-2. Point DNS: add an `A` record for `app.syriahc.com` with the server's IP address.
-3. Copy this `platform` folder to the server, then run `cp .env.example .env` and fill in `.env` (see the comments in the file).
-4. Run `docker compose up -d --build`. Caddy gets the HTTPS certificate automatically.
-5. Create the first admin: `docker compose exec app node src/create-admin.js admin@company.com "Name"`.
-6. Check that https://app.syriahc.com/api/health returns `{"ok":true}`.
+1. Use a Linux server with Docker, git and rsync, and open ports 80 and 443.
+2. Point DNS: add `A` (and `AAAA`) records for `app.syriahc.com`, `syriahc.com` and `www.syriahc.com` with the server's IP addresses.
+3. Clone the repository to `/opt/syriahealthcare`, then in `platform/` run `cp .env.example .env` and fill in `.env` (see the comments in the file).
+4. Publish the website once and let it update itself every 10 minutes:
+   ```sh
+   /opt/syriahealthcare/platform/website/update-website.sh --force
+   cp /opt/syriahealthcare/platform/website/update-website.{service,timer} /etc/systemd/system/
+   systemctl daemon-reload && systemctl enable --now update-website.timer
+   ```
+5. Run `docker compose up -d --build`. Caddy gets the HTTPS certificates automatically.
+6. Create the first admin: `docker compose exec app node src/create-admin.js admin@company.com "Name"`.
+7. Check that https://app.syriahc.com/api/health returns `{"ok":true}` and https://syriahc.com shows the website.
 
 Backups: a compressed database dump and an archive of the encrypted documents are written to `platform/backups/` every night, and the last 14 days are kept. **Keep `DOCUMENT_KEY` safe and separate from the backups: without it, the document backups cannot be opened, and with it anyone holding the backups can read the licences.** Copy these files off the server regularly (to another machine or storage), because a backup on the same disk does not survive a disk failure.
 
-Updates: `git pull && docker compose up -d --build`. Database changes in `migrations/` are applied automatically on start.
+Updates: the website updates itself (see step 4; `journalctl -u update-website` shows what it did). The platform does not: run `git pull && docker compose up -d --build` in `platform/` after platform changes. Database changes in `migrations/` are applied automatically on start.
 
 ## Before going live
 - Create a mailbox for sending (e.g. `noreply@syriahealthcare.com` at STRATO, its own mailbox rather than an alias, with Catchall off) and put its SMTP details in `.env`. The server does not start without them. Check it with `npm run test-mail -- you@example.com` (asks for the password, hidden), or on the server with `docker compose exec app node src/test-mail.js you@example.com`.

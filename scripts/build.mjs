@@ -6,7 +6,7 @@ import path from 'node:path';
 const root = fileURLToPath(new URL('../', import.meta.url));
 const output = path.join(root, 'dist');
 const site = 'https://syriahc.com/';
-const files = ['sources.json', 'CNAME', 'manifest.webmanifest', 'assets', 'data'];
+const files = ['sources.json', 'manifest.webmanifest', 'assets', 'data'];
 
 // Every page shares pages/_layout.html; `nav` pages appear in the header menu, all pages in the footer.
 const pages = [
@@ -94,4 +94,4 @@ const urls = pages.filter(p => p.sitemap !== false).map(p => `  <url><loc>${site
 await writeFile(path.join(output, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join('\n')}\n</urlset>\n`);
 await writeFile(path.join(output, 'robots.txt'), `User-agent: *\nAllow: /\n\nSitemap: ${site}sitemap.xml\n`);
 await writeFile(path.join(output, '.nojekyll'), '');
-console.log(`Built ${pages.length} pages in dist/ (assets v${version}, feeds, sitemap, app manifest, service worker and custom domain).`);
+console.log(`Built ${pages.length} pages in dist/ (assets v${version}, feeds, sitemap, app manifest and service worker).`);

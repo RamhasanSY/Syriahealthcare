@@ -1,4 +1,4 @@
-# Production stack: PostgreSQL, the platform, HTTPS (Caddy) and nightly database backups.
+# Production stack: PostgreSQL, the platform, HTTPS (Caddy, which also serves the public website) and nightly database backups.
 # Start with: docker compose up -d --build      (settings come from .env — copy .env.example first)
 services:
   db:
@@ -58,8 +58,11 @@ services:
       - "443:443"
     environment:
       APP_DOMAIN: ${APP_DOMAIN}
+      SITE_DOMAIN: ${SITE_DOMAIN:?Set SITE_DOMAIN in .env}
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      # The public website, published by website/update-website.sh (a fixed folder, so Caddy always sees the latest files).
+      - /opt/www:/srv/site:ro
       - caddy-data:/data
       - caddy-config:/config
 
