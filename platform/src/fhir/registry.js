@@ -1,0 +1,38 @@
+// The one list of FHIR resources, interactions and search parameters. /metadata (CapabilityStatement) is built from it,
+// and unknown search parameters are refused against it, so the published contract cannot drift from the code.
+import {PUBLISHED} from './terminology.js';
+
+export const RESOURCES = {
+    Practitioner: {read: true, search: {name: 'string', active: 'token'}},
+    PractitionerRole: {read: true, search: {specialty: 'token', practitioner: 'reference', location: 'reference', active: 'token'}},
+    Location: {read: true, search: {name: 'string', type: 'token', active: 'token'}},
+    Organization: {read: true, search: {name: 'string', type: 'token', active: 'token'}},
+    HealthcareService: {read: true, search: {name: 'string', category: 'token', type: 'token', active: 'token'}},
+    Schedule: {read: true, search: {}},
+    Slot: {read: true, search: {schedule: 'reference', start: 'date', status: 'token'}},
+    CodeSystem: {read: true, search: {}},
+    ValueSet: {read: true, search: {}},
+    NamingSystem: {read: true, search: {}},
+    Endpoint: {read: true, search: {}}
+};
+
+// Parameters every search accepts.
+export const COMMON_PARAMS = ['_count'];
+
+export function capabilityStatement(base) {
+    return {
+        resourceType: 'CapabilityStatement', status: 'active', experimental: false, date: `${PUBLISHED}T00:00:00Z`,
+        publisher: 'SyriaHC', kind: 'instance',
+        software: {name: 'SyriaHC platform', version: '2.0'},
+        implementation: {description: 'SyriaHC public directory (IHE mCSD style), HL7 FHIR R4', url: base},
+        fhirVersion: '4.0.1', format: ['json'], acceptUnknown: 'no',
+        rest: [{
+            mode: 'server',
+            resource: Object.entries(RESOURCES).map(([type, def]) => ({
+                type,
+                interaction: [...(def.read ? [{code: 'read'}] : []), ...(Object.keys(def.search).length ? [{code: 'search-type'}] : [])],
+                searchParam: Object.entries(def.search).map(([name, type]) => ({name, type}))
+            }))
+        }]
+    };
+}

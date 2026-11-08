@@ -15,6 +15,7 @@ import dashboardRoutes from './dashboard.js';
 import facilityRoutes from './facilities.js';
 import resultRoutes from './results.js';
 import {createDocumentStore} from './documents.js';
+import fhirRoutes from './fhir/index.js';
 
 const UNSAFE = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
 
@@ -78,6 +79,7 @@ export async function buildApp({config, pool, sms, whatsapp, telegram, mail, doc
     await app.register(dashboardRoutes);
     await app.register(facilityRoutes);
     await app.register(resultRoutes);
+    await app.register(fhirRoutes, {prefix: '/fhir/r4'});
     await app.register(fastifyStatic, {root: fileURLToPath(new URL('../public/', import.meta.url)), extensions: ['html']});
     return app;
 }
