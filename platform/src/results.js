@@ -31,8 +31,21 @@ function qrSvg(text) {
     return qr.createSvgTag({cellSize: 4, margin: 4, scalable: true});
 }
 
+// The lab sees its own results, never which or how many doctors opened them (that would tell it where the patient goes).
 const labView = r => ({id: r.id, patient_name: r.patient_name, patient_phone: r.patient_phone, title: r.title, filename: r.filename,
-    created_at: r.created_at, code_expires_at: r.code_expires_at, doctors: r.doctors ?? 0});
+    created_at: r.created_at, code_expires_at: r.code_expires_at, code_expired: new Date(r.code_expires_at) <= new Date()});
+
+const PAGE = 50;
+const DATE = '^\\d{4}-\\d{2}-\\d{2}$';
+// Paging cursor: the exact creation time (microseconds, as text) and id of the last result shown.
+const encodeCursor = row => Buffer.from(JSON.stringify([row.cursor_at, row.id])).toString('base64url');
+function decodeCursor(raw) {
+    try {
+        const [at, id] = JSON.parse(Buffer.from(raw, 'base64url').toString('utf8'));
+        if (typeof at === 'string' && /^\d{4}-\d{2}-\d{2}T[\d:.]+Z$/.test(at) && /^[0-9a-f-]{36}$/.test(id)) return {at, id};
+    } catch (_) {}
+    return null;
+}
 const doctorView = r => ({id: r.id, title: r.title, patient_name: r.patient_name, patient_phone: r.patient_phone, lab_name: r.lab_name,
     mime: r.mime, created_at: r.created_at});
 
@@ -73,13 +86,34 @@ export default async function resultRoutes(app) {
 
     // ---- Lab side ----
 
-    app.get('/api/lab/results', facilityOnly, async request => {
+    // All of the lab's own results, newest first, 50 at a time. q finds a patient's name, the test, or a mobile number
+    // (the whole number in any usual form, or its last digits); from/to are days in Syria time.
+    app.get('/api/lab/results', {...facilityOnly, schema: {querystring: {type: 'object', additionalProperties: false, properties: {
+        q: {type: 'string', maxLength: 80}, from: {type: 'string', pattern: DATE}, to: {type: 'string', pattern: DATE},
+        cursor: {type: 'string', maxLength: 200}
+    }}}}, async request => {
         const lab = await loadLab(request.user.id);
+        const where = ['r.facility_id = $1'], args = [request.user.id];
+        const q = (request.query.q || '').trim();
+        if (q) {
+            const parts = [`r.patient_name ILIKE $${args.push('%' + q.replace(/[%_\\]/g, '\\$&') + '%')}`, `r.title ILIKE $${args.length}`];
+            const phone = normalizePhone(q), digits = q.replace(/\D/g, '');
+            if (phone) parts.push(`r.patient_phone = $${args.push(phone)}`);
+            else if (digits.length >= 4 && digits.length === q.replace(/[\s\-().+]/g, '').length) parts.push(`r.patient_phone LIKE $${args.push('%' + digits)}`);
+            where.push(`(${parts.join(' OR ')})`);
+        }
+        if (request.query.from) where.push(`r.created_at >= ($${args.push(request.query.from)}::date::timestamp AT TIME ZONE 'Asia/Damascus')`);
+        if (request.query.to) where.push(`r.created_at < (($${args.push(request.query.to)}::date + 1)::timestamp AT TIME ZONE 'Asia/Damascus')`);
+        if (request.query.cursor) {
+            const cursor = decodeCursor(request.query.cursor);
+            if (!cursor) throw new HttpError(400, 'invalid_cursor', 'This list link is not valid. Please search again.');
+            where.push(`(r.created_at, r.id) < ($${args.push(cursor.at)}::timestamptz, $${args.push(cursor.id)}::uuid)`);
+        }
         const {rows} = await app.pg.query(
-            `SELECT r.*, (SELECT count(*)::int FROM patient_file_results f WHERE f.result_id = r.id) AS doctors
-             FROM lab_results r WHERE r.facility_id = $1 AND r.created_at > now() - interval '90 days' ORDER BY r.created_at DESC LIMIT 200`,
-            [request.user.id]);
-        return {lab_name: lab.facility_name, results: rows.map(labView)};
+            `SELECT r.*, to_char(r.created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS.US"Z"') AS cursor_at
+             FROM lab_results r WHERE ${where.join(' AND ')} ORDER BY r.created_at DESC, r.id DESC LIMIT ${PAGE + 1}`, args);
+        const more = rows.length > PAGE, page = rows.slice(0, PAGE);
+        return {lab_name: lab.facility_name, results: page.map(labView), next_cursor: more ? encodeCursor(page.at(-1)) : null};
     });
 
     // Multipart form: patient_name, patient_phone and title first, then the file.
@@ -121,7 +155,7 @@ export default async function resultRoutes(app) {
         const lab = await loadLab(request.user.id), code = newResultCode();
         const {rows: [result]} = await app.pg.query(
             `UPDATE lab_results r SET code_hash = $3, code_expires_at = now() + make_interval(days => $4) WHERE r.id = $1 AND r.facility_id = $2
-             RETURNING r.*, (SELECT count(*)::int FROM patient_file_results f WHERE f.result_id = r.id) AS doctors`,
+             RETURNING r.*`,
             [request.params.id, request.user.id, codeHash(code), CODE_DAYS]);
         if (!result) throw new HttpError(404, 'not_found', 'Result not found.');
         await audit(app.pg, {actorId: request.user.id, action: 'result.new_code', targetId: result.id, ip: request.ip});

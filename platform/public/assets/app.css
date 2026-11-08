@@ -94,6 +94,11 @@ table.list thead th{border-top:0;color:var(--muted);font-size:13px;font-weight:6
 .field-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
 .field-row.two{grid-template-columns:repeat(2,minmax(0,1fr))}
 @media(max-width:620px){.field-row,.field-row.two{grid-template-columns:1fr}}
+/* Lab results search: query, from, to and buttons on one line on wide screens, stacked on phones. */
+.search-row{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr) minmax(0,1fr) auto;gap:12px;align-items:end;margin:8px 0 12px}
+.search-row .field{margin-bottom:0}
+.search-row .actions{margin-bottom:0}
+@media(max-width:760px){.search-row{grid-template-columns:1fr 1fr}.search-row .field:first-child,.search-row .actions{grid-column:1/-1}}
 .day-row{display:grid;grid-template-columns:150px 1fr;gap:10px 16px;align-items:start;padding:12px 0;border-top:1px solid var(--rule)}
 .day-row:first-child{border-top:0}
 .day-toggle{margin:0;align-items:center;min-height:44px}
