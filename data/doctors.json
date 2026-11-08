@@ -1,4 +1,18 @@
 {
-  "updated": null,
-  "items": []
+  "updated": "2026-11-08T22:08:51+00:00",
+  "platform_url": "https://app.syriahc.com",
+  "items": [
+    {
+      "name": "عثمان عبد الكريم ششة",
+      "specialty": "Psychiatry",
+      "specialty_ar": "طب نفسي",
+      "city": "Tartus",
+      "city_ar": "طرطوس",
+      "address": "مرضى الحياة, شارع الكورنيش, طرطوس",
+      "phone": "+3450912678",
+      "booking_url": "https://app.syriahc.com/book?doctor=5f6199e0-e6b3-4549-ac6a-f866a6b947fe",
+      "platform": true,
+      "hours": "خبرة ١٥ سنة في مجال الطب النفسي والاعصاب"
+    }
+  ]
 }

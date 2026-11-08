@@ -1,4 +1,31 @@
 {
   "updated": null,
-  "items": []
+  "items": [
+    {
+      "name": "مخبر آلاء",
+      "city": "Quneitra",
+      "city_ar": "القنيطرة",
+      "address": "الشارع العام بجانب الحديقة العامة, القنيطرة",
+      "phone": "+1782046938",
+      "type": "Medical laboratory",
+      "type_ar": "مخبر تحاليل طبية",
+      "platform": true,
+      "hours": "ليش",
+      "tests": [
+        "Blood count (CBC)",
+        "Hormones",
+        "Serology and immunology",
+        "Pregnancy tests",
+        "Pathology (biopsies)"
+      ],
+      "tests_ar": [
+        "تعداد دم عام",
+        "هرمونات",
+        "مصليات ومناعة",
+        "اختبارات الحمل",
+        "تشريح مرضي (خزعات)"
+      ]
+    }
+  ],
+  "platform_url": "https://app.syriahc.com"
 }
