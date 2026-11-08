@@ -1,7 +1,8 @@
 #!/bin/sh
 # Publishes the public website on this server: pulls the latest code and data (news and jobs are collected twice a
 # day by .github/workflows/update.yml), builds the pages with Node in a throw-away container and copies them to
-# /opt/www, which Caddy serves as SITE_DOMAIN. Runs every 10 minutes from update-website.timer; safe to run by hand.
+# /opt/www, which Caddy serves as SITE_DOMAIN (SyriaHC). The jobs and news website (dist-news/) is published by
+# GitHub Pages, see .github/workflows/deploy-news.yml. Runs every 10 minutes from update-website.timer; safe to run by hand.
 #   update-website.sh           rebuild only when something new was pulled (or nothing is published yet)
 #   update-website.sh --force   rebuild anyway
 set -eu

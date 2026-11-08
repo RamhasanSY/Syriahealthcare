@@ -1,4 +1,4 @@
-# Caddy obtains and renews the HTTPS certificates for all three addresses automatically.
+# Caddy obtains and renews the HTTPS certificates for all addresses automatically.
 
 # The booking platform.
 {$APP_DOMAIN} {
@@ -11,8 +11,7 @@
 }
 
 # The public website: static files that website/update-website.sh builds from the repository and puts in /srv/site.
-{$SITE_DOMAIN} {
-	root * /srv/site
+(website) {
 	encode zstd gzip
 	header {
 		Strict-Transport-Security "max-age=31536000"
@@ -38,6 +37,15 @@
 		output stdout
 		format json
 	}
+}
+
+# SyriaHC: doctors, labs, hospitals and pregnancy planning (in /srv/site).
+{$SITE_DOMAIN} {
+	root * /srv/site
+	# Jobs and news are on Syria Healthcare (NEWS_DOMAIN, on GitHub Pages); old links to them here are forwarded.
+	@jobs_and_news path /jobs /jobs.html /news /news.html /about /about.html /sources.json /data/news.* /data/jobs.* /data/status.json /data/editor.json
+	redir @jobs_and_news https://{$NEWS_DOMAIN}{uri} 302
+	import website
 }
 
 # www.syriahc.com -> syriahc.com

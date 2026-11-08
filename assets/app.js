@@ -1,9 +1,18 @@
 (() => {
     'use strict';
     const $ = id => document.getElementById(id);
-    // Links shared before the site had separate pages (e.g. /#jobs) open the new page instead.
-    const moved = {jobs: 'jobs.html', saved: 'jobs.html#saved', toolkit: 'jobs.html#toolkit', news: 'news.html', doctors: 'doctors.html', labs: 'labs.html',
-        hospitals: 'hospitals.html', pregnancy: 'pregnancy.html', about: 'about.html', sources: 'about.html#sources'};
+    // syriahealthcare.com runs on GitHub Pages, which cannot forward links: its "page not found" page sends old links to
+    // doctors, labs, hospitals and pregnancy planning on to SyriaHC.
+    const healthPage = document.documentElement.dataset.site === 'syriahealthcare' && window.location.pathname.match(/^\/(doctors|labs|hospitals|pregnancy)(\.html)?$/);
+    if (healthPage) {
+        window.location.replace('https://syriahc.com/' + healthPage[1] + '.html' + window.location.search + window.location.hash);
+        return;
+    }
+    // Links shared before the site had separate pages (e.g. syriahealthcare.com/#jobs) open the new page instead.
+    // Doctors, labs, hospitals and pregnancy planning have moved to SyriaHC.
+    const moved = {jobs: 'jobs.html', saved: 'jobs.html#saved', toolkit: 'jobs.html#toolkit', news: 'news.html', about: 'about.html', sources: 'about.html#sources',
+        doctors: 'https://syriahc.com/doctors.html', labs: 'https://syriahc.com/labs.html', hospitals: 'https://syriahc.com/hospitals.html',
+        pregnancy: 'https://syriahc.com/pregnancy.html'};
     const openMoved = () => {
         const target = moved[window.location.hash.slice(1)];
         if (target && $('homeJobs')) window.location.replace(target);
@@ -429,8 +438,8 @@
             const d = job.deadline.replace(/-/g, ''),
                 next = new Date(timestamp(job.deadline) + 86400000).toISOString().slice(0, 10).replace(/-/g, '');
             const esc = t => String(t).replace(/[\\;,]/g, m => '\\' + m).replace(/\r?\n/g, '\\n');
-            const ics = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//SyriaHC//EN', 'BEGIN:VEVENT',
-                'UID:' + d + '-' + Math.abs([...key(job)].reduce((h, c) => (h * 31 + c.charCodeAt(0)) | 0, 7)) + '@syriahc.com',
+            const ics = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Syria Healthcare//EN', 'BEGIN:VEVENT',
+                'UID:' + d + '-' + Math.abs([...key(job)].reduce((h, c) => (h * 31 + c.charCodeAt(0)) | 0, 7)) + '@syriahealthcare.com',
                 'DTSTAMP:' + new Date().toISOString().replace(/[-:]|\.\d{3}/g, ''),
                 'DTSTART;VALUE=DATE:' + d, 'DTEND;VALUE=DATE:' + next,
                 'SUMMARY:' + esc('Deadline: ' + value(job, 'title') + ' (' + (job.organisation || job.source) + ')'),

@@ -59,6 +59,8 @@ services:
     environment:
       APP_DOMAIN: ${APP_DOMAIN}
       SITE_DOMAIN: ${SITE_DOMAIN:?Set SITE_DOMAIN in .env}
+      # Where old links to jobs and news are forwarded (the Syria Healthcare website, on GitHub Pages).
+      NEWS_DOMAIN: ${NEWS_DOMAIN:-syriahealthcare.com}
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       # The public website, published by website/update-website.sh (a fixed folder, so Caddy always sees the latest files).

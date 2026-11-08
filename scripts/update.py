@@ -21,7 +21,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SOURCES = ROOT / 'sources.json'
 DATA = ROOT / 'data'
 VERSION = 2
-USER_AGENT = 'SyriaHCBot/2.0 (+https://syriahc.com)'
+USER_AGENT = 'SyriaHealthcareBot/2.0 (+https://syriahealthcare.com)'
 MAX_NEWS_DAYS = 45
 CACHE_HOURS = 72
 SYRIA = re.compile(r'\b(?:syria|syrian|damascus|aleppo|idlib|homs|hama|daraa|dar.a|raqqa|hasakah|azaz|deir\s+(?:ez[ -]?zor|ezzor|alzoor|azzur))\b|سوري[اة]|دمشق|حلب|إدلب|ادلب|حمص|حماة|درعا|الرقة|دير الزور|أعزاز', re.I)
@@ -633,7 +633,7 @@ def news_rss(items):
     """Original headlines and attribution for readers and publishing integrations."""
     rss = ElementTree.Element('rss', version='2.0')
     channel = ElementTree.SubElement(rss, 'channel')
-    for tag, value in [('title', 'SyriaHC - source news'), ('link', 'https://syriahc.com/#news'),
+    for tag, value in [('title', 'Syria Healthcare - source news'), ('link', 'https://syriahealthcare.com/news.html'),
                        ('description', 'Original healthcare headlines about Syria, with links to their publishers.')]:
         ElementTree.SubElement(channel, tag).text = value
     seen = set()
@@ -665,7 +665,7 @@ def jobs_rss(items):
     """Verified, still-open vacancies with employer attribution and deadlines."""
     rss = ElementTree.Element('rss', version='2.0')
     channel = ElementTree.SubElement(rss, 'channel')
-    for tag, value in [('title', 'SyriaHC - open vacancies'), ('link', 'https://syriahc.com/#jobs'),
+    for tag, value in [('title', 'Syria Healthcare - open vacancies'), ('link', 'https://syriahealthcare.com/jobs.html'),
                        ('description', 'Verified healthcare and NGO vacancies in Syria, linked to the original employer listing.')]:
         ElementTree.SubElement(channel, tag).text = value
     seen = set()
