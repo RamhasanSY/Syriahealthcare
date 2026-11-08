@@ -129,6 +129,17 @@ export function appointmentEmail(patient, status, {doctorName, when, address, no
     };
 }
 
+// Tells a doctor or facility what the administrator decided about held changes. Only the field names are listed.
+export function changeDecisionEmail(user, accepted, fields, note, origin) {
+    const list = fields.join(', ');
+    const en = accepted ? `Your changes were accepted: ${list}.` : `Your changes were not accepted: ${list}.${note ? `\n\n${note}` : ''}\n\nYou can edit your profile at ${origin}.`;
+    const ar = accepted ? `تم قبول تعديلاتك: ${list}.` : `لم تُقبل تعديلاتك: ${list}.${note ? `\n\n${note}` : ''}\n\nيمكنك تعديل ملفك على ${origin}.`;
+    return {
+        subject: (accepted ? 'Profile changes accepted' : 'Profile changes not accepted') + (user.language === 'en' ? ' — SyriaHC' : ' — صحة تك'),
+        text: both(user.language, `مرحباً ${user.name}،\n\n${ar}`, `Hello ${user.name},\n\n${en}`)
+    };
+}
+
 // Tells every admin that a profile is waiting for review.
 export async function notifyAdminsOfSubmission(app, user, kind, displayName) {
     const {rows: admins} = await app.pg.query("SELECT email FROM users WHERE role = 'admin' AND disabled_at IS NULL AND email IS NOT NULL");

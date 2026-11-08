@@ -6,7 +6,8 @@ import {facilityKinds, facilityServices, governorates} from './catalog.js';
 import {audit, transaction} from './db.js';
 import {deleteDocument, documentView, listDocuments, saveUpload} from './doctors.js';
 import {MAX_DOCUMENT_BYTES} from './documents.js';
-import {decisionEmail, notifyAdminsOfSubmission, sendEmail} from './notify.js';
+import {changeDecisionEmail, decisionEmail, notifyAdminsOfSubmission, sendEmail} from './notify.js';
+import {acceptPending, FACILITY_CRITICAL, rejectPending, saveChange} from './profile-changes.js';
 import {normalizePhone} from './security.js';
 
 const TEXT_FIELDS = {facility_name: 160, area: 120, address: 300, licence_number: 60, opening_hours: 200, description: 600};
@@ -22,7 +23,8 @@ const PUBLIC_FACILITY = `u.id, p.kind, p.facility_name, p.governorate, p.area, p
 const profileView = p => ({
     kind: p.kind, status: p.status, facility_name: p.facility_name, governorate: p.governorate, area: p.area, address: p.address,
     phone: p.phone, licence_number: p.licence_number, services: p.services, emergency: p.emergency, opening_hours: p.opening_hours,
-    description: p.description, submitted_at: p.submitted_at, reviewed_at: p.reviewed_at, review_note: p.review_note, updated_at: p.updated_at
+    description: p.description, submitted_at: p.submitted_at, reviewed_at: p.reviewed_at, review_note: p.review_note, updated_at: p.updated_at,
+    pending_fields: p.pending_changes ? Object.keys(p.pending_changes) : []
 });
 
 // Checks and cleans the fields a facility sends. Empty strings clear a field.
@@ -96,18 +98,39 @@ export default async function facilityRoutes(app) {
             if (!EDITABLE.has(current.status)) throw new HttpError(403, 'suspended', 'Your profile is suspended. Please contact support.');
             const changes = cleanProfile(request.body, current.kind);
             const keys = Object.keys(changes);
-            if (!keys.length) return current;
-            // The public only ever sees reviewed details: changing an approved profile sends it back for review.
-            const backToReview = current.status === 'approved';
-            const {rows: [updated]} = await db.query(
-                `UPDATE facility_profiles SET ${keys.map((k, i) => `${k} = $${i + 2}`).join(', ')}, updated_at = now()
-                 ${backToReview ? ", status = 'pending', submitted_at = now()" : ''}
-                 WHERE user_id = $1 RETURNING *`, [request.user.id, ...keys.map(k => changes[k])]);
-            if (backToReview) await audit(db, {actorId: request.user.id, action: 'facility.changed_after_approval', targetId: request.user.id, details: {fields: keys}, ip: request.ip});
-            return updated;
+            if (!keys.length) return {row: current, held: []};
+            // An approved listing keeps its status: identifying details wait for an administrator (see profile-changes.js).
+            const {row, held} = await saveChange(db, 'facility_profiles', request.user.id, changes,
+                current.status === 'approved' ? FACILITY_CRITICAL : []);
+            if (held.length) await audit(db, {actorId: request.user.id, action: 'facility.change_pending', targetId: request.user.id, details: {fields: held}, ip: request.ip});
+            return {row, held};
         });
-        return {profile: profileView(profile)};
+        if (profile.held.length) await notifyAdminsOfSubmission(app, request.user, profile.row.kind, profile.row.facility_name);
+        return {profile: profileView(profile.row), pending: profile.held};
     });
+
+    // Administrator: accept or reject held changes. The facility is told either way.
+    const decideChange = accepted => async request => {
+        const note = String(request.body?.note || '').trim();
+        if (!accepted && note.length < 3) throw new HttpError(400, 'note_required', 'Please write a short reason for the facility.');
+        const result = await transaction(app.pg, async db => {
+            const current = await loadProfile(db, request.params.id, true);
+            if (!current.pending_changes) throw new HttpError(409, 'no_pending_changes', 'There are no changes to review.');
+            const fields = Object.keys(current.pending_changes);
+            const row = accepted
+                ? await acceptPending(db, 'facility_profiles', request.params.id, current.pending_changes, FACILITY_CRITICAL)
+                : await rejectPending(db, 'facility_profiles', request.params.id);
+            await audit(db, {actorId: request.user.id, action: accepted ? 'facility.change_accepted' : 'facility.change_rejected',
+                targetId: request.params.id, details: {fields, ...(note && {note})}, ip: request.ip});
+            return {row, fields};
+        });
+        const {rows: [user]} = await app.pg.query('SELECT name, email, language FROM users WHERE id = $1', [request.params.id]);
+        await sendEmail(app, user.email, changeDecisionEmail(user, accepted, result.fields, note, app.config.appOrigin));
+        return {profile: profileView(result.row)};
+    };
+    const changeSchema = {...adminOnly, schema: {...uuidParam, body: {type: 'object', properties: {note: {type: 'string', maxLength: 1000}}}}};
+    app.post('/api/admin/facilities/:id/changes/accept', changeSchema, decideChange(true));
+    app.post('/api/admin/facilities/:id/changes/reject', changeSchema, decideChange(false));
 
     app.post('/api/facility/documents', facilityOnly, async (request, reply) => {
         const profile = await loadProfile(app.pg, request.user.id);
@@ -142,15 +165,21 @@ export default async function facilityRoutes(app) {
     // ---- Admin side ----
 
     app.get('/api/admin/facilities', {...adminOnly, schema: {querystring: {type: 'object', properties: {
-        status: {enum: ['draft', 'pending', 'approved', 'rejected', 'suspended']}
+        status: {enum: ['draft', 'pending', 'approved', 'rejected', 'suspended', 'changes']}
     }}}}, async request => {
         const status = request.query.status || 'pending';
+        // "changes": approved listings with details waiting for a decision, oldest first.
+        const changes = status === 'changes';
         const {rows} = await app.pg.query(
-            `SELECT u.id, u.name, u.email, u.created_at, p.kind, p.facility_name, p.status, p.governorate, p.submitted_at, p.reviewed_at,
+            `SELECT u.id, u.name, u.email, u.created_at, p.kind, p.facility_name, p.status, p.governorate,
+                    ${changes ? 'p.changes_submitted_at' : 'p.submitted_at'} AS submitted_at, p.reviewed_at,
                     (SELECT count(*)::int FROM doctor_documents d WHERE d.doctor_id = u.id) AS documents
              FROM users u JOIN facility_profiles p ON p.user_id = u.id
-             WHERE p.status = $1 ORDER BY p.submitted_at NULLS LAST, u.created_at`, [status]);
-        const {rows: counts} = await app.pg.query('SELECT status, count(*)::int AS n FROM facility_profiles GROUP BY status');
+             WHERE ${changes ? 'p.pending_changes IS NOT NULL' : 'p.status = $1'}
+             ORDER BY ${changes ? 'p.changes_submitted_at' : 'p.submitted_at'} NULLS LAST, u.created_at`, changes ? [] : [status]);
+        const {rows: counts} = await app.pg.query(
+            `SELECT status::text, count(*)::int AS n FROM facility_profiles GROUP BY status
+             UNION ALL SELECT 'changes', count(*)::int FROM facility_profiles WHERE pending_changes IS NOT NULL`);
         return {facilities: rows, counts: Object.fromEntries(counts.map(c => [c.status, c.n]))};
     });
 
@@ -162,7 +191,9 @@ export default async function facilityRoutes(app) {
             `SELECT a.action, a.details, a.created_at, actor.name AS actor_name FROM audit_log a LEFT JOIN users actor ON actor.id = a.actor_id
              WHERE a.target_id = $1 OR a.target_id IN (SELECT id FROM doctor_documents WHERE doctor_id = $1)
              ORDER BY a.created_at DESC LIMIT 50`, [user.id]);
-        return {facility: user, profile: profileView(profile), documents: (await listDocuments(app.pg, user.id)).map(documentView), history};
+        const pending = profile.pending_changes ? Object.fromEntries(Object.entries(profile.pending_changes)
+            .map(([key, value]) => [key, {current: profile[key] ?? null, proposed: value}])) : null;
+        return {facility: user, profile: profileView(profile), pending, documents: (await listDocuments(app.pg, user.id)).map(documentView), history};
     });
 
     const decide = (action, from, to, needsNote) => async request => {

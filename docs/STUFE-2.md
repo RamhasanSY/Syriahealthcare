@@ -207,8 +207,8 @@ Jeder Dienst ist ein Modul unter `platform/src/` mit eigenen Tests. Die Schnitts
 | Teil | Dienst | Zweck | Status |
 |---|---|---|---|
 | 2.0 | `src/fhir/` (Verzeichnis, Codesysteme, Metadaten) | öffentliche FHIR-R4-Schnittstelle | ✅ live (PR #21) |
-| 2a | `src/outbox.js` (E-Mail-Warteschlange) | E-Mails mit Wiederholung und Aufgabe nach 8 Versuchen | ✅ gebaut, Branch `stage2a-outbox` |
-| 2a | Profiländerungen prüfen (`pending_changes`) | Ärzte bleiben aktiv, Admin prüft Unterschiede | ⏳ nächster Schritt |
+| 2a | `src/outbox.js` (E-Mail-Warteschlange) | E-Mails mit Wiederholung und Aufgabe nach 8 Versuchen | ✅ live (PR #22) |
+| 2a | `src/profile-changes.js` (Profiländerungen prüfen) | Ärzte und Einrichtungen bleiben aktiv; Name, Fachrichtung, Gebiet, Adresse und Lizenz wartet auf den Admin, der Rest gilt sofort; Admin-Reiter „Änderungen prüfen“ mit bisher/neu | ✅ gebaut, Branch `stage2a-pending-changes` |
 | 2a | Laborsuche über alle Befunde | Suche nach Name, Telefon, Test, Datum | ⏳ |
 | 2a | Admin-Zweitfaktor (E-Mail-Code) | zweiter Faktor für Admins | ⏳ |
 | 2a | Verschlüsselte Datensicherung außerhalb des Servers | restic, zweiter Anbieter | ⏳ braucht Bestellung |

@@ -146,15 +146,15 @@ describe('facility review and public list', () => {
         assert.match(mail.sent.at(-1).text, /Licence expired in September\./);
     });
 
-    test('changes after approval go back to review; reject and suspend need a note', async () => {
+    test('opening hours apply at once after approval; reject and suspend need a note', async () => {
         const lab = await submittedFacility();
         const admin = await signIn(post, 'admin', 'admin@example.org');
         assert.equal((await post(`/api/admin/facilities/${lab.id}/reject`, {}, {cookie: admin})).json().error, 'note_required');
         await post(`/api/admin/facilities/${lab.id}/approve`, {}, {cookie: admin});
         const edited = await post('/api/facility/profile', {opening_hours: 'Every day 08:00–22:00'}, {cookie: lab.cookie});
-        assert.equal(edited.json().profile.status, 'pending');
-        assert.equal((await app.inject({url: '/api/facilities'})).json().facilities.length, 0);
-        await post(`/api/admin/facilities/${lab.id}/approve`, {}, {cookie: admin});
+        assert.equal(edited.json().profile.status, 'approved');
+        assert.equal(edited.json().profile.opening_hours, 'Every day 08:00–22:00');
+        assert.equal((await app.inject({url: '/api/facilities'})).json().facilities.length, 1, 'still listed');
         const suspended = await post(`/api/admin/facilities/${lab.id}/suspend`, {note: 'Licence expired'}, {cookie: admin});
         assert.equal(suspended.json().profile.status, 'suspended');
         assert.equal((await app.inject({url: '/api/facilities'})).json().facilities.length, 0);
