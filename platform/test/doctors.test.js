@@ -166,13 +166,17 @@ describe('admin review', () => {
         assert.ok(mail.sent.every(m => !/SY-12345/.test(m.text)), 'licence numbers are never emailed');
     });
 
-    test('editing an approved profile sends it back for review', async () => {
+    test('editing the address of an approved profile waits for the administrator and keeps the doctor listed', async () => {
         const {cookie, id} = await submittedDoctor();
         const admin = await signIn(post, 'admin', 'admin@example.org');
         await post(`/api/admin/doctors/${id}/approve`, {}, {cookie: admin});
         assert.equal((await upload(cookie, 'other', PDF)).statusCode, 403, 'documents are locked after approval');
         const changed = await post('/api/doctor/profile', {clinic_address: 'New address 5'}, {cookie});
-        assert.equal(changed.json().profile.status, 'pending');
+        assert.equal(changed.json().profile.status, 'approved', 'still approved');
+        assert.deepEqual(changed.json().pending, ['clinic_address']);
+        const listed = await app.inject({url: '/api/doctors'});
+        assert.equal(listed.json().doctors.length, 1, 'still listed for patients');
+        assert.notEqual(listed.json().doctors[0].clinic_address, 'New address 5', 'the public keeps the reviewed address');
     });
 
     test('suspended doctors cannot edit; admins can reinstate', async () => {

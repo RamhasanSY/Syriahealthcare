@@ -37,7 +37,19 @@
     </div>
     <form id="decisionForm" novalidate>
       <div class="msg error" id="decisionError" role="alert" tabindex="-1" hidden></div>
-      <label class="field"><span data-en="Note to the applicant (required to reject or suspend)" data-ar="ملاحظة لصاحب الطلب (إلزامية عند الرفض أو الإيقاف)">ملاحظة لصاحب الطلب (إلزامية عند الرفض أو الإيقاف)</span><textarea id="note" maxlength="1000" rows="3" dir="auto"></textarea></label>
+      <section id="changesBox" hidden aria-labelledby="changesTitle">
+        <h3 id="changesTitle" data-en="Changes waiting for your decision" data-ar="تعديلات بانتظار قرارك">تعديلات بانتظار قرارك</h3>
+        <p class="hint" data-en="Until you decide, the profile stays approved and the public sees the current details." data-ar="إلى أن تقرر، يبقى الملف معتمداً ويرى العموم البيانات الحالية.">إلى أن تقرر، يبقى الملف معتمداً ويرى العموم البيانات الحالية.</p>
+        <div class="table-wrap"><table class="list">
+          <thead><tr><th data-en="Field" data-ar="الحقل">الحقل</th><th data-en="Now" data-ar="الحالي">الحالي</th><th data-en="New" data-ar="الجديد">الجديد</th></tr></thead>
+          <tbody id="changesRows"></tbody>
+        </table></div>
+        <div class="actions">
+          <button class="btn" type="button" id="acceptChanges" data-en="Accept changes" data-ar="قبول التعديلات">قبول التعديلات</button>
+          <button class="btn danger" type="button" id="rejectChanges" data-en="Reject changes" data-ar="رفض التعديلات">رفض التعديلات</button>
+        </div>
+      </section>
+      <label class="field"><span data-en="Note to the applicant (required to reject, suspend or reject changes)" data-ar="ملاحظة لصاحب الطلب (إلزامية عند الرفض أو الإيقاف أو رفض التعديلات)">ملاحظة لصاحب الطلب (إلزامية عند الرفض أو الإيقاف أو رفض التعديلات)</span><textarea id="note" maxlength="1000" rows="3" dir="auto"></textarea></label>
       <div class="actions">
         <button class="btn" type="button" id="approve" data-en="Approve" data-ar="اعتماد">اعتماد</button>
         <button class="btn danger" type="button" id="reject" data-en="Ask for changes" data-ar="طلب تعديلات">طلب تعديلات</button>

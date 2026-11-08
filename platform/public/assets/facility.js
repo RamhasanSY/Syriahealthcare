@@ -1,5 +1,7 @@
 // Facility profile (lab, imaging centre, hospital, clinic): public details, operating licence, and sending for review.
 document.addEventListener('DOMContentLoaded', async () => {
+    const FIELD_NAMES = {facility_name: ['name', 'الاسم'], governorate: ['governorate', 'المحافظة'], area: ['area', 'المنطقة'],
+        address: ['address', 'العنوان'], licence_number: ['licence number', 'رقم الترخيص']};
     const {$, tr, api, showError, busy} = Shc;
     const TEXT = ['facility_name', 'area', 'address', 'phone', 'licence_number', 'opening_hours', 'description'];
     const LABELS = {facility_name: ['Name', 'الاسم'], governorate: ['Governorate', 'المحافظة'], area: ['City or area', 'المدينة أو المنطقة'],
@@ -39,6 +41,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         $('uploadForm').hidden = !DOCS_OPEN.includes(p.status);
         $('submitCard').hidden = !['draft', 'rejected'].includes(p.status);
         $('reviewWarning').hidden = p.status !== 'approved';
+        // Details sent after approval that wait for the team's decision.
+        $('pendingNote').hidden = !p.pending_fields?.length;
+        if (p.pending_fields?.length) {
+            const names = p.pending_fields.map(k => FIELD_NAMES[k] ? tr(...FIELD_NAMES[k]) : k).join(tr(', ', '، '));
+            $('pendingNote').textContent = tr(`Waiting for our team: ${names}.`, `بانتظار مراجعة فريقنا: ${names}.`);
+        }
     }
 
     function renderForm() {

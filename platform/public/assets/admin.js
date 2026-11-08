@@ -1,7 +1,9 @@
 // Admin: review doctors and facilities (labs, imaging, hospitals, clinics), open their documents, approve / ask for changes / suspend.
 document.addEventListener('DOMContentLoaded', async () => {
     const {$, tr, api, showError, busy} = Shc;
-    const STATUSES = {pending: ['Waiting for review', 'بانتظار المراجعة'], approved: ['Approved', 'معتمد'], rejected: ['Changes requested', 'مطلوب تعديلات'],
+    // "changes" is not a status but a list: approved profiles whose new details wait for a decision.
+    const STATUSES = {pending: ['Waiting for review', 'بانتظار المراجعة'], changes: ['Changes to review', 'تعديلات للمراجعة'],
+        approved: ['Approved', 'معتمد'], rejected: ['Changes requested', 'مطلوب تعديلات'],
         suspended: ['Suspended', 'موقوف'], draft: ['Not sent yet', 'لم يُرسل بعد']};
     // The two groups share the review flow; they differ in endpoints, columns and fields.
     const GROUPS = {
@@ -36,7 +38,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         'document.deleted': ['Document removed', 'حُذفت وثيقة'], 'document.viewed': ['Document opened', 'فُتحت وثيقة'],
         'facility.registered': ['Account created', 'إنشاء الحساب'], 'facility.submitted': ['Sent for review', 'أُرسل للمراجعة'],
         'facility.approved': ['Approved', 'اعتُمد'], 'facility.rejected': ['Changes requested', 'طُلبت تعديلات'], 'facility.suspended': ['Suspended', 'أُوقف'],
-        'facility.changed_after_approval': ['Edited after approval', 'عُدّل بعد الاعتماد']};
+        'facility.changed_after_approval': ['Edited after approval', 'عُدّل بعد الاعتماد'],
+        'doctor.change_pending': ['Changes sent for review', 'أُرسلت تعديلات للمراجعة'], 'doctor.change_accepted': ['Changes accepted', 'قُبلت التعديلات'],
+        'doctor.change_rejected': ['Changes rejected', 'رُفضت التعديلات'], 'facility.change_pending': ['Changes sent for review', 'أُرسلت تعديلات للمراجعة'],
+        'facility.change_accepted': ['Changes accepted', 'قُبلت التعديلات'], 'facility.change_rejected': ['Changes rejected', 'رُفضت التعديلات']};
     const KINDS = {licence: ['Licence', 'الترخيص'], syndicate: ['Syndicate card', 'بطاقة النقابة'], other: ['Other document', 'وثيقة أخرى']};
     let group = window.location.hash === '#facilities' ? 'facilities' : 'doctors';
     let status = 'pending', list = null, current = null, catalog = null;
@@ -141,10 +146,21 @@ document.addEventListener('DOMContentLoaded', async () => {
             li.append(a, el('span', `${tr(...KINDS[d.kind])} · ${Math.max(1, Math.round(d.size_bytes / 1024))} KB`, 'muted-small'));
             return li;
         }) : [el('li', tr('No documents uploaded.', 'لا توجد وثائق.'), 'empty-row')]));
+        // Held changes: field, value now, proposed value. Codes (specialty, governorate) are shown with their names.
+        const pending = current.pending ? Object.entries(current.pending) : [];
+        const shown = (key, value) => key === 'specialty' ? label('specialties', value) : key === 'governorate' ? label('governorates', value) : (value || '—');
+        $('changesBox').hidden = !pending.length;
+        $('changesRows').replaceChildren(...pending.map(([key, change]) => {
+            const field = G().fields.find(([k]) => k === key);
+            const row = el('tr'), now = el('td', shown(key, change.current)), next = el('td', shown(key, change.proposed));
+            now.dir = next.dir = 'auto';
+            row.append(el('td', field ? tr(field[1], field[2]) : key), now, next);
+            return row;
+        }));
         $('approve').hidden = !['pending', 'suspended'].includes(profile.status);
         $('reject').hidden = profile.status !== 'pending';
         $('suspend').hidden = profile.status !== 'approved';
-        $('decisionForm').hidden = $('approve').hidden && $('reject').hidden && $('suspend').hidden;
+        $('decisionForm').hidden = $('approve').hidden && $('reject').hidden && $('suspend').hidden && !pending.length;
         $('history').replaceChildren(...history.map(h => {
             const li = el('li');
             li.append(el('time', when(h.created_at)), el('span', ' ' + (ACTIONS[h.action] ? tr(...ACTIONS[h.action]) : h.action) + (h.actor_name ? ' · ' + h.actor_name : '')));
@@ -153,9 +169,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         }));
     }
 
-    async function decide(action) {
+    // action: approve, reject, suspend, or changes/accept, changes/reject (button ids acceptChanges, rejectChanges).
+    async function decide(action, buttonId = action) {
         $('decisionError').hidden = true;
-        const button = $(action);
+        const button = $(buttonId);
         busy(button, true);
         const id = current[G().one].id;
         const res = await api(`${G().api}/${id}/${action}`, {note: $('note').value});
@@ -170,6 +187,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
     ['approve', 'reject', 'suspend'].forEach(a => $(a).addEventListener('click', () => decide(a)));
+    $('acceptChanges').addEventListener('click', () => decide('changes/accept', 'acceptChanges'));
+    $('rejectChanges').addEventListener('click', () => decide('changes/reject', 'rejectChanges'));
     $('backToList').addEventListener('click', () => { current = null; loadList(); });
     document.addEventListener('shc:language', () => { renderGroups(); current ? renderDetail() : list && renderList(); });
     renderGroups();
