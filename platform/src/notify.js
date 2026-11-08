@@ -14,21 +14,21 @@ export async function sendEmail(app, to, message) {
 }
 
 export const resetEmail = (user, link, minutes) => ({
-    subject: user.language === 'en' ? 'Reset your Syria Healthcare password' : 'إعادة تعيين كلمة المرور — الرعاية الصحية في سوريا',
+    subject: user.language === 'en' ? 'Reset your SyriaHC password' : 'إعادة تعيين كلمة المرور — صحة تك',
     text: both(user.language,
         `مرحباً ${user.name}،\n\nطلب أحدهم إعادة تعيين كلمة مرور حسابك. افتح هذا الرابط خلال ${minutes} دقيقة لاختيار كلمة مرور جديدة:\n\n${link}\n\nيعمل الرابط مرة واحدة فقط. إن لم تطلب ذلك فتجاهل هذه الرسالة، وتبقى كلمة مرورك كما هي.`,
         `Hello ${user.name},\n\nSomeone asked to reset the password of your account. Open this link within ${minutes} minutes to choose a new password:\n\n${link}\n\nThe link works only once. If this was not you, ignore this email; your password stays the same.`)
 });
 
 export const passwordChangedEmail = (user, origin) => ({
-    subject: user.language === 'en' ? 'Your Syria Healthcare password was changed' : 'تم تغيير كلمة المرور — الرعاية الصحية في سوريا',
+    subject: user.language === 'en' ? 'Your SyriaHC password was changed' : 'تم تغيير كلمة المرور — صحة تك',
     text: both(user.language,
         `مرحباً ${user.name}،\n\nتم تغيير كلمة مرور حسابك وتسجيل الخروج من جميع الأجهزة.\nإن لم تكن أنت من غيّرها، فاطلب رابطاً جديداً فوراً من ${origin}/forgot وتواصل مع الدعم.`,
         `Hello ${user.name},\n\nThe password of your account was changed and all devices were signed out.\nIf this was not you, request a new link right away at ${origin}/forgot and contact support.`)
 });
 
 export const welcomeEmail = (user, origin) => ({
-    subject: user.language === 'en' ? 'Welcome to Syria Healthcare' : 'أهلاً بك في الرعاية الصحية في سوريا',
+    subject: user.language === 'en' ? 'Welcome to SyriaHC' : 'أهلاً بك في صحة تك',
     text: both(user.language,
         `مرحباً ${user.name}،\n\nتم إنشاء حسابك. الخطوات التالية: أكمل البيانات، وارفع الترخيص، ثم أرسلها للمراجعة. سنراسلك عند صدور القرار.\n\n${origin}/account\n\nإن لم تنشئ هذا الحساب فتجاهل هذه الرسالة.`,
         `Hello ${user.name},\n\nYour account has been created. Next steps: complete your details, upload your licence, then send them for review. We will email you when we have decided.\n\n${origin}/account\n\nIf you did not create this account, ignore this email.`)
@@ -41,9 +41,9 @@ export function decisionEmail(user, kind, status, note, origin) {
         approved: {
             subject: ['Your profile is approved', 'تم اعتماد ملفك'],
             en: doctor ? 'Your profile has been approved. Patients can now find you and book appointments.'
-                : 'Your listing has been approved. It appears on syriahealthcare.com within about 12 hours, as the website is updated twice a day.',
+                : 'Your listing has been approved. It appears on syriahc.com within about 12 hours, as the website is updated twice a day.',
             ar: doctor ? 'تم اعتماد ملفك. يمكن للمرضى الآن إيجادك وحجز المواعيد لديك.'
-                : 'تم اعتماد منشأتكم. ستظهر على syriahealthcare.com خلال 12 ساعة تقريباً، إذ يُحدَّث الموقع مرتين يومياً.'
+                : 'تم اعتماد منشأتكم. ستظهر على syriahc.com خلال 12 ساعة تقريباً، إذ يُحدَّث الموقع مرتين يومياً.'
         },
         rejected: {
             subject: ['Changes needed on your profile', 'مطلوب تعديلات على ملفك'],
@@ -57,7 +57,7 @@ export function decisionEmail(user, kind, status, note, origin) {
         }
     }[status];
     return {
-        subject: (user.language === 'en' ? texts.subject[0] : texts.subject[1]) + (user.language === 'en' ? ' — Syria Healthcare' : ' — الرعاية الصحية في سوريا'),
+        subject: (user.language === 'en' ? texts.subject[0] : texts.subject[1]) + (user.language === 'en' ? ' — SyriaHC' : ' — صحة تك'),
         text: both(user.language, `مرحباً ${user.name}،\n\n${texts.ar}\n\n${page}`, `Hello ${user.name},\n\n${texts.en}\n\n${page}`)
     };
 }

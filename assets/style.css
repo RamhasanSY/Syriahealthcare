@@ -1,14 +1,14 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Newsreader:ital,wght@0,500;0,600;1,400;1,500&family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap');
 
 :root {
-    --ink: #173e36;
-    --muted: #53665c;
-    --paper: #fafbf8;
+    --ink: #1a3a5c;
+    --muted: #556578;
+    --paper: #fbfaf7;
     --white: #fff;
-    --green: #21624d;
-    --lime: #d7ed9f;
-    --sage: #eaf1e8;
-    --rule: #dfe6dd;
+    --green: #1d7470;
+    --lime: #f1dfb4;
+    --sage: #e7f1f0;
+    --rule: #dde3ea;
     --orange: #a3532f;
     --sand: #f4eee2;
     --sans: 'DM Sans', system-ui, sans-serif;
@@ -116,7 +116,7 @@ button:disabled {
 
 .utility {
     background: var(--ink);
-    color: #d2dfd8;
+    color: #d3dde8;
     font-size: 10px;
     letter-spacing: .25px
 }
@@ -141,7 +141,7 @@ button:disabled {
     height: 6px;
     flex-shrink: 0;
     border-radius: 50%;
-    background: #7d9d63
+    background: #238a85
 }
 
 .utility .dot {
@@ -347,7 +347,7 @@ h1 em {
     position: relative;
     isolation: isolate;
     border-radius: 20px;
-    background: #e9eee2;
+    background: #e8eef3;
     min-height: 410px;
     padding: 32px 33px 20px;
     overflow: hidden
@@ -356,7 +356,7 @@ h1 em {
 .visual-orbit {
     position: absolute;
     z-index: -1;
-    border: 1px solid #c6d5b8;
+    border: 1px solid #c5d3df;
     border-radius: 50%;
     height: 360px;
     width: 360px;
@@ -384,7 +384,7 @@ h1 em {
 
 .visual-spark {
     position: absolute;
-    color: #8caa75;
+    color: #7fb3ae;
     font: 50px var(--serif);
     z-index: -1
 }
@@ -399,7 +399,7 @@ h1 em {
     bottom: 25px;
     left: 12px;
     font-size: 80px;
-    color: #b8cda3
+    color: #b9cfdb
 }
 
 .spotlight {
@@ -408,7 +408,7 @@ h1 em {
     border: 1px solid #fff;
     border-radius: 12px;
     padding: 22px;
-    box-shadow: 0 14px 40px #173e3612;
+    box-shadow: 0 14px 40px #1a3a5c12;
     transform: rotate(-2deg);
     margin-inline-end: 15px;
     min-height: 227px
@@ -489,7 +489,7 @@ h1 em {
     position: relative;
     margin-top: 14px;
     margin-inline-start: 34px;
-    box-shadow: 0 8px 25px #173e3615
+    box-shadow: 0 8px 25px #1a3a5c15
 }
 
 .visual-stats div {
@@ -505,7 +505,7 @@ h1 em {
 
 .visual-stats div span {
     font-size: 9px;
-    color: #c4d7cb;
+    color: #c4d4e0;
     margin-top: 4px
 }
 
@@ -621,7 +621,7 @@ h1 em {
     background: white;
     border-radius: 10px;
     padding: 14px;
-    box-shadow: 0 4px 16px #173e3604
+    box-shadow: 0 4px 16px #1a3a5c04
 }
 
 .search-box {
@@ -634,7 +634,7 @@ h1 em {
 
 .search-icon {
     display: block;
-    border: 1.7px solid #6e8075;
+    border: 1.7px solid #637489;
     border-radius: 50%;
     width: 15px;
     height: 15px;
@@ -647,7 +647,7 @@ h1 em {
     position: absolute;
     width: 7px;
     height: 1.7px;
-    background: #6e8075;
+    background: #637489;
     transform: rotate(45deg);
     bottom: -3px;
     right: -5px
@@ -784,8 +784,8 @@ h1 em {
 }
 
 .jobs>li:hover {
-    border-color: #a9bca8;
-    box-shadow: 0 8px 25px #173e3608
+    border-color: #a7b6c6;
+    box-shadow: 0 8px 25px #1a3a5c08
 }
 
 .job-card-top {
@@ -937,7 +937,7 @@ h1 em {
 .empty {
     padding: 40px 25px;
     text-align: center;
-    border: 1px dashed #becbb8;
+    border: 1px dashed #bcc8d4;
     border-radius: 9px;
     background: #fff
 }
@@ -957,7 +957,7 @@ h1 em {
 .empty-symbol {
     display: block;
     font-size: 34px;
-    color: #88a179;
+    color: #7fa8b0;
     margin-bottom: 14px
 }
 
@@ -1024,7 +1024,7 @@ h1 em {
     justify-content: space-between;
     gap: 12px;
     background: #ffffffa8;
-    border: 1px solid #d8e1d3;
+    border: 1px solid #d6dfe8;
     border-radius: 6px;
     padding: 12px 15px;
     font-size: 11px;
@@ -1190,13 +1190,13 @@ h1 em {
 
 .about p:not(.eyebrow) {
     font-size: 13px;
-    color: #d2e0d8;
+    color: #d2dde8;
     max-width: 560px
 }
 
 .about .muted {
     font-size: 11px !important;
-    color: #abbeb1 !important;
+    color: #aab9c8 !important;
     margin-bottom: 0
 }
 
@@ -1787,7 +1787,7 @@ body[dir=rtl] .section-head h2 {
 .services{padding-block:56px 24px}
 .service-grid{list-style:none;margin:28px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}
 .service{display:block;width:100%;height:100%;text-align:start;font:inherit;color:inherit;background:var(--white);border:1px solid var(--rule);border-radius:18px;padding:24px;text-decoration:none;cursor:pointer;transition:transform .18s,box-shadow .18s,border-color .18s}
-.service:hover,.service:focus-visible{transform:translateY(-3px);border-color:var(--green);box-shadow:0 12px 28px rgba(23,62,54,.12)}
+.service:hover,.service:focus-visible{transform:translateY(-3px);border-color:var(--green);box-shadow:0 12px 28px rgba(26,58,92,.12)}
 .service-icon{display:grid;place-items:center;width:48px;height:48px;border-radius:14px;background:var(--sage);font-size:22px;margin-bottom:14px}
 .service h3{margin:0 0 6px;font:600 20px/1.25 var(--serif)}
 .service p{margin:0;color:var(--muted);font-size:14.5px}
@@ -1836,7 +1836,7 @@ body[dir=rtl] .section-head h2 {
 .planner{background:var(--sage)}
 .planner h3,.danger-signs h3{margin:0 0 14px;font:600 20px/1.25 var(--serif)}
 .planner label{display:block;font-weight:600;margin-bottom:6px}
-.planner input{font:inherit;font-size:16px;min-height:44px;padding:8px 12px;border:1px solid #9fb2a4;border-radius:10px;background:var(--white);color:var(--ink);max-width:100%}
+.planner input{font:inherit;font-size:16px;min-height:44px;padding:8px 12px;border:1px solid #9fb0c2;border-radius:10px;background:var(--white);color:var(--ink);max-width:100%}
 .planner input[aria-invalid=true]{border-color:var(--orange)}
 .planner-note{font-size:13px;color:var(--muted);margin:8px 0}
 .planner-error{color:var(--orange);font-weight:600}

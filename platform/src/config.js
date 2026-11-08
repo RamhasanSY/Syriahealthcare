@@ -16,7 +16,7 @@ export const config = {
     port: Number(env.PORT || 3000),
     host: env.HOST || '127.0.0.1',
     databaseUrl: required('DATABASE_URL', 'postgres://postgres@127.0.0.1:54329/shc_dev'),
-    // Public address of the platform, e.g. https://app.syriahealthcare.com. State-changing requests must come from it.
+    // Public address of the platform, e.g. https://app.syriahc.com. State-changing requests must come from it.
     appOrigin: required('APP_ORIGIN', 'http://127.0.0.1:3000'),
     // Signs SMS codes. At least 32 random characters; generate with: node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
     otpSecret: required('OTP_SECRET', 'development-only-otp-secret-change-me'),
@@ -38,7 +38,7 @@ export const config = {
     // e.g. through STRATO: SMTP_HOST=smtp.strato.de, SMTP_PORT=465. Port 465 uses TLS from the start; other ports must offer STARTTLS.
     mailProvider: env.MAIL_PROVIDER || (production ? 'smtp' : 'console'),
     smtp: {host: env.SMTP_HOST, port: Number(env.SMTP_PORT || 465), user: env.SMTP_USER, password: env.SMTP_PASSWORD},
-    mailFrom: env.MAIL_FROM || (production ? undefined : 'Syria Healthcare <noreply@localhost>'),
+    mailFrom: env.MAIL_FROM || (production ? undefined : 'SyriaHC <noreply@localhost>'),
     // Licence documents: encrypted with DOCUMENT_KEY (64 hex characters) and stored in DOCUMENT_DIR.
     documentKey: required('DOCUMENT_KEY', '0'.repeat(64)),
     documentDir: env.DOCUMENT_DIR || fileURLToPath(new URL('../storage/documents/', import.meta.url)),

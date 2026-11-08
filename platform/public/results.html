@@ -1,15 +1,15 @@
 <!doctype html>
-<html lang="ar" dir="rtl" data-title-en="Lab results — Syria Healthcare" data-title-ar="نتائج التحاليل — الرعاية الصحية في سوريا">
+<html lang="ar" dir="rtl" data-title-en="Lab results — SyriaHC" data-title-ar="نتائج التحاليل — صحة تك">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#173e36">
-<title>نتائج التحاليل — الرعاية الصحية في سوريا</title>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#1a3a5c">
+<title>نتائج التحاليل — صحة تك</title>
 <link rel="manifest" href="/manifest.webmanifest"><link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/assets/app.css">
 <script src="/assets/common.js" defer></script><script src="/assets/results.js" defer></script>
 </head>
 <body>
 <a class="skip" href="#main" data-en="Skip to content" data-ar="انتقل إلى المحتوى">انتقل إلى المحتوى</a>
-<header class="top"><div class="top-inner"><a class="brand" href="/account"><img src="/assets/logo.svg" alt=""><span data-en="Syria Healthcare" data-ar="الرعاية الصحية في سوريا">الرعاية الصحية في سوريا</span></a><div class="top-actions"><button class="lang" id="langToggle" type="button">English</button></div></div></header>
+<header class="top"><div class="top-inner"><a class="brand" href="/account"><img src="/assets/logo.svg" alt=""><span data-en="SyriaHC" data-ar="صحة تك">صحة تك</span></a><div class="top-actions"><button class="lang" id="langToggle" type="button">English</button></div></div></header>
 <main id="main" class="wrap wide" aria-busy="true">
   <h1 data-en="Lab results" data-ar="نتائج التحاليل">نتائج التحاليل</h1>
   <p class="lead" data-en="Upload a result and give the patient the printed QR code. Their doctor scans it to add the result to the patient file. The code itself contains no medical data." data-ar="ارفعوا النتيجة وأعطوا المريض رمز QR المطبوع. يمسحه طبيبه فتُضاف النتيجة إلى ملف المريض. الرمز نفسه لا يحتوي على أي بيانات طبية.">ارفعوا النتيجة وأعطوا المريض رمز QR المطبوع. يمسحه طبيبه فتُضاف النتيجة إلى ملف المريض. الرمز نفسه لا يحتوي على أي بيانات طبية.</p>
@@ -20,7 +20,7 @@
       <h2 data-en="New result" data-ar="نتيجة جديدة">نتيجة جديدة</h2>
       <div class="msg error" id="formError" role="alert" tabindex="-1" hidden></div>
       <label class="field"><span data-en="Patient's full name *" data-ar="اسم المريض الكامل *">اسم المريض الكامل *</span><input type="text" id="patientName" dir="auto" maxlength="120" autocomplete="off"></label>
-      <label class="field"><span data-en="Patient's mobile *" data-ar="جوال المريض *">جوال المريض *</span><input type="tel" id="patientPhone" dir="ltr" placeholder="0912 345 678" autocomplete="off"><small data-en="The number the patient uses on Syria Healthcare." data-ar="الرقم الذي يستخدمه المريض في منصة الرعاية الصحية في سوريا.">الرقم الذي يستخدمه المريض في منصة الرعاية الصحية في سوريا.</small></label>
+      <label class="field"><span data-en="Patient's mobile *" data-ar="جوال المريض *">جوال المريض *</span><input type="tel" id="patientPhone" dir="ltr" placeholder="0912 345 678" autocomplete="off"><small data-en="The number the patient uses on SyriaHC." data-ar="الرقم الذي يستخدمه المريض في منصة صحة تك.">الرقم الذي يستخدمه المريض في منصة صحة تك.</small></label>
       <label class="field"><span data-en="Test *" data-ar="التحليل *">التحليل *</span><input type="text" id="title" dir="auto" maxlength="120" placeholder="" data-placeholder-en="e.g. Complete blood count" data-placeholder-ar="مثلاً: تعداد دم كامل"></label>
       <label class="field"><span data-en="Result file *" data-ar="ملف النتيجة *">ملف النتيجة *</span><input type="file" id="file" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"><small data-en="PDF, JPG or PNG, up to 5 MB. Stored encrypted." data-ar="ملف PDF أو JPG أو PNG حتى 5 ميغابايت. يُحفظ مشفّراً.">ملف PDF أو JPG أو PNG حتى 5 ميغابايت. يُحفظ مشفّراً.</small></label>
       <button class="btn" type="submit" id="uploadButton" data-en="Upload and make QR code" data-ar="ارفع وأنشئ رمز QR">ارفع وأنشئ رمز QR</button>

@@ -36,7 +36,7 @@ jobs:
         env:
           # Optional: an approved ReliefWeb API appname (Settings → Secrets and variables → Actions → Variables).
           RELIEFWEB_APPNAME: ${{ vars.RELIEFWEB_APPNAME }}
-          # Optional: the booking platform's address, e.g. https://app.syriahealthcare.com (set once it is online).
+          # Optional: the booking platform's address, e.g. https://app.syriahc.com (set once it is online).
           PLATFORM_URL: ${{ vars.PLATFORM_URL }}
         run: python scripts/update.py
 

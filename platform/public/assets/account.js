@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Labs, imaging centres, hospitals and clinics see where their listing stands.
     const FACILITY_STATUS = {draft: ['Not sent yet', 'لم يُرسل بعد', 'Add your details and operating licence, then send them for review.', 'أضيفوا بيانات المنشأة وترخيصها ثم أرسلوها للمراجعة.'],
         pending: ['Waiting for verification', 'بانتظار التحقق', 'Our team is checking your licence. Your listing is not public yet.', 'يتحقق فريقنا من ترخيصكم. منشأتكم غير ظاهرة للعموم بعد.'],
-        approved: ['Approved', 'معتمد', 'Your listing is shown on syriahealthcare.com.', 'منشأتكم ظاهرة على syriahealthcare.com.'],
+        approved: ['Approved', 'معتمد', 'Your listing is shown on syriahc.com.', 'منشأتكم ظاهرة على syriahc.com.'],
         rejected: ['Changes requested', 'مطلوب تعديلات', 'Open your facility page to see what needs to change.', 'افتحوا صفحة المنشأة لمعرفة التعديلات المطلوبة.'],
         suspended: ['Suspended', 'موقوف', 'Your listing is hidden from the website. Please contact support.', 'منشأتكم مخفية عن الموقع. يرجى التواصل مع الدعم.']};
     let doctorStatus = null, facilityStatus = null;

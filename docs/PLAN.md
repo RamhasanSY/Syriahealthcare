@@ -1,6 +1,6 @@
 # Plan: Plattform online bringen (Ärzte, Labore, Krankenhäuser, Patienten)
 
-Stand: 22.10.2026. Fertig und in `main`: Anmeldung, Profile, Lizenz-Upload und Prüfung für Ärzte und Einrichtungen, Sprechzeiten, Terminbuchung, Arzt-Dashboard und die Übernahme auf syriahealthcare.com. Die Plattform läuft aber noch nirgends öffentlich.
+Stand: 22.10.2026. Fertig und in `main`: Anmeldung, Profile, Lizenz-Upload und Prüfung für Ärzte und Einrichtungen, Sprechzeiten, Terminbuchung, Arzt-Dashboard und die Übernahme auf syriahc.com. Die Plattform läuft aber noch nirgends öffentlich.
 
 Jeder Teil unten sagt: **was** zu tun ist, **wie**, **wer** es macht (du oder Claude) und **was vorher erledigt sein muss**.
 
@@ -119,12 +119,12 @@ Jeder Teil unten sagt: **was** zu tun ist, **wie**, **wer** es macht (du oder Cl
 
 ## F. Website mit der Plattform verbinden
 
-**Was:** Damit freigegebene Ärzte und Einrichtungen auf syriahealthcare.com erscheinen und dort der Link „Labor eintragen" auftaucht.
+**Was:** Damit freigegebene Ärzte und Einrichtungen auf syriahc.com erscheinen und dort der Link „Labor eintragen" auftaucht.
 
 **Wie:**
 1. GitHub → Repository → Settings → Secrets and variables → Actions → **Variables** → `PLATFORM_URL` = `https://app.syriahc.com`.
 2. Unter Actions den Workflow „Update news and jobs" einmal von Hand starten.
-3. Prüfen: syriahealthcare.com/labs.html zeigt den Link „Labor eintragen", nach der ersten Freigabe auch den Eintrag.
+3. Prüfen: syriahc.com/labs.html zeigt den Link „Labor eintragen", nach der ersten Freigabe auch den Eintrag.
 
 **Wer:** du. **Braucht vorher:** C und D.
 

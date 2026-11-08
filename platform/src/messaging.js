@@ -25,7 +25,7 @@ export async function sendCode(app, request, phone, code, {language, minutes, ch
             request.log.warn({err: error}, 'Telegram code not possible, sending SMS instead');
         }
     }
-    await app.sms.send(phone, `رمز الدخول إلى الرعاية الصحية في سوريا: ${code} (صالح ${minutes} دقائق)\nSyria Healthcare sign-in code: ${code}`);
+    await app.sms.send(phone, `رمز الدخول إلى صحة تك: ${code} (صالح ${minutes} دقائق)\nSyriaHC sign-in code: ${code}`);
     return 'sms';
 }
 

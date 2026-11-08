@@ -14,9 +14,9 @@ const smsTime = date => new Intl.DateTimeFormat('en-CA', {timeZone: TZ, year: 'n
     hour: '2-digit', minute: '2-digit', hourCycle: 'h23'}).format(date).replace(',', '');
 
 const MESSAGES = {
-    confirmed: (a, when) => `تم تأكيد موعدك لدى ${a.doctor_name} في ${when}. العنوان: ${a.clinic_address}\nSyria Healthcare: appointment confirmed, ${when}.`,
-    declined: (a, when) => `اعتذر ${a.doctor_name} عن موعد ${when}${a.status_note ? ': ' + a.status_note : ''}. يمكنك اختيار وقت آخر.\nSyria Healthcare: request for ${when} declined.`,
-    cancelled_by_doctor: (a, when) => `ألغى ${a.doctor_name} موعدك في ${when}${a.status_note ? ': ' + a.status_note : ''}.\nSyria Healthcare: appointment on ${when} cancelled by the doctor.`
+    confirmed: (a, when) => `تم تأكيد موعدك لدى ${a.doctor_name} في ${when}. العنوان: ${a.clinic_address}\nSyriaHC: appointment confirmed, ${when}.`,
+    declined: (a, when) => `اعتذر ${a.doctor_name} عن موعد ${when}${a.status_note ? ': ' + a.status_note : ''}. يمكنك اختيار وقت آخر.\nSyriaHC: request for ${when} declined.`,
+    cancelled_by_doctor: (a, when) => `ألغى ${a.doctor_name} موعدك في ${when}${a.status_note ? ': ' + a.status_note : ''}.\nSyriaHC: appointment on ${when} cancelled by the doctor.`
 };
 
 // Which change is allowed from which status, and whether the appointment must be in the future or have started.

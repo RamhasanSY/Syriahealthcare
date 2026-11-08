@@ -1,6 +1,6 @@
-# Syria Healthcare
+# SyriaHC
 
-A bilingual interface for original healthcare news about Syria and current healthcare and NGO vacancies in Syria. Static HTML/CSS/JavaScript hosted on GitHub Pages at https://syriahealthcare.com/.
+A bilingual interface for original healthcare news about Syria and current healthcare and NGO vacancies in Syria. Static HTML/CSS/JavaScript hosted on GitHub Pages at https://syriahc.com/.
 
 ## How content is selected
 
@@ -32,7 +32,7 @@ Browser requests time out after 15 seconds. Failed background refreshes retain e
 
 The updater runs source requests with bounded retries and timeouts, atomically writes the content/status JSON, commits changes, rebases over concurrent repository changes, and pushes them to `main`.
 
-`.github/workflows/deploy.yml` validates code, then deploys on a main-branch push and after an update run completes. Each run attempt uses a unique Pages artifact name so rerunning a failed deployment cannot select duplicate artifacts. The existing CNAME preserves `syriahealthcare.com`. Pages must use GitHub Actions as its deployment source.
+`.github/workflows/deploy.yml` validates code, then deploys on a main-branch push and after an update run completes. Each run attempt uses a unique Pages artifact name so rerunning a failed deployment cannot select duplicate artifacts. The existing CNAME preserves `syriahc.com`. Pages must use GitHub Actions as its deployment source.
 
 For failed-run notifications, enable GitHub Actions notifications in your own GitHub account. Detailed source results appear in each update run's summary and on the website's source list.
 
@@ -100,17 +100,17 @@ Entries missing a required field are not shown. The pregnancy planner computes d
 
 ### Booking platform doctors, labs and hospitals
 
-The booking platform (`platform/`, at app.syriahealthcare.com) has its own README. Once it is online, add a repository variable `PLATFORM_URL` (for example `https://app.syriahealthcare.com`) under GitHub Settings → Secrets and variables → Actions → Variables. From then on, every collection run copies the platform's approved doctors (public details only) into `data/doctors.json` with a "Book online" link for each, and the Doctors page shows a "Book online with verified doctors" banner. Until `PLATFORM_URL` is set, nothing is fetched and the site never links to the platform. Hand-added entries in `data/doctors.json` (without `"platform": true`) are kept.
+The booking platform (`platform/`, at app.syriahc.com) has its own README. Once it is online, add a repository variable `PLATFORM_URL` (for example `https://app.syriahc.com`) under GitHub Settings → Secrets and variables → Actions → Variables. From then on, every collection run copies the platform's approved doctors (public details only) into `data/doctors.json` with a "Book online" link for each, and the Doctors page shows a "Book online with verified doctors" banner. Until `PLATFORM_URL` is set, nothing is fetched and the site never links to the platform. Hand-added entries in `data/doctors.json` (without `"platform": true`) are kept.
 
 Labs, imaging centres, hospitals and clinics register on the same platform and are reviewed there. With `PLATFORM_URL` set, approved labs and imaging centres are copied into `data/labs.json` and approved hospitals and clinics into `data/hospitals.json` (next to the OpenStreetMap hospitals), each marked "Verified licence". The Doctors, Labs and Hospitals pages then also show a short invitation for doctors, labs and hospitals to list themselves for free.
 
 ### Booking platform doctors
 
-The booking platform (`platform/`, at app.syriahealthcare.com) has its own README. Once it is online, add a repository variable `PLATFORM_URL` (for example `https://app.syriahealthcare.com`) under GitHub Settings → Secrets and variables → Actions → Variables. From then on, every collection run copies the platform's approved doctors (public details only) into `data/doctors.json` with a "Book online" link for each, and the Doctors page shows a "Book online with verified doctors" banner. Until `PLATFORM_URL` is set, nothing is fetched and the site never links to the platform. Hand-added entries in `data/doctors.json` (without `"platform": true`) are kept.
+The booking platform (`platform/`, at app.syriahc.com) has its own README. Once it is online, add a repository variable `PLATFORM_URL` (for example `https://app.syriahc.com`) under GitHub Settings → Secrets and variables → Actions → Variables. From then on, every collection run copies the platform's approved doctors (public details only) into `data/doctors.json` with a "Book online" link for each, and the Doctors page shows a "Book online with verified doctors" banner. Until `PLATFORM_URL` is set, nothing is fetched and the site never links to the platform. Hand-added entries in `data/doctors.json` (without `"platform": true`) are kept.
 
 ## LinkedIn publishing
 
-The public RSS feed at https://syriahealthcare.com/data/news.xml is rebuilt with each collection. It contains original headlines, publisher attribution, original article links, publication dates and stable URL identifiers. Refreshing source verification does not create a new feed item. No full article text is republished.
+The public RSS feed at https://syriahc.com/data/news.xml is rebuilt with each collection. It contains original headlines, publisher attribution, original article links, publication dates and stable URL identifiers. Refreshing source verification does not create a new feed item. No full article text is republished.
 
 A Page administrator can connect LinkedIn to Zapier using its sign-in authorization, then configure RSS by Zapier (New Item in Feed) to LinkedIn (Create Company Update). Map the title and description to the post text and the item link to its article URL. Enable only new items after setup; do not bulk-publish the existing archive. Test with a draft/sample before enabling publishing. This repository does not hold a LinkedIn password or token and no LinkedIn publishing connection is currently configured. Page creation and account authorization must be completed by the account owner.
 

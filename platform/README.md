@@ -1,8 +1,8 @@
-# Syria Healthcare platform
+# SyriaHC platform
 
-Accounts and (in later steps) appointment booking for patients and doctors. It runs on the company's own server at `app.syriahealthcare.com`, separately from the public website, which stays on GitHub Pages.
+Accounts and (in later steps) appointment booking for patients and doctors. It runs on the company's own server at `app.syriahc.com`, separately from the public website, which stays on GitHub Pages.
 
-**Status: Stage 1, steps 1–5 of 6 done:** accounts and sign-in, doctor profiles and approval, opening hours, patient booking, and the doctor dashboard. Labs, imaging centres, hospitals and clinics can also register and get listed on syriahealthcare.com after review.
+**Status: Stage 1, steps 1–5 of 6 done:** accounts and sign-in, doctor profiles and approval, opening hours, patient booking, and the doctor dashboard. Labs, imaging centres, hospitals and clinics can also register and get listed on syriahc.com after review.
 
 ## What works now
 
@@ -10,7 +10,7 @@ Accounts and (in later steps) appointment booking for patients and doctors. It r
 |---|---|---|
 | Patient | Mobile number and a 6-digit code by WhatsApp, Telegram or SMS | Max 3 codes per number per 15 min; a code is valid for 5 minutes, works once, and allows 5 tries. New patients give their name and accept the privacy policy. |
 | Doctor | Email and password (at least 10 characters), self-registration | Fills in a profile and uploads a licence; must be approved by an admin before patients can see them. |
-| Lab, imaging centre, hospital or clinic | Email and password, self-registration (same sign-in page as doctors) | Fills in the facility's details and uploads its operating licence; must be approved by an admin before it is listed on syriahealthcare.com. |
+| Lab, imaging centre, hospital or clinic | Email and password, self-registration (same sign-in page as doctors) | Fills in the facility's details and uploads its operating licence; must be approved by an admin before it is listed on syriahc.com. |
 | Admin | Email and password, created on the server only | `npm run create-admin -- you@company.com "Your Name"` |
 
 ### Doctor verification (step 2)
@@ -29,7 +29,7 @@ Accounts and (in later steps) appointment booking for patients and doctors. It r
 3. **Facility** uploads its operating licence (required) and sends the profile for review. Documents follow the same rules as doctors' documents: PDF, JPG or PNG up to 5 MB, encrypted at rest, locked after approval.
 4. **Admin** (`/admin`, tab "Labs, hospitals and clinics") approves, asks for changes or suspends, with the same notes and history as for doctors.
 5. Changing an approved profile sends it back for review. `GET /api/facilities` lists approved facilities with public details only: never the contact person, email, licence number or documents.
-6. The website's collector copies them to syriahealthcare.com: labs and imaging centres to the Labs page, hospitals and clinics to the Hospitals page, each marked "Verified licence".
+6. The website's collector copies them to syriahc.com: labs and imaging centres to the Labs page, hospitals and clinics to the Hospitals page, each marked "Verified licence".
 
 ### Opening hours (step 3)
 
@@ -81,7 +81,7 @@ Patients get their sign-in code and the doctor's decisions (confirmed, declined,
 **Setup at Meta** (once):
 1. Create a Meta Business account at business.facebook.com and verify the business (the operator's company documents).
 2. At developers.facebook.com, create an app of type "Business" and add the product **WhatsApp**.
-3. Add a phone number that is not used in the WhatsApp app (a German number works) and the display name "Syria Healthcare". Add a payment method.
+3. Add a phone number that is not used in the WhatsApp app (a German number works) and the display name "SyriaHC". Add a payment method.
 4. In WhatsApp Manager, create these templates, each in **Arabic (ar)** and **English (en)**:
 
 | Template name | Category | Text (Arabic / English) |
@@ -162,11 +162,11 @@ Open http://127.0.0.1:3000. The demo data has three approved doctors, an approve
 ## Install on the company server
 
 1. Use a Linux server with Docker, and open ports 80 and 443.
-2. Point DNS: add an `A` record for `app.syriahealthcare.com` with the server's IP address.
+2. Point DNS: add an `A` record for `app.syriahc.com` with the server's IP address.
 3. Copy this `platform` folder to the server, then run `cp .env.example .env` and fill in `.env` (see the comments in the file).
 4. Run `docker compose up -d --build`. Caddy gets the HTTPS certificate automatically.
 5. Create the first admin: `docker compose exec app node src/create-admin.js admin@company.com "Name"`.
-6. Check that https://app.syriahealthcare.com/api/health returns `{"ok":true}`.
+6. Check that https://app.syriahc.com/api/health returns `{"ok":true}`.
 
 Backups: a compressed database dump and an archive of the encrypted documents are written to `platform/backups/` every night, and the last 14 days are kept. **Keep `DOCUMENT_KEY` safe and separate from the backups: without it, the document backups cannot be opened, and with it anyone holding the backups can read the licences.** Copy these files off the server regularly (to another machine or storage), because a backup on the same disk does not survive a disk failure.
 

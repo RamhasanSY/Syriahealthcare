@@ -1,4 +1,4 @@
-:root{--ink:#173e36;--muted:#53665c;--paper:#fafbf8;--white:#fff;--green:#21624d;--lime:#d7ed9f;--sage:#eaf1e8;--rule:#dfe6dd;--orange:#a3532f;--danger:#9b2c1f;--sans:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans Arabic",sans-serif}
+:root{--ink:#1a3a5c;--muted:#556578;--paper:#fbfaf7;--white:#fff;--green:#1d7470;--lime:#f1dfb4;--sage:#e7f1f0;--rule:#dde3ea;--orange:#a3532f;--danger:#9b2c1f;--sans:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans Arabic",sans-serif}
 *{box-sizing:border-box}
 body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.6 var(--sans);-webkit-font-smoothing:antialiased}
 a{color:var(--green)}
@@ -17,7 +17,7 @@ h2{font-size:22px;margin:0 0 8px}
 .lead{color:var(--muted);margin:0 0 28px;max-width:60ch}
 .choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}
 .choice{display:block;background:var(--white);border:1px solid var(--rule);border-radius:18px;padding:26px;color:var(--ink);text-decoration:none;transition:border-color .15s,box-shadow .15s}
-.choice:hover{border-color:var(--green);box-shadow:0 10px 26px rgba(23,62,54,.1)}
+.choice:hover{border-color:var(--green);box-shadow:0 10px 26px rgba(26,58,92,.1)}
 .choice .icon{font-size:30px}
 .choice p{color:var(--muted);margin:6px 0 0}
 .card{background:var(--white);border:1px solid var(--rule);border-radius:18px;padding:28px;max-width:460px}
@@ -25,7 +25,7 @@ h2{font-size:22px;margin:0 0 8px}
 .field{display:block;margin-bottom:16px}
 .field span{display:block;font-weight:600;margin-bottom:6px}
 .field small{display:block;color:var(--muted);font-size:13px;margin-top:4px}
-input[type=tel],input[type=email],input[type=password],input[type=text],input[inputmode=numeric]{width:100%;font:inherit;font-size:17px;padding:11px 14px;min-height:48px;border:1px solid #9fb2a4;border-radius:10px;background:var(--white);color:var(--ink)}
+input[type=tel],input[type=email],input[type=password],input[type=text],input[inputmode=numeric]{width:100%;font:inherit;font-size:17px;padding:11px 14px;min-height:48px;border:1px solid #9fb0c2;border-radius:10px;background:var(--white);color:var(--ink)}
 input[aria-invalid=true]{border-color:var(--danger)}
 .code{letter-spacing:.4em;text-align:center;font-variant-numeric:tabular-nums}
 .check{display:flex;gap:10px;align-items:flex-start;margin-bottom:16px}
@@ -56,7 +56,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:8px 22px;justify-content:space-betw
 .two-col .card{max-width:none}
 @media(max-width:860px){.two-col{grid-template-columns:1fr}}
 .hint{color:var(--muted);font-size:14px;margin:0 0 16px}
-select,textarea{width:100%;font:inherit;font-size:16px;padding:11px 14px;min-height:48px;border:1px solid #9fb2a4;border-radius:10px;background:var(--white);color:var(--ink)}
+select,textarea{width:100%;font:inherit;font-size:16px;padding:11px 14px;min-height:48px;border:1px solid #9fb0c2;border-radius:10px;background:var(--white);color:var(--ink)}
 textarea{resize:vertical;min-height:110px}
 input[type=file]{font:inherit;font-size:15px;max-width:100%}
 .btn.full{width:100%}
@@ -100,7 +100,7 @@ table.list thead th{border-top:0;color:var(--muted);font-size:13px;font-weight:6
 .ranges{display:flex;flex-direction:column;gap:8px;align-items:flex-start;padding-top:10px}
 .ranges .muted-small{padding-top:2px}
 .range{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-input[type=time],input[type=date]{font:inherit;font-size:16px;padding:8px 10px;min-height:44px;border:1px solid #9fb2a4;border-radius:10px;background:var(--white);color:var(--ink)}
+input[type=time],input[type=date]{font:inherit;font-size:16px;padding:8px 10px;min-height:44px;border:1px solid #9fb0c2;border-radius:10px;background:var(--white);color:var(--ink)}
 input[type=date]{width:100%}
 @media(max-width:520px){.day-row{grid-template-columns:1fr}.ranges{padding-top:0}}
 .preview-day h3{font-size:15px;margin:14px 0 8px}
@@ -147,7 +147,7 @@ a.btn.ghost{width:auto}
 .confirm-box p{margin:0 0 10px}
 /* Grid children may shrink, so wide rows (like the day strip) scroll inside instead of widening the page. */
 .two-col>*,.two-col .card{min-width:0}
-input[type=search]{width:100%;font:inherit;font-size:17px;padding:11px 14px;min-height:48px;border:1px solid #9fb2a4;border-radius:10px;background:var(--white);color:var(--ink)}
+input[type=search]{width:100%;font:inherit;font-size:17px;padding:11px 14px;min-height:48px;border:1px solid #9fb0c2;border-radius:10px;background:var(--white);color:var(--ink)}
 .top-actions .btn{min-height:44px;padding:8px 14px;font-size:14px;white-space:nowrap}
 @media(max-width:420px){.brand span{font-size:15px}.top-actions{gap:6px}.lang{padding:8px 10px}}
 .appt-head{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px}
@@ -166,7 +166,7 @@ fieldset.services legend{font-weight:600;margin-bottom:8px;padding:0}
 /* "Forgot your password?" under the staff sign-in */
 .forgot-link{margin:14px 0 0;text-align:center;font-size:15px}
 /* Lab results: the QR slip the lab prints for the patient, and the doctor's patient files */
-.slip-print{text-align:center;border:1px dashed #9fb2a4;border-radius:14px;padding:18px;margin-bottom:16px}
+.slip-print{text-align:center;border:1px dashed #9fb0c2;border-radius:14px;padding:18px;margin-bottom:16px}
 .slip-print img{display:block;width:220px;height:220px;margin:8px auto}
 .slip-lab{font-weight:700;margin:0}
 .slip-code{font:700 20px/1.3 ui-monospace,Consolas,monospace;letter-spacing:.08em;margin:0 0 12px}

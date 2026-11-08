@@ -1,17 +1,18 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 88 88">
-  <title>Syria Healthcare — jasmine and courtyard arch</title>
-  <rect width="88" height="88" rx="21" fill="#173e36"/>
-  <!-- A courtyard arch frames a jasmine blossom and a healthcare cross. -->
-  <path d="M19 72V41c0-12 10-21 25-28 15 7 25 16 25 28v31" fill="none" stroke="#cfad79" stroke-width="2.5" stroke-linecap="round"/>
-  <g fill="#faf5e9">
-    <path id="petal" d="M44 45c-9-5-11-16-4-20 2-1 6-1 8 0 7 4 5 15-4 20Z"/>
-    <use href="#petal" transform="rotate(72 44 45)"/>
-    <use href="#petal" transform="rotate(144 44 45)"/>
-    <use href="#petal" transform="rotate(216 44 45)"/>
-    <use href="#petal" transform="rotate(288 44 45)"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="239.5 143.5 320 320">
+  <title>SyriaHC — صحة تك</title>
+  <!-- The SyriaHC mark: "صحة" (navy) over "تك" (teal) in square Kufic, inside a gold ring. -->
+  <circle cx="399.5" cy="303.5" r="154" fill="#fff" stroke="#d4a64e" stroke-width="9"/>
+  <g fill="#1a3a5c">
+    <path d="M305 245h62v57h-62zM321 262v24h30v-24z" fill-rule="evenodd"/>
+    <path d="M432 245h63v57h-63zM448 262v24h31v-24z" fill-rule="evenodd"/>
+    <path d="M385 232h40v16h-24v38h11v-17h16v33h-43z"/>
+    <rect x="305" y="286" width="190" height="16"/>
   </g>
-  <circle cx="44" cy="45" r="8" fill="#173e36"/>
-  <path d="M42 39h4v4h4v4h-4v4h-4v-4h-4v-4h4Z" fill="#faf5e9"/>
-  <path d="M44 65v9" stroke="#cfad79" stroke-width="2" stroke-linecap="round"/>
-  <path d="M43 71c-7 1-12-3-13-9 7-1 12 3 13 9Zm2 0c7 1 12-3 13-9-7-1-12 3-13 9Z" fill="#a9c28a"/>
+  <path fill="#238a85" d="M348 313h57v16h-41v44h72v-20h16v36h-104z"/>
+  <g fill="#d4a64e">
+    <rect x="320" y="217" width="16" height="16"/>
+    <rect x="343" y="217" width="16" height="16"/>
+    <rect x="420" y="328" width="16" height="16"/>
+    <rect x="447" y="328" width="16" height="16"/>
+  </g>
 </svg>
