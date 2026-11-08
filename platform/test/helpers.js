@@ -9,7 +9,7 @@ import {createMail} from '../src/mail.js';
 import {createSms} from '../src/sms.js';
 import {createTelegramGateway} from '../src/telegram.js';
 import {createWhatsApp, DEFAULT_BLOCKED_PREFIXES, TEMPLATES} from '../src/whatsapp.js';
-import {hashPassword} from '../src/security.js';
+import {hashPassword, newToken, sha256} from '../src/security.js';
 
 export const origin = 'http://127.0.0.1:3000';
 export const pool = createPool(process.env.TEST_DATABASE_URL || 'postgres://postgres@127.0.0.1:54329/shc_test');
@@ -51,8 +51,12 @@ export const cookieOf = response => {
 // Creates a staff account directly and returns its session cookie.
 export async function signIn(post, role, email, name = 'Test User') {
     if (role === 'admin') {
-        await pool.query("INSERT INTO users (role, name, email, password_hash) VALUES ('admin', $1, $2, $3)", [name, email, await hashPassword('admin password 123')]);
-        return cookieOf(await post('/api/auth/login', {email, password: 'admin password 123'}));
+        // Admins sign in with password and an emailed code (tested in admin-2fa.test.js); other tests start a session directly.
+        const {rows: [admin]} = await pool.query("INSERT INTO users (role, name, email, password_hash) VALUES ('admin', $1, $2, $3) RETURNING id",
+            [name, email, await hashPassword('admin password 123')]);
+        const token = newToken();
+        await pool.query("INSERT INTO sessions (token_hash, user_id, expires_at) VALUES ($1, $2, now() + interval '1 day')", [sha256(token), admin.id]);
+        return `shc_session=${token}`;
     }
     return cookieOf(await post('/api/auth/doctor/register', {name, email, password: 'doctor password 123', consent: true}));
 }

@@ -25,6 +25,14 @@
       <button class="btn" type="submit" id="loginButton" data-en="Sign in" data-ar="دخول">دخول</button>
       <p class="forgot-link"><a href="/forgot" data-en="Forgot your password?" data-ar="نسيت كلمة المرور؟">نسيت كلمة المرور؟</a></p>
     </form>
+    <form id="codeForm" novalidate hidden aria-labelledby="codeHeading">
+      <h2 id="codeHeading" data-en="Enter the code from your email" data-ar="أدخل الرمز من بريدك الإلكتروني">أدخل الرمز من بريدك الإلكتروني</h2>
+      <p class="hint" id="codeHint" role="status"></p>
+      <div class="msg error" id="codeError" role="alert" tabindex="-1" hidden></div>
+      <label class="field"><span data-en="6-digit code" data-ar="الرمز المكوّن من 6 أرقام">الرمز المكوّن من 6 أرقام</span><input type="text" id="staffCode" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" dir="ltr" required></label>
+      <button class="btn" type="submit" id="codeButton" data-en="Sign in" data-ar="دخول">دخول</button>
+      <p class="forgot-link"><button class="link-btn" type="button" id="codeRestart" data-en="Start again" data-ar="ابدأ من جديد">ابدأ من جديد</button></p>
+    </form>
     <form id="registerForm" role="tabpanel" aria-labelledby="tabRegister" novalidate hidden>
       <div class="msg error" id="registerError" role="alert" tabindex="-1" hidden></div>
       <label class="field"><span data-en="I am registering" data-ar="أسجّل">أسجّل</span><select id="regType">

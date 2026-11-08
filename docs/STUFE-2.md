@@ -208,9 +208,9 @@ Jeder Dienst ist ein Modul unter `platform/src/` mit eigenen Tests. Die Schnitts
 |---|---|---|---|
 | 2.0 | `src/fhir/` (Verzeichnis, Codesysteme, Metadaten) | öffentliche FHIR-R4-Schnittstelle | ✅ live (PR #21) |
 | 2a | `src/outbox.js` (E-Mail-Warteschlange) | E-Mails mit Wiederholung und Aufgabe nach 8 Versuchen | ✅ live (PR #22) |
-| 2a | `src/profile-changes.js` (Profiländerungen prüfen) | Ärzte und Einrichtungen bleiben aktiv; Name, Fachrichtung, Gebiet, Adresse und Lizenz wartet auf den Admin, der Rest gilt sofort; Admin-Reiter „Änderungen prüfen“ mit bisher/neu | ✅ gebaut, Branch `stage2a-pending-changes` |
-| 2a | Laborsuche über alle Befunde | Suche nach Name, Telefon, Test, Datum | ⏳ |
-| 2a | Admin-Zweitfaktor (E-Mail-Code) | zweiter Faktor für Admins | ⏳ |
+| 2a | `src/profile-changes.js` (Profiländerungen prüfen) | Ärzte und Einrichtungen bleiben aktiv; Name, Fachrichtung, Gebiet, Adresse und Lizenz wartet auf den Admin, der Rest gilt sofort; Admin-Reiter „Änderungen prüfen“ mit bisher/neu | ✅ live (PR #23) |
+| 2a | Laborsuche über alle Befunde (`/api/lab/results?q=&from=&to=&cursor=`) | Suche nach Name, Telefon (ganz oder letzte Ziffern), Test und Zeitraum; 50 pro Seite, keine 90-Tage-Grenze; Code-Status statt Arztanzahl | ✅ gebaut, Branch `stage2a-lab-search` |
+| 2a | Admin-Zweitfaktor (`staff_login_codes`, `/api/auth/login/verify`) | nach dem Passwort ein E-Mail-Code, gebunden an den Anmeldeversuch; „Passwort vergessen“ meldet Admins nicht mehr direkt an | ✅ gebaut, Branch `stage2a-lab-search` |
 | 2a | Verschlüsselte Datensicherung außerhalb des Servers | restic, zweiter Anbieter | ⏳ braucht Bestellung |
 | 2b | `src/healthfile.js`: Patientenstamm, Akte, Uploads | Gesundheitsakte, Befund übernehmen mit zweitem Merkmal | ⏳ (Akte bleibt aus, bis Datenschutz geklärt) |
 | 2b | Patientennummer (`src/patient-number.js`) | SHC-XXXX-XXXX-X mit Prüfzeichen | ⏳ |

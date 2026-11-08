@@ -36,7 +36,8 @@ document.addEventListener('DOMContentLoaded', () => {
         busy($('resetButton'), true);
         const res = await api('/api/auth/password/reset', {token, password: $('resetPassword').value});
         busy($('resetButton'), false);
-        if (res.ok) return window.location.assign('/account');
+        // Administrators sign in again with password and email code after a reset.
+        if (res.ok) return window.location.assign(res.data.sign_in_required ? '/staff' : '/account');
         if (res.data.error === 'reset_invalid') return invalid();
         showError('resetError', res.data);
     });

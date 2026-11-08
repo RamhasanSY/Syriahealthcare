@@ -1,7 +1,7 @@
 import {facilityKinds} from './catalog.js';
 import {audit, transaction} from './db.js';
 import {phoneSignInAvailable, sendCode} from './messaging.js';
-import {emailCodeEmail, passwordChangedEmail, resetEmail, sendEmail, staffAddressEmail, welcomeEmail} from './notify.js';
+import {emailCodeEmail, passwordChangedEmail, resetEmail, sendEmail, staffAddressEmail, staffCodeEmail, welcomeEmail} from './notify.js';
 import {dummyPasswordHash, hashPassword, newOtp, newToken, normalizeEmail, normalizePhone, otpHash, passwordProblem, rateLimitKey, sameHash, sha256, verifyPassword} from './security.js';
 
 export const SESSION_COOKIE = 'shc_session';
@@ -11,7 +11,13 @@ const OTP_MINUTES = 5, OTP_PER_PHONE = 3, OTP_WINDOW_MINUTES = 15, OTP_MAX_ATTEM
 const EMAIL_CODE_MINUTES = 15, EMAIL_CODES_PER_DAY = 10, EMAIL_CODES_PER_HOUR_TOTAL = 500;
 const LOGIN_MAX_FAILURES = 5, LOGIN_WINDOW_MINUTES = 15;
 const RESET_MINUTES = 30, RESET_PER_HOUR = 3;
+// Administrators: second factor by email code after the password (10 minutes, 5 tries per code, 5 codes per 15 minutes).
+const STAFF_CODE_MINUTES = 10, STAFF_CODE_ATTEMPTS = 5, STAFF_CODES_PER_WINDOW = 5;
+export const SECOND_FACTOR_ROLES = new Set(['admin']);
 const STAFF = "role IN ('doctor', 'facility', 'admin')";
+
+// "a.sahada@example.org" -> "a••••••@example.org": enough to recognise the mailbox, not enough to learn it.
+const maskEmail = email => email.replace(/^(.)[^@]*/, (_, first) => first + '•'.repeat(6));
 
 const publicUser = u => ({id: u.id, role: u.role, name: u.name, phone: u.phone, email: u.email, language: u.language});
 
@@ -297,6 +303,57 @@ export default async function authRoutes(app) {
             throw new HttpError(401, 'wrong_credentials', 'Email or password is not correct.');
         }
         await app.pg.query('DELETE FROM login_failures WHERE email = $1', [email]);
+        if (!SECOND_FACTOR_ROLES.has(user.role)) {
+            await startSession(app, request, reply, user);
+            return {user: publicUser(user)};
+        }
+        // Administrators: no session yet. A code goes to the account's email; the browser keeps the challenge token.
+        const {rows: [recent]} = await app.pg.query(
+            'SELECT count(*)::int AS n FROM staff_login_codes WHERE user_id = $1 AND created_at > now() - make_interval(mins => $2)',
+            [user.id, OTP_WINDOW_MINUTES]);
+        if (recent.n >= STAFF_CODES_PER_WINDOW) throw new HttpError(429, 'too_many_codes', 'Too many codes requested. Please wait 15 minutes and try again.');
+        const challenge = newToken(), code = newOtp();
+        const {rows: [row]} = await app.pg.query(
+            `INSERT INTO staff_login_codes (user_id, token_hash, code_hash, expires_at, ip)
+             VALUES ($1, $2, $3, now() + make_interval(mins => $4), $5) RETURNING id`,
+            [user.id, sha256(challenge), otpHash(app.config.otpSecret, 'staff:' + user.id, code), STAFF_CODE_MINUTES, request.ip]);
+        try {
+            // Sent directly: the administrator must know at once when no code is coming.
+            await app.mail.send({to: user.email, ...staffCodeEmail(user, code, STAFF_CODE_MINUTES)});
+        } catch (error) {
+            request.log.error({err: error}, 'Admin sign-in code email failed');
+            await app.pg.query('UPDATE staff_login_codes SET consumed_at = now() WHERE id = $1', [row.id]);
+            throw new HttpError(502, 'mail_failed', 'We could not send the email. Please try again in a minute.');
+        }
+        await audit(app.pg, {actorId: user.id, action: 'login.code_sent', targetId: user.id, ip: request.ip});
+        reply.code(202);
+        return {second_factor: 'email_code', challenge, email_hint: maskEmail(user.email), expires_in_minutes: STAFF_CODE_MINUTES};
+    });
+
+    // Administrators, step 2: the emailed code together with the challenge from step 1.
+    app.post('/api/auth/login/verify', {
+        config: ipLimit(30),
+        schema: {body: {type: 'object', required: ['challenge', 'code'], properties: {
+            challenge: {type: 'string', pattern: '^[A-Za-z0-9_-]{43}$'}, code: {type: 'string', pattern: '^[0-9]{6}$'}
+        }}}
+    }, async (request, reply) => {
+        // Every attempt counts at once, outside any transaction, so parallel guesses cannot exceed the limit.
+        const {rows: [row]} = await app.pg.query(
+            `UPDATE staff_login_codes SET attempts = attempts + 1
+             WHERE token_hash = $1 AND consumed_at IS NULL AND expires_at > now() RETURNING *`, [sha256(request.body.challenge)]);
+        if (!row) throw new HttpError(400, 'code_expired', 'This code has expired. Please sign in again.');
+        if (row.attempts > STAFF_CODE_ATTEMPTS) {
+            await app.pg.query('UPDATE staff_login_codes SET consumed_at = now() WHERE id = $1', [row.id]);
+            throw new HttpError(429, 'too_many_attempts', 'Too many wrong codes. Please sign in again.');
+        }
+        if (!sameHash(row.code_hash, otpHash(app.config.otpSecret, 'staff:' + row.user_id, request.body.code))) {
+            throw new HttpError(400, 'wrong_code', 'That code is not correct.');
+        }
+        const used = await app.pg.query('UPDATE staff_login_codes SET consumed_at = now() WHERE id = $1 AND consumed_at IS NULL', [row.id]);
+        if (!used.rowCount) throw new HttpError(400, 'code_expired', 'This code has already been used. Please sign in again.');
+        const {rows: [user]} = await app.pg.query(`SELECT * FROM users WHERE id = $1 AND ${STAFF} AND disabled_at IS NULL`, [row.user_id]);
+        if (!user) throw new HttpError(400, 'code_expired', 'This code has expired. Please sign in again.');
+        await audit(app.pg, {actorId: user.id, action: 'login.second_factor', targetId: user.id, ip: request.ip});
         await startSession(app, request, reply, user);
         return {user: publicUser(user)};
     });
@@ -355,8 +412,10 @@ export default async function authRoutes(app) {
             await audit(db, {actorId: account.id, action: 'password.reset', targetId: account.id, ip: request.ip});
             return account;
         });
-        await startSession(app, request, reply, user);
         await sendEmail(app, user.email, passwordChangedEmail(user, app.config.appOrigin));
+        // Administrators sign in again with password and email code: the reset link alone must not open an admin session.
+        if (SECOND_FACTOR_ROLES.has(user.role)) return {user: publicUser(user), sign_in_required: true};
+        await startSession(app, request, reply, user);
         return {user: publicUser(user)};
     });
 
