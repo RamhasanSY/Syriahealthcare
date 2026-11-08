@@ -62,6 +62,35 @@ export function decisionEmail(user, kind, status, note, origin) {
     };
 }
 
+// The doctor's decision on a patient's appointment, for patients who have an email address.
+// `when` is the Syria-time "2026-10-14 10:00" string also used in the SMS; the doctor's note arrives without its
+// final full stop (the SMS adds its own), so it is added back here.
+export function appointmentEmail(patient, status, {doctorName, when, address, note}, origin) {
+    const said = note ? `:\n\n${note}.` : '.';
+    const texts = {
+        confirmed: {
+            subject: ['Your appointment is confirmed', 'تم تأكيد موعدك'],
+            en: `${doctorName} has confirmed your appointment on ${when} (Syria time).\nAddress: ${address}`,
+            ar: `أكّد ${doctorName} موعدك في ${when} (بتوقيت سوريا).\nالعنوان: ${address}`
+        },
+        declined: {
+            subject: ['Your appointment request was declined', 'تم الاعتذار عن طلب موعدك'],
+            en: `${doctorName} cannot see you on ${when}${said}\n\nYou can choose another time.`,
+            ar: `اعتذر ${doctorName} عن موعد ${when}${said}\n\nيمكنك اختيار وقت آخر.`
+        },
+        cancelled_by_doctor: {
+            subject: ['Your appointment was cancelled', 'تم إلغاء موعدك'],
+            en: `${doctorName} has cancelled your appointment on ${when}${said}`,
+            ar: `ألغى ${doctorName} موعدك في ${when}${said}`
+        }
+    }[status];
+    if (!texts) return null;
+    return {
+        subject: (patient.language === 'en' ? texts.subject[0] : texts.subject[1]) + (patient.language === 'en' ? ' — SyriaHC' : ' — صحة تك'),
+        text: both(patient.language, `مرحباً ${patient.name}،\n\n${texts.ar}\n\n${origin}/appointments`, `Hello ${patient.name},\n\n${texts.en}\n\n${origin}/appointments`)
+    };
+}
+
 // Tells every admin that a profile is waiting for review.
 export async function notifyAdminsOfSubmission(app, user, kind, displayName) {
     const {rows: admins} = await app.pg.query("SELECT email FROM users WHERE role = 'admin' AND disabled_at IS NULL AND email IS NOT NULL");

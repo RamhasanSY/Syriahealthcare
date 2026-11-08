@@ -62,9 +62,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (scope !== 'upcoming' || started) head.append(el('span', {className: 'muted-small', textContent: day(a.starts_at)}));
         if (scope === 'past') head.append(el('span', {className: 'pill ' + STATUS[a.status][2], textContent: tr(...STATUS[a.status])}));
         li.append(head, el('p', {className: 'appt-doctor', textContent: a.patient_name, dir: 'auto'}));
-        const phone = el('p', {className: 'muted-small'});
-        phone.append(el('a', {href: 'tel:' + a.patient_phone, textContent: a.patient_phone, dir: 'ltr'}));
-        li.append(phone);
+        // Patients who signed in with email may have no mobile number, and the other way round.
+        const contact = el('p', {className: 'muted-small'});
+        if (a.patient_phone) contact.append(el('a', {href: 'tel:' + a.patient_phone, textContent: a.patient_phone, dir: 'ltr'}));
+        if (a.patient_phone && a.patient_email) contact.append(' · ');
+        if (a.patient_email) contact.append(el('a', {href: 'mailto:' + a.patient_email, textContent: a.patient_email, dir: 'ltr'}));
+        li.append(contact);
         if (a.reason) li.append(el('p', {className: 'appt-reason', textContent: tr('Reason: ', 'السبب: ') + a.reason, dir: 'auto'}));
         if (a.status_note && scope === 'past') li.append(el('p', {className: 'appt-reason', textContent: tr('Note: ', 'ملاحظة: ') + a.status_note, dir: 'auto'}));
         const buttons = el('div', {className: 'actions'});

@@ -1,13 +1,14 @@
 import {after, beforeEach, describe, test} from 'node:test';
 import assert from 'node:assert/strict';
 import {approvedDoctor, config, origin, pool, setup, signInPatient, teardown} from './helpers.js';
+import {newToken, sha256} from '../src/security.js';
 import {buildApp} from '../src/app.js';
 import {addDays, localDate} from '../src/slots.js';
 
-let app, sms, post;
+let app, sms, mail, post;
 beforeEach(async () => {
     await app?.close();
-    ({app, sms, post} = await setup());
+    ({app, sms, mail, post} = await setup());
 });
 after(() => teardown(app));
 
@@ -101,5 +102,47 @@ describe('doctor dashboard', () => {
         const res = await broken.inject({method: 'POST', url: `/api/doctor/appointments/${id}/confirm`, payload: {}, headers: {origin, cookie: doctor.cookie}});
         assert.equal(res.json().appointment.status, 'confirmed');
         await broken.close();
+    });
+});
+
+describe('patients with an email address', () => {
+    // A patient who signed up with email only (no mobile number), with a session cookie.
+    async function emailPatient(email = 'lina@example.org') {
+        const {rows: [user]} = await pool.query(
+            "INSERT INTO users (role, name, email, language, consented_at) VALUES ('patient', 'Lina Email', $1, 'en', now()) RETURNING id", [email]);
+        const token = newToken();
+        await pool.query("INSERT INTO sessions (token_hash, user_id, expires_at) VALUES ($1, $2, now() + interval '1 day')", [sha256(token), user.id]);
+        return `shc_session=${token}`;
+    }
+
+    test('get the decision of the doctor by email, and the doctor sees the email address', async () => {
+        const doctor = await approvedDoctor(post, 'dr@example.org', 'Dr. Sara Haddad');
+        const patient = await emailPatient();
+        const [slot] = (await app.inject({url: `/api/doctors/${doctor.id}/slots?from=${tomorrow()}&days=1`})).json().slots;
+        const {appointment} = (await post('/api/appointments', {doctor_id: doctor.id, starts_at: slot.starts_at}, {cookie: patient})).json();
+        const view = (await list(doctor.cookie, 'requests')).appointments[0];
+        assert.deepEqual([view.patient_phone, view.patient_email], [null, 'lina@example.org']);
+
+        await act(doctor.cookie, appointment.id, 'confirm');
+        const confirmed = mail.sent.filter(m => m.to === 'lina@example.org');
+        assert.equal(confirmed.length, 1);
+        assert.match(confirmed[0].subject, /Your appointment is confirmed — SyriaHC/, 'English first for an English account');
+        assert.match(confirmed[0].text, /Dr\. Sara Haddad has confirmed your appointment on .*Mezzeh Highway 12/s);
+        assert.match(confirmed[0].text, new RegExp(`${slot.date} ${slot.time}`), 'Syria time, as in the SMS');
+        assert.match(confirmed[0].text, /أكّد Dr\. Sara Haddad موعدك/, 'Arabic too');
+        assert.equal(sms.sent.filter(m => !/sign-in code/.test(m.message)).length, 0, 'no SMS without a mobile number');
+
+        await act(doctor.cookie, appointment.id, 'cancel', {note: 'The clinic is closed that day.'});
+        const cancelled = mail.sent.filter(m => m.to === 'lina@example.org').at(-1);
+        assert.match(cancelled.subject, /Your appointment was cancelled/);
+        assert.match(cancelled.text, /The clinic is closed that day\./);
+    });
+
+    test('a patient with both gets the email and the SMS', async () => {
+        const {doctor, id} = await requested();
+        await pool.query("UPDATE users SET email = 'both@example.org' WHERE phone = '+963912345678'");
+        await act(doctor.cookie, id, 'decline', {note: 'Fully booked.'});
+        assert.match(mail.sent.find(m => m.to === 'both@example.org').text, /Fully booked\./);
+        assert.match(smsTo('+963912345678')[0].message, /اعتذر/);
     });
 });
