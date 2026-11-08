@@ -42,10 +42,18 @@
   </div>
 
   <section id="recent" hidden aria-labelledby="recentHeading">
-    <h2 id="recentHeading" data-en="Last 90 days" data-ar="آخر 90 يوماً">آخر 90 يوماً</h2>
-    <p class="hint" data-en="Paper lost or badly printed? Make a new QR code: the old one stops working." data-ar="ضاعت الورقة أو طُبعت بشكل سيئ؟ أنشئوا رمزاً جديداً: يتوقف الرمز القديم عن العمل.">ضاعت الورقة أو طُبعت بشكل سيئ؟ أنشئوا رمزاً جديداً: يتوقف الرمز القديم عن العمل.</p>
+    <h2 id="recentHeading" data-en="Your results" data-ar="نتائجكم">نتائجكم</h2>
+    <p class="hint" data-en="Paper lost, badly printed or code expired? Make a new QR code: the old one stops working." data-ar="ضاعت الورقة أو طُبعت بشكل سيئ أو انتهت صلاحية الرمز؟ أنشئوا رمزاً جديداً: يتوقف الرمز القديم عن العمل.">ضاعت الورقة أو طُبعت بشكل سيئ أو انتهت صلاحية الرمز؟ أنشئوا رمزاً جديداً: يتوقف الرمز القديم عن العمل.</p>
+    <form class="search-row" id="searchForm" role="search" novalidate>
+      <label class="field"><span data-en="Patient name, mobile or test" data-ar="اسم المريض أو الجوال أو التحليل">اسم المريض أو الجوال أو التحليل</span><input type="search" id="searchQ" maxlength="80" dir="auto" autocomplete="off"></label>
+      <label class="field"><span data-en="From" data-ar="من">من</span><input type="date" id="searchFrom"></label>
+      <label class="field"><span data-en="To" data-ar="إلى">إلى</span><input type="date" id="searchTo"></label>
+      <div class="actions"><button class="btn" type="submit" id="searchButton" data-en="Search" data-ar="بحث">بحث</button><button class="btn ghost" type="button" id="clearSearch" data-en="Show all" data-ar="عرض الكل">عرض الكل</button></div>
+    </form>
     <div class="msg error" id="listError" role="alert" tabindex="-1" hidden></div>
+    <p class="hint" id="listStatus" role="status"></p>
     <ul class="appt-list" id="list"></ul>
+    <div class="actions"><button class="btn ghost" type="button" id="moreButton" hidden data-en="Show more" data-ar="عرض المزيد">عرض المزيد</button></div>
   </section>
 </main>
 <footer><div class="wrap"><a href="/account" data-en="← My account" data-ar="حسابي ←">حسابي ←</a><a href="/facility" data-en="My facility" data-ar="منشأتي">منشأتي</a></div></footer>

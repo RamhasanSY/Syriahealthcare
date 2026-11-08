@@ -4,14 +4,29 @@ document.addEventListener('DOMContentLoaded', async () => {
     const el = (tag, props = {}) => Object.assign(document.createElement(tag), props);
     const date = iso => new Date(iso).toLocaleDateString(Shc.lang === 'ar' ? 'ar' : 'en-GB', {day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Asia/Damascus'});
     let state = null, shown = null;  // shown: the QR slip on screen, as the server returned it
+    let query = {};                  // the search on screen: q, from, to
 
-    const res = await api('/api/lab/results');
+    const listUrl = cursor => '/api/lab/results?' + new URLSearchParams(Object.entries({...query, cursor}).filter(([, v]) => v)).toString();
+
+    const res = await api(listUrl());
     $('main').setAttribute('aria-busy', 'false');
     if (res.status === 401) return window.location.assign('/staff?next=/results');
     if (!res.ok) return showError('pageError', res.data);
     state = res.data;
     $('content').hidden = false;
     $('recent').hidden = false;
+
+    // A new search replaces the list; "Show more" adds the next 50.
+    async function load(more) {
+        $('listError').hidden = true;
+        const button = more ? $('moreButton') : $('searchButton');
+        busy(button, true);
+        const next = await api(listUrl(more ? state.next_cursor : undefined));
+        busy(button, false);
+        if (!next.ok) return showError('listError', next.data);
+        state = {...next.data, results: more ? [...state.results, ...next.data.results] : next.data.results};
+        renderList();
+    }
 
     function renderSlip() {
         if (!shown) return;
@@ -27,15 +42,23 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     function renderList() {
+        const searching = Object.values(query).some(Boolean);
+        $('moreButton').hidden = !state.next_cursor;
+        const n = state.results.length, plus = state.next_cursor ? '+' : '';
+        $('listStatus').textContent = searching
+            ? tr(`${n}${plus} ${n === 1 && !plus ? 'result' : 'results'} for this search.`, `عدد النتائج لهذا البحث: ${n}${plus}.`)
+            : '';
         if (!state.results.length) {
-            $('list').replaceChildren(el('li', {className: 'empty-row', textContent: tr('No results sent yet.', 'لم تُرسل أي نتيجة بعد.')}));
+            $('list').replaceChildren(el('li', {className: 'empty-row', textContent: searching
+                ? tr('No results match this search.', 'لا توجد نتائج مطابقة لهذا البحث.')
+                : tr('No results sent yet.', 'لم تُرسل أي نتيجة بعد.')}));
             return;
         }
         $('list').replaceChildren(...state.results.map(r => {
             const li = el('li', {className: 'appt'}), head = el('div', {className: 'appt-head'});
             head.append(el('strong', {textContent: r.patient_name, dir: 'auto'}), el('span', {className: 'muted-small', textContent: r.patient_phone, dir: 'ltr'}));
-            const opened = r.doctors ? tr(`In ${r.doctors} doctor's file${r.doctors > 1 ? 's' : ''}`, `في ملف ${r.doctors} ${r.doctors > 1 ? 'أطباء' : 'طبيب'}`) : tr('Not scanned yet', 'لم يُمسح بعد');
-            li.append(head, el('p', {className: 'appt-reason', textContent: `${r.title} · ${date(r.created_at)} · ${opened}`, dir: 'auto'}));
+            const code = r.code_expired ? tr('Code expired', 'انتهت صلاحية الرمز') : tr('Code valid until ', 'الرمز صالح حتى ') + date(r.code_expires_at);
+            li.append(head, el('p', {className: 'appt-reason', textContent: `${r.title} · ${date(r.created_at)} · ${code}`, dir: 'auto'}));
             const again = el('button', {type: 'button', className: 'btn ghost', textContent: tr('New QR code', 'رمز QR جديد')});
             again.setAttribute('aria-label', tr('New QR code for ', 'رمز QR جديد لـ ') + `${r.patient_name}, ${r.title}`);
             again.onclick = async () => {
@@ -88,6 +111,17 @@ document.addEventListener('DOMContentLoaded', async () => {
         show(data);
     });
 
+    $('searchForm').addEventListener('submit', event => {
+        event.preventDefault();
+        query = {q: $('searchQ').value.trim(), from: $('searchFrom').value, to: $('searchTo').value};
+        load(false);
+    });
+    $('clearSearch').addEventListener('click', () => {
+        $('searchForm').reset();
+        query = {};
+        load(false);
+    });
+    $('moreButton').addEventListener('click', () => load(true));
     $('printButton').addEventListener('click', () => window.print());
     document.addEventListener('shc:language', () => { renderSlip(); renderList(); });
     renderList();

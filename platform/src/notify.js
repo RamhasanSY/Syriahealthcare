@@ -129,6 +129,14 @@ export function appointmentEmail(patient, status, {doctorName, when, address, no
     };
 }
 
+// Administrator sign-in, second step. The code is in the subject too, so it shows in the phone's notification.
+export const staffCodeEmail = (user, code, minutes) => ({
+    subject: user.language === 'en' ? `SyriaHC admin sign-in code: ${code}` : `رمز دخول الإدارة إلى صحة تك: ${code}`,
+    text: both(user.language,
+        `مرحباً ${user.name}،\n\nرمز الدخول: ${code}\nالرمز صالح لمدة ${minutes} دقائق، ولمحاولة الدخول هذه فقط.\n\nإن لم تحاول الدخول الآن، فكلمة مرورك معروفة لشخص آخر: غيّرها فوراً.`,
+        `Hello ${user.name},\n\nYour sign-in code: ${code}\nThe code is valid for ${minutes} minutes and only for this sign-in.\n\nIf you are not signing in right now, someone else knows your password: change it at once.`)
+});
+
 // Tells a doctor or facility what the administrator decided about held changes. Only the field names are listed.
 export function changeDecisionEmail(user, accepted, fields, note, origin) {
     const list = fields.join(', ');

@@ -1,6 +1,6 @@
 // Sign-in for doctors, facilities and admins; registration for doctors and facilities (labs, imaging, hospitals, clinics).
 document.addEventListener('DOMContentLoaded', () => {
-    const {$, api, showError, busy} = Shc;
+    const {$, tr, api, showError, busy} = Shc;
     const tabs = [[$('tabLogin'), $('loginForm')], [$('tabRegister'), $('registerForm')]];
 
     function select(index, focus) {
@@ -34,18 +34,58 @@ document.addEventListener('DOMContentLoaded', () => {
     $('regType').addEventListener('change', renderType);
     renderType();
 
+    // Pages that need a signed-in doctor or lab send people here with ?next=/page; only plain local paths are followed.
+    const goOn = () => {
+        const next = new URLSearchParams(window.location.search).get('next');
+        window.location.assign(/^\/[a-z]+$/.test(next || '') ? next : '/account');
+    };
+    // Administrators get a second step: the code from their email, tied to this sign-in attempt.
+    let challenge = null;
+    const showLogin = () => {
+        challenge = null;
+        $('codeForm').hidden = true;
+        $('loginForm').hidden = false;
+        document.querySelector('.tabs')?.removeAttribute('hidden');
+        $('loginPassword').focus();
+    };
+
     $('loginForm').addEventListener('submit', async event => {
         event.preventDefault();
         $('loginError').hidden = true;
         busy($('loginButton'), true);
         const res = await api('/api/auth/login', {email: $('loginEmail').value, password: $('loginPassword').value});
         busy($('loginButton'), false);
-        // Pages that need a signed-in doctor or lab send people here with ?next=/page; only plain local paths are followed.
-        const next = new URLSearchParams(window.location.search).get('next');
-        if (res.ok) return window.location.assign(/^\/[a-z]+$/.test(next || '') ? next : '/account');
         $('loginPassword').value = '';
+        if (res.ok && res.data.second_factor) {
+            challenge = res.data.challenge;
+            $('loginForm').hidden = true;
+            document.querySelector('.tabs')?.setAttribute('hidden', '');
+            $('codeForm').hidden = false;
+            $('codeHint').textContent = tr(`We sent a 6-digit code to ${res.data.email_hint}. It is valid for ${res.data.expires_in_minutes} minutes.`,
+                `أرسلنا رمزاً من 6 أرقام إلى ⁦${res.data.email_hint}⁩. الرمز صالح لمدة ${res.data.expires_in_minutes} دقائق.`);
+            $('staffCode').value = '';
+            $('staffCode').focus();
+            return;
+        }
+        if (res.ok) return goOn();
         showError('loginError', res.data);
     });
+
+    $('codeForm').addEventListener('submit', async event => {
+        event.preventDefault();
+        $('codeError').hidden = true;
+        busy($('codeButton'), true);
+        const res = await api('/api/auth/login/verify', {challenge, code: $('staffCode').value.replace(/\D/g, '')});
+        busy($('codeButton'), false);
+        if (res.ok) return goOn();
+        // An expired or used-up code cannot be retried: back to the password.
+        if (['code_expired', 'too_many_attempts'].includes(res.data.error)) {
+            showLogin();
+            return showError('loginError', res.data);
+        }
+        showError('codeError', res.data);
+    });
+    $('codeRestart').addEventListener('click', showLogin);
 
     $('registerForm').addEventListener('submit', async event => {
         event.preventDefault();
