@@ -1,8 +1,8 @@
-# Syria Healthcare platform
+# SyriaHC platform
 
-Accounts and (in later steps) appointment booking for patients and doctors. It runs on the company's own server at `app.syriahealthcare.com`, separately from the public website, which stays on GitHub Pages.
+Accounts and (in later steps) appointment booking for patients and doctors. It runs on the company's own server at `app.syriahc.com`. The same server also serves the public website at `syriahc.com` (see "Install on the company server").
 
-**Status: Stage 1, steps 1–5 of 6 done:** accounts and sign-in, doctor profiles and approval, opening hours, patient booking, and the doctor dashboard. Labs, imaging centres, hospitals and clinics can also register and get listed on syriahealthcare.com after review.
+**Status: Stage 1, steps 1–5 of 6 done:** accounts and sign-in, doctor profiles and approval, opening hours, patient booking, and the doctor dashboard. Labs, imaging centres, hospitals and clinics can also register and get listed on syriahc.com after review.
 
 ## What works now
 
@@ -10,7 +10,7 @@ Accounts and (in later steps) appointment booking for patients and doctors. It r
 |---|---|---|
 | Patient | Mobile number and a 6-digit code by WhatsApp, Telegram or SMS | Max 3 codes per number per 15 min; a code is valid for 5 minutes, works once, and allows 5 tries. New patients give their name and accept the privacy policy. |
 | Doctor | Email and password (at least 10 characters), self-registration | Fills in a profile and uploads a licence; must be approved by an admin before patients can see them. |
-| Lab, imaging centre, hospital or clinic | Email and password, self-registration (same sign-in page as doctors) | Fills in the facility's details and uploads its operating licence; must be approved by an admin before it is listed on syriahealthcare.com. |
+| Lab, imaging centre, hospital or clinic | Email and password, self-registration (same sign-in page as doctors) | Fills in the facility's details and uploads its operating licence; must be approved by an admin before it is listed on syriahc.com. |
 | Admin | Email and password, created on the server only | `npm run create-admin -- you@company.com "Your Name"` |
 
 ### Doctor verification (step 2)
@@ -29,7 +29,7 @@ Accounts and (in later steps) appointment booking for patients and doctors. It r
 3. **Facility** uploads its operating licence (required) and sends the profile for review. Documents follow the same rules as doctors' documents: PDF, JPG or PNG up to 5 MB, encrypted at rest, locked after approval.
 4. **Admin** (`/admin`, tab "Labs, hospitals and clinics") approves, asks for changes or suspends, with the same notes and history as for doctors.
 5. Changing an approved profile sends it back for review. `GET /api/facilities` lists approved facilities with public details only: never the contact person, email, licence number or documents.
-6. The website's collector copies them to syriahealthcare.com: labs and imaging centres to the Labs page, hospitals and clinics to the Hospitals page, each marked "Verified licence".
+6. The website's collector copies them to syriahc.com: labs and imaging centres to the Labs page, hospitals and clinics to the Hospitals page, each marked "Verified licence".
 
 ### Opening hours (step 3)
 
@@ -62,6 +62,14 @@ Each card shows the patient's name, phone and reason. Doctors only see their own
 
 When the doctor confirms, declines or cancels, the patient gets a bilingual SMS with the date and time in Syria time, plus the clinic address or the doctor's message. If an SMS fails, it is logged and the doctor's decision still stands.
 
+### Lab results by QR code
+
+1. **Lab** (an approved laboratory or imaging centre, `/results`) enters the patient's name and mobile, the test, and uploads the result (PDF, JPG or PNG up to 5 MB, encrypted at rest). It prints the QR slip and gives it to the patient.
+2. The QR code holds only a link with a random code (`/scan#ABCD-EFGH-JKLM`, about 60 bits), never the result. The code is printed under the QR code to type in by hand, is valid for 90 days, and only its HMAC is stored. A lost or badly printed slip: "New QR code" replaces it and the old one stops working.
+3. **Doctor** (approved) scans the QR code with the phone camera, or types the code at `/scan`. A doctor who is not signed in comes back to the result after signing in. The page shows the patient, test, lab and date; the doctor checks them and adds the result to the patient file.
+4. **Doctor** sees the patient files at `/records`: every scanned result grouped by patient (mobile number), searchable by name or mobile. Results open from the server each time and are never saved by the app.
+5. Only a doctor who added a result can open it. Several doctors can add the same result. Uploading, adding, viewing and new codes are recorded in the audit log.
+
 ### WhatsApp for patients
 
 Patients get their sign-in code and the doctor's decisions (confirmed, declined, cancelled) by **WhatsApp**, through Meta's official WhatsApp Cloud API. SMS is the fallback:
@@ -73,7 +81,7 @@ Patients get their sign-in code and the doctor's decisions (confirmed, declined,
 **Setup at Meta** (once):
 1. Create a Meta Business account at business.facebook.com and verify the business (the operator's company documents).
 2. At developers.facebook.com, create an app of type "Business" and add the product **WhatsApp**.
-3. Add a phone number that is not used in the WhatsApp app (a German number works) and the display name "Syria Healthcare". Add a payment method.
+3. Add a phone number that is not used in the WhatsApp app (a German number works) and the display name "SyriaHC". Add a payment method.
 4. In WhatsApp Manager, create these templates, each in **Arabic (ar)** and **English (en)**:
 
 | Template name | Category | Text (Arabic / English) |
@@ -153,16 +161,22 @@ Open http://127.0.0.1:3000. The demo data has three approved doctors, an approve
 
 ## Install on the company server
 
-1. Use a Linux server with Docker, and open ports 80 and 443.
-2. Point DNS: add an `A` record for `app.syriahealthcare.com` with the server's IP address.
-3. Copy this `platform` folder to the server, then run `cp .env.example .env` and fill in `.env` (see the comments in the file).
-4. Run `docker compose up -d --build`. Caddy gets the HTTPS certificate automatically.
-5. Create the first admin: `docker compose exec app node src/create-admin.js admin@company.com "Name"`.
-6. Check that https://app.syriahealthcare.com/api/health returns `{"ok":true}`.
+1. Use a Linux server with Docker, git and rsync, and open ports 80 and 443.
+2. Point DNS: add `A` (and `AAAA`) records for `app.syriahc.com`, `syriahc.com` and `www.syriahc.com` with the server's IP addresses.
+3. Clone the repository to `/opt/syriahealthcare`, then in `platform/` run `cp .env.example .env` and fill in `.env` (see the comments in the file).
+4. Publish the website once and let it update itself every 10 minutes:
+   ```sh
+   /opt/syriahealthcare/platform/website/update-website.sh --force
+   cp /opt/syriahealthcare/platform/website/update-website.{service,timer} /etc/systemd/system/
+   systemctl daemon-reload && systemctl enable --now update-website.timer
+   ```
+5. Run `docker compose up -d --build`. Caddy gets the HTTPS certificates automatically.
+6. Create the first admin: `docker compose exec app node src/create-admin.js admin@company.com "Name"`.
+7. Check that https://app.syriahc.com/api/health returns `{"ok":true}` and https://syriahc.com shows the website.
 
 Backups: a compressed database dump and an archive of the encrypted documents are written to `platform/backups/` every night, and the last 14 days are kept. **Keep `DOCUMENT_KEY` safe and separate from the backups: without it, the document backups cannot be opened, and with it anyone holding the backups can read the licences.** Copy these files off the server regularly (to another machine or storage), because a backup on the same disk does not survive a disk failure.
 
-Updates: `git pull && docker compose up -d --build`. Database changes in `migrations/` are applied automatically on start.
+Updates: the website updates itself (see step 4; `journalctl -u update-website` shows what it did). The platform does not: run `git pull && docker compose up -d --build` in `platform/` after platform changes. Database changes in `migrations/` are applied automatically on start.
 
 ## Before going live
 - Create a mailbox for sending (e.g. `noreply@syriahealthcare.com` at STRATO, its own mailbox rather than an alias, with Catchall off) and put its SMTP details in `.env`. The server does not start without them. Check it with `npm run test-mail -- you@example.com` (asks for the password, hidden), or on the server with `docker compose exec app node src/test-mail.js you@example.com`.

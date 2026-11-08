@@ -1,26 +1,26 @@
 <!doctype html>
-<html lang="ar" dir="rtl" data-title-en="My account — Syria Healthcare" data-title-ar="حسابي — الرعاية الصحية في سوريا">
+<html lang="ar" dir="rtl" data-title-en="My account — SyriaHC" data-title-ar="حسابي — صحة تك">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#173e36">
-<title>حسابي — الرعاية الصحية في سوريا</title>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#1a3a5c">
+<title>حسابي — صحة تك</title>
 <link rel="manifest" href="/manifest.webmanifest"><link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/assets/app.css">
 <script src="/assets/common.js" defer></script><script src="/assets/account.js" defer></script>
 </head>
 <body>
 <a class="skip" href="#main" data-en="Skip to content" data-ar="انتقل إلى المحتوى">انتقل إلى المحتوى</a>
-<header class="top"><div class="top-inner"><a class="brand" href="/"><img src="/assets/logo.svg" alt=""><span data-en="Syria Healthcare" data-ar="الرعاية الصحية في سوريا">الرعاية الصحية في سوريا</span></a><div class="top-actions"><button class="lang" id="langToggle" type="button">English</button><button class="btn ghost" type="button" id="logout" hidden data-en="Sign out" data-ar="خروج">خروج</button></div></div></header>
+<header class="top"><div class="top-inner"><a class="brand" href="/"><img src="/assets/logo.svg" alt=""><span data-en="SyriaHC" data-ar="صحة تك">صحة تك</span></a><div class="top-actions"><button class="lang" id="langToggle" type="button">English</button><button class="btn ghost" type="button" id="logout" hidden data-en="Sign out" data-ar="خروج">خروج</button></div></div></header>
 <main id="main" class="wrap" aria-busy="true">
   <h1 id="greeting" data-en="My account" data-ar="حسابي">حسابي</h1>
   <div class="card" id="details" hidden>
     <dl class="dl"><dt data-en="Name" data-ar="الاسم">الاسم</dt><dd id="userName" dir="auto"></dd><dt data-en="Account type" data-ar="نوع الحساب">نوع الحساب</dt><dd id="userRole"></dd><dt id="contactLabel"></dt><dd id="userContact" dir="ltr"></dd></dl>
     <div id="patientNext" hidden><div class="actions"><a class="btn" href="/doctors" data-en="Find a doctor and book" data-ar="ابحث عن طبيب واحجز">ابحث عن طبيب واحجز</a><a class="btn ghost" href="/appointments" data-en="My appointments" data-ar="مواعيدي">مواعيدي</a></div></div>
-    <div id="doctorNext" hidden><p><span class="pill wait" id="doctorStatus"></span></p><p id="doctorStatusText"></p><div class="actions"><a class="btn" href="/dashboard" id="dashboardLink" data-en="Appointments" data-ar="المواعيد">المواعيد</a><a class="btn ghost" href="/doctor" data-en="My doctor profile" data-ar="ملفي كطبيب">ملفي كطبيب</a><a class="btn ghost" href="/schedule" data-en="Opening hours" data-ar="أوقات الدوام">أوقات الدوام</a></div></div>
-    <div id="facilityNext" hidden><p><span class="pill wait" id="facilityStatus"></span></p><p id="facilityStatusText"></p><div class="actions"><a class="btn" href="/facility" data-en="My facility" data-ar="منشأتي">منشأتي</a></div></div>
+    <div id="doctorNext" hidden><p><span class="pill wait" id="doctorStatus"></span></p><p id="doctorStatusText"></p><div class="actions"><a class="btn" href="/dashboard" id="dashboardLink" data-en="Appointments" data-ar="المواعيد">المواعيد</a><a class="btn ghost" href="/doctor" data-en="My doctor profile" data-ar="ملفي كطبيب">ملفي كطبيب</a><a class="btn ghost" href="/schedule" data-en="Opening hours" data-ar="أوقات الدوام">أوقات الدوام</a></div><div class="actions" id="recordsLinks" hidden><a class="btn ghost" href="/scan" data-en="Scan a lab result" data-ar="امسح نتيجة تحليل">امسح نتيجة تحليل</a><a class="btn ghost" href="/records" data-en="Patient files" data-ar="ملفات المرضى">ملفات المرضى</a></div></div>
+    <div id="facilityNext" hidden><p><span class="pill wait" id="facilityStatus"></span></p><p id="facilityStatusText"></p><div class="actions"><a class="btn" href="/facility" data-en="My facility" data-ar="منشأتي">منشأتي</a><a class="btn ghost" href="/results" id="resultsLink" hidden data-en="Lab results" data-ar="نتائج التحاليل">نتائج التحاليل</a></div></div>
     <div id="adminNext" hidden><div class="actions"><a class="btn" href="/admin" data-en="Review doctors" data-ar="مراجعة الأطباء">مراجعة الأطباء</a><a class="btn ghost" href="/admin#facilities" data-en="Review labs and hospitals" data-ar="مراجعة المخابر والمشافي">مراجعة المخابر والمشافي</a></div></div>
   </div>
   <div class="card" id="signedOut" hidden><p data-en="You are not signed in." data-ar="لم تسجّل الدخول.">لم تسجّل الدخول.</p><a class="btn" href="/" data-en="Sign in" data-ar="تسجيل الدخول">تسجيل الدخول</a></div>
 </main>
-<footer><div class="wrap"><a href="https://syriahealthcare.com/" data-en="← Back to syriahealthcare.com" data-ar="العودة إلى الموقع ←">العودة إلى الموقع ←</a><a href="/privacy" data-en="Privacy policy" data-ar="سياسة الخصوصية">سياسة الخصوصية</a></div></footer>
+<footer><div class="wrap"><a href="https://syriahc.com/" data-en="← Back to syriahc.com" data-ar="العودة إلى الموقع ←">العودة إلى الموقع ←</a><a href="/privacy" data-en="Privacy policy" data-ar="سياسة الخصوصية">سياسة الخصوصية</a></div></footer>
 </body>
 </html>

@@ -429,8 +429,8 @@
             const d = job.deadline.replace(/-/g, ''),
                 next = new Date(timestamp(job.deadline) + 86400000).toISOString().slice(0, 10).replace(/-/g, '');
             const esc = t => String(t).replace(/[\\;,]/g, m => '\\' + m).replace(/\r?\n/g, '\\n');
-            const ics = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Syria Healthcare//EN', 'BEGIN:VEVENT',
-                'UID:' + d + '-' + Math.abs([...key(job)].reduce((h, c) => (h * 31 + c.charCodeAt(0)) | 0, 7)) + '@syriahealthcare.com',
+            const ics = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//SyriaHC//EN', 'BEGIN:VEVENT',
+                'UID:' + d + '-' + Math.abs([...key(job)].reduce((h, c) => (h * 31 + c.charCodeAt(0)) | 0, 7)) + '@syriahc.com',
                 'DTSTAMP:' + new Date().toISOString().replace(/[-:]|\.\d{3}/g, ''),
                 'DTSTART;VALUE=DATE:' + d, 'DTEND;VALUE=DATE:' + next,
                 'SUMMARY:' + esc('Deadline: ' + value(job, 'title') + ' (' + (job.organisation || job.source) + ')'),

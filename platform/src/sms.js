@@ -1,6 +1,13 @@
 // Sends SMS codes. Syrian SMS gateways differ, so the "http" provider posts JSON
 // {to, message, sender} with a bearer token; adapt sendHttp() to the chosen gateway's API.
 export function createSms(config, log) {
+    // No SMS gateway yet: phone sign-in is switched off (see /api/auth/methods) and appointment texts are skipped.
+    if (config.smsProvider === 'none') {
+        return {
+            available: false,
+            async send() { throw new Error('No SMS provider is configured (SMS_PROVIDER=none)'); }
+        };
+    }
     if (config.smsProvider === 'console') {
         return {
             async send(to, message) {

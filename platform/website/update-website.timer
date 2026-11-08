@@ -1,0 +1,10 @@
+[Unit]
+Description=Publish the public website every 10 minutes
+
+[Timer]
+OnBootSec=1min
+OnUnitActiveSec=10min
+RandomizedDelaySec=30
+
+[Install]
+WantedBy=timers.target

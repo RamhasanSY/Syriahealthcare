@@ -124,7 +124,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         $('detail').hidden = false;
         $('decisionError').hidden = true;
         $('detailName').textContent = G().title(current);
-        $('detailStatus').replaceChildren(el('span', tr(...STATUSES[profile.status]), 'pill' + (profile.status === 'approved' ? '' : ' wait')));
+        $('detailStatus').replaceChildren(el('span', tr(...STATUSES[profile.status]), 'pill ' + (profile.status === 'approved' ? 'ok' : 'wait')));
         if (profile.review_note) $('detailStatus').append(el('span', ' ' + profile.review_note));
         const values = G().values(current);
         $('detailFields').replaceChildren(...G().fields.filter(([key]) => key !== 'emergency' || values.emergency).flatMap(([key, en, ar]) => {

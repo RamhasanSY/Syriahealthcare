@@ -1,34 +1,34 @@
-SYRIA HEALTHCARE - LINKEDIN PAGE SETUP
+SYRIAHC - LINKEDIN PAGE SETUP
 
 1. Create the Page while signed in to your own LinkedIn account:
    https://www.linkedin.com/company/setup/new/
    Choose Company. Enter the real organization type, size and other required details.
-   Name: Syria Healthcare
-   Website: https://syriahealthcare.com/
-   Suggested public address: syriahealthcare (subject to availability)
+   Name: SyriaHC
+   Website: https://syriahc.com/
+   Suggested public address: syriahc (subject to availability)
    Tagline: Healthcare news and NGO opportunities in Syria.
 
 About text:
-Syria Healthcare is an independent information platform connecting people with
+SyriaHC is an independent information platform connecting people with
 healthcare news and NGO opportunities in Syria. We collect original headlines
 and current vacancies from publishers and employers, with links to the source.
 Our website is available in English and Arabic. We do not represent the listed
 employers; applications are handled by each employer.
 
 First post draft (not published):
-Welcome to Syria Healthcare.
+Welcome to SyriaHC.
 Explore healthcare news and current healthcare and NGO opportunities in Syria,
 with original sources, closing dates and employer application links.
-Visit https://syriahealthcare.com/
+Visit https://syriahc.com/
 #Syria #Healthcare #NGOJobs
 
 2. Connect publishing:
    In Zapier, add a LinkedIn connection and complete LinkedIn's sign-in and
    authorization screen as an administrator of the Page.
    Trigger: RSS by Zapier - New Item in Feed
-   Feed: https://syriahealthcare.com/data/news.xml
+   Feed: https://syriahc.com/data/news.xml
    Action: LinkedIn - Create Company Update
-   Select the Syria Healthcare Page.
+   Select the SyriaHC Page.
    Post text: feed Title, then Description (publisher attribution).
    Article URL: feed Link.
    Check a sample before enabling. Start with future new items, not the archive.

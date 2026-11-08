@@ -23,14 +23,14 @@ const password = env.SMTP_PASSWORD || await askHidden(`Password of ${user}: `);
 const config = {
     mailProvider: 'smtp',
     smtp: {host: env.SMTP_HOST || 'smtp.strato.de', port: Number(env.SMTP_PORT || 465), user, password},
-    mailFrom: env.MAIL_FROM || `Syria Healthcare <${user}>`
+    mailFrom: env.MAIL_FROM || `SyriaHC <${user}>`
 };
 console.log(`Sending from ${config.mailFrom} to ${to} through ${config.smtp.host}:${config.smtp.port} ...`);
 try {
     await createMail(config).send({
         to,
-        subject: 'Test email from Syria Healthcare / رسالة تجريبية',
-        text: 'This is a test from the Syria Healthcare platform. If you can read it, sending emails works.\n\nهذه رسالة تجريبية من منصة الرعاية الصحية في سوريا. إن وصلتك، فإرسال البريد يعمل.'
+        subject: 'Test email from SyriaHC / رسالة تجريبية',
+        text: 'This is a test from the SyriaHC platform. If you can read it, sending emails works.\n\nهذه رسالة تجريبية من منصة صحة تك. إن وصلتك، فإرسال البريد يعمل.'
     });
     console.log('Sent. Check the inbox, and the spam folder if it is not there.');
 } catch (error) {

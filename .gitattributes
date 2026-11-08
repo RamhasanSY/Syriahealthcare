@@ -1,0 +1,5 @@
+# Files that run on the Linux server must keep LF line endings, even when checked out on Windows.
+*.sh text eol=lf
+platform/Caddyfile text eol=lf
+platform/website/*.service text eol=lf
+platform/website/*.timer text eol=lf

@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const STATUS = {
         draft: ['info', 'Not sent yet. Complete steps 1–3 below.', 'لم يُرسل بعد. أكملوا الخطوات 1–3 أدناه.'],
         pending: ['wait', 'Under review. We will let you know by email when it is checked.', 'قيد المراجعة. سنبلغكم بالبريد الإلكتروني عند الانتهاء.'],
-        approved: ['ok', 'Approved. Your listing appears on syriahealthcare.com at the next daily update.', 'معتمد. تظهر منشأتكم على syriahealthcare.com مع التحديث اليومي التالي.'],
+        approved: ['ok', 'Approved. Your listing appears on syriahc.com at the next daily update.', 'معتمد. تظهر منشأتكم على syriahc.com مع التحديث اليومي التالي.'],
         rejected: ['error', 'Changes needed before approval:', 'مطلوب تعديلات قبل الاعتماد:'],
         suspended: ['error', 'Your listing is suspended and hidden from the website:', 'منشأتكم موقوفة ومخفية عن الموقع:']
     };

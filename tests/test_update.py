@@ -56,11 +56,11 @@ class CollectorTests(unittest.TestCase):
         doctor = {'id': '0b6f1d1e-3c55-4a43-9f6e-5d3c2a1b0c9d', 'name': 'Dr. Omar Khalil', 'specialty': 'cardiology', 'governorate': 'aleppo',
                   'area': 'Al Furqan', 'clinic_name': 'Heart Clinic', 'clinic_address': 'Street 4', 'clinic_phone': '+963210000002',
                   'bio': 'Adult cardiology.', 'email': 'private@example.org'}
-        rows = u.platform_doctors('https://app.syriahealthcare.com/', catalog, [doctor, {**doctor, 'specialty': 'unknown'}, {**doctor, 'id': '../evil'}])
+        rows = u.platform_doctors('https://app.syriahc.com/', catalog, [doctor, {**doctor, 'specialty': 'unknown'}, {**doctor, 'id': '../evil'}])
         self.assertEqual(len(rows), 1)
         row = rows[0]
         self.assertEqual((row['specialty'], row['specialty_ar'], row['city_ar']), ('Cardiology', 'أمراض القلب', 'حلب'))
-        self.assertEqual(row['booking_url'], 'https://app.syriahealthcare.com/book?doctor=0b6f1d1e-3c55-4a43-9f6e-5d3c2a1b0c9d')
+        self.assertEqual(row['booking_url'], 'https://app.syriahc.com/book?doctor=0b6f1d1e-3c55-4a43-9f6e-5d3c2a1b0c9d')
         self.assertEqual(row['address'], 'Heart Clinic, Street 4, Al Furqan')
         self.assertNotIn('email', row)
         self.assertTrue(row['platform'])

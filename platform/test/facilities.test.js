@@ -141,7 +141,7 @@ describe('facility review and public list', () => {
         await post(`/api/admin/facilities/${lab.id}/approve`, {}, {cookie: admin});
         const approved = mail.sent.at(-1);
         assert.equal(approved.to, 'lab@example.org');
-        assert.match(approved.text, /syriahealthcare\.com/);
+        assert.match(approved.text, /syriahc\.com/);
         await post(`/api/admin/facilities/${lab.id}/suspend`, {note: 'Licence expired in September.'}, {cookie: admin});
         assert.match(mail.sent.at(-1).text, /Licence expired in September\./);
     });

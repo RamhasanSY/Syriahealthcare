@@ -1,4 +1,6 @@
-# Caddy obtains and renews the HTTPS certificate for APP_DOMAIN automatically.
+# Caddy obtains and renews the HTTPS certificates for all three addresses automatically.
+
+# The booking platform.
 {$APP_DOMAIN} {
 	encode zstd gzip
 	reverse_proxy app:3000
@@ -6,4 +8,39 @@
 		output stdout
 		format json
 	}
+}
+
+# The public website: static files that website/update-website.sh builds from the repository and puts in /srv/site.
+{$SITE_DOMAIN} {
+	root * /srv/site
+	encode zstd gzip
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		Permissions-Policy "camera=(), microphone=(), geolocation=()"
+		-Server
+	}
+	# Pages and data are refreshed twice a day; the service worker must always be checked for a new version.
+	@worker path /sw.js
+	header @worker Cache-Control "no-cache"
+	@other not path /sw.js
+	header @other Cache-Control "public, max-age=600"
+	# /jobs serves jobs.html, as links on the site and in search engines expect.
+	try_files {path} {path}.html
+	file_server
+	handle_errors 404 {
+		rewrite * /404.html
+		file_server
+	}
+	log {
+		output stdout
+		format json
+	}
+}
+
+# www.syriahc.com -> syriahc.com
+www.{$SITE_DOMAIN} {
+	redir https://{$SITE_DOMAIN}{uri} permanent
 }

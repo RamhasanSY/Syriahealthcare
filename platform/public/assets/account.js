@@ -13,8 +13,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         $('greeting').textContent = tr(`Hello, ${user.name}`, `مرحباً، ${user.name}`);
         $('userName').textContent = user.name;
         $('userRole').textContent = tr(...roles[user.role]);
-        $('contactLabel').textContent = user.role === 'patient' ? tr('Mobile', 'الجوال') : tr('Email', 'البريد الإلكتروني');
-        $('userContact').textContent = user.role === 'patient' ? user.phone : user.email;
+        // Patients may have signed in with an email address, a mobile number, or both.
+        const byPhone = user.role === 'patient' && user.phone && !user.email;
+        $('contactLabel').textContent = byPhone ? tr('Mobile', 'الجوال') : tr('Email', 'البريد الإلكتروني');
+        $('userContact').textContent = byPhone ? user.phone : [user.email, user.role === 'patient' ? user.phone : null].filter(Boolean).join(' · ');
     };
     // Doctors see where their profile stands.
     const STATUS = {draft: ['Profile not sent yet', 'لم يُرسل الملف بعد', 'Add your specialty, clinic and licence, then send it for review.', 'أضف اختصاصك وعيادتك وترخيصك ثم أرسله للمراجعة.'],
@@ -25,17 +27,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Labs, imaging centres, hospitals and clinics see where their listing stands.
     const FACILITY_STATUS = {draft: ['Not sent yet', 'لم يُرسل بعد', 'Add your details and operating licence, then send them for review.', 'أضيفوا بيانات المنشأة وترخيصها ثم أرسلوها للمراجعة.'],
         pending: ['Waiting for verification', 'بانتظار التحقق', 'Our team is checking your licence. Your listing is not public yet.', 'يتحقق فريقنا من ترخيصكم. منشأتكم غير ظاهرة للعموم بعد.'],
-        approved: ['Approved', 'معتمد', 'Your listing is shown on syriahealthcare.com.', 'منشأتكم ظاهرة على syriahealthcare.com.'],
+        approved: ['Approved', 'معتمد', 'Your listing is shown on syriahc.com.', 'منشأتكم ظاهرة على syriahc.com.'],
         rejected: ['Changes requested', 'مطلوب تعديلات', 'Open your facility page to see what needs to change.', 'افتحوا صفحة المنشأة لمعرفة التعديلات المطلوبة.'],
         suspended: ['Suspended', 'موقوف', 'Your listing is hidden from the website. Please contact support.', 'منشأتكم مخفية عن الموقع. يرجى التواصل مع الدعم.']};
     let doctorStatus = null, facilityStatus = null;
     if (user.role === 'facility') {
         const profile = await api('/api/facility/profile');
         if (profile.ok) facilityStatus = profile.data.profile.status;
+        // Approved labs and imaging centres send results to patients as QR codes.
+        $('resultsLink').hidden = !(profile.ok && facilityStatus === 'approved' && ['lab', 'imaging'].includes(profile.data.profile.kind));
     }
     if (user.role === 'doctor') {
         const profile = await api('/api/doctor/profile');
         if (profile.ok) doctorStatus = profile.data.profile.status;
+        $('recordsLinks').hidden = doctorStatus !== 'approved';
         const waiting = await api('/api/doctor/appointments?scope=requests');
         if (waiting.ok && waiting.data.counts.requests) {
             const n = waiting.data.counts.requests;
@@ -49,14 +54,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!doctorStatus) return;
         const [en, ar, textEn, textAr] = STATUS[doctorStatus];
         $('doctorStatus').textContent = tr(en, ar);
-        $('doctorStatus').className = 'pill' + (doctorStatus === 'approved' ? '' : ' wait');
+        $('doctorStatus').className = 'pill ' + (doctorStatus === 'approved' ? 'ok' : 'wait');
         $('doctorStatusText').textContent = tr(textEn, textAr);
     };
     const renderFacility = () => {
         if (!facilityStatus) return;
         const [en, ar, textEn, textAr] = FACILITY_STATUS[facilityStatus];
         $('facilityStatus').textContent = tr(en, ar);
-        $('facilityStatus').className = 'pill' + (facilityStatus === 'approved' ? '' : ' wait');
+        $('facilityStatus').className = 'pill ' + (facilityStatus === 'approved' ? 'ok' : 'wait');
         $('facilityStatusText').textContent = tr(textEn, textAr);
     };
     document.addEventListener('shc:language', () => { render(); renderDoctor(); renderFacility(); });

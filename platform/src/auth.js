@@ -1,11 +1,14 @@
 import {facilityKinds} from './catalog.js';
 import {audit, transaction} from './db.js';
-import {sendCode} from './messaging.js';
-import {passwordChangedEmail, resetEmail, sendEmail, welcomeEmail} from './notify.js';
-import {dummyPasswordHash, hashPassword, newOtp, newToken, normalizeEmail, normalizePhone, otpHash, passwordProblem, sameHash, sha256, verifyPassword} from './security.js';
+import {phoneSignInAvailable, sendCode} from './messaging.js';
+import {emailCodeEmail, passwordChangedEmail, resetEmail, sendEmail, staffAddressEmail, welcomeEmail} from './notify.js';
+import {dummyPasswordHash, hashPassword, newOtp, newToken, normalizeEmail, normalizePhone, otpHash, passwordProblem, rateLimitKey, sameHash, sha256, verifyPassword} from './security.js';
 
 export const SESSION_COOKIE = 'shc_session';
 const OTP_MINUTES = 5, OTP_PER_PHONE = 3, OTP_WINDOW_MINUTES = 15, OTP_MAX_ATTEMPTS = 5;
+// Email is slower than SMS, so its codes last longer. Per address: 3 codes per 15 minutes and 10 per day; all code
+// emails together are capped per hour to protect the sending mailbox from being used to spam people.
+const EMAIL_CODE_MINUTES = 15, EMAIL_CODES_PER_DAY = 10, EMAIL_CODES_PER_HOUR_TOTAL = 500;
 const LOGIN_MAX_FAILURES = 5, LOGIN_WINDOW_MINUTES = 15;
 const RESET_MINUTES = 30, RESET_PER_HOUR = 3;
 const STAFF = "role IN ('doctor', 'facility', 'admin')";
@@ -49,7 +52,7 @@ export function requireRole(...roles) {
 
 // Per network address. Mobile carriers often share one address among many customers, so these are generous;
 // the per-phone and per-account limits above do the real protection.
-const ipLimit = max => ({rateLimit: {max, timeWindow: '15 minutes'}});
+const ipLimit = max => ({rateLimit: {max, timeWindow: '15 minutes', keyGenerator: request => rateLimitKey(request.ip)}});
 
 export default async function authRoutes(app) {
     // Patients: request a sign-in code, by WhatsApp or Telegram where possible, otherwise by SMS.
@@ -59,6 +62,7 @@ export default async function authRoutes(app) {
             phone: {type: 'string', maxLength: 30}, language: {enum: ['ar', 'en']}, channel: {enum: ['whatsapp', 'sms']}
         }}}
     }, async (request, reply) => {
+        if (!phoneSignInAvailable(app)) throw new HttpError(503, 'phone_signin_unavailable', 'Sign-in by mobile number is not available yet. Please sign in with your email.');
         const phone = normalizePhone(request.body.phone);
         if (!phone) throw new HttpError(400, 'invalid_phone', 'Enter a valid mobile number, for example 0912 345 678.');
         const {rows: [recent]} = await app.pg.query(
@@ -123,6 +127,112 @@ export default async function authRoutes(app) {
             // Single use: if a parallel request already used this code, this one fails.
             const used = await db.query('UPDATE otp_codes SET consumed_at = now() WHERE id = $1 AND consumed_at IS NULL', [otp.id]);
             if (!used.rowCount) throw new HttpError(400, 'code_expired', 'This code has already been used. Please request a new one.');
+            return account;
+        });
+        await startSession(app, request, reply, user);
+        return {user: publicUser(user)};
+    });
+
+    // Which ways patients can sign in right now. The sign-in page hides "mobile number" while no phone channel exists.
+    app.get('/api/auth/methods', async () => ({email: true, phone: phoneSignInAvailable(app)}));
+
+    // Patients: request a sign-in code by email. The answer is the same for every address — new, patient or staff —
+    // so nobody can find out who is registered. A staff address gets a hint to use its password instead of a code.
+    app.post('/api/auth/email/request', {
+        config: ipLimit(30),
+        schema: {body: {type: 'object', required: ['email'], properties: {
+            email: {type: 'string', maxLength: 254}, language: {enum: ['ar', 'en']}
+        }}}
+    }, async (request, reply) => {
+        const email = normalizeEmail(request.body.email);
+        if (!email) throw new HttpError(400, 'invalid_email', 'Enter a valid email address.');
+        const code = newOtp();
+        // One request per address at a time, so parallel requests cannot all pass the count. A request that finds the
+        // address busy is refused rather than kept waiting, which would hold one of the few database connections.
+        const {account, staff, otp} = await transaction(app.pg, async db => {
+            const {rows: [lock]} = await db.query('SELECT pg_try_advisory_xact_lock(hashtext($1)) AS ok', ['otp-email:' + email]);
+            if (!lock.ok) throw new HttpError(429, 'too_many_codes', 'Too many codes requested. Please wait 15 minutes and try again.');
+            const {rows: [counts]} = await db.query(
+                `SELECT count(*) FILTER (WHERE email = $1 AND created_at > now() - make_interval(mins => $2))::int AS recent,
+                        count(*) FILTER (WHERE email = $1)::int AS today,
+                        count(*) FILTER (WHERE created_at > now() - interval '1 hour')::int AS hour
+                 FROM otp_codes WHERE email IS NOT NULL AND created_at > now() - interval '1 day'`, [email, OTP_WINDOW_MINUTES]);
+            if (counts.today >= EMAIL_CODES_PER_DAY) {
+                throw new HttpError(429, 'too_many_codes_today', 'Too many codes requested today. Please try again tomorrow.');
+            }
+            if (counts.recent >= OTP_PER_PHONE) {
+                throw new HttpError(429, 'too_many_codes', 'Too many codes requested. Please wait 15 minutes and try again.');
+            }
+            if (counts.hour >= EMAIL_CODES_PER_HOUR_TOTAL) {
+                request.log.error('Hourly limit of sign-in emails reached');
+                throw new HttpError(503, 'try_later', 'Too many sign-in requests right now. Please try again in a few minutes.');
+            }
+            const {rows: [account]} = await db.query('SELECT * FROM users WHERE email = $1', [email]);
+            const staff = Boolean(account) && account.role !== 'patient';
+            // Staff addresses get a row too, so the same limits stop anyone flooding their inbox. Its hash is of a random
+            // value that is never sent and cannot match a 6-digit code, so verifying answers exactly as for any address.
+            const {rows: [otp]} = await db.query(
+                `INSERT INTO otp_codes (email, code_hash, expires_at, ip) VALUES ($1, $2, now() + make_interval(mins => $3), $4) RETURNING id`,
+                [email, otpHash(app.config.otpSecret, 'email:' + email, staff ? newToken() : code), EMAIL_CODE_MINUTES, request.ip]);
+            return {account, staff, otp};
+        });
+        try {
+            // Sent directly rather than through sendEmail(), which only logs failures: the patient must know when no code is coming.
+            await app.mail.send({to: email, ...(staff ? staffAddressEmail(account, app.config.appOrigin)
+                : emailCodeEmail(account?.language || request.body.language || 'ar', code, EMAIL_CODE_MINUTES))});
+        } catch (error) {
+            request.log.error({err: error}, 'Sign-in email failed');
+            await app.pg.query('UPDATE otp_codes SET consumed_at = now() WHERE id = $1', [otp.id]);
+            throw new HttpError(502, 'mail_failed', 'We could not send the email. Please check the address and try again in a minute.');
+        }
+        reply.code(202);
+        // Local preview only: MAIL_PROVIDER=console (refused in production) shows the code on screen.
+        const preview = app.config.mailProvider === 'console' && !app.config.production && !staff ? {previewCode: code} : {};
+        return {sent: true, email, expiresInMinutes: EMAIL_CODE_MINUTES, ...preview};
+    });
+
+    // Patients: verify an emailed code. New patients also send their name and consent, as with phone sign-in.
+    app.post('/api/auth/email/verify', {
+        config: ipLimit(60),
+        schema: {body: {type: 'object', required: ['email', 'code'], properties: {
+            email: {type: 'string', maxLength: 254}, code: {type: 'string', pattern: '^[0-9]{6}$'},
+            name: {type: 'string', maxLength: 120}, consent: {type: 'boolean'}, language: {enum: ['ar', 'en']}
+        }}}
+    }, async (request, reply) => {
+        const email = normalizeEmail(request.body.email);
+        if (!email) throw new HttpError(400, 'invalid_email', 'Enter a valid email address.');
+        // Every attempt counts at once against all open codes of the address (outside any transaction): a late email
+        // with an older code still works, but asking for more codes gives no extra guesses.
+        const {rows: open} = await app.pg.query(
+            'UPDATE otp_codes SET attempts = attempts + 1 WHERE email = $1 AND consumed_at IS NULL AND expires_at > now() RETURNING *', [email]);
+        if (!open.length) throw new HttpError(400, 'code_expired', 'This code has expired. Please request a new one.');
+        if (open.some(otp => otp.attempts > OTP_MAX_ATTEMPTS)) {
+            await app.pg.query('UPDATE otp_codes SET consumed_at = now() WHERE email = $1 AND consumed_at IS NULL', [email]);
+            throw new HttpError(429, 'too_many_attempts', 'Too many wrong codes. Please request a new one.');
+        }
+        const hash = otpHash(app.config.otpSecret, 'email:' + email, request.body.code);
+        const match = open.find(otp => sameHash(otp.code_hash, hash));
+        if (!match) throw new HttpError(400, 'wrong_code', 'That code is not correct.');
+        const user = await transaction(app.pg, async db => {
+            let {rows: [account]} = await db.query('SELECT * FROM users WHERE email = $1', [email]);
+            if (account && account.role !== 'patient') throw new HttpError(403, 'use_password', 'This email belongs to a doctor or facility account. Please sign in with your password.');
+            if (account?.disabled_at) throw new HttpError(403, 'disabled', 'This account has been disabled. Please contact support.');
+            if (!account) {
+                const name = String(request.body.name || '').trim();
+                // The code stays valid so the patient can send it again together with name and consent.
+                if (name.length < 2 || request.body.consent !== true) throw new HttpError(409, 'profile_required', 'Please enter your name and accept the privacy policy.');
+                ({rows: [account]} = await db.query(
+                    `INSERT INTO users (role, name, email, email_verified_at, language, consented_at) VALUES ('patient', $1, $2, now(), $3, now())
+                     ON CONFLICT (email) DO NOTHING RETURNING *`, [name, email, request.body.language || 'ar']));
+                if (!account) throw new HttpError(400, 'code_expired', 'This code has already been used. Please request a new one.');
+                await audit(db, {actorId: account.id, action: 'patient.registered', targetId: account.id, details: {via: 'email'}, ip: request.ip});
+            } else if (!account.email_verified_at) {
+                ({rows: [account]} = await db.query('UPDATE users SET email_verified_at = now() WHERE id = $1 RETURNING *', [account.id]));
+            }
+            // Single use: if a parallel request already used this code, this one fails. The address's other codes end too.
+            const used = await db.query('UPDATE otp_codes SET consumed_at = now() WHERE id = $1 AND consumed_at IS NULL', [match.id]);
+            if (!used.rowCount) throw new HttpError(400, 'code_expired', 'This code has already been used. Please request a new one.');
+            await db.query('UPDATE otp_codes SET consumed_at = now() WHERE email = $1 AND consumed_at IS NULL', [email]);
             return account;
         });
         await startSession(app, request, reply, user);

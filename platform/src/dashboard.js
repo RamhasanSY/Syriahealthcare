@@ -1,8 +1,9 @@
 // Doctor dashboard: incoming requests, upcoming and past appointments, and the decisions on them.
-// Patients get a WhatsApp message (or an SMS where WhatsApp is not possible) when the doctor confirms, declines or cancels.
+// Patients get an email and/or a WhatsApp message (or an SMS where WhatsApp is not possible) when the doctor confirms, declines or cancels.
 import {HttpError, requireRole} from './auth.js';
 import {audit} from './db.js';
-import {sendAppointmentUpdate} from './messaging.js';
+import {sendAppointmentUpdate, whatsappReaches} from './messaging.js';
+import {appointmentEmail, sendEmail} from './notify.js';
 
 const TZ = 'Asia/Damascus';
 const uuidParam = {params: {type: 'object', properties: {id: {type: 'string', format: 'uuid'}}}};
@@ -14,9 +15,9 @@ const smsTime = date => new Intl.DateTimeFormat('en-CA', {timeZone: TZ, year: 'n
     hour: '2-digit', minute: '2-digit', hourCycle: 'h23'}).format(date).replace(',', '');
 
 const MESSAGES = {
-    confirmed: (a, when) => `تم تأكيد موعدك لدى ${a.doctor_name} في ${when}. العنوان: ${a.clinic_address}\nSyria Healthcare: appointment confirmed, ${when}.`,
-    declined: (a, when) => `اعتذر ${a.doctor_name} عن موعد ${when}${a.status_note ? ': ' + a.status_note : ''}. يمكنك اختيار وقت آخر.\nSyria Healthcare: request for ${when} declined.`,
-    cancelled_by_doctor: (a, when) => `ألغى ${a.doctor_name} موعدك في ${when}${a.status_note ? ': ' + a.status_note : ''}.\nSyria Healthcare: appointment on ${when} cancelled by the doctor.`
+    confirmed: (a, when) => `تم تأكيد موعدك لدى ${a.doctor_name} في ${when}. العنوان: ${a.clinic_address}\nSyriaHC: appointment confirmed, ${when}.`,
+    declined: (a, when) => `اعتذر ${a.doctor_name} عن موعد ${when}${a.status_note ? ': ' + a.status_note : ''}. يمكنك اختيار وقت آخر.\nSyriaHC: request for ${when} declined.`,
+    cancelled_by_doctor: (a, when) => `ألغى ${a.doctor_name} موعدك في ${when}${a.status_note ? ': ' + a.status_note : ''}.\nSyriaHC: appointment on ${when} cancelled by the doctor.`
 };
 
 // Which change is allowed from which status, and whether the appointment must be in the future or have started.
@@ -43,7 +44,7 @@ export default async function dashboardRoutes(app) {
         const order = scope === 'past' ? 'a.starts_at DESC' : 'a.starts_at';
         // Only this doctor's own patients, and only what is needed to see them.
         const {rows} = await app.pg.query(
-            `SELECT a.id, a.status, a.starts_at, a.ends_at, a.reason, a.status_note, a.created_at, u.name AS patient_name, u.phone AS patient_phone
+            `SELECT a.id, a.status, a.starts_at, a.ends_at, a.reason, a.status_note, a.created_at, u.name AS patient_name, u.phone AS patient_phone, u.email AS patient_email
              FROM appointments a JOIN users u ON u.id = a.patient_id
              WHERE a.doctor_id = $1 AND ${where} ORDER BY ${order} LIMIT 300`, [request.user.id]);
         const {rows: [counts]} = await app.pg.query(
@@ -76,12 +77,19 @@ export default async function dashboardRoutes(app) {
 }
 
 // The decision is already saved; a failed message is logged but does not undo it.
+// Patients with an email address get an email; patients with a mobile number also get WhatsApp or SMS.
 async function notifyPatient(app, request, appointment) {
     const {rows: [info]} = await app.pg.query(
-        `SELECT p.phone, p.language, d.name AS doctor_name, dp.clinic_address FROM users p, users d, doctor_profiles dp
+        `SELECT p.name, p.phone, p.email, p.language, d.name AS doctor_name, dp.clinic_address FROM users p, users d, doctor_profiles dp
          WHERE p.id = $1 AND d.id = $2 AND dp.user_id = $2`, [appointment.patient_id, appointment.doctor_id]);
-    if (!info?.phone) return;
+    if (!info || !MESSAGES[appointment.status]) return;
     const when = smsTime(appointment.starts_at), status = appointment.status;
+    if (info.email) {
+        await sendEmail(app, info.email, appointmentEmail(info, status,
+            {doctorName: info.doctor_name, when, address: info.clinic_address, note: appointment.status_note}, app.config.appOrigin));
+    }
+    // No SMS gateway yet (SMS_PROVIDER=none) and no WhatsApp for this number: there is no way to text the patient.
+    if (!info.phone || (app.sms.available === false && !whatsappReaches(app, info.phone))) return;
     const reason = appointment.status_note || (info.language === 'en' ? 'no reason given' : 'دون ذكر سبب');
     try {
         await sendAppointmentUpdate(app, request, info.phone, {

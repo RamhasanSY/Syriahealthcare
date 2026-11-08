@@ -1,26 +1,43 @@
 <!doctype html>
-<html lang="ar" dir="rtl" data-title-en="Patient sign-in — Syria Healthcare" data-title-ar="دخول المرضى — الرعاية الصحية في سوريا">
+<html lang="ar" dir="rtl" data-title-en="Patient sign-in — SyriaHC" data-title-ar="دخول المرضى — صحة تك">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#173e36">
-<title>دخول المرضى — الرعاية الصحية في سوريا</title>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#1a3a5c">
+<title>دخول المرضى — صحة تك</title>
 <link rel="manifest" href="/manifest.webmanifest"><link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/assets/app.css">
 <script src="/assets/common.js" defer></script><script src="/assets/login.js" defer></script>
 </head>
 <body>
 <a class="skip" href="#main" data-en="Skip to content" data-ar="انتقل إلى المحتوى">انتقل إلى المحتوى</a>
-<header class="top"><div class="top-inner"><a class="brand" href="/"><img src="/assets/logo.svg" alt=""><span data-en="Syria Healthcare" data-ar="الرعاية الصحية في سوريا">الرعاية الصحية في سوريا</span></a><div class="top-actions"><button class="lang" id="langToggle" type="button">English</button></div></div></header>
+<header class="top"><div class="top-inner"><a class="brand" href="/"><img src="/assets/logo.svg" alt=""><span data-en="SyriaHC" data-ar="صحة تك">صحة تك</span></a><div class="top-actions"><button class="lang" id="langToggle" type="button">English</button></div></div></header>
 <main id="main" class="wrap">
   <h1 data-en="Patient sign-in" data-ar="دخول المرضى">دخول المرضى</h1>
-  <p class="lead" data-en="No password needed. We send a 6-digit code to your mobile, by WhatsApp, Telegram or SMS." data-ar="لا حاجة لكلمة مرور. نرسل رمزاً من 6 أرقام إلى جوالك عبر واتساب أو تيليغرام أو برسالة SMS.">لا حاجة لكلمة مرور. نرسل رمزاً من 6 أرقام إلى جوالك عبر واتساب أو تيليغرام أو برسالة SMS.</p>
+  <p class="lead" data-en="No password needed. We send you a 6-digit code by email. New here? The same steps create your free account." data-ar="لا حاجة لكلمة مرور. نرسل لك رمزاً من 6 أرقام بالبريد الإلكتروني. جديد هنا؟ الخطوات نفسها تنشئ حسابك المجاني.">لا حاجة لكلمة مرور. نرسل لك رمزاً من 6 أرقام بالبريد الإلكتروني. جديد هنا؟ الخطوات نفسها تنشئ حسابك المجاني.</p>
 
-  <form class="card" id="phoneForm" novalidate>
-    <div class="msg error" id="phoneError" role="alert" tabindex="-1" hidden></div>
-    <label class="field"><span data-en="Mobile number" data-ar="رقم الجوال">رقم الجوال</span>
-      <input type="tel" id="phone" name="phone" autocomplete="tel" inputmode="tel" dir="ltr" required placeholder="0912 345 678" aria-describedby="phoneHint">
-      <small id="phoneHint" data-en="Syrian numbers like 0912 345 678, or international with + and country code." data-ar="أرقام سورية مثل 0912 345 678، أو دولية تبدأ بـ + ورمز الدولة.">أرقام سورية مثل 0912 345 678، أو دولية تبدأ بـ + ورمز الدولة.</small></label>
-    <button class="btn" type="submit" id="sendCode" data-en="Send code" data-ar="أرسل الرمز">أرسل الرمز</button>
-  </form>
+  <div class="card" id="start">
+    <!-- Shown only while a phone channel (SMS, WhatsApp or Telegram) is configured; see /api/auth/methods. -->
+    <div class="tabs" role="tablist" id="methodTabs" hidden>
+      <button type="button" role="tab" id="tabEmail" aria-controls="emailForm" aria-selected="true" data-en="Email" data-ar="البريد الإلكتروني">البريد الإلكتروني</button>
+      <button type="button" role="tab" id="tabPhone" aria-controls="phoneForm" aria-selected="false" tabindex="-1" data-en="Mobile number" data-ar="رقم الجوال">رقم الجوال</button>
+    </div>
+
+    <form id="emailForm" role="tabpanel" aria-labelledby="tabEmail" novalidate>
+      <div class="msg error" id="emailError" role="alert" tabindex="-1" hidden></div>
+      <label class="field"><span data-en="Email address" data-ar="البريد الإلكتروني">البريد الإلكتروني</span>
+        <input type="email" id="email" name="email" autocomplete="email" inputmode="email" dir="ltr" required maxlength="254" placeholder="name@gmail.com" aria-describedby="emailHint">
+        <small id="emailHint" data-en="Often the Google (Gmail) address on your phone." data-ar="غالباً عنوان Gmail المرتبط بهاتفك.">غالباً عنوان Gmail المرتبط بهاتفك.</small></label>
+      <button type="button" class="msg info typo-hint" id="emailTypo" hidden></button>
+      <button class="btn" type="submit" id="sendEmailCode" data-en="Send code" data-ar="أرسل الرمز">أرسل الرمز</button>
+    </form>
+
+    <form id="phoneForm" role="tabpanel" aria-labelledby="tabPhone" novalidate hidden>
+      <div class="msg error" id="phoneError" role="alert" tabindex="-1" hidden></div>
+      <label class="field"><span data-en="Mobile number" data-ar="رقم الجوال">رقم الجوال</span>
+        <input type="tel" id="phone" name="phone" autocomplete="tel" inputmode="tel" dir="ltr" required placeholder="0912 345 678" aria-describedby="phoneHint">
+        <small id="phoneHint" data-en="Syrian numbers like 0912 345 678, or international with + and country code. We send the code by WhatsApp, Telegram or SMS." data-ar="أرقام سورية مثل 0912 345 678، أو دولية تبدأ بـ + ورمز الدولة. نرسل الرمز عبر واتساب أو تيليغرام أو برسالة SMS.">أرقام سورية مثل 0912 345 678، أو دولية تبدأ بـ + ورمز الدولة. نرسل الرمز عبر واتساب أو تيليغرام أو برسالة SMS.</small></label>
+      <button class="btn" type="submit" id="sendCode" data-en="Send code" data-ar="أرسل الرمز">أرسل الرمز</button>
+    </form>
+  </div>
 
   <form class="card" id="codeForm" novalidate hidden>
     <div class="msg info" id="codeInfo" role="status"></div>
@@ -28,13 +45,14 @@
     <label class="field"><span data-en="6-digit code" data-ar="الرمز المكوّن من 6 أرقام">الرمز المكوّن من 6 أرقام</span>
       <input class="code" type="text" id="code" name="code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" dir="ltr" required></label>
     <div id="profile" hidden>
-      <p class="msg info" data-en="Welcome! This number is new to us. Please tell us your name." data-ar="أهلاً! هذا الرقم جديد لدينا. يرجى إدخال اسمك.">أهلاً! هذا الرقم جديد لدينا. يرجى إدخال اسمك.</p>
+      <p class="msg info" id="welcomeNew"></p>
       <label class="field"><span data-en="Full name" data-ar="الاسم الكامل">الاسم الكامل</span><input type="text" id="name" name="name" autocomplete="name" maxlength="120"></label>
       <label class="check"><input type="checkbox" id="consent"><span><span data-en="I agree to the" data-ar="أوافق على">أوافق على</span> <a href="/privacy" target="_blank" data-en="privacy policy" data-ar="سياسة الخصوصية">سياسة الخصوصية</a>.</span></label>
     </div>
     <button class="btn" type="submit" id="verify" data-en="Sign in" data-ar="دخول">دخول</button>
+    <button class="link-btn" type="button" id="resend" hidden></button>
     <button class="link-btn" type="button" id="smsInstead" hidden data-en="No message? Send the code by SMS" data-ar="لم تصلك الرسالة؟ أرسل الرمز برسالة SMS">لم تصلك الرسالة؟ أرسل الرمز برسالة SMS</button>
-    <button class="link-btn" type="button" id="changeNumber" data-en="Use a different number" data-ar="استخدم رقماً آخر">استخدم رقماً آخر</button>
+    <button class="link-btn" type="button" id="changeAddress"></button>
   </form>
 </main>
 <footer><div class="wrap"><a href="/staff" data-en="Doctor, lab or hospital? Sign in here" data-ar="طبيب أو مخبر أو مشفى؟ سجّل الدخول من هنا">طبيب أو مخبر أو مشفى؟ سجّل الدخول من هنا</a><a href="/privacy" data-en="Privacy policy" data-ar="سياسة الخصوصية">سياسة الخصوصية</a></div></footer>

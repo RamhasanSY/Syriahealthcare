@@ -1,6 +1,6 @@
-# Syria Healthcare
+# SyriaHC
 
-A bilingual interface for original healthcare news about Syria and current healthcare and NGO vacancies in Syria. Static HTML/CSS/JavaScript hosted on GitHub Pages at https://syriahealthcare.com/.
+A bilingual interface for original healthcare news about Syria and current healthcare and NGO vacancies in Syria. Static HTML/CSS/JavaScript served by the company's own server at https://syriahc.com/ (next to the booking platform at app.syriahc.com).
 
 ## How content is selected
 
@@ -32,7 +32,7 @@ Browser requests time out after 15 seconds. Failed background refreshes retain e
 
 The updater runs source requests with bounded retries and timeouts, atomically writes the content/status JSON, commits changes, rebases over concurrent repository changes, and pushes them to `main`.
 
-`.github/workflows/deploy.yml` validates code, then deploys on a main-branch push and after an update run completes. Each run attempt uses a unique Pages artifact name so rerunning a failed deployment cannot select duplicate artifacts. The existing CNAME preserves `syriahealthcare.com`. Pages must use GitHub Actions as its deployment source.
+The website is not hosted on GitHub. The company server checks for new commits on `main` every 10 minutes, rebuilds the pages and serves them at `syriahc.com` (`platform/website/update-website.sh`, set up as described in `platform/README.md`, "Install on the company server"). New news and jobs therefore appear on the site within about 10 minutes of an update run. `.github/workflows/website.yml` only checks that the collector tests pass and the pages build, on every push and pull request.
 
 For failed-run notifications, enable GitHub Actions notifications in your own GitHub account. Detailed source results appear in each update run's summary and on the website's source list.
 
@@ -70,7 +70,7 @@ python tests/browser_check.py
 
 Browser checks cover every page at four widths in English and Arabic, old-link forwarding, search, healthcare/NGO and organization filters, exact deadline sorting, saved-job persistence, expiration, invalid verification records, safe links, retry behavior, background refresh failures, stalled request timeouts, keyboard focus, directory-note containment and restricted local storage. Screenshots are saved to ignored `.preview/`.
 
-The site uses a jasmine and courtyard arch SVG logo and a simplified matching favicon. Canonical and social metadata point to the production domain. `assets/social-card.png` is the 1200 × 630 sharing image; its editable template is `scripts/social-card.html`. To regenerate it, serve the repository, open that template in a browser at 1200 × 630 with device scale 1, and save a viewport screenshot over the PNG.
+The site uses the SyriaHC logo, the square Kufic "صحة تك" in a gold ring, as an SVG (`assets/logo.svg`); the favicon is the same file. The original artwork with the wordmark is `assets/syriahc-logo.png`. Canonical and social metadata point to the production domain. `assets/social-card.png` is the 1200 × 630 sharing image; its editable template is `scripts/social-card.html`. After changing the logo or the template, run `python scripts/app_icons.py` (needs Playwright): it renders the app icons and the social card and copies the icons and logo to the platform.
 
 Run `python scripts/update.py` to collect content locally. It writes public JSON files and makes no Git commits itself.
 
@@ -100,17 +100,17 @@ Entries missing a required field are not shown. The pregnancy planner computes d
 
 ### Booking platform doctors, labs and hospitals
 
-The booking platform (`platform/`, at app.syriahealthcare.com) has its own README. Once it is online, add a repository variable `PLATFORM_URL` (for example `https://app.syriahealthcare.com`) under GitHub Settings → Secrets and variables → Actions → Variables. From then on, every collection run copies the platform's approved doctors (public details only) into `data/doctors.json` with a "Book online" link for each, and the Doctors page shows a "Book online with verified doctors" banner. Until `PLATFORM_URL` is set, nothing is fetched and the site never links to the platform. Hand-added entries in `data/doctors.json` (without `"platform": true`) are kept.
+The booking platform (`platform/`, at app.syriahc.com) has its own README. Once it is online, add a repository variable `PLATFORM_URL` (for example `https://app.syriahc.com`) under GitHub Settings → Secrets and variables → Actions → Variables. From then on, every collection run copies the platform's approved doctors (public details only) into `data/doctors.json` with a "Book online" link for each, and the Doctors page shows a "Book online with verified doctors" banner. Until `PLATFORM_URL` is set, nothing is fetched and the site never links to the platform. Hand-added entries in `data/doctors.json` (without `"platform": true`) are kept.
 
 Labs, imaging centres, hospitals and clinics register on the same platform and are reviewed there. With `PLATFORM_URL` set, approved labs and imaging centres are copied into `data/labs.json` and approved hospitals and clinics into `data/hospitals.json` (next to the OpenStreetMap hospitals), each marked "Verified licence". The Doctors, Labs and Hospitals pages then also show a short invitation for doctors, labs and hospitals to list themselves for free.
 
 ### Booking platform doctors
 
-The booking platform (`platform/`, at app.syriahealthcare.com) has its own README. Once it is online, add a repository variable `PLATFORM_URL` (for example `https://app.syriahealthcare.com`) under GitHub Settings → Secrets and variables → Actions → Variables. From then on, every collection run copies the platform's approved doctors (public details only) into `data/doctors.json` with a "Book online" link for each, and the Doctors page shows a "Book online with verified doctors" banner. Until `PLATFORM_URL` is set, nothing is fetched and the site never links to the platform. Hand-added entries in `data/doctors.json` (without `"platform": true`) are kept.
+The booking platform (`platform/`, at app.syriahc.com) has its own README. Once it is online, add a repository variable `PLATFORM_URL` (for example `https://app.syriahc.com`) under GitHub Settings → Secrets and variables → Actions → Variables. From then on, every collection run copies the platform's approved doctors (public details only) into `data/doctors.json` with a "Book online" link for each, and the Doctors page shows a "Book online with verified doctors" banner. Until `PLATFORM_URL` is set, nothing is fetched and the site never links to the platform. Hand-added entries in `data/doctors.json` (without `"platform": true`) are kept.
 
 ## LinkedIn publishing
 
-The public RSS feed at https://syriahealthcare.com/data/news.xml is rebuilt with each collection. It contains original headlines, publisher attribution, original article links, publication dates and stable URL identifiers. Refreshing source verification does not create a new feed item. No full article text is republished.
+The public RSS feed at https://syriahc.com/data/news.xml is rebuilt with each collection. It contains original headlines, publisher attribution, original article links, publication dates and stable URL identifiers. Refreshing source verification does not create a new feed item. No full article text is republished.
 
 A Page administrator can connect LinkedIn to Zapier using its sign-in authorization, then configure RSS by Zapier (New Item in Feed) to LinkedIn (Create Company Update). Map the title and description to the post text and the item link to its article URL. Enable only new items after setup; do not bulk-publish the existing archive. Test with a draft/sample before enabling publishing. This repository does not hold a LinkedIn password or token and no LinkedIn publishing connection is currently configured. Page creation and account authorization must be completed by the account owner.
 
