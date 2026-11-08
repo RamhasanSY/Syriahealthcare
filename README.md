@@ -5,7 +5,7 @@ Two bilingual (English and Arabic) websites built from this repository, both ser
 - **https://syriahc.com/ (SyriaHC, صحة تك):** health services. Doctors, labs and hospitals in Syria, pregnancy planning, and online booking on the platform.
 - **https://syriahealthcare.com/ (Syria Healthcare):** original healthcare news about Syria and current healthcare and NGO vacancies in Syria, in the original green Syria Healthcare look.
 
-Each site links to the other in its menu. Old links are forwarded by the server: syriahc.com/jobs opens syriahealthcare.com/jobs, and syriahealthcare.com/doctors opens syriahc.com/doctors.
+Each site links to the other in its menu. SyriaHC runs on the company server; Syria Healthcare runs on GitHub Pages (`.github/workflows/deploy-news.yml`). Old links are forwarded: syriahc.com/jobs opens syriahealthcare.com/jobs (by the server), and syriahealthcare.com/doctors opens syriahc.com/doctors (by its "page not found" page).
 
 ## How content is selected
 
@@ -37,7 +37,7 @@ Browser requests time out after 15 seconds. Failed background refreshes retain e
 
 The updater runs source requests with bounded retries and timeouts, atomically writes the content/status JSON, commits changes, rebases over concurrent repository changes, and pushes them to `main`.
 
-The website is not hosted on GitHub. The company server checks for new commits on `main` every 10 minutes, rebuilds the pages and serves them at `syriahc.com` and `syriahealthcare.com` (`platform/website/update-website.sh`, set up as described in `platform/README.md`, "Install on the company server"). New news and jobs therefore appear on the site within about 10 minutes of an update run. `.github/workflows/website.yml` only checks that the collector tests pass and the pages build, on every push and pull request.
+Syria Healthcare (jobs and news) is published on GitHub Pages by `.github/workflows/deploy-news.yml` after every push to `main` and after every update run, so new news and jobs appear within a few minutes. GitHub Pages is set to deploy from GitHub Actions with the custom domain `syriahealthcare.com`. SyriaHC is not hosted on GitHub: the company server checks for new commits on `main` every 10 minutes, rebuilds the pages and serves them at `syriahc.com` (`platform/website/update-website.sh`, set up as described in `platform/README.md`, "Install on the company server"). `.github/workflows/website.yml` checks that the collector tests pass and the pages build, on every push and pull request.
 
 For failed-run notifications, enable GitHub Actions notifications in your own GitHub account. Detailed source results appear in each update run's summary and on the website's source list.
 

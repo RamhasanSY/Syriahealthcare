@@ -1,6 +1,13 @@
 (() => {
     'use strict';
     const $ = id => document.getElementById(id);
+    // syriahealthcare.com runs on GitHub Pages, which cannot forward links: its "page not found" page sends old links to
+    // doctors, labs, hospitals and pregnancy planning on to SyriaHC.
+    const healthPage = document.documentElement.dataset.site === 'syriahealthcare' && window.location.pathname.match(/^\/(doctors|labs|hospitals|pregnancy)(\.html)?$/);
+    if (healthPage) {
+        window.location.replace('https://syriahc.com/' + healthPage[1] + '.html' + window.location.search + window.location.hash);
+        return;
+    }
     // Links shared before the site had separate pages (e.g. syriahealthcare.com/#jobs) open the new page instead.
     // Doctors, labs, hospitals and pregnancy planning have moved to SyriaHC.
     const moved = {jobs: 'jobs.html', saved: 'jobs.html#saved', toolkit: 'jobs.html#toolkit', news: 'news.html', about: 'about.html', sources: 'about.html#sources',

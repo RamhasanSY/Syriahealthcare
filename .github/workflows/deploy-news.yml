@@ -1,0 +1,56 @@
+name: Publish Syria Healthcare
+
+# Publishes the jobs and news website (dist-news/, Syria Healthcare) on GitHub Pages at syriahealthcare.com, after every
+# push to main and after every news and jobs collection. SyriaHC (dist/, syriahc.com) is published by the company
+# server instead (platform/website/update-website.sh).
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  workflow_run:
+    workflows: [Update news and jobs]
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate collector
+        run: python -m unittest discover -s tests -p 'test_*.py'
+      - name: Validate browser script
+        run: node --check assets/app.js
+      - uses: actions/configure-pages@v5
+      - name: Build the websites
+        run: node scripts/build.mjs
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          name: github-pages-${{ github.run_attempt }}
+          path: dist-news
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4
+        with:
+          artifact_name: github-pages-${{ github.run_attempt }}

@@ -162,9 +162,9 @@ Open http://127.0.0.1:3000. The demo data has three approved doctors, an approve
 ## Install on the company server
 
 1. Use a Linux server with Docker, git and rsync, and open ports 80 and 443.
-2. Point DNS: add `A` (and `AAAA`) records for `app.syriahc.com`, `syriahc.com`, `www.syriahc.com`, `syriahealthcare.com` and `www.syriahealthcare.com` with the server's IP addresses.
+2. Point DNS: add `A` (and `AAAA`) records for `app.syriahc.com`, `syriahc.com` and `www.syriahc.com` with the server's IP addresses.
 3. Clone the repository to `/opt/syriahealthcare`, then in `platform/` run `cp .env.example .env` and fill in `.env` (see the comments in the file).
-4. Publish the two websites (SyriaHC in `/opt/www`, Syria Healthcare in `/opt/www-news`) once and let them update themselves every 10 minutes:
+4. Publish the website once and let it update itself every 10 minutes:
    ```sh
    /opt/syriahealthcare/platform/website/update-website.sh --force
    cp /opt/syriahealthcare/platform/website/update-website.{service,timer} /etc/systemd/system/
@@ -172,7 +172,7 @@ Open http://127.0.0.1:3000. The demo data has three approved doctors, an approve
    ```
 5. Run `docker compose up -d --build`. Caddy gets the HTTPS certificates automatically.
 6. Create the first admin: `docker compose exec app node src/create-admin.js admin@company.com "Name"`.
-7. Check that https://app.syriahc.com/api/health returns `{"ok":true}`, https://syriahc.com shows SyriaHC and https://syriahealthcare.com shows the jobs and news.
+7. Check that https://app.syriahc.com/api/health returns `{"ok":true}` and https://syriahc.com shows the website.
 
 Backups: a compressed database dump and an archive of the encrypted documents are written to `platform/backups/` every night, and the last 14 days are kept. **Keep `DOCUMENT_KEY` safe and separate from the backups: without it, the document backups cannot be opened, and with it anyone holding the backups can read the licences.** Copy these files off the server regularly (to another machine or storage), because a backup on the same disk does not survive a disk failure.
 
