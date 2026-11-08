@@ -179,3 +179,6 @@ fieldset.services legend{font-weight:600;margin-bottom:8px;padding:0}
 .records-search{max-width:420px}
 .record-name{font-size:19px;margin:0}
 .doc-list bdi{white-space:nowrap}
+/* Patient sign-in: "Did you mean …@gmail.com?" as a full-width button that fills in the suggestion */
+.typo-hint{display:block;width:100%;font:inherit;font-size:15px;text-align:start;border:0;cursor:pointer;min-height:44px}
+.typo-hint[hidden]{display:none}

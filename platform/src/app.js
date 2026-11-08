@@ -3,7 +3,7 @@ import cookie from '@fastify/cookie';
 import rateLimit from '@fastify/rate-limit';
 import fastifyStatic from '@fastify/static';
 import {fileURLToPath} from 'node:url';
-import authRoutes, {loadSession} from './auth.js';
+import authRoutes, {HttpError, loadSession} from './auth.js';
 import {createSms} from './sms.js';
 import {createMail} from './mail.js';
 import {createTelegramGateway} from './telegram.js';
@@ -57,9 +57,12 @@ export async function buildApp({config, pool, sms, whatsapp, telegram, mail, doc
         if (error.validation) return reply.code(400).send({error: 'invalid_request', message: 'Some fields are missing or not valid.'});
         const status = error.statusCode || 500;
         if (status >= 500) request.log.error({err: error}, 'Request failed');
+        // Our own errors (HttpError) always carry a message meant for the user, also for 502/503 such as "the SMS or
+        // email could not be sent". Anything unexpected only says that something went wrong.
+        const ours = error instanceof HttpError;
         reply.code(status).send({
-            error: error.code && status < 500 ? error.code : status === 429 ? 'rate_limited' : 'server_error',
-            message: status < 500 ? error.message : 'Something went wrong. Please try again.',
+            error: error.code && (ours || status < 500) ? error.code : status === 429 ? 'rate_limited' : 'server_error',
+            message: ours || status < 500 ? error.message : 'Something went wrong. Please try again.',
             ...(error.missing && {missing: error.missing})
         });
     });

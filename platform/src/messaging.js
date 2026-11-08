@@ -2,6 +2,9 @@
 // number has Telegram, then SMS. Appointment updates: WhatsApp, then SMS (the Telegram Gateway carries codes only).
 // If one channel refuses a message, the next one is tried, so a patient is never left without their code.
 
+// Whether patients can get a code on their phone at all (SMS gateway, WhatsApp or Telegram configured).
+export const phoneSignInAvailable = app => app.sms.available !== false || Boolean(app.whatsapp) || Boolean(app.telegram);
+
 export const whatsappReaches = (app, phone) =>
     Boolean(app.whatsapp) && !app.config.whatsapp.blockedPrefixes.some(prefix => phone.startsWith(prefix));
 

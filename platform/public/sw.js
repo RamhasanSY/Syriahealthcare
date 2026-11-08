@@ -1,7 +1,7 @@
 // Service worker for the installed platform app. Only the page frames, styles, scripts and icons are saved,
 // so the app opens quickly and shows a clear notice without internet. Nothing under /api/ is ever saved:
 // appointments, profiles and licence documents always come fresh from the server and never stay on the phone.
-const CACHE = 'shc-app-v2';
+const CACHE = 'shc-app-v3';
 const SHELL = ['/', '/offline', '/login', '/staff', '/doctors', '/account', '/assets/app.css', '/assets/common.js',
     '/assets/logo.svg', '/assets/favicon.svg', '/assets/icon-192.png', '/manifest.webmanifest'];
 const SLOW_MS = 6000;

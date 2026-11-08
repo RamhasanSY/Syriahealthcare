@@ -13,8 +13,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         $('greeting').textContent = tr(`Hello, ${user.name}`, `مرحباً، ${user.name}`);
         $('userName').textContent = user.name;
         $('userRole').textContent = tr(...roles[user.role]);
-        $('contactLabel').textContent = user.role === 'patient' ? tr('Mobile', 'الجوال') : tr('Email', 'البريد الإلكتروني');
-        $('userContact').textContent = user.role === 'patient' ? user.phone : user.email;
+        // Patients may have signed in with an email address, a mobile number, or both.
+        const byPhone = user.role === 'patient' && user.phone && !user.email;
+        $('contactLabel').textContent = byPhone ? tr('Mobile', 'الجوال') : tr('Email', 'البريد الإلكتروني');
+        $('userContact').textContent = byPhone ? user.phone : [user.email, user.role === 'patient' ? user.phone : null].filter(Boolean).join(' · ');
     };
     // Doctors see where their profile stands.
     const STATUS = {draft: ['Profile not sent yet', 'لم يُرسل الملف بعد', 'Add your specialty, clinic and licence, then send it for review.', 'أضف اختصاصك وعيادتك وترخيصك ثم أرسله للمراجعة.'],

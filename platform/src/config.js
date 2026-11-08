@@ -20,7 +20,8 @@ export const config = {
     appOrigin: required('APP_ORIGIN', 'http://127.0.0.1:3000'),
     // Signs SMS codes. At least 32 random characters; generate with: node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
     otpSecret: required('OTP_SECRET', 'development-only-otp-secret-change-me'),
-    // "console" prints codes to the server log (development only); "http" posts to an SMS gateway.
+    // "console" prints codes to the server log (development only); "http" posts to an SMS gateway;
+    // "none" means there is no gateway yet: patients sign in by email only.
     smsProvider: env.SMS_PROVIDER || (production ? 'http' : 'console'),
     smsHttp: {url: env.SMS_HTTP_URL, token: env.SMS_HTTP_TOKEN, sender: env.SMS_SENDER || 'SyriaHC'},
     // WhatsApp for patients (sign-in codes, appointment updates) through Meta's WhatsApp Cloud API; empty = SMS only.

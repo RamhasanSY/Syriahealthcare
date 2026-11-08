@@ -64,6 +64,13 @@ export async function signInPatient(post, sms, phone, name = 'Test Patient') {
     return cookieOf(await post('/api/auth/otp/verify', {phone, code, name, consent: true}));
 }
 
+// Signs in a patient through the real email-code flow and returns the session cookie.
+export async function signInPatientByEmail(post, mail, email, name = 'Test Patient') {
+    await post('/api/auth/email/request', {email});
+    const code = mail.sent.filter(m => m.to === email).at(-1).subject.match(/\d{6}/)[0];
+    return cookieOf(await post('/api/auth/email/verify', {email, code, name, consent: true}));
+}
+
 // An approved doctor open every day 09:00–12:00 in 30-minute slots, bookable from now on.
 export async function approvedDoctor(post, email = 'dr@example.org', name = 'Dr. Approved') {
     const cookie = await signIn(post, 'doctor', email, name);

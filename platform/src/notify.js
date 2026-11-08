@@ -13,6 +13,44 @@ export async function sendEmail(app, to, message) {
     }
 }
 
+// Patient sign-in code by email. The code is in the subject too, so it shows in the phone's notification,
+// as SMS codes do. There may be no account yet, so the language is the one chosen on the sign-in page.
+export const emailCodeEmail = (language, code, minutes) => ({
+    subject: language === 'en' ? `SyriaHC sign-in code: ${code}` : `رمز الدخول إلى صحة تك: ${code}`,
+    text: both(language,
+        `رمز الدخول الخاص بك: ${code}
+
+الرمز صالح لمدة ${minutes} دقيقة. أدخله في صفحة تسجيل الدخول.
+لا تعطِ هذا الرمز لأي شخص، فلن يطلبه منك فريق صحة تك أبداً.
+إن لم تطلب هذا الرمز فتجاهل هذه الرسالة.`,
+        `Your sign-in code: ${code}
+
+The code is valid for ${minutes} minutes. Enter it on the sign-in page.
+Never give this code to anyone; the SyriaHC team will never ask you for it.
+If you did not ask for this code, ignore this email.`)
+});
+
+// Someone asked for a patient code for an address that belongs to a doctor or facility account. No code is sent;
+// the screen looks the same as for any address, so nobody learns which addresses have staff accounts.
+export const staffAddressEmail = (user, origin) => ({
+    subject: user.language === 'en' ? 'Sign in to SyriaHC with your password' : 'سجّل الدخول إلى صحة تك بكلمة المرور',
+    text: both(user.language,
+        `مرحباً ${user.name}،
+
+طُلب رمز دخول للمرضى لهذا العنوان، لكنه مرتبط بحساب طبيب أو منشأة. سجّل الدخول ببريدك وكلمة المرور من هنا:
+
+${origin}/staff
+
+إن لم تطلب ذلك فتجاهل هذه الرسالة.`,
+        `Hello ${user.name},
+
+Someone asked for a patient sign-in code for this address, but it belongs to a doctor or facility account. Sign in with your email and password here:
+
+${origin}/staff
+
+If this was not you, ignore this email.`)
+});
+
 export const resetEmail = (user, link, minutes) => ({
     subject: user.language === 'en' ? 'Reset your SyriaHC password' : 'إعادة تعيين كلمة المرور — صحة تك',
     text: both(user.language,
