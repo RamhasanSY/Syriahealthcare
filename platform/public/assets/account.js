@@ -52,14 +52,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!doctorStatus) return;
         const [en, ar, textEn, textAr] = STATUS[doctorStatus];
         $('doctorStatus').textContent = tr(en, ar);
-        $('doctorStatus').className = 'pill' + (doctorStatus === 'approved' ? '' : ' wait');
+        $('doctorStatus').className = 'pill ' + (doctorStatus === 'approved' ? 'ok' : 'wait');
         $('doctorStatusText').textContent = tr(textEn, textAr);
     };
     const renderFacility = () => {
         if (!facilityStatus) return;
         const [en, ar, textEn, textAr] = FACILITY_STATUS[facilityStatus];
         $('facilityStatus').textContent = tr(en, ar);
-        $('facilityStatus').className = 'pill' + (facilityStatus === 'approved' ? '' : ' wait');
+        $('facilityStatus').className = 'pill ' + (facilityStatus === 'approved' ? 'ok' : 'wait');
         $('facilityStatusText').textContent = tr(textEn, textAr);
     };
     document.addEventListener('shc:language', () => { render(); renderDoctor(); renderFacility(); });

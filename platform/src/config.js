@@ -22,7 +22,7 @@ export const config = {
     otpSecret: required('OTP_SECRET', 'development-only-otp-secret-change-me'),
     // "console" prints codes to the server log (development only); "http" posts to an SMS gateway.
     smsProvider: env.SMS_PROVIDER || (production ? 'http' : 'console'),
-    smsHttp: {url: env.SMS_HTTP_URL, token: env.SMS_HTTP_TOKEN, sender: env.SMS_SENDER || 'SyriaHealth'},
+    smsHttp: {url: env.SMS_HTTP_URL, token: env.SMS_HTTP_TOKEN, sender: env.SMS_SENDER || 'SyriaHC'},
     // WhatsApp for patients (sign-in codes, appointment updates) through Meta's WhatsApp Cloud API; empty = SMS only.
     // Numbers starting with a blocked prefix always get SMS, because Meta does not deliver there (see src/whatsapp.js).
     whatsapp: {

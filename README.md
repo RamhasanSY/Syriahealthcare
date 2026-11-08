@@ -70,7 +70,7 @@ python tests/browser_check.py
 
 Browser checks cover every page at four widths in English and Arabic, old-link forwarding, search, healthcare/NGO and organization filters, exact deadline sorting, saved-job persistence, expiration, invalid verification records, safe links, retry behavior, background refresh failures, stalled request timeouts, keyboard focus, directory-note containment and restricted local storage. Screenshots are saved to ignored `.preview/`.
 
-The site uses a jasmine and courtyard arch SVG logo and a simplified matching favicon. Canonical and social metadata point to the production domain. `assets/social-card.png` is the 1200 × 630 sharing image; its editable template is `scripts/social-card.html`. To regenerate it, serve the repository, open that template in a browser at 1200 × 630 with device scale 1, and save a viewport screenshot over the PNG.
+The site uses the SyriaHC logo, the square Kufic "صحة تك" in a gold ring, as an SVG (`assets/logo.svg`); the favicon is the same file. The original artwork with the wordmark is `assets/syriahc-logo.png`. Canonical and social metadata point to the production domain. `assets/social-card.png` is the 1200 × 630 sharing image; its editable template is `scripts/social-card.html`. After changing the logo or the template, run `python scripts/app_icons.py` (needs Playwright): it renders the app icons and the social card and copies the icons and logo to the platform.
 
 Run `python scripts/update.py` to collect content locally. It writes public JSON files and makes no Git commits itself.
 
