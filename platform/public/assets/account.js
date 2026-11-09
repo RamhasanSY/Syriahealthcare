@@ -31,6 +31,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         rejected: ['Changes requested', 'مطلوب تعديلات', 'Open your facility page to see what needs to change.', 'افتحوا صفحة المنشأة لمعرفة التعديلات المطلوبة.'],
         suspended: ['Suspended', 'موقوف', 'Your listing is hidden from the website. Please contact support.', 'منشأتكم مخفية عن الموقع. يرجى التواصل مع الدعم.']};
     let doctorStatus = null, facilityStatus = null;
+    // Patients see their health file and their own SyriaHC patient number once the health file is switched on.
+    if (user.role === 'patient') {
+        const file = await api('/api/file');
+        const self = file.ok ? file.data.profiles.find(p => p.relationship === 'self') : null;
+        if (file.ok) Shc.saveProfiles(file.data.profiles);
+        $('fileLink').hidden = !file.ok;
+        $('numberLabel').hidden = $('userNumber').hidden = !self;
+        $('userNumber').textContent = self ? self.patient_number : '';
+    }
     if (user.role === 'facility') {
         const profile = await api('/api/facility/profile');
         if (profile.ok) facilityStatus = profile.data.profile.status;
@@ -73,6 +82,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     $('logout').hidden = false;
     $('logout').addEventListener('click', async () => {
         await api('/api/auth/logout', {});
+        Shc.forgetProfiles();  // the next person on this phone must not see these patient numbers
         window.location.assign('/');
     });
 });
