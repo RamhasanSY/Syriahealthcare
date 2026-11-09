@@ -47,6 +47,29 @@ const Shc = (() => {
         invalid_kind: 'اختر نوع الوثيقة.',
         file_too_large: 'حجم الملف أكبر من 5 ميغابايت.',
         invalid_file_type: 'ارفع ملف PDF أو JPG أو PNG.',
+        // Health file (file.html)
+        active_pdf: 'يحتوي ملف PDF هذا على محتوى نشط ولا يمكن رفعه. اطبعه إلى ملف PDF جديد أو التقط صورة له بدلاً من ذلك.',
+        invalid_file: 'هذا الملف تالف ولا يمكن قراءته.',
+        too_many_pages: 'يمكنك رفع 10 صفحات كحد أقصى في المرة الواحدة.',
+        too_many_pages_today: 'يمكنك رفع 30 صفحة كحد أقصى في اليوم. تابع غداً.',
+        invalid_category: 'اختر نوع الوثيقة.',
+        invalid_document_title: 'أعطِ الوثيقة اسماً قصيراً (حرفان على الأقل).',
+        invalid_date: 'أدخل تاريخاً صحيحاً، لا يكون في المستقبل.',
+        too_many_file_entries: 'يمكن حفظ 100 وثيقة كحد أقصى في كل ملف. احذف وثائق قديمة أولاً.',
+        storage_full: 'لم تعد هناك مساحة في هذا الملف (200 ميغابايت). احذف وثائق قديمة أولاً.',
+        image_unreadable: 'تعذرت قراءة هذه الصورة. استخدم صورة JPG أو PNG أو ملف PDF.',
+        pages_not_ready: 'انتظر حتى تجهز كل الصفحات.',
+        page_problem: 'احذف الصفحات التي فيها مشكلة أولاً.',
+        consent_unticked: 'ضع علامة في المربع للموافقة أولاً.',
+        restore_expired: 'لم يعد بالإمكان استعادة هذه الوثيقة.',
+        not_a_child: 'ملفات الأطفال لمن هم دون 18 عاماً. أدخل تاريخ الميلاد.',
+        too_many_children: 'يمكنك إضافة 10 ملفات أطفال كحد أقصى.',
+        code_format: 'يتكون الرمز من 12 حرفاً ورقماً، مثل ABCD-EFGH-JKLM.',
+        check_format: 'أدخل سنة الميلاد (4 أرقام) أو آخر 3 أرقام من رقم الجوال.',
+        wrong_check: 'سنة الميلاد أو آخر 3 أرقام لا تطابق ما أدخله المخبر.',
+        claim_locked: 'محاولات خاطئة كثيرة. اطلب ورقة جديدة من المخبر.',
+        already_claimed: 'هذه النتيجة موجودة في ملف صحي آخر. إذا كانت نتيجتك فعلاً، يمكنك الإبلاغ عن ذلك.',
+        invalid_birth_year: 'أدخل سنة الميلاد بأربعة أرقام، مثلاً 1985.',
         already_submitted: 'أُرسل ملفك للمراجعة مسبقاً.',
         licence_required: 'يرجى رفع ترخيص مزاولة المهنة أولاً.',
         facility_licence_required: 'يرجى رفع ترخيص المنشأة أولاً.',
@@ -155,5 +178,23 @@ const Shc = (() => {
         });
         window.addEventListener('appinstalled', () => show(false, false));
     }
-    return {$, tr, api, showError, busy, get lang() { return lang; }};
+    // Health file: the profile names and SyriaHC patient numbers are kept on this device, so the number shows without
+    // internet. Never anything medical. Signing out removes them (account.js).
+    const PROFILES_KEY = 'shc-file-profiles';
+    function saveProfiles(profiles) {
+        const list = profiles.map(({id, name, patient_number, relationship}) => ({id, name, patient_number, relationship}));
+        try { localStorage.setItem(PROFILES_KEY, JSON.stringify(list)); } catch (_) {}
+    }
+    function savedProfiles() {
+        try {
+            const list = JSON.parse(localStorage.getItem(PROFILES_KEY) || '[]');
+            return Array.isArray(list) ? list.filter(p => p && typeof p.patient_number === 'string' && typeof p.name === 'string') : [];
+        } catch (_) {
+            return [];
+        }
+    }
+    function forgetProfiles() {
+        try { localStorage.removeItem(PROFILES_KEY); } catch (_) {}
+    }
+    return {$, tr, api, showError, busy, saveProfiles, savedProfiles, forgetProfiles, get lang() { return lang; }};
 })();
