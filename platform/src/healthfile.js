@@ -150,7 +150,7 @@ export default async function healthFileRoutes(app) {
     app.post('/api/file/profiles/:id/documents', {preHandler: patientOnly, schema: idParam, config: {rateLimit: {max: 30, timeWindow: '15 minutes'}}},
         async (request, reply) => {
             const p = await patientFor(app.pg, request.user, request.params.id);
-            if (!await hasConsent(app.pg, p.id)) throw new HttpError(403, 'consent_required', 'Please agree to keeping a health file first.');
+            if (!await hasConsent(app.pg, p.id)) throw new HttpError(403, 'file_consent_required', 'Please agree to keeping a health file first.');
             const pages = [];
             let fields = {};
             try {
@@ -268,7 +268,7 @@ export default async function healthFileRoutes(app) {
 
     app.post('/api/file/profiles/:id/claim', {preHandler: patientOnly, config: claimLimit, schema: {...idParam, body: claimBody}}, async (request, reply) => {
         const p = await patientFor(app.pg, request.user, request.params.id);
-        if (!await hasConsent(app.pg, p.id)) throw new HttpError(403, 'consent_required', 'Please agree to keeping a health file first.');
+        if (!await hasConsent(app.pg, p.id)) throw new HttpError(403, 'file_consent_required', 'Please agree to keeping a health file first.');
         const result = await claimableResult(request.body.code);
         const {rows: [taken]} = await app.pg.query('SELECT patient_id FROM clinical_documents WHERE lab_result_id = $1', [result.id]);
         if (taken) {

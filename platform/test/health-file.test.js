@@ -116,7 +116,7 @@ describe('uploads', () => {
         const cookie = await signInPatientByEmail(post, mail, 'lina@example.org');
         const res = await uploadTo(cookie, (await self(cookie)).id, [pdfPage()]);
         assert.equal(res.statusCode, 403);
-        assert.equal(res.json().error, 'consent_required');
+        assert.equal(res.json().error, 'file_consent_required');
         assert.equal((await pool.query('SELECT count(*)::int AS n FROM clinical_documents')).rows[0].n, 0);
     });
 
