@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="ar" dir="rtl" data-title-en="Connect your software — SyriaHC" data-title-ar="ربط برنامجكم — صحة تك">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#1a3a5c">
+<title>ربط برنامجكم — صحة تك</title>
+<link rel="manifest" href="/manifest.webmanifest"><link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/assets/app.css">
+<script src="/assets/common.js" defer></script><script src="/assets/connect.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#main" data-en="Skip to content" data-ar="انتقل إلى المحتوى">انتقل إلى المحتوى</a>
+<header class="top"><div class="top-inner"><a class="brand" href="/account"><img src="/assets/logo.svg" alt=""><span data-en="SyriaHC" data-ar="صحة تك">صحة تك</span></a><div class="top-actions"><button class="lang" id="langToggle" type="button">English</button></div></div></header>
+<main id="main" class="wrap legal">
+  <h1 data-en="Connect your software" data-ar="ربط برنامجكم">ربط برنامجكم</h1>
+  <p class="lead" data-en="Your lab or clinic software can send results and documents to SyriaHC directly, instead of uploading each file by hand. Standards: HL7 FHIR R4 or HL7 v2.5.1, over HTTPS, with an OAuth 2.0 access token." data-ar="يمكن لبرنامج مخبركم أو مركزكم إرسال النتائج والمستندات إلى صحة تك مباشرة، بدلاً من رفع كل ملف يدوياً. المعايير: HL7 FHIR R4 أو HL7 v2.5.1 عبر HTTPS مع رمز وصول OAuth 2.0.">يمكن لبرنامج مخبركم أو مركزكم إرسال النتائج والمستندات إلى صحة تك مباشرة، بدلاً من رفع كل ملف يدوياً. المعايير: HL7 FHIR R4 أو HL7 v2.5.1 عبر HTTPS مع رمز وصول OAuth 2.0.</p>
+
+  <section id="mine" hidden aria-labelledby="mineHeading">
+    <h2 id="mineHeading" data-en="Your connections" data-ar="روابطكم">روابطكم</h2>
+    <ul class="appt-list" id="mineList"></ul>
+  </section>
+
+  <h2 data-en="1. Ask for a connection" data-ar="1. اطلبوا ربطاً">1. اطلبوا ربطاً</h2>
+  <p data-en="Your facility must be approved on SyriaHC. Write to us with the name of your software; we create a connection and give you a client_id and a client_secret once. Keep the secret in your software only, never in an email." data-ar="يجب أن تكون منشأتكم معتمدة في صحة تك. راسلونا باسم برنامجكم؛ ننشئ ربطاً ونسلّمكم client_id وclient_secret مرة واحدة. احفظوا كلمة السر داخل البرنامج فقط، وليس في بريد إلكتروني.">يجب أن تكون منشأتكم معتمدة في صحة تك. راسلونا باسم برنامجكم؛ ننشئ ربطاً ونسلّمكم client_id وclient_secret مرة واحدة. احفظوا كلمة السر داخل البرنامج فقط، وليس في بريد إلكتروني.</p>
+
+  <h2 data-en="2. Get an access token (valid 15 minutes)" data-ar="2. احصلوا على رمز وصول (صالح 15 دقيقة)">2. احصلوا على رمز وصول (صالح 15 دقيقة)</h2>
+  <pre><code dir="ltr" id="exToken"></code></pre>
+
+  <h2 data-en="3a. Send a lab result as HL7 FHIR" data-ar="3أ. أرسلوا نتيجة تحليل عبر HL7 FHIR">3أ. أرسلوا نتيجة تحليل عبر HL7 FHIR</h2>
+  <p data-en="POST a transaction Bundle: a Patient (with the SyriaHC number if the patient gave it, the birth date, the name and the mobile number), a DiagnosticReport with your own lab number as identifier and the report as PDF in presentedForm (Base64), and optionally Observations with LOINC codes and UCUM units. Documents such as discharge letters: IHE MHD ITI-65 (List as SubmissionSet, DocumentReference, Binary)." data-ar="أرسلوا Bundle من نوع transaction: مريض Patient (برقم صحة تك إن أعطاه المريض، وتاريخ الميلاد والاسم ورقم الجوال)، وتقرير DiagnosticReport برقم المخبر الخاص بكم كمعرّف والتقرير كملف PDF في presentedForm بترميز Base64، واختيارياً قيم Observation برموز LOINC ووحدات UCUM. المستندات مثل تقارير الخروج: IHE MHD ITI-65.">أرسلوا Bundle من نوع transaction: مريض Patient (برقم صحة تك إن أعطاه المريض، وتاريخ الميلاد والاسم ورقم الجوال)، وتقرير DiagnosticReport برقم المخبر الخاص بكم كمعرّف والتقرير كملف PDF في presentedForm بترميز Base64، واختيارياً قيم Observation برموز LOINC ووحدات UCUM. المستندات مثل تقارير الخروج: IHE MHD ITI-65.</p>
+  <pre><code dir="ltr" id="exFhir"></code></pre>
+
+  <h2 data-en="3b. Or as HL7 v2 (ORU^R01, MDM^T02)" data-ar="3ب. أو عبر HL7 v2 (ORU^R01 وMDM^T02)">3ب. أو عبر HL7 v2 (ORU^R01 وMDM^T02)</h2>
+  <p data-en="POST one ER7 message with Content-Type x-application/hl7-v2+er7. The PDF goes into an OBX segment of type ED (Base64). The answer is always an ACK: AA accepted, AE error in the message (with an ERR segment), AR refused." data-ar="أرسلوا رسالة ER7 واحدة بنوع المحتوى x-application/hl7-v2+er7. يوضع ملف PDF في مقطع OBX من نوع ED بترميز Base64. الرد دائماً ACK: AA مقبولة، AE خطأ في الرسالة (مع مقطع ERR)، AR مرفوضة.">أرسلوا رسالة ER7 واحدة بنوع المحتوى x-application/hl7-v2+er7. يوضع ملف PDF في مقطع OBX من نوع ED بترميز Base64. الرد دائماً ACK: AA مقبولة، AE خطأ في الرسالة (مع مقطع ERR)، AR مرفوضة.</p>
+  <pre><code dir="ltr" id="exV2"></code></pre>
+
+  <h2 data-en="4. What happens with the result" data-ar="4. ماذا يحدث بالنتيجة">4. ماذا يحدث بالنتيجة</h2>
+  <ul>
+    <li data-en="If the SyriaHC patient number and the birth year match a patient who keeps a health file, the result goes straight into that file. You get &quot;delivered&quot;." data-ar="إذا تطابق رقم المريض في صحة تك وسنة الميلاد مع مريض لديه ملف صحي، تدخل النتيجة مباشرة إلى ملفه. تصلكم كلمة «delivered».">إذا تطابق رقم المريض في صحة تك وسنة الميلاد مع مريض لديه ملف صحي، تدخل النتيجة مباشرة إلى ملفه. تصلكم كلمة «delivered».</li>
+    <li data-en="Otherwise you get a slip code to print for the patient, exactly as when you upload in the app. You never get names or data from a patient's file back." data-ar="وإلا يصلكم رمز ورقة لطباعته للمريض، تماماً كما عند الرفع في التطبيق. لا تصلكم أبداً أسماء أو بيانات من ملف المريض.">وإلا يصلكم رمز ورقة لطباعته للمريض، تماماً كما عند الرفع في التطبيق. لا تصلكم أبداً أسماء أو بيانات من ملف المريض.</li>
+    <li data-en="Sending the same lab number again is harmless: the first result is kept. At most 8 MB per message, 5 MB per file; PDF, JPEG or PNG only." data-ar="إرسال رقم المخبر نفسه مرة أخرى لا يضر: تُحفظ النتيجة الأولى. 8 ميغابايت كحد أقصى لكل رسالة و5 ميغابايت لكل ملف؛ PDF أو JPEG أو PNG فقط.">إرسال رقم المخبر نفسه مرة أخرى لا يضر: تُحفظ النتيجة الأولى. 8 ميغابايت كحد أقصى لكل رسالة و5 ميغابايت لكل ملف؛ PDF أو JPEG أو PNG فقط.</li>
+    <li data-en="If your facility is suspended or the connection is ended, every request is refused at once." data-ar="إذا أُوقفت منشأتكم أو أُنهي الربط، تُرفض كل الطلبات فوراً.">إذا أُوقفت منشأتكم أو أُنهي الربط، تُرفض كل الطلبات فوراً.</li>
+  </ul>
+  <p><a href="/developers" data-en="All public interfaces" data-ar="كل الواجهات العامة">كل الواجهات العامة</a> · <a href="/fhir/r4/metadata" dir="ltr">CapabilityStatement</a></p>
+</main>
+<footer><div class="wrap"><a href="/account" data-en="← My account" data-ar="حسابي ←">حسابي ←</a></div></footer>
+</body>
+</html>

@@ -248,3 +248,7 @@ fieldset.plain legend{font-weight:700;margin-bottom:8px}
 .qr-box{text-align:center;margin-top:16px}
 .qr-box img{display:block;margin:12px auto;max-width:100%;height:auto;background:#fff}
 #accessLog time{color:var(--muted);font-variant-numeric:tabular-nums}
+/* Code examples (connect.html, admin connections) */
+pre{direction:ltr;text-align:left;overflow-x:auto;max-width:100%;background:var(--sage);border-radius:10px;padding:12px 14px;font-size:13px;line-height:1.5}
+pre code,code{font-family:ui-monospace,Consolas,monospace;overflow-wrap:anywhere}
+pre code{overflow-wrap:normal;white-space:pre}

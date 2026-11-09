@@ -5,7 +5,7 @@
 <title>المراجعة — صحة تك</title>
 <link rel="manifest" href="/manifest.webmanifest"><link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/assets/app.css">
-<script src="/assets/common.js" defer></script><script src="/assets/admin.js" defer></script>
+<script src="/assets/common.js" defer></script><script src="/assets/admin.js" defer></script><script src="/assets/connections.js" defer></script>
 </head>
 <body>
 <a class="skip" href="#main" data-en="Skip to content" data-ar="انتقل إلى المحتوى">انتقل إلى المحتوى</a>
@@ -60,6 +60,24 @@
     </form>
     <h3 data-en="History" data-ar="السجل">السجل</h3>
     <ol class="history" id="history"></ol>
+  </section>
+  <section class="card wide-card" id="connections" hidden aria-labelledby="connHeading">
+    <h2 id="connHeading" tabindex="-1" data-en="Software connections" data-ar="ربط البرامج">ربط البرامج</h2>
+    <p class="hint" data-en="A lab or clinic whose software sends results directly (HL7 FHIR or HL7 v2) gets one connection here. Only approved facilities; the secret is shown once. Results reach a patient's health file only when the SyriaHC number and birth year match." data-ar="المخبر أو المركز الذي يرسل برنامجه النتائج مباشرة (HL7 FHIR أو HL7 v2) يحصل هنا على ربط واحد. للمنشآت المعتمدة فقط؛ تظهر كلمة السر مرة واحدة. تصل النتائج إلى الملف الصحي للمريض فقط عند تطابق رقم صحة تك وسنة الميلاد.">المخبر أو المركز الذي يرسل برنامجه النتائج مباشرة (HL7 FHIR أو HL7 v2) يحصل هنا على ربط واحد. للمنشآت المعتمدة فقط؛ تظهر كلمة السر مرة واحدة. تصل النتائج إلى الملف الصحي للمريض فقط عند تطابق رقم صحة تك وسنة الميلاد.</p>
+    <div class="msg error" id="connError" role="alert" tabindex="-1" hidden></div>
+    <div class="msg info" id="connSecretBox" hidden>
+      <h3 id="connSecretHeading" tabindex="-1" data-en="Give these to the software provider now — the secret will not be shown again" data-ar="سلّم هذه البيانات لمزود البرنامج الآن — لن تظهر كلمة السر مرة أخرى">سلّم هذه البيانات لمزود البرنامج الآن — لن تظهر كلمة السر مرة أخرى</h3>
+      <dl class="dl"><dt>client_id</dt><dd><code id="connClientId" dir="ltr"></code></dd><dt>client_secret</dt><dd><code id="connSecret" dir="ltr"></code></dd><dt>token_url</dt><dd><code id="connTokenUrl" dir="ltr"></code></dd></dl>
+      <div class="actions"><button class="btn" type="button" id="connCopy" data-en="Copy all three" data-ar="انسخ الثلاثة">انسخ الثلاثة</button><button class="btn ghost" type="button" id="connSecretDone" data-en="Done, I have saved them" data-ar="تم، حفظتها">تم، حفظتها</button></div>
+      <p class="hint" id="connCopied" role="status"></p>
+    </div>
+    <form id="connForm" novalidate>
+      <label class="field"><span data-en="Facility" data-ar="المنشأة">المنشأة</span><select id="connFacility"></select></label>
+      <label class="field"><span data-en="Name of the connection (e.g. the software's name)" data-ar="اسم الربط (مثلاً اسم البرنامج)">اسم الربط (مثلاً اسم البرنامج)</span><input type="text" id="connName" maxlength="120" dir="auto"></label>
+      <fieldset class="plain"><legend data-en="The software may send" data-ar="يمكن للبرنامج إرسال">يمكن للبرنامج إرسال</legend><div id="connScopes"></div></fieldset>
+      <div class="actions"><button class="btn" type="submit" id="connCreate" data-en="Create connection" data-ar="أنشئ الربط">أنشئ الربط</button></div>
+    </form>
+    <ul class="appt-list" id="connList"></ul>
   </section>
 </main>
 <footer><div class="wrap"><a href="/account" data-en="← My account" data-ar="حسابي ←">حسابي ←</a></div></footer>
