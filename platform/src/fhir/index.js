@@ -9,6 +9,7 @@ import {
 import {capabilityStatement, COMMON_PARAMS, RESOURCES} from './registry.js';
 import {codeSystems, namingSystems, valueSets} from './terminology.js';
 import healthFhirRoutes from './health.js';
+import fhirWriteRoutes from './write.js';
 
 const FHIR_JSON = 'application/fhir+json; charset=utf-8';
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
@@ -83,6 +84,9 @@ export default async function fhirRoutes(app) {
 
     // ---- Health file of the signed-in patient (stage 2b, src/fhir/health.js) ----
     healthFhirRoutes(app, {base, send, outcome});
+
+    // ---- Results and documents from lab and clinic software (stage 2d, src/fhir/write.js) ----
+    fhirWriteRoutes(app, {send, outcome});
 
     // ---- Fixed resources ----
     app.get('/Endpoint/fhir-r4', async (request, reply) => send(reply, 200, endpoint(base)));

@@ -105,6 +105,27 @@ describe('FHIR examples for the HL7 validator', () => {
         await keep('patient-everything-child', `/fhir/r4/Patient/${child.id}/$everything`, cookie);
     });
 
+    test('answers to lab software (stage 2d)', async () => {
+        const admin = await signIn(post, 'admin', 'connections@example.org', 'Connections Admin');
+        const created = (await post('/api/admin/api-clients', {facility_id: facilities[0], name: 'LabSoft', scopes: ['system/DiagnosticReport.c']}, {cookie: admin})).json();
+        const token = (await app.inject({method: 'POST', url: '/oauth/token', headers: {'content-type': 'application/x-www-form-urlencoded'},
+            payload: `grant_type=client_credentials&client_id=${created.client.client_id}&client_secret=${encodeURIComponent(created.client_secret)}`})).json().access_token;
+        const bundle = phone => ({resourceType: 'Bundle', type: 'transaction', entry: [
+            {fullUrl: 'urn:uuid:11111111-1111-4111-8111-111111111111', resource: {resourceType: 'Patient', name: [{text: 'Omar Saleh'}],
+                telecom: [{system: 'phone', value: phone}], birthDate: '1980-01-01'}, request: {method: 'POST', url: 'Patient'}},
+            {resource: {resourceType: 'DiagnosticReport', status: 'final', identifier: [{system: 'urn:labsoft', value: 'L-1'}], code: {text: 'Lipid panel'},
+                subject: {reference: 'urn:uuid:11111111-1111-4111-8111-111111111111'}, presentedForm: [{contentType: 'application/pdf', data: PDF.toString('base64')}]},
+                request: {method: 'POST', url: 'DiagnosticReport'}}]});
+        for (const [name, phone] of [['transaction-response', '0933 222 111'], ['operation-outcome-invalid-bundle', 'none']]) {
+            const res = await app.inject({method: 'POST', url: '/fhir/r4', payload: JSON.stringify(bundle(phone)),
+                headers: {'content-type': 'application/fhir+json', authorization: `Bearer ${token}`}});
+            assert.ok(res.json().resourceType);
+            assert.doesNotMatch(res.body, /:null|:\[\]|:\{\}|:""/);
+            saved.push(name);
+            if (dir) await writeFile(path.join(dir, `${name}.json`), JSON.stringify(res.json(), null, 2));
+        }
+    });
+
     test('audit trail entries as AuditEvent', async () => {
         const {rows} = await pool.query(`SELECT a.*, u.role::text AS actor_role, u.name AS actor_name FROM audit_log a
             LEFT JOIN users u ON u.id = a.actor_id ORDER BY a.id`);

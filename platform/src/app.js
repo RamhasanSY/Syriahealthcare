@@ -19,9 +19,14 @@ import fhirRoutes from './fhir/index.js';
 import accountRoutes from './accounts.js';
 import healthFileRoutes from './healthfile.js';
 import sharingRoutes from './sharing.js';
+import oauthRoutes from './oauth.js';
+import hl7v2Routes from './hl7v2.js';
 import openapiRoutes, {collectRoutes} from './openapi.js';
 
 const UNSAFE = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
+// Lab and clinic software (stage 2d) authenticates with a client secret or a Bearer token, never with the session cookie,
+// so these paths need no Origin check (a forged form from another website has no token to send).
+const TOKEN_ONLY = /^\/(oauth\/token|fhir\/r4\/?|hl7v2)(\?|$)/;
 
 export async function buildApp({config, pool, sms, whatsapp, telegram, mail, documents, logger = true}) {
     const app = Fastify({logger, trustProxy: config.trustProxy, bodyLimit: 64 * 1024});
@@ -39,7 +44,7 @@ export async function buildApp({config, pool, sms, whatsapp, telegram, mail, doc
 
     // Forms and scripts on other websites must not be able to act for a signed-in user.
     app.addHook('onRequest', async (request, reply) => {
-        if (!UNSAFE.has(request.method)) return;
+        if (!UNSAFE.has(request.method) || TOKEN_ONLY.test(request.url)) return;
         if (request.headers.origin !== config.appOrigin) {
             reply.code(403).send({error: 'bad_origin', message: 'Request blocked.'});
             return reply;
@@ -91,6 +96,8 @@ export async function buildApp({config, pool, sms, whatsapp, telegram, mail, doc
     await app.register(accountRoutes);
     await app.register(healthFileRoutes);
     await app.register(sharingRoutes);
+    await app.register(oauthRoutes);
+    await app.register(hl7v2Routes);
     await app.register(openapiRoutes, {routes});
     await app.register(fhirRoutes, {prefix: '/fhir/r4'});
     await app.register(fastifyStatic, {root: fileURLToPath(new URL('../public/', import.meta.url)), extensions: ['html']});

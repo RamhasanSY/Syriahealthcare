@@ -18,6 +18,7 @@ const CLEANUP = [
     ['login_failures', "DELETE FROM login_failures WHERE created_at < now() - interval '1 day'"],
     ['password_resets', "DELETE FROM password_resets WHERE created_at < now() - interval '1 day'"],
     ['trusted_devices', 'DELETE FROM trusted_devices WHERE expires_at < now()'],
+    ['api_tokens', 'DELETE FROM api_tokens WHERE expires_at < now()'],
     ['share_codes', "DELETE FROM share_codes WHERE expires_at < now() - interval '1 day' AND used_at IS NULL"],
     ['email_outbox', "DELETE FROM email_outbox WHERE (sent_at < now() - interval '30 days') OR (failed_at < now() - interval '30 days')"]
 ];

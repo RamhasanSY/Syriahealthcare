@@ -217,12 +217,13 @@ Jeder Dienst ist ein Modul unter `platform/src/` mit eigenen Tests. Die Schnitts
 | 2.0 | `src/openapi.js` und `/developers` | OpenAPI 3.1 unter `/api/openapi.json`, aus den Routen erzeugt; Entwicklerseite auf Arabisch und Englisch | ✅ gebaut, Branch `stage2-rest` |
 | 2.0 | HL7-Validator in GitHub Actions | prüft je ein Beispiel jeder FHIR-Ressource (`test/fhir-examples.test.js`) | ✅ gebaut, Branch `stage2-rest` |
 | 2a | Verschlüsselte Datensicherung außerhalb des Servers | restic, zweiter Anbieter | ⏳ braucht Bestellung |
-| 2b | `src/healthfile.js`: Patientenstamm, Akte, Uploads | Gesundheitsakte, Befund übernehmen mit zweitem Merkmal | ⏳ (Akte bleibt aus, bis Datenschutz geklärt) |
-| 2b | Patientennummer (`src/patient-number.js`) | SHC-XXXX-XXXX-X mit Prüfzeichen | ⏳ |
-| 2b | MDM-Stammdaten (Patient-Index, Zusammenführung) | doppelte Personen verbinden | ⏳ |
-| 2c | `src/access.js`: Prüfstelle für alle Akten-Routen | eine Stelle für `/api`, `/fhir`, `/hl7v2` | ⏳ |
-| 2c | Freigaben und Freigabecodes | Teilen einzelner Einträge, 15-Minuten-QR | ⏳ |
-| 2c | Zugriffsprotokoll (IHE BALP) | „Wer hat meine Akte geöffnet?“ | ⏳ |
-| 2d | `src/oauth.js`: OAuth 2.0 Client Credentials | Zugang für Labor- und Klinik-Software | ⏳ |
-| 2d | `src/hl7v2/`: ORU^R01, MDM^T02, ACK | Befunde und Dokumente per HL7 v2 | ⏳ |
-| 2d | FHIR schreiben (Transaktion, MHD ITI-65) | Befunde und Dokumente per FHIR | ⏳ |
+| 2b | `src/healthfile.js`, `src/uploads.js`: Akte, Uploads, Befund übernehmen | Zeitleiste mit Filtern, Kinderprofile, Fotos und PDFs mehrseitig (EXIF/GPS entfernt, aktive PDFs abgelehnt, verschlüsselt, Sandbox), Papierkorb 30 Tage, Quoten; Laborzettel übernehmen mit Code und Geburtsjahr oder letzten 3 Ziffern, 5 Versuche, Melden | ✅ gebaut, Branch `stage2b-health-file` (Akte bleibt aus, bis Datenschutz geklärt: `HEALTH_FILE=off`) |
+| 2b | `src/patient-number.js` | SHC-XXXX-XXXX-X mit Prüfzeichen (Luhn mod 32), bei Anmeldung und Buchung | ✅ gebaut, Branch `stage2b-health-file` |
+| 2b | MDM-Stammdaten (`patients`, `patient_access`, `npm run merge-patients`) | Person getrennt vom Login, Kinder, Zusammenführung doppelter Personen | ✅ gebaut, Branch `stage2b-health-file` |
+| 2b | `src/fhir/health.js` | Patient (nur lesen), RelatedPerson, DocumentReference/Binary (MHD ITI-67/68), DiagnosticReport, Consent, Appointment, `Patient/$everything` | ✅ gebaut, Branch `stage2b-health-file` |
+| 2c | `src/access.js`: Prüfstelle für alle Akten-Routen | eine Stelle für `/api` und `/fhir`; 404 außerhalb einer Beziehung | ✅ gebaut, Branch `stage2c-sharing` |
+| 2c | `src/sharing.js`: Freigaben und Freigabecodes | einzelne Einträge für 1/30/90 Tage, beim Buchen bis 30 Tage nach dem Termin, QR für 15 Minuten; Widerruf sofort, auch einzelne Einträge und gescannte Zettel; Ärzte mit E-Mail-Code (Gerät 30 Tage merken); „Meine Patienten“ | ✅ gebaut, Branch `stage2c-sharing` |
+| 2c | Zugriffsprotokoll (IHE BALP) | „Wer hat meine Akte geöffnet?“ in der App und als FHIR AuditEvent, ohne IP; Freigaben als FHIR Consent | ✅ gebaut, Branch `stage2c-sharing` |
+| 2d | `src/oauth.js`: OAuth 2.0 Client Credentials | Zugänge pro Einrichtung mit SMART-v2-Scopes, Geheimnis nur einmal sichtbar, Token 15 Minuten, gesperrte Einrichtung sofort wirkungslos | ✅ gebaut, Branch `stage2d-interfaces` |
+| 2d | `src/hl7v2.js`: ORU^R01, MDM^T02, ACK | Befunde und Dokumente per HL7 v2.5.1 über HTTPS, Antwort AA/AE/AR mit ERR | ✅ gebaut, Branch `stage2d-interfaces` |
+| 2d | `src/fhir/write.js`, `src/ingest.js`: FHIR schreiben (Transaktion, MHD ITI-65) | ein gemeinsamer Speicherweg; doppelte Labornummer harmlos; Zustellung in die Akte nur mit Patientennummer und Geburtsjahr, sonst Zettel-Code; höchstens 8 MB | ✅ gebaut, Branch `stage2d-interfaces` (schreibender Teil live erst mit Pilotlabor) |
