@@ -19,6 +19,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     doctor = d.data.doctor;
     me = m.ok ? m.data.user : null;
     catalog = c.data;
+    // Parents with children's profiles in their health file can book for a child (subject_id).
+    let profiles = [], subject = null;
+    if (me?.role === 'patient') {
+        const file = await api('/api/file');
+        if (file.ok) profiles = file.data.profiles;
+    }
 
     async function loadSlots(start) {
         const res = await api(`/api/doctors/${doctorId}/slots?days=${days}` + (start ? `&from=${start}` : ''));
@@ -38,6 +44,23 @@ document.addEventListener('DOMContentLoaded', async () => {
         $('docBio').hidden = !doctor.bio;
         $('docBio').textContent = doctor.bio || '';
         document.title = `${doctor.name} — ${tr('Book an appointment', 'احجز موعداً')}`;
+    }
+
+    function renderForWhom() {
+        const children = profiles.filter(p => p.relationship === 'child'), self = profiles.find(p => p.relationship === 'self');
+        $('forWhom').hidden = !children.length;
+        if (!children.length) return;
+        const option = (id, ...text) => {
+            const label = el('label', {className: 'check'});
+            const input = el('input', {type: 'radio', name: 'forWhom', value: id, checked: (subject || '') === id});
+            input.addEventListener('change', () => { subject = id || null; });
+            const span = el('span');
+            span.append(...text);
+            label.append(input, span);
+            return label;
+        };
+        $('forWhomList').replaceChildren(option('', tr('Me', 'أنا'), ...(self ? [' (', el('bdi', {textContent: self.name}), ')'] : [])),
+            ...children.map(child => option(child.id, el('bdi', {textContent: child.name}))));
     }
 
     function radio(button, checked) {
@@ -79,6 +102,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         $('signInFirst').hidden = Boolean(me);
         $('notPatient').hidden = !me || me.role === 'patient';
         $('bookForm').hidden = me?.role !== 'patient';
+        renderForWhom();
         const back = `/book?doctor=${encodeURIComponent(doctorId)}` + (chosen ? `&slot=${encodeURIComponent(chosen)}` : '');
         $('signInLink').href = '/login?next=' + encodeURIComponent(back);
     }
@@ -101,7 +125,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         event.preventDefault();
         $('bookError').hidden = true;
         busy($('bookButton'), true);
-        const res = await api('/api/appointments', {doctor_id: doctorId, starts_at: chosen, reason: $('reason').value});
+        const res = await api('/api/appointments', {doctor_id: doctorId, starts_at: chosen, reason: $('reason').value, ...(subject && {subject_id: subject})});
         busy($('bookButton'), false);
         if (!res.ok) {
             showError('bookError', res.data);
@@ -113,6 +137,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         $('done').hidden = false;
         $('doneText').textContent = tr(`Your request for ${dayName(slot.date, 'long')} at ${timeOf(slot.starts_at)} with ${doctor.name} has been sent. You can follow it under "My appointments", where it shows as confirmed once the doctor accepts.`,
             `أُرسل طلبك لموعد ${dayName(slot.date, 'long')} الساعة ${timeOf(slot.starts_at)} لدى ${doctor.name}. يمكنك متابعته في «مواعيدي»، وسيظهر مؤكداً عند قبول الطبيب.`);
+        const child = profiles.find(p => p.id === subject);
+        if (child) $('doneText').textContent += tr(` The appointment is for ${child.name}.`, ` الموعد لـ ${child.name}.`);
         $('done').focus();
     });
 

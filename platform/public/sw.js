@@ -1,8 +1,9 @@
 // Service worker for the installed platform app. Only the page frames, styles, scripts and icons are saved,
 // so the app opens quickly and shows a clear notice without internet. Nothing under /api/ is ever saved:
 // appointments, profiles and licence documents always come fresh from the server and never stay on the phone.
-const CACHE = 'shc-app-v6';
-const SHELL = ['/', '/offline', '/login', '/staff', '/doctors', '/account', '/assets/app.css', '/assets/common.js',
+// The health file page is saved too, so the patient number (kept in localStorage, see common.js) shows without internet.
+const CACHE = 'shc-app-v7';
+const SHELL = ['/', '/offline', '/login', '/staff', '/doctors', '/account', '/file', '/assets/app.css', '/assets/common.js', '/assets/file.js',
     '/assets/logo.svg', '/assets/favicon.svg', '/assets/icon-192.png', '/manifest.webmanifest'];
 const SLOW_MS = 6000;
 
