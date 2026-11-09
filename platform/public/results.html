@@ -21,6 +21,7 @@
       <div class="msg error" id="formError" role="alert" tabindex="-1" hidden></div>
       <label class="field"><span data-en="Patient's full name *" data-ar="اسم المريض الكامل *">اسم المريض الكامل *</span><input type="text" id="patientName" dir="auto" maxlength="120" autocomplete="off"></label>
       <label class="field"><span data-en="Patient's mobile *" data-ar="جوال المريض *">جوال المريض *</span><input type="tel" id="patientPhone" dir="ltr" placeholder="0912 345 678" autocomplete="off"><small data-en="The number the patient uses on SyriaHC." data-ar="الرقم الذي يستخدمه المريض في منصة صحة تك.">الرقم الذي يستخدمه المريض في منصة صحة تك.</small></label>
+      <label class="field"><span data-en="Patient's birth year (optional)" data-ar="سنة ميلاد المريض (اختياري)">سنة ميلاد المريض (اختياري)</span><input type="text" id="birthYear" inputmode="numeric" maxlength="4" dir="ltr" autocomplete="off" placeholder="1985"><small data-en="4 digits. Lets the patient add this result to their own SyriaHC health file." data-ar="4 أرقام. تتيح للمريض إضافة هذه النتيجة إلى ملفه الصحي في صحة تك.">4 أرقام. تتيح للمريض إضافة هذه النتيجة إلى ملفه الصحي في صحة تك.</small></label>
       <label class="field"><span data-en="Test *" data-ar="التحليل *">التحليل *</span><input type="text" id="title" dir="auto" maxlength="120" placeholder="" data-placeholder-en="e.g. Complete blood count" data-placeholder-ar="مثلاً: تعداد دم كامل"></label>
       <label class="field"><span data-en="Result file *" data-ar="ملف النتيجة *">ملف النتيجة *</span><input type="file" id="file" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"><small data-en="PDF, JPG or PNG, up to 5 MB. Stored encrypted." data-ar="ملف PDF أو JPG أو PNG حتى 5 ميغابايت. يُحفظ مشفّراً.">ملف PDF أو JPG أو PNG حتى 5 ميغابايت. يُحفظ مشفّراً.</small></label>
       <button class="btn" type="submit" id="uploadButton" data-en="Upload and make QR code" data-ar="ارفع وأنشئ رمز QR">ارفع وأنشئ رمز QR</button>
@@ -35,6 +36,8 @@
         <dl class="dl"><dt data-en="Patient" data-ar="المريض">المريض</dt><dd id="slipPatient" dir="auto"></dd><dt data-en="Test" data-ar="التحليل">التحليل</dt><dd id="slipTitle" dir="auto"></dd><dt data-en="Date" data-ar="التاريخ">التاريخ</dt><dd id="slipDate"></dd></dl>
         <p class="slip-note" lang="ar" dir="rtl">اعرض هذا الرمز على طبيبك. يمسحه الطبيب فتُضاف النتيجة إلى ملفك لديه.</p>
         <p class="slip-note" lang="en" dir="ltr">Show this code to your doctor. They scan it to add the result to your file.</p>
+        <p class="slip-note slip-file" id="slipFileAr" lang="ar" dir="rtl" hidden></p>
+        <p class="slip-note slip-file" id="slipFileEn" lang="en" dir="ltr" hidden></p>
         <p class="slip-note" id="slipValid"></p>
       </div>
       <div class="actions"><button class="btn" type="button" id="printButton" data-en="Print" data-ar="طباعة">طباعة</button></div>

@@ -39,6 +39,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         $('slipTitle').textContent = shown.result.title;
         $('slipDate').textContent = date(shown.result.created_at);
         $('slipValid').textContent = tr('Code valid until ', 'الرمز صالح حتى ') + date(shown.result.code_expires_at);
+        // With the health file on, the slip also tells the patient how to add the result to their own file. Printed in both
+        // languages, whatever the language of the screen. Without a birth year only the mobile number's last digits work.
+        const file = shown.health_file;
+        $('slipFileAr').hidden = $('slipFileEn').hidden = !file;
+        if (!file) return;
+        const address = file.url.replace(/^https?:\/\//, ''), phoneOnly = file.check === 'phone';
+        $('slipFileAr').replaceChildren('أضف هذه النتيجة إلى ملفك الصحي في صحة تك: افتح ', el('bdi', {textContent: address, dir: 'ltr'}),
+            phoneOnly ? ' وأدخل هذا الرمز وآخر 3 أرقام من رقم جوالك.' : ' وأدخل هذا الرمز وسنة ميلادك (أو آخر 3 أرقام من رقم جوالك).');
+        $('slipFileEn').textContent = `Add this result to your SyriaHC health file: open ${address}, enter this code and ` +
+            (phoneOnly ? 'the last 3 digits of your mobile number.' : 'your birth year (or the last 3 digits of your mobile number).');
     }
 
     function renderList() {
@@ -91,11 +101,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         const file = $('file').files[0];
         if (!file) return showError('formError', {error: 'no_file', message: 'Choose a file to upload.'});
         if (file.size > 5 * 1024 * 1024) return showError('formError', {error: 'file_too_large', message: 'The file is larger than 5 MB.'});
+        // Arabic keyboards type ١٩٨٥; the server expects 1985.
+        const birthYear = $('birthYear').value.trim().replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d));
+        if (birthYear && !/^(19|20)\d{2}$/.test(birthYear)) return showError('formError', {error: 'invalid_birth_year', message: 'Enter the birth year with 4 digits, for example 1985.'});
         // The fields go before the file, so the server has them when the file arrives.
         const form = new FormData();
         form.append('patient_name', $('patientName').value);
         form.append('patient_phone', $('patientPhone').value);
         form.append('title', $('title').value);
+        if (birthYear) form.append('birth_year', birthYear);
         form.append('file', file);
         busy($('uploadButton'), true);
         let response, data = {};

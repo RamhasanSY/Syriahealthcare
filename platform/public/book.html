@@ -41,6 +41,7 @@
         </div>
         <div id="notPatient" class="msg info" hidden data-en="Bookings are made from a patient account. Sign out and sign in with your mobile number to book." data-ar="يتم الحجز من حساب مريض. سجّل الخروج ثم ادخل برقم جوالك للحجز.">يتم الحجز من حساب مريض. سجّل الخروج ثم ادخل برقم جوالك للحجز.</div>
         <form id="bookForm" novalidate hidden>
+          <fieldset class="for-whom" id="forWhom" hidden><legend data-en="For whom?" data-ar="لمن الموعد؟">لمن الموعد؟</legend><div id="forWhomList"></div></fieldset>
           <label class="field"><span data-en="Reason for the visit (optional)" data-ar="سبب الزيارة (اختياري)">سبب الزيارة (اختياري)</span><textarea id="reason" maxlength="300" rows="3" dir="auto" aria-describedby="reasonHint"></textarea><small id="reasonHint" data-en="Only this doctor sees it. Do not include anything you would not want the clinic to know." data-ar="لا يراه إلا هذا الطبيب. لا تكتب ما لا تريد أن تعرفه العيادة.">لا يراه إلا هذا الطبيب. لا تكتب ما لا تريد أن تعرفه العيادة.</small></label>
           <button class="btn" type="submit" id="bookButton" disabled data-en="Request this appointment" data-ar="اطلب هذا الموعد">اطلب هذا الموعد</button>
           <p class="hint" data-en="The doctor confirms your request. You can cancel any time before the appointment." data-ar="يؤكد الطبيب طلبك. يمكنك الإلغاء في أي وقت قبل الموعد.">يؤكد الطبيب طلبك. يمكنك الإلغاء في أي وقت قبل الموعد.</p>
