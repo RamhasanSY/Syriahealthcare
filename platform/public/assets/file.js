@@ -218,6 +218,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         $('claimWaiting').hidden = !claimCode;  // a slip link brought a code that waits for consent
         $('uploadButton').textContent = isSelf(p) ? tr('Upload to my file', 'ارفع إلى ملفي') : tr(`Upload to ${p.name}'s file`, `ارفع إلى ملف ${p.name}`);
         $('claimButton').textContent = isSelf(p) ? tr('Add to my file', 'أضف إلى ملفي') : tr(`Add to ${p.name}'s file`, `أضف إلى ملف ${p.name}`);
+        // Sharing (share.js) follows the profile on screen.
+        document.dispatchEvent(new CustomEvent('shc:profile', {detail: {profile: p}}));
     }
 
     function renderTimeline() {

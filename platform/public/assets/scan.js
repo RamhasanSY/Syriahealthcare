@@ -36,6 +36,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     async function lookup(value) {
+        // A code a patient shows from their health file has 8 characters (lab result codes have 12): "My patients" opens it.
+        const raw = String(value || '').toUpperCase().replace(/[^0-9A-Z]/g, '');
+        if (raw.length === 8) return window.location.assign('/patients#redeem=' + raw);
         $('scanError').hidden = true;
         found = null;
         render();

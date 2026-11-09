@@ -5,7 +5,7 @@
 <title>ملفي الصحي — صحة تك</title>
 <link rel="manifest" href="/manifest.webmanifest"><link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/assets/app.css">
-<script src="/assets/common.js" defer></script><script src="/assets/file.js" defer></script>
+<script src="/assets/common.js" defer></script><script src="/assets/file.js" defer></script><script src="/assets/share.js" defer></script>
 </head>
 <body>
 <a class="skip" href="#main" data-en="Skip to content" data-ar="انتقل إلى المحتوى">انتقل إلى المحتوى</a>
@@ -147,6 +147,51 @@
             <div class="actions"><button class="btn danger" type="button" id="withdrawYes" data-en="Yes, withdraw consent" data-ar="نعم، اسحب الموافقة">نعم، اسحب الموافقة</button><button class="btn ghost" type="button" id="withdrawNo" data-en="Keep it" data-ar="أبقِها">أبقِها</button></div>
           </div>
         </div>
+      </section>
+
+      <section class="card wide-card" id="shareBox" hidden aria-labelledby="shareBoxHeading">
+        <h2 id="shareBoxHeading" data-en="Share with a doctor" data-ar="شارك مع طبيب">شارك مع طبيب</h2>
+        <p class="hint" data-en="You choose which entries a doctor may open, and for how long. You can end a share at any time." data-ar="أنت تختار الوثائق التي يمكن للطبيب فتحها ولأي مدة. يمكنك إنهاء المشاركة في أي وقت.">أنت تختار الوثائق التي يمكن للطبيب فتحها ولأي مدة. يمكنك إنهاء المشاركة في أي وقت.</p>
+        <p class="msg info" id="shareStatus" role="status" tabindex="-1" hidden></p>
+        <button class="btn" type="button" id="shareToggle" aria-expanded="false" aria-controls="shareForm" data-en="Choose entries to share" data-ar="اختر وثائق للمشاركة">اختر وثائق للمشاركة</button>
+        <form id="shareForm" hidden novalidate aria-labelledby="shareHeading">
+          <h3 id="shareHeading" tabindex="-1" data-en="Which entries?" data-ar="أي وثائق؟">أي وثائق؟</h3>
+          <div class="msg error" id="shareError" role="alert" tabindex="-1" hidden></div>
+          <fieldset class="plain"><legend class="sr-only" data-en="Entries to share" data-ar="الوثائق المراد مشاركتها">الوثائق المراد مشاركتها</legend><div id="shareEntries"></div></fieldset>
+          <fieldset class="plain"><legend data-en="How?" data-ar="كيف؟">كيف؟</legend>
+            <label class="check" for="shareModeDoctor"><input type="radio" name="shareMode" id="shareModeDoctor" checked><span data-en="Give a doctor from the directory access" data-ar="امنح طبيباً من الدليل إمكانية الوصول">امنح طبيباً من الدليل إمكانية الوصول</span></label>
+            <label class="check" for="shareModeQr"><input type="radio" name="shareMode" id="shareModeQr"><span data-en="Show a QR code to the doctor in front of me (15 minutes)" data-ar="اعرض رمز QR على الطبيب الذي أمامي (15 دقيقة)">اعرض رمز QR على الطبيب الذي أمامي (15 دقيقة)</span></label>
+          </fieldset>
+          <div id="doctorFields">
+            <label class="field"><span data-en="Doctor's name" data-ar="اسم الطبيب">اسم الطبيب</span><input type="search" id="doctorSearch" dir="auto" maxlength="80" autocomplete="off"></label>
+            <p class="hint" id="doctorCount" role="status"></p>
+            <fieldset class="plain"><legend class="sr-only" data-en="Choose the doctor" data-ar="اختر الطبيب">اختر الطبيب</legend><div id="doctorResults"></div></fieldset>
+            <label class="field"><span data-en="For how long?" data-ar="لأي مدة؟">لأي مدة؟</span><select id="shareDays">
+              <option value="1" data-en="1 day" data-ar="يوم واحد">يوم واحد</option><option value="30" data-en="30 days" data-ar="30 يوماً">30 يوماً</option><option value="90" selected data-en="90 days" data-ar="90 يوماً">90 يوماً</option>
+            </select></label>
+          </div>
+          <div class="actions"><button class="btn" type="submit" id="shareSubmit"></button><button class="btn ghost" type="button" id="shareCancel" data-en="Cancel" data-ar="إلغاء">إلغاء</button></div>
+        </form>
+        <div id="qrBox" class="qr-box" hidden>
+          <h3 id="qrHeading" tabindex="-1" data-en="Show this to the doctor" data-ar="اعرض هذا على الطبيب">اعرض هذا على الطبيب</h3>
+          <img id="qrImage" alt="" width="240" height="240">
+          <p class="slip-code" id="qrCode" dir="ltr"></p>
+          <p class="hint" id="qrTime" role="status"></p>
+          <button class="btn ghost" type="button" id="qrDone" data-en="Done" data-ar="تم">تم</button>
+        </div>
+      </section>
+
+      <section class="card wide-card" id="accessBox" hidden aria-labelledby="accessHeading">
+        <h2 id="accessHeading" tabindex="-1" data-en="Who has access" data-ar="من يملك الوصول">من يملك الوصول</h2>
+        <div class="msg error" id="accessError" role="alert" tabindex="-1" hidden></div>
+        <ul class="appt-list" id="accessShares"></ul>
+        <div id="accessScansBox" hidden>
+          <h3 data-en="Doctors who scanned your lab slips" data-ar="أطباء مسحوا أوراق تحاليلك">أطباء مسحوا أوراق تحاليلك</h3>
+          <ul class="doc-list" id="accessScans"></ul>
+        </div>
+        <details id="accessEnded" hidden><summary data-en="Ended shares" data-ar="مشاركات منتهية">مشاركات منتهية</summary><ul class="doc-list" id="accessEndedList"></ul></details>
+        <h3 data-en="Who opened what" data-ar="من فتح ماذا">من فتح ماذا</h3>
+        <ul class="doc-list" id="accessLog"></ul>
       </section>
     </div>
   </div>
