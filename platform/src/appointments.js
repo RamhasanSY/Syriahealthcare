@@ -1,6 +1,7 @@
 // Public doctor directory and patient booking.
 import {HttpError, requireRole} from './auth.js';
 import {ensureSelfProfile, patientFor} from './access.js';
+import {shareForAppointment} from './sharing.js';
 import {governorates, specialties} from './catalog.js';
 import {audit} from './db.js';
 import {slotsFor} from './schedule.js';
@@ -47,7 +48,9 @@ export default async function appointmentRoutes(app) {
         config: {rateLimit: {max: 30, timeWindow: '15 minutes'}},
         schema: {body: {type: 'object', required: ['doctor_id', 'starts_at'], additionalProperties: false, properties: {
             doctor_id: {type: 'string', format: 'uuid'}, starts_at: {type: 'string', format: 'date-time'}, reason: {type: 'string', maxLength: 300},
-            subject_id: {type: 'string', format: 'uuid'}
+            subject_id: {type: 'string', format: 'uuid'},
+            // Entries of the health file to share with the doctor until 30 days after the appointment (stage 2c).
+            share_item_ids: {type: 'array', maxItems: 100, uniqueItems: true, items: {type: 'string', format: 'uuid'}}
         }}}
     }, async (request, reply) => {
         const patientId = request.user.id, doctorId = request.body.doctor_id;
@@ -86,6 +89,15 @@ export default async function appointmentRoutes(app) {
             throw error;
         }
         await audit(app.pg, {actorId: patientId, action: 'appointment.requested', targetId: appointment.id, details: {doctor_id: doctorId}, ip: request.ip});
+        if (request.body.share_item_ids?.length) {
+            try {
+                await shareForAppointment(app, request, {subjectId: subject.id, doctorId, appointment, ids: request.body.share_item_ids});
+            } catch (error) {
+                // Nothing half-done: without the share the booking is withdrawn and the patient sees why.
+                await app.pg.query('DELETE FROM appointments WHERE id = $1', [appointment.id]);
+                throw error;
+            }
+        }
         reply.code(201);
         return {appointment: {id: appointment.id, status: appointment.status, starts_at: appointment.starts_at, ends_at: appointment.ends_at}};
     });

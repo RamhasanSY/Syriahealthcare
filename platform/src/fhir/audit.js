@@ -15,6 +15,11 @@ const TARGET_TYPE = {
     result: 'DiagnosticReport', appointment: 'Appointment', document: 'DocumentReference', doctor: 'Practitioner',
     facility: 'Organization', patient: 'Patient', schedule: 'Schedule', health_document: 'DocumentReference', health_file: 'Patient'
 };
+// Actions whose target is not what the first part says: a share is a Consent; codes and slips have no FHIR resource.
+const ACTION_TARGET = {
+    'health_file.shared': 'Consent', 'health_file.share_revoked': 'Consent', 'health_file.share_code_used': 'Consent',
+    'health_file.share_code_created': null, 'health_file.scan_revoked': null, 'health_file.opened': 'Patient'
+};
 // Who acted, by account role. Administrators have no FHIR resource and appear by identifier only.
 const ACTOR_TYPE = {doctor: 'Practitioner', facility: 'Organization', patient: 'Patient'};
 const ACCOUNT_SYSTEM = 'https://syriahc.com/fhir/sid/account-id';
@@ -28,7 +33,7 @@ export function eventKind(action) {
     if (verb === 'searched') return {action: 'E', type: {system: REST, code: 'rest', display: 'Restful Operation'}, subtype: {system: INTERACTION, code: 'search-type'}};
     if (verb === 'exported') return {action: 'R', type: {system: REST, code: 'rest', display: 'Restful Operation'}, subtype: {system: INTERACTION, code: 'operation'}};
     const code = /^(viewed|opened|read)$/.test(verb) ? 'read'
-        : /^(uploaded|registered|requested|created|added|code_sent|claimed|profile_created|consent_given)$/.test(verb) ? 'create'
+        : /^(uploaded|registered|requested|created|added|code_sent|claimed|profile_created|consent_given|shared|share_code_created|share_code_used)$/.test(verb) ? 'create'
             : /^(deleted|removed)$/.test(verb) ? 'delete' : 'update';
     return {action: {read: 'R', create: 'C', delete: 'D', update: 'U'}[code],
         type: {system: REST, code: 'rest', display: 'Restful Operation'}, subtype: {system: INTERACTION, code}};
@@ -40,7 +45,7 @@ const reference = (type, id, display) => type ? {reference: `${type}/${id}`, dis
 // withNetwork: false for patients, who see who opened their file but never the network address.
 export function auditEvent(row, {withNetwork = true} = {}) {
     const kind = eventKind(row.action);
-    const targetType = TARGET_TYPE[row.action.split('.')[0]];
+    const targetType = row.action in ACTION_TARGET ? ACTION_TARGET[row.action] : TARGET_TYPE[row.action.split('.')[0]];
     return prune({
         resourceType: 'AuditEvent', id: String(row.id),
         meta: {lastUpdated: new Date(row.created_at).toISOString()},

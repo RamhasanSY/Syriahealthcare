@@ -69,3 +69,46 @@ export async function ensureSelfProfile(db, user) {
     await db.query('DELETE FROM patients WHERE id = $1', [p.id]);
     return ensureSelfProfile(db, user);
 }
+
+// ---- Doctors (stage 2c) ----
+// A doctor sees an entry only through an active share of exactly that entry (not expired, not revoked, the entry not
+// taken out of the share), or because the doctor scanned the lab slip of that result and the patient has not revoked it.
+// Doctors must be approved, and their session must have passed the second factor (sessions.second_factor_at).
+
+const ACTIVE_GRANT = `g.revoked_at IS NULL AND g.starts_at <= now() AND g.expires_at > now() AND i.revoked_at IS NULL`;
+
+// The entries of one profile this doctor may open right now, as clinical_documents ids.
+export async function sharedDocumentIds(db, doctorId, patientId) {
+    const {rows} = await db.query(
+        `SELECT i.document_id AS id FROM access_grants g JOIN access_grant_items i ON i.grant_id = g.id
+         JOIN clinical_documents d ON d.id = i.document_id AND d.deleted_at IS NULL
+         WHERE g.doctor_id = $1 AND g.patient_id = $2 AND ${ACTIVE_GRANT}
+         UNION
+         SELECT d.id FROM patient_file_results f JOIN clinical_documents d ON d.lab_result_id = f.result_id AND d.deleted_at IS NULL
+         WHERE f.doctor_id = $1 AND d.patient_id = $2 AND f.revoked_at IS NULL`, [doctorId, patientId]);
+    return rows.map(r => r.id);
+}
+
+// May this doctor open this entry? Returns the entry, or null.
+export async function doctorDocument(db, doctorId, documentId) {
+    const {rows: [d]} = await db.query(
+        `SELECT d.* FROM clinical_documents d WHERE d.id = $2 AND d.deleted_at IS NULL AND (
+            EXISTS (SELECT 1 FROM access_grants g JOIN access_grant_items i ON i.grant_id = g.id
+                    WHERE g.doctor_id = $1 AND i.document_id = d.id AND ${ACTIVE_GRANT})
+            OR EXISTS (SELECT 1 FROM patient_file_results f WHERE f.doctor_id = $1 AND f.result_id = d.lab_result_id AND f.revoked_at IS NULL))`,
+        [doctorId, documentId]);
+    return d || null;
+}
+
+// Does this doctor hold any active share for this profile (then the profile's name and number are visible)?
+export async function doctorKnowsPatient(db, doctorId, patientId) {
+    return (await sharedDocumentIds(db, doctorId, patientId)).length > 0;
+}
+
+// Approved doctor whose session passed the second factor. Throws with a reason the app can act on.
+export async function requireSharingDoctor(db, request) {
+    if (!request.user || request.user.role !== 'doctor') throw notFound();
+    const {rows: [p]} = await db.query('SELECT status FROM doctor_profiles WHERE user_id = $1', [request.user.id]);
+    if (p?.status !== 'approved') throw new HttpError(403, 'doctor_not_approved', 'Your profile must be approved before you can open shared files.');
+    if (!request.user.second_factor_at) throw new HttpError(403, 'second_factor_required', 'Please confirm it is you with a code sent to your email.');
+}

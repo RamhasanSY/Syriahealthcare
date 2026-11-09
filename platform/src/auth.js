@@ -2,7 +2,7 @@ import {ensureSelfProfile} from './access.js';
 import {facilityKinds} from './catalog.js';
 import {audit, transaction} from './db.js';
 import {phoneSignInAvailable, sendCode} from './messaging.js';
-import {emailCodeEmail, passwordChangedEmail, resetEmail, sendEmail, staffAddressEmail, staffCodeEmail, welcomeEmail} from './notify.js';
+import {emailCodeEmail, passwordChangedEmail, resetEmail, sendEmail, staffAddressEmail, staffCodeEmail, confirmCodeEmail, welcomeEmail} from './notify.js';
 import {dummyPasswordHash, hashPassword, newOtp, newToken, normalizeEmail, normalizePhone, otpHash, passwordProblem, rateLimitKey, sameHash, sha256, verifyPassword} from './security.js';
 
 export const SESSION_COOKIE = 'shc_session';
@@ -15,6 +15,9 @@ const RESET_MINUTES = 30, RESET_PER_HOUR = 3;
 // Administrators: second factor by email code after the password (10 minutes, 5 tries per code, 5 codes per 15 minutes).
 const STAFF_CODE_MINUTES = 10, STAFF_CODE_ATTEMPTS = 5, STAFF_CODES_PER_WINDOW = 5;
 export const SECOND_FACTOR_ROLES = new Set(['admin']);
+// Doctors confirm with an emailed code before opening shared health files (stage 2c); a device can be remembered.
+export const DEVICE_COOKIE = 'shc_device';
+const TRUSTED_DEVICE_DAYS = 30;
 const STAFF = "role IN ('doctor', 'facility', 'admin')";
 
 // "a.sahada@example.org" -> "a••••••@example.org": enough to recognise the mailbox, not enough to learn it.
@@ -29,9 +32,12 @@ class HttpError extends Error {
     }
 }
 
-export async function startSession(app, request, reply, user) {
+export async function startSession(app, request, reply, user, {secondFactor = false} = {}) {
     const token = newToken(), days = app.config.sessionDays[user.role];
-    await app.pg.query('INSERT INTO sessions (token_hash, user_id, expires_at, user_agent, ip) VALUES ($1, $2, now() + make_interval(days => $3), $4, $5)',
+    // A doctor on a remembered device (stage 2c) starts with the second factor already done.
+    if (!secondFactor && user.role === 'doctor') secondFactor = await trustedDevice(app, request, user);
+    await app.pg.query(`INSERT INTO sessions (token_hash, user_id, expires_at, user_agent, ip, second_factor_at)
+         VALUES ($1, $2, now() + make_interval(days => $3), $4, $5, ${secondFactor ? 'now()' : 'NULL'})`,
         [sha256(token), user.id, days, String(request.headers['user-agent'] || '').slice(0, 300), request.ip]);
     reply.setCookie(SESSION_COOKIE, token, {
         path: '/', httpOnly: true, sameSite: 'lax', secure: app.config.production, maxAge: days * 86400
@@ -39,6 +45,14 @@ export async function startSession(app, request, reply, user) {
     // Every patient gets an own profile with a SyriaHC patient number at sign-in (stage 2b). A failure here must never
     // stop the sign-in; the profile is created again on the next need.
     if (user.role === 'patient') await ensureSelfProfile(app.pg, user).catch(error => request.log.error({err: error}, 'Own profile not created'));
+}
+
+async function trustedDevice(app, request, user) {
+    const device = request.cookies?.[DEVICE_COOKIE];
+    if (!device || device.length > 100) return false;
+    const {rows: [row]} = await app.pg.query('SELECT 1 FROM trusted_devices WHERE token_hash = $1 AND user_id = $2 AND expires_at > now()',
+        [sha256(device), user.id]);
+    return Boolean(row);
 }
 
 // Loads the signed-in user (if any) on every request.
@@ -49,7 +63,7 @@ export async function loadSession(request) {
     const {rows} = await this.pg.query(
         `UPDATE sessions s SET last_seen = now() FROM users u
          WHERE s.token_hash = $1 AND s.expires_at > now() AND u.id = s.user_id AND u.disabled_at IS NULL
-         RETURNING u.*, s.token_hash`, [sha256(token)]);
+         RETURNING u.*, s.token_hash, s.second_factor_at`, [sha256(token)]);
     if (rows[0]) request.user = rows[0];
 }
 
@@ -360,12 +374,66 @@ export default async function authRoutes(app) {
         const {rows: [user]} = await app.pg.query(`SELECT * FROM users WHERE id = $1 AND ${STAFF} AND disabled_at IS NULL`, [row.user_id]);
         if (!user) throw new HttpError(400, 'code_expired', 'This code has expired. Please sign in again.');
         await audit(app.pg, {actorId: user.id, action: 'login.second_factor', targetId: user.id, ip: request.ip});
-        await startSession(app, request, reply, user);
+        await startSession(app, request, reply, user, {secondFactor: true});
         return {user: publicUser(user)};
     });
 
     // Doctors, facilities and admins: "forgot password". The answer is the same whether or not the email has an
     // account, so nobody can find out who is registered. The link goes only to the account's own email address.
+    // ---- Doctors: confirm it is you before opening shared health files (stage 2c) ----
+    // A code goes to the doctor's email (this also confirms the address). With "remember this device", a device cookie
+    // lets the next sign-ins on this device skip the code for 30 days.
+
+    app.post('/api/auth/step-up/request', {preHandler: requireRole('doctor'), config: ipLimit(30)}, async (request, reply) => {
+        const user = request.user;
+        const {rows: [recent]} = await app.pg.query(
+            'SELECT count(*)::int AS n FROM staff_login_codes WHERE user_id = $1 AND created_at > now() - make_interval(mins => $2)', [user.id, OTP_WINDOW_MINUTES]);
+        if (recent.n >= STAFF_CODES_PER_WINDOW) throw new HttpError(429, 'too_many_codes', 'Too many codes requested. Please wait 15 minutes and try again.');
+        const challenge = newToken(), code = newOtp();
+        const {rows: [row]} = await app.pg.query(
+            `INSERT INTO staff_login_codes (user_id, token_hash, code_hash, expires_at, ip)
+             VALUES ($1, $2, $3, now() + make_interval(mins => $4), $5) RETURNING id`,
+            [user.id, sha256(challenge), otpHash(app.config.otpSecret, 'step-up:' + user.id, code), STAFF_CODE_MINUTES, request.ip]);
+        try {
+            await app.mail.send({to: user.email, ...confirmCodeEmail(user, code, STAFF_CODE_MINUTES)});
+        } catch (error) {
+            request.log.error({err: error}, 'Doctor confirmation code email failed');
+            await app.pg.query('UPDATE staff_login_codes SET consumed_at = now() WHERE id = $1', [row.id]);
+            throw new HttpError(502, 'mail_failed', 'We could not send the email. Please try again in a minute.');
+        }
+        await audit(app.pg, {actorId: user.id, action: 'login.code_sent', targetId: user.id, details: {step_up: true}, ip: request.ip});
+        reply.code(202);
+        return {challenge, email_hint: maskEmail(user.email), expires_in_minutes: STAFF_CODE_MINUTES};
+    });
+
+    app.post('/api/auth/step-up/verify', {preHandler: requireRole('doctor'), config: ipLimit(30), schema: {body: {type: 'object',
+        required: ['challenge', 'code'], additionalProperties: false, properties: {
+            challenge: {type: 'string', pattern: '^[A-Za-z0-9_-]{43}$'}, code: {type: 'string', pattern: '^[0-9]{6}$'}, remember: {type: 'boolean'}
+        }}}}, async (request, reply) => {
+        const {rows: [row]} = await app.pg.query(
+            `UPDATE staff_login_codes SET attempts = attempts + 1
+             WHERE token_hash = $1 AND user_id = $2 AND consumed_at IS NULL AND expires_at > now() RETURNING *`, [sha256(request.body.challenge), request.user.id]);
+        if (!row) throw new HttpError(400, 'code_expired', 'This code has expired. Please ask for a new one.');
+        if (row.attempts > STAFF_CODE_ATTEMPTS) {
+            await app.pg.query('UPDATE staff_login_codes SET consumed_at = now() WHERE id = $1', [row.id]);
+            throw new HttpError(429, 'too_many_attempts', 'Too many wrong codes. Please ask for a new one.');
+        }
+        if (!sameHash(row.code_hash, otpHash(app.config.otpSecret, 'step-up:' + row.user_id, request.body.code))) {
+            throw new HttpError(400, 'wrong_code', 'That code is not correct.');
+        }
+        await app.pg.query('UPDATE staff_login_codes SET consumed_at = now() WHERE id = $1', [row.id]);
+        await app.pg.query('UPDATE sessions SET second_factor_at = now() WHERE token_hash = $1', [request.user.token_hash]);
+        await app.pg.query('UPDATE users SET email_verified_at = COALESCE(email_verified_at, now()) WHERE id = $1', [request.user.id]);
+        if (request.body.remember) {
+            const device = newToken();
+            await app.pg.query(`INSERT INTO trusted_devices (token_hash, user_id, expires_at) VALUES ($1, $2, now() + interval '${TRUSTED_DEVICE_DAYS} days')`,
+                [sha256(device), request.user.id]);
+            reply.setCookie(DEVICE_COOKIE, device, {path: '/', httpOnly: true, sameSite: 'lax', secure: app.config.production, maxAge: TRUSTED_DEVICE_DAYS * 86400});
+        }
+        await audit(app.pg, {actorId: request.user.id, action: 'login.second_factor', targetId: request.user.id, details: {step_up: true, remember: Boolean(request.body.remember)}, ip: request.ip});
+        return {second_factor: true};
+    });
+
     app.post('/api/auth/password/forgot', {
         config: ipLimit(20),
         schema: {body: {type: 'object', required: ['email'], properties: {email: {type: 'string', maxLength: 254}}}}
@@ -431,7 +499,8 @@ export default async function authRoutes(app) {
         return {signedOut: true};
     });
 
-    app.get('/api/me', {preHandler: requireRole('patient', 'doctor', 'facility', 'admin')}, async request => ({user: publicUser(request.user)}));
+    app.get('/api/me', {preHandler: requireRole('patient', 'doctor', 'facility', 'admin')}, async request => ({user: publicUser(request.user),
+        second_factor: Boolean(request.user.second_factor_at)}));
 }
 
 export {HttpError};

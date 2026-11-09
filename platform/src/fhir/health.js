@@ -4,7 +4,8 @@
 // Read only, over the browser session, through src/access.js. There is no patient search: Patient is read by id only.
 // Outside a relationship the answer is 404. Every read of clinical content is recorded with the patient.
 import {CATEGORIES, sendFileSandboxed} from '../healthfile.js';
-import {patientFor} from '../access.js';
+import {patientFor, sharedDocumentIds} from '../access.js';
+import {auditEvent} from './audit.js';
 import {audit} from '../db.js';
 import {PATIENT_NUMBER_SYSTEM} from '../patient-number.js';
 import {prune} from './map.js';
@@ -94,6 +95,24 @@ export const appointmentResource = a => prune({
     ]
 });
 
+// A share with a doctor (stage 2c) as Consent: who (provision.actor), which entries (provision.data), how long
+// (provision.period), under which policy, with scope and category as R4 requires.
+export const shareConsent = (origin, g, items) => prune({
+    resourceType: 'Consent', id: g.id, meta: {lastUpdated: instant(g.revoked_at || g.created_at)},
+    status: g.revoked_at || new Date(g.expires_at) <= new Date() ? 'inactive' : 'active',
+    scope: {coding: [{system: CONSENT_SCOPE, code: 'patient-privacy', display: 'Privacy Consent'}]},
+    category: [{coding: [{system: LOINC, code: '59284-0', display: 'Patient Consent'}]}],
+    patient: {reference: `Patient/${g.patient_id}`}, dateTime: instant(g.created_at),
+    policy: [{uri: `${origin}/privacy#sharing`}],
+    provision: {
+        type: 'permit', period: {start: instant(g.starts_at), end: instant(g.revoked_at || g.expires_at)},
+        actor: [{role: {coding: [{system: 'http://terminology.hl7.org/CodeSystem/v3-ParticipationType', code: 'IRCP', display: 'information recipient'}]},
+            reference: {reference: `Practitioner/${g.doctor_id}`, display: g.doctor_name}}],
+        action: [{coding: [{system: 'http://terminology.hl7.org/CodeSystem/consentaction', code: 'access', display: 'Access'}]}],
+        data: items.filter(i => !i.revoked_at).map(i => ({meaning: 'instance', reference: {reference: `DocumentReference/${i.document_id}`}}))
+    }
+});
+
 // ---- Routes (called inside the /fhir/r4 plugin, sharing its error handling) ----
 
 export default function healthFhirRoutes(app, {base, send, outcome}) {
@@ -107,17 +126,35 @@ export default function healthFhirRoutes(app, {base, send, outcome}) {
     const record = (request, action, targetId, patientId, details = {}) =>
         audit(app.pg, {actorId: request.user.id, action, targetId, details: {patient_id: patientId, ...details}, ip: request.ip});
 
-    // Runs the handler only for a signed-in patient while the health file is on; otherwise 401 or 404.
-    const patientRoute = handler => async (request, reply) => {
+    // Runs the handler for a signed-in patient (own profiles) or, where allowed, for an approved doctor who passed the
+    // second factor (shared entries only, stage 2c), while the health file is on; otherwise 401, 403 or 404.
+    const route = (handler, {doctors = false} = {}) => async (request, reply) => {
         if (!app.config.healthFile) return notFound(reply, 'Resource');
         if (!request.user) return signInFirst(reply);
+        if (request.user.role === 'doctor' && doctors) {
+            const {rows: [d]} = await app.pg.query('SELECT status FROM doctor_profiles WHERE user_id = $1', [request.user.id]);
+            if (d?.status !== 'approved') return notFound(reply, 'Resource');
+            if (!request.user.second_factor_at) {
+                return send(reply, 403, outcome('security', 'Please confirm it is you with the code sent to your email first.', 'يرجى تأكيد هويتك أولاً بالرمز المرسل إلى بريدك.'));
+            }
+            return handler(request, reply);
+        }
         if (request.user.role !== 'patient') return notFound(reply, 'Resource');
         return handler(request, reply);
     };
-    // The profile a search or read is about, or null (then the route answers 404).
+    const patientRoute = handler => route(handler);
+    const sharedRoute = handler => route(handler, {doctors: true});
+    // The profile a search or read is about, or null (then the route answers 404). For a doctor, `shared` lists the
+    // entries of an active share; without one the profile does not exist for them.
     const profile = async (request, ref) => {
         const id = String(ref || '').replace(/^Patient\//, '');
         if (!UUID.test(id)) return null;
+        if (request.user.role === 'doctor') {
+            const shared = await sharedDocumentIds(app.pg, request.user.id, id);
+            if (!shared.length) return null;
+            const {rows: [p]} = await app.pg.query('SELECT * FROM patients WHERE id = $1', [id]);
+            return p ? {...p, relationship: 'shared', shared} : null;
+        }
         try {
             return await patientFor(app.pg, request.user, id);
         } catch (_) {
@@ -126,8 +163,9 @@ export default function healthFhirRoutes(app, {base, send, outcome}) {
     };
     const badParam = (resource, query) => Object.keys(query).find(k => !(k.split(':')[0] in HEALTH_RESOURCES[resource].search) && k !== '_count') ?? null;
 
-    async function documentsOf(patientId, {category, from, to, id} = {}) {
+    async function documentsOf(patientId, {category, from, to, id, only} = {}) {
         const where = ['d.patient_id = $1', 'd.deleted_at IS NULL'], args = [patientId];
+        if (only) where.push(`d.id = ANY($${args.push(only)})`);
         if (id) where.push(`d.id = $${args.push(id)}`);
         if (category) where.push(`d.category = $${args.push(category)}`);
         if (from) where.push(`COALESCE(d.document_date, d.created_at::date) >= $${args.push(from)}`);
@@ -165,7 +203,7 @@ export default function healthFhirRoutes(app, {base, send, outcome}) {
         return Object.entries(CATEGORIES).find(([key, c]) => key === code || c.loinc?.[0] === code)?.[0] ?? 'none';
     };
 
-    app.get('/Patient/:id', patientRoute(async (request, reply) => {
+    app.get('/Patient/:id', sharedRoute(async (request, reply) => {
         const p = await profile(request, request.params.id);
         return p ? send(reply, 200, patientResource(p)) : notFound(reply, 'Patient');
     }));
@@ -177,34 +215,34 @@ export default function healthFhirRoutes(app, {base, send, outcome}) {
     }));
 
     // IHE MHD ITI-67 (Find Document References): patient is required, as the profile says.
-    app.get('/DocumentReference', patientRoute(async (request, reply) => {
+    app.get('/DocumentReference', sharedRoute(async (request, reply) => {
         const bad = badParam('DocumentReference', request.query);
         if (bad) return unknownParam(reply, bad);
         const p = await profile(request, request.query.patient);
         if (!p) return send(reply, 200, bundle([]));
         const range = dateRange(request.query.date);
         if (!range) return send(reply, 400, outcome('invalid', 'Use date=geYYYY-MM-DD or leYYYY-MM-DD.', 'استخدم date=geYYYY-MM-DD أو leYYYY-MM-DD.'));
-        const docs = await documentsOf(p.id, {category: categoryOf(request.query.type), ...range});
+        const docs = await documentsOf(p.id, {category: categoryOf(request.query.type), ...range, only: p.shared});
         await record(request, 'health_file.searched', p.id, p.id, {resource: 'DocumentReference'});
         return send(reply, 200, bundle(await docRefs(docs)));
     }));
-    app.get('/DocumentReference/:id', patientRoute(async (request, reply) => {
+    app.get('/DocumentReference/:id', sharedRoute(async (request, reply) => {
         const d = await ownDocument(request, request.params.id);
         if (!d) return notFound(reply, 'DocumentReference');
         await record(request, 'health_document.read', d.id, d.patient_id);
         return send(reply, 200, (await docRefs([d]))[0]);
     }));
 
-    app.get('/DiagnosticReport', patientRoute(async (request, reply) => {
+    app.get('/DiagnosticReport', sharedRoute(async (request, reply) => {
         const bad = badParam('DiagnosticReport', request.query);
         if (bad) return unknownParam(reply, bad);
         const p = await profile(request, request.query.patient);
         if (!p) return send(reply, 200, bundle([]));
-        const docs = (await documentsOf(p.id)).filter(d => d.lab_result_id);
+        const docs = (await documentsOf(p.id, {only: p.shared})).filter(d => d.lab_result_id);
         await record(request, 'health_file.searched', p.id, p.id, {resource: 'DiagnosticReport'});
         return send(reply, 200, bundle(await reports(docs)));
     }));
-    app.get('/DiagnosticReport/:id', patientRoute(async (request, reply) => {
+    app.get('/DiagnosticReport/:id', sharedRoute(async (request, reply) => {
         const d = await ownDocument(request, request.params.id);
         if (!d?.lab_result_id) return notFound(reply, 'DiagnosticReport');
         await record(request, 'health_document.read', d.id, d.patient_id);
@@ -212,7 +250,7 @@ export default function healthFhirRoutes(app, {base, send, outcome}) {
     }));
 
     // IHE MHD ITI-68 (Retrieve Document): the file itself, in its own type, in a sandbox.
-    app.get('/Binary/:id', patientRoute(async (request, reply) => {
+    app.get('/Binary/:id', sharedRoute(async (request, reply) => {
         if (!UUID.test(request.params.id)) return notFound(reply, 'Binary');
         let {rows: [file]} = await app.pg.query(
             `SELECT f.*, d.patient_id, d.id AS document_id FROM clinical_document_files f JOIN clinical_documents d ON d.id = f.document_id
@@ -222,19 +260,32 @@ export default function healthFhirRoutes(app, {base, send, outcome}) {
                 `SELECT r.*, d.patient_id, d.id AS document_id FROM lab_results r JOIN clinical_documents d ON d.lab_result_id = r.id
                  WHERE r.id = $1 AND d.deleted_at IS NULL`, [request.params.id]));
         }
-        if (!file || !await profile(request, file.patient_id)) return notFound(reply, 'Binary');
+        const holder = file && await profile(request, file.patient_id);
+        if (!holder || (holder.shared && !holder.shared.includes(file.document_id))) return notFound(reply, 'Binary');
         const content = await app.documents.open(file);
         await record(request, 'health_document.viewed', file.document_id, file.patient_id, {via: 'fhir'});
         return sendFileSandboxed(reply, file, content);
     }));
 
-    app.get('/Consent', patientRoute(async (request, reply) => {
+    // The consent to keep the file (patients only) and the shares (the patient sees all; a doctor only their own).
+    app.get('/Consent', sharedRoute(async (request, reply) => {
         const bad = badParam('Consent', request.query);
         if (bad) return unknownParam(reply, bad);
         const p = await profile(request, request.query.patient);
         if (!p) return send(reply, 200, bundle([]));
-        const {rows} = await app.pg.query('SELECT * FROM consents WHERE patient_id = $1 ORDER BY given_at DESC', [p.id]);
-        return send(reply, 200, bundle(rows.map(c => consentResource(app.config.appOrigin, c))));
+        return send(reply, 200, bundle(await consentsOf(request, p)));
+    }));
+
+    // "Who opened my file?": the audit trail of a profile as AuditEvent (IHE BALP), for the patient, without network addresses.
+    app.get('/AuditEvent', patientRoute(async (request, reply) => {
+        const bad = badParam('AuditEvent', request.query);
+        if (bad) return unknownParam(reply, bad);
+        const p = await profile(request, request.query.patient);
+        if (!p) return send(reply, 200, bundle([]));
+        const {rows} = await app.pg.query(
+            `SELECT a.*, u.role::text AS actor_role, u.name AS actor_name FROM audit_log a LEFT JOIN users u ON u.id = a.actor_id
+             WHERE a.details->>'patient_id' = $1::text ORDER BY a.created_at DESC LIMIT 200`, [p.id]);
+        return send(reply, 200, bundle(rows.map(r => auditEvent(r, {withNetwork: false}))));
     }));
 
     app.get('/Appointment', patientRoute(async (request, reply) => {
@@ -250,9 +301,8 @@ export default function healthFhirRoutes(app, {base, send, outcome}) {
         const p = await profile(request, request.params.id);
         if (!p) return notFound(reply, 'Patient');
         const docs = await documentsOf(p.id);
-        const {rows: consents} = await app.pg.query('SELECT * FROM consents WHERE patient_id = $1 ORDER BY given_at DESC', [p.id]);
         const resources = [patientResource(p), ...(p.relationship === 'child' ? [relatedPerson(p, request.user)] : []),
-            ...await docRefs(docs), ...await reports(docs), ...consents.map(c => consentResource(app.config.appOrigin, c)),
+            ...await docRefs(docs), ...await reports(docs), ...await consentsOf(request, p),
             ...(await appointmentsOf(p.id)).map(appointmentResource)];
         await record(request, 'health_file.exported', p.id, p.id);
         return send(reply, 200, bundle(resources));
@@ -261,8 +311,20 @@ export default function healthFhirRoutes(app, {base, send, outcome}) {
     async function ownDocument(request, id) {
         if (!UUID.test(id)) return null;
         const {rows: [d]} = await app.pg.query('SELECT patient_id FROM clinical_documents WHERE id = $1 AND deleted_at IS NULL', [id]);
-        if (!d || !await profile(request, d.patient_id)) return null;
+        const holder = d && await profile(request, d.patient_id);
+        if (!holder || (holder.shared && !holder.shared.includes(id))) return null;
         return (await documentsOf(d.patient_id, {id}))[0] ?? null;
+    }
+    async function consentsOf(request, p) {
+        const doctor = request.user.role === 'doctor';
+        const {rows: own} = doctor ? {rows: []} : await app.pg.query('SELECT * FROM consents WHERE patient_id = $1 ORDER BY given_at DESC', [p.id]);
+        const {rows: grants} = await app.pg.query(
+            `SELECT g.*, u.name AS doctor_name, COALESCE(json_agg(json_build_object('document_id', i.document_id, 'revoked_at', i.revoked_at))
+                    FILTER (WHERE i.document_id IS NOT NULL), '[]') AS items
+             FROM access_grants g JOIN users u ON u.id = g.doctor_id LEFT JOIN access_grant_items i ON i.grant_id = g.id
+             WHERE g.patient_id = $1 ${doctor ? 'AND g.doctor_id = $2' : ''} GROUP BY g.id, u.name ORDER BY g.created_at DESC LIMIT 200`,
+            doctor ? [p.id, request.user.id] : [p.id]);
+        return [...own.map(c => consentResource(app.config.appOrigin, c)), ...grants.map(g => shareConsent(app.config.appOrigin, g, g.items))];
     }
     async function appointmentsOf(patientId) {
         const {rows} = await app.pg.query(

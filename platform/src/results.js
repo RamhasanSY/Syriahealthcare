@@ -201,7 +201,7 @@ export default async function resultRoutes(app) {
         const {rows} = await app.pg.query(
             `SELECT r.id, r.title, r.patient_name, r.patient_phone, r.mime, r.created_at, f.added_at, p.facility_name AS lab_name
              FROM patient_file_results f JOIN lab_results r ON r.id = f.result_id JOIN facility_profiles p ON p.user_id = r.facility_id
-             WHERE f.doctor_id = $1 ORDER BY r.created_at DESC LIMIT 1000`, [request.user.id]);
+             WHERE f.doctor_id = $1 AND f.revoked_at IS NULL ORDER BY r.created_at DESC LIMIT 1000`, [request.user.id]);
         const patients = new Map();
         for (const row of rows) {
             if (!patients.has(row.patient_phone)) patients.set(row.patient_phone, {phone: row.patient_phone, name: row.patient_name, results: []});
@@ -214,7 +214,7 @@ export default async function resultRoutes(app) {
     app.get('/api/doctor/results/:id/file', {...doctorOnly, schema: uuidParam}, async (request, reply) => {
         await checkDoctor(request.user.id);
         const {rows: [result]} = await app.pg.query(
-            `SELECT r.* FROM lab_results r JOIN patient_file_results f ON f.result_id = r.id AND f.doctor_id = $2 WHERE r.id = $1`,
+            `SELECT r.* FROM lab_results r JOIN patient_file_results f ON f.result_id = r.id AND f.doctor_id = $2 AND f.revoked_at IS NULL WHERE r.id = $1`,
             [request.params.id, request.user.id]);
         if (!result) throw new HttpError(404, 'not_found', 'Result not found.');
         const content = await app.documents.open(result);
