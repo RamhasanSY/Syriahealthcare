@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="ar" dir="rtl" data-title-en="Price list — SyriaHC" data-title-ar="قائمة الأسعار — صحة تك">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#1a3a5c">
+<title>قائمة الأسعار — صحة تك</title>
+<link rel="manifest" href="/manifest.webmanifest"><link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/assets/app.css">
+<script src="/assets/common.js" defer></script><script src="/assets/lab-tests.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#main" data-en="Skip to content" data-ar="انتقل إلى المحتوى">انتقل إلى المحتوى</a>
+<header class="top"><div class="top-inner"><a class="brand" href="/account"><img src="/assets/logo.svg" alt=""><span data-en="SyriaHC" data-ar="صحة تك">صحة تك</span></a><div class="top-actions"><button class="lang" id="langToggle" type="button">English</button></div></div></header>
+<main id="main" class="wrap" aria-busy="true">
+  <h1 data-en="Your price list" data-ar="قائمة أسعاركم">قائمة أسعاركم</h1>
+  <p class="lead" data-en="Patients see these tests and prices on syriahc.com and on your lab page once your lab is approved. Keep them up to date; the page shows when you last changed them." data-ar="يرى المرضى هذه التحاليل والأسعار على syriahc.com وعلى صفحة مخبركم بعد اعتماده. حدّثوها باستمرار؛ تُظهر الصفحة تاريخ آخر تعديل.">يرى المرضى هذه التحاليل والأسعار على syriahc.com وعلى صفحة مخبركم بعد اعتماده. حدّثوها باستمرار؛ تُظهر الصفحة تاريخ آخر تعديل.</p>
+  <div class="msg error" id="pageError" role="alert" tabindex="-1" hidden></div>
+  <div id="content" hidden>
+    <p><a id="publicLink" data-en="See your public lab page" data-ar="اعرض صفحة مخبركم العامة">اعرض صفحة مخبركم العامة</a></p>
+    <form class="card wide-card" id="testForm" novalidate aria-labelledby="formHeading">
+      <h2 id="formHeading" tabindex="-1"></h2>
+      <div class="msg error" id="formError" role="alert" tabindex="-1" hidden></div>
+      <label class="field"><span data-en="Test name *" data-ar="اسم التحليل *">اسم التحليل *</span><input type="text" id="testName" maxlength="120" dir="auto" placeholder="" data-placeholder-en="e.g. TSH" data-placeholder-ar="مثلاً: TSH"></label>
+      <label class="field"><span data-en="Kind" data-ar="النوع">النوع</span><select id="testService"></select></label>
+      <label class="field"><span data-en="Price in Syrian pounds (empty = ask the lab)" data-ar="السعر بالليرة السورية (فارغ = اسأل المخبر)">السعر بالليرة السورية (فارغ = اسأل المخبر)</span><input type="number" id="testPrice" min="0" step="500" inputmode="numeric" dir="ltr"></label>
+      <label class="field"><span data-en="Result within (hours)" data-ar="النتيجة خلال (ساعات)">النتيجة خلال (ساعات)</span><input type="number" id="testHours" min="0" max="2000" inputmode="numeric" dir="ltr"></label>
+      <label class="field"><span data-en="Note for patients" data-ar="ملاحظة للمرضى">ملاحظة للمرضى</span><input type="text" id="testNotes" maxlength="200" dir="auto" placeholder="" data-placeholder-en="e.g. fasting 12 hours" data-placeholder-ar="مثلاً: صيام 12 ساعة"></label>
+      <div class="actions"><button class="btn" type="submit" id="saveButton"></button><button class="btn ghost" type="button" id="cancelEdit" hidden data-en="Cancel" data-ar="إلغاء">إلغاء</button></div>
+    </form>
+    <p class="results-count" id="count" role="status"></p>
+    <ul class="appt-list" id="list"></ul>
+  </div>
+</main>
+<footer><div class="wrap"><a href="/account" data-en="← My account" data-ar="حسابي ←">حسابي ←</a><a href="/home-visits" data-en="Home visits" data-ar="الزيارات المنزلية">الزيارات المنزلية</a></div></footer>
+</body>
+</html>

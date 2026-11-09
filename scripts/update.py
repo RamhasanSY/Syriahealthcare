@@ -595,7 +595,7 @@ FACILITY_PAGES = {'lab': 'labs', 'imaging': 'labs', 'hospital': 'hospitals', 'cl
                   'pharmacy': 'pharmacies', 'blood_bank': 'blood-banks'}
 
 
-def platform_facilities(catalog, facilities):
+def platform_facilities(catalog, facilities, platform_url=''):
     kinds, governorates, services = catalog.get('facilityKinds', {}), catalog.get('governorates', {}), catalog.get('facilityServices', {})
     pages = {name: [] for name in dict.fromkeys(FACILITY_PAGES.values())}
     for f in facilities:
@@ -613,6 +613,10 @@ def platform_facilities(catalog, facilities):
         page = FACILITY_PAGES[kind]
         if page == 'labs':
             record.update(tests=[s[0] for s in offered], tests_ar=[s[1] for s in offered])
+            # The lab's own page on the platform: price list and/or a request for sample collection at home.
+            prices, home = int(f.get('tests_count') or 0) > 0, 'home_collection' in (f.get('services') or [])
+            if platform_url and (prices or home):
+                record.update(lab_url=f"{platform_url.rstrip('/')}/lab?id={f['id']}", prices=prices, home_collection=home)
         else:
             if page == 'hospitals':
                 record['emergency'] = f.get('emergency') is True
@@ -631,7 +635,7 @@ def update_platform_facilities():
     payload = json.loads(fetch(platform_url + '/api/facilities'))
     if not isinstance(payload.get('facilities'), list):
         raise ValueError('Platform facility list has changed')
-    pages = platform_facilities(catalog, payload['facilities'])
+    pages = platform_facilities(catalog, payload['facilities'], platform_url)
     for name, rows in pages.items():
         replace_platform_entries(name, platform_url, rows)
     return {name: len(rows) for name, rows in pages.items()}

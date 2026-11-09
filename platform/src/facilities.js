@@ -18,7 +18,8 @@ const DOCUMENT_KINDS = ['licence', 'other'];
 const APPROVED = "p.status = 'approved' AND u.disabled_at IS NULL";
 // Public details only: never the contact person, email, licence number or documents.
 const PUBLIC_FACILITY = `u.id, p.kind, p.facility_name, p.governorate, p.area, p.address, p.phone, p.services, p.emergency,
-    p.opening_hours, p.description, p.reviewed_at`;
+    p.opening_hours, p.description, p.reviewed_at,
+    (SELECT count(*)::int FROM lab_tests t WHERE t.facility_id = u.id) AS tests_count`;
 
 const profileView = p => ({
     kind: p.kind, status: p.status, facility_name: p.facility_name, governorate: p.governorate, area: p.area, address: p.address,

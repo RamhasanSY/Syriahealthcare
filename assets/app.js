@@ -528,7 +528,11 @@
                     li.append(tags);
                 }
                 if (value(l, 'hours')) li.append(node('p', 'job-reference', value(l, 'hours')));
-                contact(li, l);
+                // Labs on the platform may have a price list and/or take samples at home: one link to their page.
+                const page = safeURL(l.lab_url);
+                const label = l.prices && l.home_collection ? tr('Prices & home visit ↗', 'الأسعار وسحب العينات من المنزل ↖')
+                    : l.prices ? tr('Price list ↗', 'قائمة الأسعار ↖') : tr('Sample collection at home ↗', 'سحب العينات من المنزل ↖');
+                contact(li, l, page ? link(label, page, 'apply-link') : undefined);
             }
         },
         hospitals: {
