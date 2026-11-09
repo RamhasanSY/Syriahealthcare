@@ -181,8 +181,9 @@ describe('code systems', () => {
         const cs = (await get('/fhir/r4/CodeSystem/facility-service')).json();
         const vs = (await get('/fhir/r4/ValueSet/facility-service')).json();
         const leaves = cs.concept.flatMap(kind => kind.concept.map(c => c.code));
-        assert.equal(vs.expansion.total, leaves.length);
-        assert.deepEqual(vs.expansion.contains.map(c => c.code).sort(), leaves.sort());
+        assert.equal(vs.expansion.total, cs.count, 'every code of the code system, as the HL7 validator requires');
+        assert.deepEqual(vs.expansion.contains.filter(c => !c.abstract).map(c => c.code).sort(), leaves.sort(), 'services can be chosen');
+        assert.deepEqual(vs.expansion.contains.filter(c => c.abstract).map(c => c.code).sort(), cs.concept.map(k => k.code).sort(), 'kinds only group');
     });
 
     test('the governorates carry their ISO 3166-2 codes', async () => {
