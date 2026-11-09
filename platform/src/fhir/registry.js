@@ -41,8 +41,9 @@ export function capabilityStatement(base, {health = false} = {}) {
         fhirVersion: '4.0.1', format: ['json'],
         rest: [{
             mode: 'server',
+            interaction: [{code: 'transaction'}],
             ...(health && {security: {description: 'Health file resources (Patient, RelatedPerson, DocumentReference, Binary, DiagnosticReport, ' +
-                'Consent, Appointment, AuditEvent) need a signed-in session: patients see their own profiles; approved doctors who confirmed with an emailed code see only entries shared with them. There is no patient search.'}}),
+                'Consent, Appointment, AuditEvent) need a signed-in session: patients see their own profiles; approved doctors who confirmed with an emailed code see only entries shared with them. There is no patient search. Writing (transaction) needs an OAuth 2.0 access token from /oauth/token (client credentials) with the scope system/DiagnosticReport.c or system/DocumentReference.c.'}}),
             resource: Object.entries({...RESOURCES, ...(health ? HEALTH_RESOURCES : {})}).map(([type, def]) => ({
                 type,
                 interaction: [...(def.read ? [{code: 'read'}] : []), ...(Object.keys(def.search).length ? [{code: 'search-type'}] : [])],

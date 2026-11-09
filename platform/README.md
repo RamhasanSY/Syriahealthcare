@@ -30,6 +30,15 @@ Accounts and (in later steps) appointment booking for patients and doctors. It r
 - `/api/openapi.json` is the OpenAPI 3.1 description of the app interface. It is generated from the routes, so it always matches the code; `test/openapi.test.js` fails when a route has no summary in `src/openapi.js`.
 - The audit trail maps to FHIR AuditEvent (IHE BALP) in `src/fhir/audit.js`, for "who opened my file" in stage 2c.
 
+### Health file, sharing and software connections (stage 2b–2d)
+
+All of this is built and tested but **switched off** until the new privacy policy is published: `HEALTH_FILE=off` in `.env` (decision 1 in `docs/STUFE-2.md`). With `HEALTH_FILE=on`:
+
+- **Patients** (`/file`) get a SyriaHC patient number (`SHC-XXXX-XXXX-X`), a timeline of their entries, children's profiles, uploads of photos and PDFs (several pages; location data removed, active PDFs refused, encrypted at rest), a bin with 30 days to restore, and can take a lab result into their file with the slip code plus their birth year or the last 3 digits of their mobile number.
+- **Sharing**: patients share single entries with a doctor (1, 30 or 90 days; when booking until 30 days after the appointment; or a QR code for 15 minutes) and see who opened what. Doctors confirm with an emailed code first and find everyone in "My patients".
+- **Software**: an admin creates a connection for an approved lab or clinic (`/admin`, the secret is shown once). The software gets a token at `/oauth/token` and sends results as FHIR (`POST /fhir/r4`, transaction Bundle or IHE MHD ITI-65) or HL7 v2 (`POST /hl7v2`, ORU^R01 or MDM^T02). A result reaches the patient's file only when the SyriaHC number and birth year match; otherwise the lab gets a slip code to print.
+- Two profiles of the same person: `npm run merge-patients -- SHC-AAAA-BBBB-C SHC-DDDD-EEEE-F` (the first goes into the second).
+
 ### Background jobs (`src/jobs.js`)
 
 Every 5 minutes queued emails are sent; every hour expired sessions, codes and reset links are removed (sent emails after 30 days); every hour the disk is checked, and when less than 2 GB or 10 % is free all active admins get one email per day. Container logs are capped at 3 × 10 MB per service (`docker-compose.yml`).

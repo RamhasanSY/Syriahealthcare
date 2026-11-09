@@ -86,6 +86,11 @@ export const SUMMARIES = {
     'GET /api/doctor/patients': 'Doctor: My patients, from appointments, scanned slips and shares, searchable by name, mobile or patient number.',
     'GET /api/doctor/patients/{id}': 'Doctor: the entries a patient shares with you now.',
     'GET /api/doctor/shared/{id}/pages/{page}': 'Doctor: open one page of a shared entry (recorded, the patient sees it).',
+    // Software connections (stage 2d)
+    'GET /api/admin/api-clients': 'Administrator: software connections (OAuth clients) of facilities.',
+    'POST /api/admin/api-clients': 'Administrator: create a connection for an approved facility; the secret is shown only in this answer.',
+    'POST /api/admin/api-clients/{id}/revoke': 'Administrator: end a connection at once.',
+    'GET /api/facility/api-clients': 'Facility: own software connections (never secrets) and the addresses to send to.',
     // Administrators
     'GET /api/admin/doctors': 'Administrator: doctors by review status.',
     'GET /api/admin/doctors/{id}': 'Administrator: one doctor with documents, held changes and history.',
