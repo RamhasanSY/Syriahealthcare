@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const option = (id, ...text) => {
             const label = el('label', {className: 'check'});
             const input = el('input', {type: 'radio', name: 'forWhom', value: id, checked: (subject || '') === id});
-            input.addEventListener('change', () => { subject = id || null; });
+            input.addEventListener('change', () => { subject = id || null; loadShareItems(); });
             const span = el('span');
             span.append(...text);
             label.append(input, span);
@@ -61,6 +61,33 @@ document.addEventListener('DOMContentLoaded', async () => {
         };
         $('forWhomList').replaceChildren(option('', tr('Me', 'أنا'), ...(self ? [' (', el('bdi', {textContent: self.name}), ')'] : [])),
             ...children.map(child => option(child.id, el('bdi', {textContent: child.name}))));
+    }
+
+    // Optional: entries of the chosen profile's health file to share with this doctor (stage 2c).
+    let shareItems = [], shareTicket = 0;
+    async function loadShareItems() {
+        const ticket = ++shareTicket;
+        const p = subject ? profiles.find(x => x.id === subject) : profiles.find(x => x.relationship === 'self');
+        shareItems = [];
+        if (p?.consent) {
+            const res = await api(`/api/file/profiles/${p.id}/items`);
+            if (ticket !== shareTicket) return;
+            if (res.ok) shareItems = res.data.items;
+        }
+        renderShareItems();
+    }
+    function renderShareItems() {
+        $('shareOnBook').hidden = !shareItems.length;
+        const date = iso => new Date(iso).toLocaleDateString(Shc.lang === 'ar' ? 'ar' : 'en-GB', {day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Asia/Damascus'});
+        const checked = new Set([...$('shareList').querySelectorAll('input:checked')].map(i => i.value));
+        $('shareList').replaceChildren(...shareItems.map(item => {
+            const box = el('input', {type: 'checkbox', value: item.id, id: 'book-share-' + item.id, checked: checked.has(item.id)});
+            const label = el('label', {className: 'check', htmlFor: box.id});
+            const text = el('span');
+            text.append(el('bdi', {textContent: item.title}), ` · ${date(item.document_date || item.created_at)}`);
+            label.append(box, text);
+            return label;
+        }));
     }
 
     function radio(button, checked) {
@@ -125,7 +152,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         event.preventDefault();
         $('bookError').hidden = true;
         busy($('bookButton'), true);
-        const res = await api('/api/appointments', {doctor_id: doctorId, starts_at: chosen, reason: $('reason').value, ...(subject && {subject_id: subject})});
+        const shared = [...$('shareList').querySelectorAll('input:checked')].map(i => i.value);
+        const res = await api('/api/appointments', {doctor_id: doctorId, starts_at: chosen, reason: $('reason').value, ...(subject && {subject_id: subject}),
+            ...(shared.length && {share_item_ids: shared})});
         busy($('bookButton'), false);
         if (!res.ok) {
             showError('bookError', res.data);
@@ -139,10 +168,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             `أُرسل طلبك لموعد ${dayName(slot.date, 'long')} الساعة ${timeOf(slot.starts_at)} لدى ${doctor.name}. يمكنك متابعته في «مواعيدي»، وسيظهر مؤكداً عند قبول الطبيب.`);
         const child = profiles.find(p => p.id === subject);
         if (child) $('doneText').textContent += tr(` The appointment is for ${child.name}.`, ` الموعد لـ ${child.name}.`);
+        if (shared.length) $('doneText').textContent += tr(` ${shared.length} entries of the health file are shared with the doctor until 30 days after the appointment.`,
+            ` شاركت ${shared.length} وثائق من الملف الصحي مع الطبيب حتى 30 يوماً بعد الموعد.`);
         $('done').focus();
     });
 
-    document.addEventListener('shc:language', render);
+    document.addEventListener('shc:language', () => { render(); renderShareItems(); });
     $('booking').hidden = false;
+    if (me?.role === 'patient') loadShareItems();
     await loadSlots();
 });

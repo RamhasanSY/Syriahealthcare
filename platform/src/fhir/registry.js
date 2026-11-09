@@ -25,6 +25,7 @@ export const HEALTH_RESOURCES = {
     Binary: {read: true, search: {}},
     DiagnosticReport: {read: true, search: {patient: 'reference'}},
     Consent: {read: false, search: {patient: 'reference'}},
+    AuditEvent: {read: false, search: {patient: 'reference'}},
     Appointment: {read: false, search: {patient: 'reference'}}
 };
 
@@ -41,7 +42,7 @@ export function capabilityStatement(base, {health = false} = {}) {
         rest: [{
             mode: 'server',
             ...(health && {security: {description: 'Health file resources (Patient, RelatedPerson, DocumentReference, Binary, DiagnosticReport, ' +
-                'Consent, Appointment) need a signed-in patient session and show only their own profiles. There is no patient search.'}}),
+                'Consent, Appointment, AuditEvent) need a signed-in session: patients see their own profiles; approved doctors who confirmed with an emailed code see only entries shared with them. There is no patient search.'}}),
             resource: Object.entries({...RESOURCES, ...(health ? HEALTH_RESOURCES : {})}).map(([type, def]) => ({
                 type,
                 interaction: [...(def.read ? [{code: 'read'}] : []), ...(Object.keys(def.search).length ? [{code: 'search-type'}] : [])],

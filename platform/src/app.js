@@ -18,6 +18,7 @@ import {createDocumentStore} from './documents.js';
 import fhirRoutes from './fhir/index.js';
 import accountRoutes from './accounts.js';
 import healthFileRoutes from './healthfile.js';
+import sharingRoutes from './sharing.js';
 import openapiRoutes, {collectRoutes} from './openapi.js';
 
 const UNSAFE = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
@@ -89,6 +90,7 @@ export async function buildApp({config, pool, sms, whatsapp, telegram, mail, doc
     await app.register(resultRoutes);
     await app.register(accountRoutes);
     await app.register(healthFileRoutes);
+    await app.register(sharingRoutes);
     await app.register(openapiRoutes, {routes});
     await app.register(fhirRoutes, {prefix: '/fhir/r4'});
     await app.register(fastifyStatic, {root: fileURLToPath(new URL('../public/', import.meta.url)), extensions: ['html']});

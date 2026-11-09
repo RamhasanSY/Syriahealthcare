@@ -130,6 +130,14 @@ export function appointmentEmail(patient, status, {doctorName, when, address, no
 }
 
 // Administrator sign-in, second step. The code is in the subject too, so it shows in the phone's notification.
+// Doctors confirm it is them before opening health files patients shared (stage 2c). The code is in the subject, as elsewhere.
+export const confirmCodeEmail = (user, code, minutes) => ({
+    subject: user.language === 'en' ? `SyriaHC confirmation code: ${code}` : `رمز التأكيد في صحة تك: ${code}`,
+    text: both(user.language,
+        `مرحباً ${user.name}،\n\nرمز التأكيد: ${code}\nالرمز صالح لمدة ${minutes} دقائق. أدخله لفتح الملفات الصحية التي شاركها معك المرضى.\n\nإن لم تطلب هذا الرمز، فقد يكون شخص آخر داخلاً إلى حسابك: غيّر كلمة المرور فوراً.`,
+        `Hello ${user.name},\n\nYour confirmation code: ${code}\nThe code is valid for ${minutes} minutes. Enter it to open health files patients shared with you.\n\nIf you did not ask for this code, someone else may be signed in to your account: change your password at once.`)
+});
+
 export const staffCodeEmail = (user, code, minutes) => ({
     subject: user.language === 'en' ? `SyriaHC admin sign-in code: ${code}` : `رمز دخول الإدارة إلى صحة تك: ${code}`,
     text: both(user.language,

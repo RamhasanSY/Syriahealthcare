@@ -118,7 +118,8 @@ describe('FHIR health file for the signed-in patient', () => {
         for (const cookie of [omar, doctor.cookie]) {
             for (const url of [`/fhir/r4/Patient/${self.id}`, `/fhir/r4/Patient/${child.id}/$everything`, `/fhir/r4/RelatedPerson/${child.id}`,
                 `/fhir/r4/DocumentReference/${photo.id}`, `/fhir/r4/Binary/${labResultId}`]) {
-                assert.equal((await get(url, cookie)).statusCode, 404, url);
+                // A doctor who has not confirmed with the emailed code gets 403 for every id alike (stage 2c); others 404.
+                assert.equal((await get(url, cookie)).statusCode, cookie === doctor.cookie && !/\$everything|RelatedPerson/.test(url) ? 403 : 404, url);
             }
             const search = (await get(`/fhir/r4/DocumentReference?patient=${self.id}`, cookie)).json();
             assert.equal(search.total ?? 0, 0);

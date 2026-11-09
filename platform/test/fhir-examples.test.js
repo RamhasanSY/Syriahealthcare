@@ -90,6 +90,7 @@ describe('FHIR examples for the HL7 validator', () => {
         const slots = (await app.inject({url: `/api/doctors/${doctor.id}/slots?from=${day}&days=1`})).json().slots;
         await post('/api/appointments', {doctor_id: doctor.id, starts_at: slots[0].starts_at, subject_id: child.id, reason: 'Fever'}, {cookie});
 
+        await post(`/api/file/profiles/${self.id}/shares`, {doctor_id: doctor.id, item_ids: [photo.id], days: 30}, {cookie});
         await keep('patient', `/fhir/r4/Patient/${self.id}`, cookie);
         await keep('patient-child', `/fhir/r4/Patient/${child.id}`, cookie);
         await keep('related-person', `/fhir/r4/RelatedPerson/${child.id}`, cookie);
@@ -100,6 +101,7 @@ describe('FHIR examples for the HL7 validator', () => {
         await keep('consent-search', `/fhir/r4/Consent?patient=${self.id}`, cookie);
         await keep('appointment-search', `/fhir/r4/Appointment?patient=${child.id}`, cookie);
         await keep('patient-everything', `/fhir/r4/Patient/${self.id}/$everything`, cookie);
+        await keep('auditevent-search', `/fhir/r4/AuditEvent?patient=${self.id}`, cookie);
         await keep('patient-everything-child', `/fhir/r4/Patient/${child.id}/$everything`, cookie);
     });
 
