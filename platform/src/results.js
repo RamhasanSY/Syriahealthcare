@@ -9,6 +9,7 @@ import {audit} from './db.js';
 import {sendDocument} from './doctors.js';
 import {MAX_DOCUMENT_BYTES, sniffType} from './documents.js';
 import {normalizePhone, resultCodeHash} from './security.js';
+import {valueRows} from './lab-values.js';
 
 const RESULT_KINDS = ['lab', 'imaging'];
 const CODE_DAYS = 90;
@@ -47,6 +48,7 @@ function decodeCursor(raw) {
     return null;
 }
 const doctorView = r => ({id: r.id, title: r.title, patient_name: r.patient_name, patient_phone: r.patient_phone, lab_name: r.lab_name,
+    has_values: Array.isArray(r.observations) && r.observations.length > 0,
     mime: r.mime, created_at: r.created_at});
 
 // Slips printed while the health file is on tell the patient they can take the result into their own file (version 2).
@@ -199,7 +201,7 @@ export default async function resultRoutes(app) {
     app.get('/api/doctor/records', doctorOnly, async request => {
         await checkDoctor(request.user.id);
         const {rows} = await app.pg.query(
-            `SELECT r.id, r.title, r.patient_name, r.patient_phone, r.mime, r.created_at, f.added_at, p.facility_name AS lab_name
+            `SELECT r.id, r.title, r.patient_name, r.patient_phone, r.mime, r.created_at, r.observations, f.added_at, p.facility_name AS lab_name
              FROM patient_file_results f JOIN lab_results r ON r.id = f.result_id JOIN facility_profiles p ON p.user_id = r.facility_id
              WHERE f.doctor_id = $1 AND f.revoked_at IS NULL ORDER BY r.created_at DESC LIMIT 1000`, [request.user.id]);
         const patients = new Map();
@@ -208,6 +210,17 @@ export default async function resultRoutes(app) {
             patients.get(row.patient_phone).results.push({...doctorView(row), added_at: row.added_at});
         }
         return {patients: [...patients.values()]};
+    });
+
+    // The measured values of a scanned result, as table rows. Every look is recorded.
+    app.get('/api/doctor/results/:id/values', {...doctorOnly, schema: uuidParam}, async request => {
+        await checkDoctor(request.user.id);
+        const {rows: [result]} = await app.pg.query(
+            `SELECT r.id, r.observations FROM lab_results r JOIN patient_file_results f ON f.result_id = r.id AND f.doctor_id = $2 AND f.revoked_at IS NULL WHERE r.id = $1`,
+            [request.params.id, request.user.id]);
+        if (!result) throw new HttpError(404, 'not_found', 'Result not found.');
+        await audit(app.pg, {actorId: request.user.id, action: 'result.viewed', targetId: result.id, details: {values: true}, ip: request.ip});
+        return {values: valueRows(result.observations)};
     });
 
     // Opens a result from the doctor's own patient files. Every view is recorded.

@@ -39,6 +39,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const open = el('a', {href: `/api/doctor/results/${r.id}/file`, target: '_blank', rel: 'noopener', textContent: tr('Open', 'افتح')});
                 open.setAttribute('aria-label', `${tr('Open', 'افتح')}: ${r.title}, ${date(r.created_at)}`);
                 row.append(info, open);
+                // Values sent by the lab's software (HL7 v2 or FHIR) as a table; every look is recorded.
+                if (r.has_values) row.append(Shc.valuesButton(`/api/doctor/results/${r.id}/values`, r.title));
                 return row;
             }));
             li.append(head, phone, ul);

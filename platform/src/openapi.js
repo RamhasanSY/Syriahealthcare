@@ -51,6 +51,7 @@ export const SUMMARIES = {
     'POST /api/doctor/results/add': 'Doctor: add a scanned result to the own patient files.',
     'GET /api/doctor/records': 'Doctor: own patient files with scanned results.',
     'GET /api/doctor/results/{id}/file': 'Doctor: open a result from the own patient files.',
+    'GET /api/doctor/results/{id}/values': 'Doctor: the measured values of a scanned result (recorded).',
     // Facilities and labs
     'GET /api/facility/profile': 'Facility: own profile and review status.',
     'POST /api/facility/profile': 'Facility: update the profile (identifying fields wait for review once approved).',
@@ -69,6 +70,7 @@ export const SUMMARIES = {
     'GET /api/file/profiles/{id}/items': 'Patient: the health file as a timeline, filterable by kind and date; bin=true lists the bin.',
     'POST /api/file/profiles/{id}/documents': {summary: 'Patient: upload a document, one file per page (PDF, JPEG or PNG, 5 MB each, up to 10 pages). Photos lose their location and other metadata.', upload: true},
     'GET /api/file/documents/{id}/pages/{page}': 'Patient: open one page of an entry (recorded).',
+    'GET /api/file/documents/{id}/values': 'Patient: the measured values of a lab result as a table (recorded).',
     'POST /api/file/documents/{id}/delete': 'Patient: move an entry to the bin (30 days to restore).',
     'POST /api/file/documents/{id}/restore': 'Patient: bring an entry back from the bin.',
     'POST /api/file/profiles/{id}/claim': 'Patient: take a lab result into the file with the slip code and the birth year or the last 3 digits of the mobile number.',
@@ -86,6 +88,7 @@ export const SUMMARIES = {
     'GET /api/doctor/patients': 'Doctor: My patients, from appointments, scanned slips and shares, searchable by name, mobile or patient number.',
     'GET /api/doctor/patients/{id}': 'Doctor: the entries a patient shares with you now.',
     'GET /api/doctor/shared/{id}/pages/{page}': 'Doctor: open one page of a shared entry (recorded, the patient sees it).',
+    'GET /api/doctor/shared/{id}/values': 'Doctor: the measured values of a shared lab result (recorded, the patient sees it).',
     // Software connections (stage 2d)
     'GET /api/admin/api-clients': 'Administrator: software connections (OAuth clients) of facilities.',
     'POST /api/admin/api-clients': 'Administrator: create a connection for an approved facility; the secret is shown only in this answer.',

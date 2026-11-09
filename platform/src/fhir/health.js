@@ -6,6 +6,7 @@
 import {CATEGORIES, sendFileSandboxed} from '../healthfile.js';
 import {patientFor, sharedDocumentIds} from '../access.js';
 import {auditEvent} from './audit.js';
+import {observationResources} from '../lab-values.js';
 import {audit} from '../db.js';
 import {PATIENT_NUMBER_SYSTEM} from '../patient-number.js';
 import {prune} from './map.js';
@@ -63,12 +64,15 @@ export function documentReference(base, d, files) {
 // A lab result taken over from a slip, as DiagnosticReport with the lab's file as presented form.
 export function diagnosticReport(base, d, result) {
     const imaging = d.category === 'imaging';
+    const observations = observationResources(result.observations, {subject: {reference: `Patient/${d.patient_id}`}, effective: instant(result.created_at)});
     return prune({
         resourceType: 'DiagnosticReport', id: d.id, meta: {lastUpdated: instant(d.updated_at)}, status: 'final',
         category: [{coding: [{system: V2_0074, code: imaging ? 'RAD' : 'LAB', display: imaging ? 'Radiology' : 'Laboratory'}]}],
         code: {text: d.title}, subject: {reference: `Patient/${d.patient_id}`},
         effectiveDateTime: instant(result.created_at), issued: instant(result.created_at),
         performer: [{reference: `Organization/${result.facility_id}`, display: d.lab_name}],
+        contained: observations.length ? observations : undefined,
+        result: observations.length ? observations.map(o => ({reference: `#${o.id}`})) : undefined,
         presentedForm: [{contentType: result.mime, url: `${base}/Binary/${result.id}`, size: result.size_bytes, title: result.filename}]
     });
 }
@@ -178,7 +182,7 @@ export default function healthFhirRoutes(app, {base, send, outcome}) {
     }
     async function filesOf(d) {
         if (d.lab_result_id) {
-            const {rows: [r]} = await app.pg.query('SELECT id, mime, size_bytes, filename, created_at, facility_id FROM lab_results WHERE id = $1', [d.lab_result_id]);
+            const {rows: [r]} = await app.pg.query('SELECT id, mime, size_bytes, filename, created_at, facility_id, observations FROM lab_results WHERE id = $1', [d.lab_result_id]);
             return r ? [r] : [];
         }
         return (await app.pg.query('SELECT id, mime, size_bytes, filename FROM clinical_document_files WHERE document_id = $1 ORDER BY page', [d.id])).rows;

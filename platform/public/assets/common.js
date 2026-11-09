@@ -201,5 +201,83 @@ const Shc = (() => {
     function forgetProfiles() {
         try { localStorage.removeItem(PROFILES_KEY); } catch (_) {}
     }
-    return {$, tr, api, showError, busy, saveProfiles, savedProfiles, forgetProfiles, get lang() { return lang; }};
+    // Measured values of a lab result as an accessible table: test, value, unit, reference range, flag.
+    // The flag is written out (not only a colour or an arrow), so a screen reader says "high" or "low".
+    const FLAGS = {HH: ['Critically high', 'مرتفع جداً'], H: ['High', 'مرتفع'], LL: ['Critically low', 'منخفض جداً'], L: ['Low', 'منخفض'],
+        A: ['Abnormal', 'غير طبيعي'], AA: ['Critically abnormal', 'غير طبيعي جداً'], N: ['Normal', 'طبيعي']};
+    function valuesTable(values, caption) {
+        const make = (tag, text, cls) => {
+            const node = document.createElement(tag);
+            if (text !== undefined) node.textContent = text;
+            if (cls) node.className = cls;
+            return node;
+        };
+        const table = make('table', undefined, 'values');
+        table.append(make('caption', caption));
+        const head = make('tr');
+        for (const [en, ar] of [['Test', 'التحليل'], ['Value', 'القيمة'], ['Normal range', 'المجال الطبيعي'], ['Result', 'التقييم']]) {
+            const th = make('th', tr(en, ar));
+            th.scope = 'col';
+            head.append(th);
+        }
+        table.append(make('thead'), make('tbody'));
+        table.tHead.append(head);
+        for (const v of values) {
+            const row = make('tr', undefined, v.flag && v.flag !== 'N' ? 'flag-' + v.flag.toLowerCase() : '');
+            const name = make('th', v.name);
+            name.scope = 'row';
+            name.dir = 'auto';
+            // Value and unit together ("240 mg/dL"), so the table fits on a phone.
+            const value = make('td', undefined, 'num');
+            value.dir = 'ltr';
+            value.append(make('strong', v.value), v.unit ? ' ' + v.unit : '');
+            const range = make('td', v.range ? v.range + (v.unit ? ' ' + v.unit : '') : '');
+            range.dir = 'ltr';
+            const flag = make('td', v.flag ? tr(...FLAGS[v.flag]) + (v.flag_calculated ? '*' : '') : '—');
+            row.append(name, value, range, flag);
+            table.tBodies[0].append(row);
+        }
+        if (!values.some(v => v.flag_calculated)) return table;
+        // A short star in the table, the explanation once below it.
+        const box = document.createDocumentFragment();
+        box.append(table, make('p', tr('* Worked out from the normal range; the lab did not mark this value.', '* حُسب من المجال الطبيعي؛ لم يحدد المخبر تقييم هذه القيمة.'), 'hint'));
+        return box;
+    }
+    // A button that loads the values from `url` once and shows or hides the table under it.
+    function valuesButton(url, title) {
+        const wrap = document.createElement('div');
+        wrap.className = 'values-wrap';
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'link-btn';
+        button.setAttribute('aria-expanded', 'false');
+        const label = () => { button.textContent = button.getAttribute('aria-expanded') === 'true' ? tr('Hide values', 'إخفاء القيم') : tr('Show values', 'عرض القيم'); };
+        label();
+        const box = document.createElement('div');
+        box.className = 'values-box';
+        box.hidden = true;
+        let values = null;
+        button.addEventListener('click', async () => {
+            if (!values) {
+                busy(button, true);
+                const res = await api(url);
+                busy(button, false);
+                if (!res.ok) {
+                    box.hidden = false;
+                    box.textContent = errorText(res.data);
+                    return;
+                }
+                values = res.data.values;
+            }
+            const open = button.getAttribute('aria-expanded') !== 'true';
+            button.setAttribute('aria-expanded', String(open));
+            box.hidden = !open;
+            if (open) box.replaceChildren(valuesTable(values, tr(`Values: ${title}`, `القيم: ${title}`)));
+            label();
+        });
+        document.addEventListener('shc:language', () => { label(); if (values && !box.hidden) box.replaceChildren(valuesTable(values, tr(`Values: ${title}`, `القيم: ${title}`))); });
+        wrap.append(button, box);
+        return wrap;
+    }
+    return {$, tr, api, showError, busy, saveProfiles, savedProfiles, forgetProfiles, valuesTable, valuesButton, get lang() { return lang; }};
 })();

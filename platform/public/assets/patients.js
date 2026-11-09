@@ -111,6 +111,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 pages.append(link, ' ');
             }
             row.append(pages);
+            if (item.has_values) row.append(Shc.valuesButton(`/api/doctor/shared/${item.id}/values`, item.title));
             return row;
         }));
     }

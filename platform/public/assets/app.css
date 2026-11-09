@@ -252,3 +252,13 @@ fieldset.plain legend{font-weight:700;margin-bottom:8px}
 pre{direction:ltr;text-align:left;overflow-x:auto;max-width:100%;background:var(--sage);border-radius:10px;padding:12px 14px;font-size:13px;line-height:1.5}
 pre code,code{font-family:ui-monospace,Consolas,monospace;overflow-wrap:anywhere}
 pre code{overflow-wrap:normal;white-space:pre}
+/* Measured values (common.js valuesTable) */
+.values-wrap{flex-basis:100%;min-width:0}
+.values-box{overflow-x:auto;margin:8px 0;contain:inline-size}
+table.values{border-collapse:collapse;width:100%;font-size:13.5px}
+table.values caption{text-align:start;font-weight:700;margin-bottom:6px}
+table.values th,table.values td{border-bottom:1px solid var(--rule);padding:6px 5px;text-align:start;vertical-align:top}
+table.values thead th{color:var(--muted);font-weight:600}
+table.values td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+table.values tr.flag-h td,table.values tr.flag-hh td,table.values tr.flag-l td,table.values tr.flag-ll td,table.values tr.flag-a td,table.values tr.flag-aa td{color:var(--danger)}
+table.values tr.flag-hh,table.values tr.flag-ll,table.values tr.flag-aa{background:#fbeae6}

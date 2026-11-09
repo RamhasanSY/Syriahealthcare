@@ -276,6 +276,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             links.append(link);
         }
         li.append(head, el('h4', {className: 'entry-title', textContent: item.title, dir: 'auto'}), source, links);
+        if (item.has_values) li.append(Shc.valuesButton(`/api/file/documents/${item.id}/values`, item.title));
         const actions = el('div', {className: 'actions'});
         if (item.deleted_at) {
             const days = file.limits.binDays, gone = new Date(Date.parse(item.deleted_at) + days * 86400000).toISOString();
