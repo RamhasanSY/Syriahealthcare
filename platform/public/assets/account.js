@@ -46,6 +46,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Approved labs and imaging centres send results to patients as QR codes.
         $('resultsLink').hidden = !(profile.ok && facilityStatus === 'approved' && ['lab', 'imaging'].includes(profile.data.profile.kind));
         $('connectLink').hidden = !(profile.ok && facilityStatus === 'approved');
+        // Labs and imaging centres keep a price list (also before approval) and handle home sample collection.
+        const isLab = profile.ok && ['lab', 'imaging'].includes(profile.data.profile.kind);
+        $('pricesLink').hidden = !isLab;
+        $('visitsLink').hidden = !(isLab && facilityStatus === 'approved');
     }
     if (user.role === 'doctor') {
         const profile = await api('/api/doctor/profile');

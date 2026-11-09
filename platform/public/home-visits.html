@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="ar" dir="rtl" data-title-en="Home visits — SyriaHC" data-title-ar="الزيارات المنزلية — صحة تك">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#1a3a5c">
+<title>الزيارات المنزلية — صحة تك</title>
+<link rel="manifest" href="/manifest.webmanifest"><link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/assets/app.css">
+<script src="/assets/common.js" defer></script><script src="/assets/home-visits.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#main" data-en="Skip to content" data-ar="انتقل إلى المحتوى">انتقل إلى المحتوى</a>
+<header class="top"><div class="top-inner"><a class="brand" href="/account"><img src="/assets/logo.svg" alt=""><span data-en="SyriaHC" data-ar="صحة تك">صحة تك</span></a><div class="top-actions"><button class="lang" id="langToggle" type="button">English</button></div></div></header>
+<main id="main" class="wrap wide" aria-busy="true">
+  <h1 data-en="Home sample collection" data-ar="سحب العينات من المنزل">سحب العينات من المنزل</h1>
+  <p class="lead" data-en="Patients ask for a visit on a day and a time of day. Confirm with the time you will arrive, or decline with a reason. The patient is told by email." data-ar="يطلب المرضى زيارة في يوم ووقت معيّن. أكّدوا الطلب مع موعد الوصول أو اعتذروا مع ذكر السبب. يُبلَّغ المريض بالبريد الإلكتروني.">يطلب المرضى زيارة في يوم ووقت معيّن. أكّدوا الطلب مع موعد الوصول أو اعتذروا مع ذكر السبب. يُبلَّغ المريض بالبريد الإلكتروني.</p>
+  <div class="msg error" id="pageError" role="alert" tabindex="-1" hidden></div>
+  <div class="msg info" id="notOffered" hidden data-en="Your profile does not list home sample collection, so patients cannot ask you yet. Add it under My facility → services." data-ar="لا يتضمن ملفكم خدمة سحب العينات من المنزل، لذلك لا يستطيع المرضى طلبها بعد. أضيفوها في منشأتي ← الخدمات.">لا يتضمن ملفكم خدمة سحب العينات من المنزل، لذلك لا يستطيع المرضى طلبها بعد. أضيفوها في منشأتي ← الخدمات.</div>
+  <div class="tabs" role="tablist" id="tabs" hidden>
+    <button type="button" role="tab" data-scope="open" id="tab-open"></button>
+    <button type="button" role="tab" data-scope="upcoming" id="tab-upcoming"></button>
+    <button type="button" role="tab" data-scope="past" id="tab-past"></button>
+  </div>
+  <p class="results-count" id="announce" role="status"></p>
+  <ul class="appt-list" id="list"></ul>
+</main>
+<footer><div class="wrap"><a href="/account" data-en="← My account" data-ar="حسابي ←">حسابي ←</a><a href="/lab-tests" data-en="Price list" data-ar="قائمة الأسعار">قائمة الأسعار</a></div></footer>
+</body>
+</html>

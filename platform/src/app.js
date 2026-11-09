@@ -21,6 +21,7 @@ import healthFileRoutes from './healthfile.js';
 import sharingRoutes from './sharing.js';
 import oauthRoutes from './oauth.js';
 import hl7v2Routes from './hl7v2.js';
+import labServiceRoutes from './lab-services.js';
 import openapiRoutes, {collectRoutes} from './openapi.js';
 
 const UNSAFE = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
@@ -98,6 +99,7 @@ export async function buildApp({config, pool, sms, whatsapp, telegram, mail, doc
     await app.register(sharingRoutes);
     await app.register(oauthRoutes);
     await app.register(hl7v2Routes);
+    await app.register(labServiceRoutes);
     await app.register(openapiRoutes, {routes});
     await app.register(fhirRoutes, {prefix: '/fhir/r4'});
     await app.register(fastifyStatic, {root: fileURLToPath(new URL('../public/', import.meta.url)), extensions: ['html']});

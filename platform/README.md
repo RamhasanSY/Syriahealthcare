@@ -39,6 +39,13 @@ All of this is built and tested but **switched off** until the new privacy polic
 - **Software**: an admin creates a connection for an approved lab or clinic (`/admin`, the secret is shown once). The software gets a token at `/oauth/token` and sends results as FHIR (`POST /fhir/r4`, transaction Bundle or IHE MHD ITI-65) or HL7 v2 (`POST /hl7v2`, ORU^R01 or MDM^T02). A result reaches the patient's file only when the SyriaHC number and birth year match; otherwise the lab gets a slip code to print.
 - Two profiles of the same person: `npm run merge-patients -- SHC-AAAA-BBBB-C SHC-DDDD-EEEE-F` (the first goes into the second).
 
+### Lab services
+
+- **Kinds of tests:** labs choose from 28 kinds in their profile (blood count, thyroid, blood fats, liver, kidney, vitamins, clotting, tumour markers, allergy, hepatitis/HIV, blood group, pre-marriage tests, genetic tests and more). syriahc.com filters labs by them.
+- **Measured values:** values that lab software sends (HL7 v2 OBX, FHIR Observation) are shown to the patient and their doctors as a table with normal range and a written flag (high, low, critical). Without a flag from the lab it is worked out from the range and marked with a star.
+- **Price list:** each lab or imaging centre keeps its tests with price (SYP), time to result and a note (`/lab-tests`). Public once the lab is approved, on `/lab?id=…` and linked from the lab's card on syriahc.com.
+- **Sample collection at home:** for labs that list "Home sample collection", patients ask for a day and time of day on the lab page; the lab confirms with an arrival time, declines, cancels or marks it done (`/home-visits`). The patient follows it under My appointments and gets emails.
+
 ### Background jobs (`src/jobs.js`)
 
 Every 5 minutes queued emails are sent; every hour expired sessions, codes and reset links are removed (sent emails after 30 days); every hour the disk is checked, and when less than 2 GB or 10 % is free all active admins get one email per day. Container logs are capped at 3 × 10 MB per service (`docker-compose.yml`).

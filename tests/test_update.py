@@ -83,6 +83,19 @@ class CollectorTests(unittest.TestCase):
         self.assertEqual(hospitals[0]['services_ar'], ['جراحة'])
         for secret in ('email', 'licence_number', 'id'):
             self.assertNotIn(secret, labs[0])
+        self.assertNotIn('lab_url', labs[0], 'no link without a price list or home collection')
+
+    def test_platform_labs_link_to_their_price_list_and_home_collection(self):
+        catalog = {'governorates': {'aleppo': ['Aleppo', 'حلب']}, 'facilityKinds': {'lab': ['Medical laboratory', 'مخبر تحاليل طبية']},
+                   'facilityServices': {'lab': {'home_collection': ['Home sample collection', 'سحب العينات من المنزل']}}}
+        lab = {'id': '0b6f1d1e-3c55-4a43-9f6e-5d3c2a1b0c9d', 'kind': 'lab', 'facility_name': 'Al Shifa Lab', 'governorate': 'aleppo',
+               'address': 'Street 9', 'services': ['home_collection'], 'tests_count': 12}
+        row = u.platform_facilities(catalog, [lab], 'https://app.syriahc.com/')['labs'][0]
+        self.assertEqual(row['lab_url'], 'https://app.syriahc.com/lab?id=0b6f1d1e-3c55-4a43-9f6e-5d3c2a1b0c9d')
+        self.assertTrue(row['prices'] and row['home_collection'])
+        only_prices = u.platform_facilities(catalog, [{**lab, 'services': []}], 'https://app.syriahc.com')['labs'][0]
+        self.assertEqual((only_prices['prices'], only_prices['home_collection']), (True, False))
+        self.assertNotIn('lab_url', u.platform_facilities(catalog, [{**lab, 'services': [], 'tests_count': 0}], 'https://app.syriahc.com')['labs'][0])
 
     def test_platform_facilities_replace_only_platform_entries(self):
         with tempfile.TemporaryDirectory() as folder, patch.object(u, 'DATA', Path(folder)), \
