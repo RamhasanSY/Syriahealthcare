@@ -13,6 +13,7 @@ import {sendFileSandboxed} from './healthfile.js';
 import {sendEmail} from './notify.js';
 import {normalizePhone, resultCodeHash} from './security.js';
 import {specialties} from './catalog.js';
+import {valueRows} from './lab-values.js';
 
 export const SHARE_DAYS = [1, 30, 90];
 export const QR_MINUTES = 15;
@@ -265,8 +266,17 @@ export default async function sharingRoutes(app) {
                           WHERE g.doctor_id = $2 AND i.document_id = h.id AND g.revoked_at IS NULL AND i.revoked_at IS NULL) AS shared_until
              FROM health_file_items h WHERE h.id = ANY($1) ORDER BY COALESCE(h.document_date, h.created_at::date) DESC`, [ids, request.user.id]);
         await record(request, 'health_file.opened', p.id, {patient_id: p.id});
-        return {patient: p, items: items.map(i => ({id: i.id, source: i.source, category: i.category, title: i.title, document_date: i.document_date,
+        return {patient: p, items: items.map(i => ({id: i.id, source: i.source, category: i.category, title: i.title, document_date: i.document_date, has_values: i.has_values,
             created_at: i.created_at, pages: i.pages, lab_name: i.lab_name, shared_until: i.shared_until}))};
+    });
+
+    app.get('/api/doctor/shared/:id/values', {preHandler: doctorOnly, schema: {params: {type: 'object', properties: {id: UUID}}}}, async request => {
+        await requireSharingDoctor(app.pg, request);
+        const d = await doctorDocument(app.pg, request.user.id, request.params.id);
+        if (!d) throw notFound();
+        const {rows: [r]} = d.lab_result_id ? await app.pg.query('SELECT observations FROM lab_results WHERE id = $1', [d.lab_result_id]) : {rows: []};
+        await record(request, 'health_document.viewed', d.id, {patient_id: d.patient_id, values: true, via: 'share'});
+        return {values: valueRows(r?.observations)};
     });
 
     app.get('/api/doctor/shared/:id/pages/:page', {preHandler: doctorOnly, schema: {params: {type: 'object', properties: {

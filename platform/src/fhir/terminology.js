@@ -3,7 +3,9 @@
 import {documentCategories, documentSources, facilityKinds, facilityServices, governorates, specialties} from '../catalog.js';
 
 export const CANONICAL = 'https://syriahc.com/fhir';
-export const PUBLISHED = '2026-11-09';  // also the version of every CodeSystem and ValueSet: change it when a code is added
+export const PUBLISHED = '2026-11-09';  // date of the current code lists
+// Version of every CodeSystem and ValueSet: change it whenever a code is added (17 lab tests added in version 2026-11-09.2).
+export const VERSION = '2026-11-09.2';
 const PUBLISHER = 'SyriaHC';
 
 // Governorates <-> ISO 3166-2:SY subdivision codes.
@@ -51,7 +53,7 @@ export function codeSystems() {
     return CODE_SYSTEMS.map(cs => {
         const concepts = cs.concepts();
         return {
-            resourceType: 'CodeSystem', id: cs.id, url: codeSystemUrl(cs.id), version: PUBLISHED,
+            resourceType: 'CodeSystem', id: cs.id, url: codeSystemUrl(cs.id), version: VERSION,
             name: cs.title.replace(/[^A-Za-z]/g, ''), title: cs.title, status: 'active', experimental: false, date: PUBLISHED,
             publisher: PUBLISHER, description: cs.description, caseSensitive: true, valueSet: `${CANONICAL}/ValueSet/${cs.id}`,
             ...(cs.id === 'facility-service' && {hierarchyMeaning: 'grouped-by'}),
@@ -72,7 +74,7 @@ export function valueSets() {
         });
         walk(cs.concept);
         return {
-            resourceType: 'ValueSet', id: cs.id, url: `${CANONICAL}/ValueSet/${cs.id}`, version: PUBLISHED, name: cs.name,
+            resourceType: 'ValueSet', id: cs.id, url: `${CANONICAL}/ValueSet/${cs.id}`, version: VERSION, name: cs.name,
             title: cs.title, status: 'active', experimental: false, date: PUBLISHED, publisher: PUBLISHER, description: cs.description,
             compose: {include: [{system: cs.url}]},
             expansion: {identifier: `urn:uuid:${expansionId(cs.id)}`, timestamp: `${PUBLISHED}T00:00:00Z`, total: flat.length, contains: flat}

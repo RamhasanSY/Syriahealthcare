@@ -13,6 +13,7 @@ import {cleanResultCode} from './results.js';
 import {resultCodeHash} from './security.js';
 import {cleanUpload, UploadError} from './uploads.js';
 import {sendEmail} from './notify.js';
+import {valueRows} from './lab-values.js';
 
 // Kinds of entries, with the LOINC document type used in FHIR (src/catalog.js).
 export const CATEGORIES = documentCategories;
@@ -34,6 +35,7 @@ const isoDate = value => value ? (value instanceof Date ? value.toISOString().sl
 export const profileView = p => ({id: p.id, patient_number: p.patient_number, name: p.name, birth_date: isoDate(p.birth_date),
     sex: p.sex, relationship: p.relationship, consent: Boolean(p.consent)});
 export const itemView = i => ({id: i.id, source: i.source, category: i.category, title: i.title, document_date: isoDate(i.document_date),
+    has_values: Boolean(i.has_values),
     created_at: i.created_at, pages: i.pages, size_bytes: i.size_bytes, lab_name: i.lab_name || null, deleted_at: i.deleted_at});
 
 async function hasConsent(db, patientId) {
@@ -224,6 +226,14 @@ export default async function healthFileRoutes(app) {
         const content = await app.documents.open(file);
         await withAudit(request, 'health_document.viewed', d.id, d.patient_id, {page: request.params.page});
         return sendFileSandboxed(reply, file, content);
+    });
+
+    // The measured values of a lab result taken over or delivered from lab software, as table rows. Every look is recorded.
+    app.get('/api/file/documents/:id/values', {preHandler: patientOnly, schema: idParam}, async request => {
+        const d = await documentFor(request, request.params.id, {includeDeleted: true});
+        const {rows: [r]} = d.lab_result_id ? await app.pg.query('SELECT observations FROM lab_results WHERE id = $1', [d.lab_result_id]) : {rows: []};
+        await withAudit(request, 'health_document.viewed', d.id, d.patient_id, {values: true});
+        return {values: valueRows(r?.observations)};
     });
 
     // Delete moves an entry to the bin for 30 days; restore brings it back. src/jobs.js removes it for good afterwards.
