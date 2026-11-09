@@ -72,7 +72,7 @@ export const welcomeEmail = (user, origin) => ({
         `Hello ${user.name},\n\nYour account has been created. Next steps: complete your details, upload your licence, then send them for review. We will email you when we have decided.\n\n${origin}/account\n\nIf you did not create this account, ignore this email.`)
 });
 
-// Review decisions. `kind` is 'doctor' or a facility kind (lab, imaging, hospital, clinic).
+// Review decisions. `kind` is 'doctor' or a facility kind (lab, imaging, hospital, clinic, pharmacy, blood_bank).
 export function decisionEmail(user, kind, status, note, origin) {
     const doctor = kind === 'doctor', page = `${origin}/${doctor ? 'doctor' : 'facility'}`;
     const texts = {

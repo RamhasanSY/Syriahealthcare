@@ -69,6 +69,17 @@ describe('lab side', () => {
         assert.equal((await app.inject({url: '/api/lab/results', headers: {cookie: doctor}})).statusCode, 403);
     });
 
+    test('approved pharmacies and blood banks cannot send, list or renew lab results', async () => {
+        for (const [kind, email] of [['pharmacy', 'ph@example.org'], ['blood_bank', 'bb@example.org']]) {
+            const cookie = await lab(kind, email);
+            assert.equal((await upload(cookie)).json().error, 'not_a_lab', kind);
+            assert.equal((await app.inject({url: '/api/lab/results', headers: {cookie}})).json().error, 'not_a_lab', kind);
+            const renew = await post('/api/lab/results/0b6f1d1e-3c55-4a43-9f6e-5d3c2a1b0c9d/code', {}, {cookie});
+            assert.equal(renew.json().error, 'not_a_lab', kind);
+        }
+        assert.equal((await pool.query('SELECT count(*)::int AS n FROM lab_results')).rows[0].n, 0);
+    });
+
     test('checks the patient, the title and the file', async () => {
         const cookie = await lab();
         assert.equal((await upload(cookie, {...patient, patient_name: 'A'})).json().error, 'invalid_patient_name');

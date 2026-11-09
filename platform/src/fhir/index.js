@@ -164,7 +164,7 @@ export default async function fhirRoutes(app) {
         return found ? send(reply, 200, slot(parsed.doctorId, found)) : notFound(reply, 'Slot');
     });
 
-    // ---- Organization, Location, HealthcareService (laboratories, imaging centres, hospitals, clinics) ----
+    // ---- Organization, Location, HealthcareService (laboratories, imaging centres, hospitals, clinics, pharmacies, blood banks) ----
     app.get('/Organization/:id', async (request, reply) => {
         if (!UUID.test(request.params.id)) return notFound(reply, 'Organization');
         const [f] = await loadFacilities(app.pg, {where: ['u.id = $1'], args: [request.params.id], limit: 1});

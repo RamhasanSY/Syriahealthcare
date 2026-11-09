@@ -1,5 +1,5 @@
-// Labs, imaging centres, hospitals and clinics: profile and documents (facility side), review (admin side),
-// and the public list of approved facilities that the website copies to its Labs and Hospitals pages.
+// Labs, imaging centres, hospitals, clinics, pharmacies and blood banks: profile and documents (facility side), review
+// (admin side), and the public list of approved facilities that the website copies to its directory pages.
 import multipart from '@fastify/multipart';
 import {HttpError, requireRole} from './auth.js';
 import {facilityKinds, facilityServices, governorates} from './catalog.js';

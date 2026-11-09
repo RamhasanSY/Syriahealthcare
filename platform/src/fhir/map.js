@@ -108,16 +108,18 @@ export const organization = f => prune({
     address: [address({text: f.address, area: f.area, governorate: f.governorate})]
 });
 
+// HL7 v3 RoleCode for each kind. It has no code for a blood bank, so blood banks carry only the SyriaHC facility kind.
 const LOCATION_TYPE = {
     hospital: {code: 'HOSP', display: 'Hospital'}, lab: {code: 'MBL', display: 'medical laboratory'},
-    imaging: {code: 'RADDX', display: 'Radiology diagnostics or therapeutics unit'}, clinic: {code: 'OF', display: 'Outpatient facility'}
+    imaging: {code: 'RADDX', display: 'Radiology diagnostics or therapeutics unit'}, clinic: {code: 'OF', display: 'Outpatient facility'},
+    pharmacy: {code: 'PHARM', display: 'Pharmacy'}
 };
 
 export const facilityLocation = f => prune({
     resourceType: 'Location', id: f.id, meta: {lastUpdated: instant(f.updated_at)}, status: 'active', mode: 'instance',
     name: facilityName(f), description: f.description,
     type: [
-        {coding: [{system: V3_ROLE, ...LOCATION_TYPE[f.kind]}]},
+        LOCATION_TYPE[f.kind] ? {coding: [{system: V3_ROLE, ...LOCATION_TYPE[f.kind]}]} : undefined,
         f.emergency ? {coding: [{system: V3_ROLE, code: 'ER', display: 'Emergency room'}]} : undefined,
         kindConcept(f.kind)
     ],
