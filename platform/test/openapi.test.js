@@ -12,6 +12,9 @@ before(async () => {
 });
 after(() => teardown(app));
 
+// A real-looking URL for a path: ids become a UUID, page numbers 1.
+const example = path => path.replace('{page}', '1').replace(/\{\w+\}/g, '00000000-0000-4000-8000-000000000000');
+
 const operations = () => Object.entries(doc.paths).flatMap(([path, methods]) =>
     Object.entries(methods).map(([method, op]) => ({key: `${method.toUpperCase()} ${path}`, path, method, op})));
 
@@ -57,14 +60,14 @@ describe('OpenAPI description of /api', () => {
         const protectedGets = operations().filter(o => o.method === 'get' && o.op.security);
         assert.ok(protectedGets.length > 10);
         for (const {path} of protectedGets) {
-            const url = path.replace(/\{\w+\}/g, '00000000-0000-4000-8000-000000000000');
+            const url = example(path);
             assert.equal((await app.inject({url})).statusCode, 401, url);
         }
     });
 
     test('every public GET route answers without a session', async () => {
         for (const {path, op} of operations().filter(o => o.method === 'get' && !o.op.security)) {
-            const url = path.replace(/\{\w+\}/g, '00000000-0000-4000-8000-000000000000');
+            const url = example(path);
             assert.notEqual((await app.inject({url})).statusCode, 401, `${url} (${op.summary})`);
         }
     });

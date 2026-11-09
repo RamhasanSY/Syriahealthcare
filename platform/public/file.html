@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="ar" dir="rtl" data-title-en="My health file — SyriaHC" data-title-ar="ملفي الصحي — صحة تك">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#1a3a5c">
+<title>ملفي الصحي — صحة تك</title>
+<link rel="manifest" href="/manifest.webmanifest"><link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/assets/app.css">
+<script src="/assets/common.js" defer></script><script src="/assets/file.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#main" data-en="Skip to content" data-ar="انتقل إلى المحتوى">انتقل إلى المحتوى</a>
+<header class="top"><div class="top-inner"><a class="brand" href="/account"><img src="/assets/logo.svg" alt=""><span data-en="SyriaHC" data-ar="صحة تك">صحة تك</span></a><div class="top-actions"><a class="btn ghost" href="/account" data-en="My account" data-ar="حسابي">حسابي</a><button class="lang" id="langToggle" type="button">English</button></div></div></header>
+<main id="main" class="wrap wide" aria-busy="true">
+  <h1 data-en="My health file" data-ar="ملفي الصحي">ملفي الصحي</h1>
+  <p class="lead" id="lead" data-en="Your documents and lab results, and your children's, in one place. They open from our server each time and are not saved on this device." data-ar="وثائقك ونتائج تحاليلك، ووثائق أطفالك، في مكان واحد. تُفتح من خادمنا في كل مرة ولا تُحفظ على هذا الجهاز.">وثائقك ونتائج تحاليلك، ووثائق أطفالك، في مكان واحد. تُفتح من خادمنا في كل مرة ولا تُحفظ على هذا الجهاز.</p>
+  <div class="msg error" id="pageError" role="alert" tabindex="-1" hidden></div>
+
+  <section class="card" id="unavailable" hidden aria-labelledby="unavailableHeading">
+    <h2 id="unavailableHeading" data-en="Not available yet" data-ar="غير متاح بعد">غير متاح بعد</h2>
+    <p data-en="The health file is not open yet. We will let you know when you can start it. Booking appointments works as before." data-ar="الملف الصحي غير مفتوح بعد. سنخبرك عندما يمكنك البدء به. حجز المواعيد يعمل كالمعتاد.">الملف الصحي غير مفتوح بعد. سنخبرك عندما يمكنك البدء به. حجز المواعيد يعمل كالمعتاد.</p>
+    <a class="btn ghost" href="/account" data-en="Back to my account" data-ar="العودة إلى حسابي">العودة إلى حسابي</a>
+  </section>
+
+  <section class="card" id="offline" hidden tabindex="-1" aria-labelledby="offlineHeading">
+    <h2 id="offlineHeading" data-en="No internet connection" data-ar="لا يوجد اتصال بالإنترنت">لا يوجد اتصال بالإنترنت</h2>
+    <p data-en="Your SyriaHC patient numbers are saved on this device, so you can show them without internet. Documents and results need the internet." data-ar="أرقامك في صحة تك محفوظة على هذا الجهاز، فيمكنك إظهارها دون إنترنت. الوثائق والنتائج تحتاج إلى الإنترنت.">أرقامك في صحة تك محفوظة على هذا الجهاز، فيمكنك إظهارها دون إنترنت. الوثائق والنتائج تحتاج إلى الإنترنت.</p>
+    <ul class="number-list" id="offlineList"></ul>
+    <button class="btn ghost" type="button" id="retry" data-en="Try again" data-ar="حاول مجدداً">حاول مجدداً</button>
+  </section>
+
+  <div id="content" hidden>
+    <div class="profile-bar">
+      <div class="tabs profile-tabs" role="tablist" id="profileTabs"></div>
+      <button class="btn ghost" type="button" id="childToggle" aria-expanded="false" aria-controls="childForm" data-en="+ Add a child" data-ar="+ أضف طفلاً">+ أضف طفلاً</button>
+    </div>
+
+    <form class="card" id="childForm" hidden novalidate aria-labelledby="childHeading">
+      <h2 id="childHeading" tabindex="-1" data-en="Add a child" data-ar="أضف طفلاً">أضف طفلاً</h2>
+      <p class="hint" data-en="For children under 18. Each child gets their own SyriaHC patient number and their own file." data-ar="للأطفال دون 18 عاماً. يحصل كل طفل على رقم مريض خاص به في صحة تك وعلى ملف خاص به.">للأطفال دون 18 عاماً. يحصل كل طفل على رقم مريض خاص به في صحة تك وعلى ملف خاص به.</p>
+      <div class="msg error" id="childError" role="alert" tabindex="-1" hidden></div>
+      <label class="field"><span data-en="Child's full name *" data-ar="اسم الطفل الكامل *">اسم الطفل الكامل *</span><input type="text" id="childName" dir="auto" maxlength="120" autocomplete="off"></label>
+      <label class="field"><span data-en="Birth date *" data-ar="تاريخ الميلاد *">تاريخ الميلاد *</span><input type="date" id="childBirth"></label>
+      <label class="field"><span data-en="Sex (optional)" data-ar="الجنس (اختياري)">الجنس (اختياري)</span><select id="childSex"><option value="" data-en="Not given" data-ar="غير محدد">غير محدد</option><option value="female" data-en="Female" data-ar="أنثى">أنثى</option><option value="male" data-en="Male" data-ar="ذكر">ذكر</option></select></label>
+      <div class="actions"><button class="btn" type="submit" id="childButton" data-en="Add child" data-ar="أضف الطفل">أضف الطفل</button><button class="btn ghost" type="button" id="childCancel" data-en="Cancel" data-ar="إلغاء">إلغاء</button></div>
+    </form>
+
+    <p class="msg info" id="profileStatus" role="status" tabindex="-1" hidden></p>
+
+    <div id="profilePanel" role="tabpanel" class="file-layout">
+      <div class="file-side">
+        <section class="card number-card" aria-labelledby="numberHeading">
+          <h2 id="numberHeading" class="number-label" data-en="SyriaHC patient number" data-ar="رقم المريض في صحة تك">رقم المريض في صحة تك</h2>
+          <p class="patient-number" id="patientNumber" dir="ltr"></p>
+          <div class="actions"><button class="btn ghost" type="button" id="copyNumber" data-en="Copy number" data-ar="انسخ الرقم">انسخ الرقم</button><span class="saved" id="copyStatus" role="status"></span></div>
+          <dl class="dl"><dt data-en="Name" data-ar="الاسم">الاسم</dt><dd id="profileName"></dd><dt data-en="Birth date" data-ar="تاريخ الميلاد">تاريخ الميلاد</dt><dd id="profileBirth"></dd></dl>
+          <p class="hint" data-en="The number stays the same for life. It is saved on this device, so you can show it even without internet." data-ar="يبقى الرقم نفسه مدى الحياة. وهو محفوظ على هذا الجهاز، فيمكنك إظهاره حتى دون إنترنت.">يبقى الرقم نفسه مدى الحياة. وهو محفوظ على هذا الجهاز، فيمكنك إظهاره حتى دون إنترنت.</p>
+          <button class="link-btn" type="button" id="editToggle" aria-expanded="false" aria-controls="editForm" data-en="Edit profile" data-ar="تعديل البيانات">تعديل البيانات</button>
+          <form id="editForm" class="edit-form" hidden novalidate aria-labelledby="editHeading">
+            <h3 id="editHeading" tabindex="-1" data-en="Edit profile" data-ar="تعديل البيانات">تعديل البيانات</h3>
+            <div class="msg error" id="editError" role="alert" tabindex="-1" hidden></div>
+            <label class="field"><span data-en="Full name *" data-ar="الاسم الكامل *">الاسم الكامل *</span><input type="text" id="editName" dir="auto" maxlength="120" autocomplete="off"></label>
+            <label class="field"><span id="editBirthLabel"></span><input type="date" id="editBirth"></label>
+            <label class="field"><span data-en="Sex (optional)" data-ar="الجنس (اختياري)">الجنس (اختياري)</span><select id="editSex"><option value="" data-en="Not given" data-ar="غير محدد">غير محدد</option><option value="female" data-en="Female" data-ar="أنثى">أنثى</option><option value="male" data-en="Male" data-ar="ذكر">ذكر</option></select></label>
+            <div class="actions"><button class="btn" type="submit" id="editButton" data-en="Save" data-ar="حفظ">حفظ</button><button class="btn ghost" type="button" id="editCancel" data-en="Cancel" data-ar="إلغاء">إلغاء</button></div>
+          </form>
+        </section>
+
+        <section class="card consent-card" id="consentBox" hidden aria-labelledby="consentHeading">
+          <h2 id="consentHeading" tabindex="-1"></h2>
+          <ul class="plain-list">
+            <li data-en="We keep the documents and lab results you add here, with their kind and date." data-ar="نحفظ الوثائق ونتائج التحاليل التي تضيفها هنا، مع نوعها وتاريخها.">نحفظ الوثائق ونتائج التحاليل التي تضيفها هنا، مع نوعها وتاريخها.</li>
+            <li data-en="Everything is stored encrypted on our server." data-ar="يُحفظ كل شيء مشفّراً على خادمنا.">يُحفظ كل شيء مشفّراً على خادمنا.</li>
+            <li data-en="Only you can see it. A doctor sees it only if you decide to share it later." data-ar="لا يراه أحد غيرك. لا يراه الطبيب إلا إذا قررت مشاركته لاحقاً.">لا يراه أحد غيرك. لا يراه الطبيب إلا إذا قررت مشاركته لاحقاً.</li>
+            <li data-en="You can delete any entry. It stays in the bin for 30 days, then it is removed for good." data-ar="يمكنك حذف أي وثيقة. تبقى في سلة المحذوفات 30 يوماً ثم تُحذف نهائياً.">يمكنك حذف أي وثيقة. تبقى في سلة المحذوفات 30 يوماً ثم تُحذف نهائياً.</li>
+            <li data-en="You can withdraw your consent at any time." data-ar="يمكنك سحب موافقتك في أي وقت.">يمكنك سحب موافقتك في أي وقت.</li>
+          </ul>
+          <p><a href="/privacy" data-en="Privacy policy" data-ar="سياسة الخصوصية">سياسة الخصوصية</a></p>
+          <p class="msg info" id="claimWaiting" hidden data-en="After you agree, you can add the lab result from your slip." data-ar="بعد موافقتك يمكنك إضافة نتيجة التحليل من ورقة المخبر.">بعد موافقتك يمكنك إضافة نتيجة التحليل من ورقة المخبر.</p>
+          <div class="msg error" id="consentError" role="alert" tabindex="-1" hidden></div>
+          <label class="check"><input type="checkbox" id="consentCheck"><span id="consentLabel"></span></label>
+          <button class="btn" type="button" id="consentButton" data-en="Start the health file" data-ar="ابدأ الملف الصحي">ابدأ الملف الصحي</button>
+        </section>
+
+        <section class="card" id="addBox" hidden aria-labelledby="addHeading">
+          <h2 id="addHeading" data-en="Add to this file" data-ar="أضف إلى هذا الملف">أضف إلى هذا الملف</h2>
+          <div class="actions"><button class="btn" type="button" id="uploadToggle" aria-expanded="false" aria-controls="uploadForm" data-en="Upload photos or a PDF" data-ar="ارفع صوراً أو ملف PDF">ارفع صوراً أو ملف PDF</button><button class="btn ghost" type="button" id="claimToggle" aria-expanded="false" aria-controls="claimForm" data-en="Add a lab result from your slip" data-ar="أضف نتيجة تحليل من ورقة المخبر">أضف نتيجة تحليل من ورقة المخبر</button></div>
+        </section>
+
+        <form class="card" id="uploadForm" hidden novalidate aria-labelledby="uploadHeading">
+          <h2 id="uploadHeading" tabindex="-1" data-en="Upload photos or a PDF" data-ar="ارفع صوراً أو ملف PDF">ارفع صوراً أو ملف PDF</h2>
+          <div class="msg error" id="uploadError" role="alert" tabindex="-1" hidden></div>
+          <label class="field"><span data-en="Kind *" data-ar="النوع *">النوع *</span><select id="upCategory"></select></label>
+          <label class="field"><span data-en="Name of the document *" data-ar="اسم الوثيقة *">اسم الوثيقة *</span><input type="text" id="upTitle" dir="auto" maxlength="100" autocomplete="off" placeholder="" data-placeholder-en="e.g. Blood test, March" data-placeholder-ar="مثلاً: تحليل دم، آذار"></label>
+          <label class="field"><span data-en="Date on the document (optional)" data-ar="تاريخ الوثيقة (اختياري)">تاريخ الوثيقة (اختياري)</span><input type="date" id="upDate"><small data-en="Leave it empty if you do not know it." data-ar="اتركه فارغاً إن لم تكن تعرفه.">اتركه فارغاً إن لم تكن تعرفه.</small></label>
+          <fieldset class="pages-field">
+            <legend data-en="Pages *" data-ar="الصفحات *">الصفحات *</legend>
+            <p class="hint" data-en="Up to 10 pages: photos, or PDF, JPG and PNG files, at most 5 MB each. Photos are made smaller on this device and their location data is removed before they are sent." data-ar="حتى 10 صفحات: صور، أو ملفات PDF وJPG وPNG، بحد أقصى 5 ميغابايت لكل صفحة. تُصغَّر الصور على هذا الجهاز ويُحذف منها الموقع الجغرافي قبل إرسالها.">حتى 10 صفحات: صور، أو ملفات PDF وJPG وPNG، بحد أقصى 5 ميغابايت لكل صفحة. تُصغَّر الصور على هذا الجهاز ويُحذف منها الموقع الجغرافي قبل إرسالها.</p>
+            <div class="actions file-buttons">
+              <label class="btn ghost file-btn"><span data-en="Take a photo" data-ar="التقط صورة">التقط صورة</span><input type="file" id="upCamera" class="sr-only" accept="image/*" capture="environment"></label>
+              <label class="btn ghost file-btn"><span data-en="Choose files" data-ar="اختر ملفات">اختر ملفات</span><input type="file" id="upFiles" class="sr-only" multiple accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"></label>
+            </div>
+            <ol class="page-list" id="pageList"></ol>
+          </fieldset>
+          <p class="hint" id="uploadProgress" role="status"></p>
+          <progress id="uploadBar" max="100" value="0" hidden></progress>
+          <button class="btn" type="submit" id="uploadButton"></button>
+        </form>
+
+        <form class="card" id="claimForm" hidden novalidate aria-labelledby="claimHeading">
+          <h2 id="claimHeading" tabindex="-1" data-en="Add a lab result from your slip" data-ar="أضف نتيجة تحليل من ورقة المخبر">أضف نتيجة تحليل من ورقة المخبر</h2>
+          <p class="hint" data-en="Labs that use SyriaHC give you a slip with a code. Enter the code and one more detail, as you gave it to the lab." data-ar="المخابر التي تستخدم صحة تك تعطيك ورقة عليها رمز. أدخل الرمز ومعلومة أخرى كما أعطيتها للمخبر.">المخابر التي تستخدم صحة تك تعطيك ورقة عليها رمز. أدخل الرمز ومعلومة أخرى كما أعطيتها للمخبر.</p>
+          <div class="msg error" id="claimError" role="alert" tabindex="-1" hidden></div>
+          <p class="hint" id="claimTries" hidden></p>
+          <div class="report-box" id="reportBox" hidden>
+            <button class="btn ghost" type="button" id="reportToggle" aria-expanded="false" aria-controls="reportFields" data-en="This is my result — report it" data-ar="هذه نتيجتي — أبلغ عن ذلك">هذه نتيجتي — أبلغ عن ذلك</button>
+            <div id="reportFields" hidden>
+              <p class="hint" data-en="We tell our team, who will check it with the lab. We do not show you anything about the other file." data-ar="نُبلغ فريقنا ليتحقق من الأمر مع المخبر. لا نعرض عليك أي شيء عن الملف الآخر.">نُبلغ فريقنا ليتحقق من الأمر مع المخبر. لا نعرض عليك أي شيء عن الملف الآخر.</p>
+              <label class="field"><span data-en="Note (optional)" data-ar="ملاحظة (اختيارية)">ملاحظة (اختيارية)</span><textarea id="reportNote" rows="3" maxlength="500" dir="auto"></textarea></label>
+              <button class="btn" type="button" id="reportSend" data-en="Send report" data-ar="أرسل البلاغ">أرسل البلاغ</button>
+            </div>
+          </div>
+          <p class="msg info" id="reportDone" role="status" tabindex="-1" hidden data-en="Thank you. Our team will check this with the lab." data-ar="شكراً لك. سيتحقق فريقنا من الأمر مع المخبر.">شكراً لك. سيتحقق فريقنا من الأمر مع المخبر.</p>
+          <label class="field"><span data-en="Code from the slip *" data-ar="الرمز من الورقة *">الرمز من الورقة *</span><input type="text" id="claimCode" class="code-input" dir="ltr" maxlength="20" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="ABCD-EFGH-JKLM"><small data-en="12 letters and digits. Spaces and dashes do not matter." data-ar="12 حرفاً ورقماً. لا تهم المسافات والشرطات.">12 حرفاً ورقماً. لا تهم المسافات والشرطات.</small></label>
+          <label class="field"><span data-en="Birth year, or the last 3 digits of the mobile number *" data-ar="سنة الميلاد، أو آخر 3 أرقام من رقم الجوال *">سنة الميلاد، أو آخر 3 أرقام من رقم الجوال *</span><input type="text" inputmode="numeric" id="claimCheck" dir="ltr" maxlength="4" autocomplete="off"><small data-en="As the lab entered it: for example 1985, or 678 for 0912 345 678." data-ar="كما أدخلها المخبر: مثلاً 1985، أو 678 للرقم ⁦0912 345 678⁩.">كما أدخلها المخبر: مثلاً 1985، أو 678 للرقم ⁦0912 345 678⁩.</small></label>
+          <button class="btn" type="submit" id="claimButton"></button>
+        </form>
+      </div>
+
+      <section class="timeline" aria-labelledby="timelineHeading">
+        <div class="timeline-head"><h2 id="timelineHeading" tabindex="-1"></h2><button class="btn ghost" type="button" id="binToggle"></button></div>
+        <form class="filter-row" id="filterForm" role="search" novalidate>
+          <label class="field"><span data-en="Kind" data-ar="النوع">النوع</span><select id="filterCategory"></select></label>
+          <label class="field"><span data-en="From" data-ar="من">من</span><input type="date" id="filterFrom"></label>
+          <label class="field"><span data-en="To" data-ar="إلى">إلى</span><input type="date" id="filterTo"></label>
+          <div class="actions"><button class="btn" type="submit" id="filterButton" data-en="Show" data-ar="اعرض">اعرض</button><button class="btn ghost" type="button" id="filterClear" data-en="Show all" data-ar="عرض الكل">عرض الكل</button></div>
+        </form>
+        <p class="hint" data-en="Pages open in a new tab. PDF files are downloaded and open in your phone's PDF app." data-ar="تُفتح الصفحات في نافذة جديدة. تُنزَّل ملفات PDF وتُفتح في تطبيق PDF على هاتفك.">تُفتح الصفحات في نافذة جديدة. تُنزَّل ملفات PDF وتُفتح في تطبيق PDF على هاتفك.</p>
+        <div class="msg info timeline-note" id="timelineNote" role="status" tabindex="-1" hidden><span id="timelineNoteText"></span> <button class="link-btn" type="button" id="undoDelete" hidden data-en="Undo" data-ar="تراجع">تراجع</button></div>
+        <div class="msg error" id="timelineError" role="alert" tabindex="-1" hidden></div>
+        <p class="hint" id="timelineCount" role="status"></p>
+        <div id="timeline"></div>
+        <div class="withdraw" id="withdrawBox" hidden>
+          <button class="link-btn" type="button" id="withdrawToggle" aria-expanded="false" aria-controls="withdrawConfirm" data-en="Withdraw consent for this file" data-ar="سحب الموافقة على هذا الملف">سحب الموافقة على هذا الملف</button>
+          <div class="confirm-box" id="withdrawConfirm" hidden>
+            <p id="withdrawText" tabindex="-1" data-en="After this, nothing new can be added to this file. What is already in it stays until you delete it. You can agree again later." data-ar="بعد ذلك لا يمكن إضافة شيء جديد إلى هذا الملف. ما فيه الآن يبقى حتى تحذفه. يمكنك الموافقة مجدداً لاحقاً.">بعد ذلك لا يمكن إضافة شيء جديد إلى هذا الملف. ما فيه الآن يبقى حتى تحذفه. يمكنك الموافقة مجدداً لاحقاً.</p>
+            <div class="msg error" id="withdrawError" role="alert" tabindex="-1" hidden></div>
+            <div class="actions"><button class="btn danger" type="button" id="withdrawYes" data-en="Yes, withdraw consent" data-ar="نعم، اسحب الموافقة">نعم، اسحب الموافقة</button><button class="btn ghost" type="button" id="withdrawNo" data-en="Keep it" data-ar="أبقِها">أبقِها</button></div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</main>
+<footer><div class="wrap"><a href="/account" data-en="← My account" data-ar="حسابي ←">حسابي ←</a><a href="/privacy" data-en="Privacy policy" data-ar="سياسة الخصوصية">سياسة الخصوصية</a></div></footer>
+</body>
+</html>

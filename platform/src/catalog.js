@@ -125,3 +125,20 @@ export const governorates = {
     raqqa: ['Raqqa', 'الرقة'],
     hasakah: ['Al-Hasakah', 'الحسكة']
 };
+
+// Kinds of entries in a patient's health file (stage 2b), with the LOINC document type used in FHIR DocumentReference.type.
+export const documentCategories = {
+    lab: {loinc: ['11502-2', 'Laboratory report'], label: ['Lab result', 'نتيجة تحليل']},
+    imaging: {loinc: ['18748-4', 'Diagnostic imaging study'], label: ['X-ray or scan', 'صورة أشعة']},
+    report: {loinc: ['11488-4', 'Consult note'], label: ["Doctor's report", 'تقرير طبي']},
+    prescription: {loinc: ['57833-6', 'Prescription for medication'], label: ['Prescription', 'وصفة طبية']},
+    discharge: {loinc: ['18842-5', 'Discharge summary'], label: ['Hospital discharge letter', 'تقرير خروج من المشفى']},
+    vaccination: {loinc: ['11369-6', 'History of Immunization Narrative'], label: ['Vaccinations', 'لقاحات']},
+    other: {loinc: null, label: ['Other', 'أخرى']}
+};
+
+// Where an entry of the health file came from.
+export const documentSources = {
+    'patient-upload': ['Uploaded by the patient', 'رفعه المريض'],
+    'lab-slip': ['Lab result taken over from a lab slip', 'نتيجة تحليل أُضيفت من ورقة المخبر']
+};

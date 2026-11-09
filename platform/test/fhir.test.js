@@ -1,7 +1,7 @@
 import {after, beforeEach, describe, test} from 'node:test';
 import assert from 'node:assert/strict';
 import {approvedDoctor, cookieOf, pool, setup, signIn, teardown} from './helpers.js';
-import {RESOURCES} from '../src/fhir/registry.js';
+import {HEALTH_RESOURCES, RESOURCES} from '../src/fhir/registry.js';
 import {addDays, localDate} from '../src/slots.js';
 
 let app, post;
@@ -32,14 +32,17 @@ describe('metadata', () => {
         const body = res.json();
         assert.equal(body.resourceType, 'CapabilityStatement');
         assert.equal(body.fhirVersion, '4.0.1');
-        assert.deepEqual(body.rest[0].resource.map(r => r.type), Object.keys(RESOURCES));
+        assert.deepEqual(body.rest[0].resource.map(r => r.type), [...Object.keys(RESOURCES), ...Object.keys(HEALTH_RESOURCES)], 'the health file is on in tests');
         const practitioner = body.rest[0].resource.find(r => r.type === 'Practitioner');
         assert.deepEqual(practitioner.searchParam, [{name: 'name', type: 'string'}, {name: 'active', type: 'token'}]);
     });
 
     test('there is no patient search of any kind', async () => {
         const body = (await get('/fhir/r4/metadata')).json();
-        assert.equal(body.rest[0].resource.some(r => r.type === 'Patient'), false);
+        const patient = body.rest[0].resource.find(r => r.type === 'Patient');
+        assert.deepEqual(patient.interaction, [{code: 'read'}], 'read by id only');
+        assert.equal(patient.searchParam, undefined);
+        assert.equal((await get('/fhir/r4/Patient?name=Lina')).statusCode, 404, 'no search route exists');
     });
 });
 
@@ -100,7 +103,8 @@ describe('practitioners and practices (IHE mCSD style)', () => {
 
     test('there is no way to search patients by phone or name', async () => {
         assert.equal((await get('/fhir/r4/Patient?phone=0912345678')).statusCode, 404);
-        assert.equal((await get('/fhir/r4/Patient/00000000-0000-4000-8000-000000000000')).statusCode, 404);
+        // Reading a profile by id needs a patient session (stage 2b); without one every id gets the same 401, so nothing is revealed.
+        assert.equal((await get('/fhir/r4/Patient/00000000-0000-4000-8000-000000000000')).statusCode, 401);
     });
 });
 

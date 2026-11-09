@@ -17,6 +17,7 @@ import resultRoutes from './results.js';
 import {createDocumentStore} from './documents.js';
 import fhirRoutes from './fhir/index.js';
 import accountRoutes from './accounts.js';
+import healthFileRoutes from './healthfile.js';
 import openapiRoutes, {collectRoutes} from './openapi.js';
 
 const UNSAFE = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
@@ -50,7 +51,10 @@ export async function buildApp({config, pool, sms, whatsapp, telegram, mail, doc
         reply.header('X-Frame-Options', 'DENY');
         reply.header('Referrer-Policy', 'same-origin');
         reply.header('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
-        reply.header('Content-Security-Policy', "default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'");
+        // A route may set a stricter policy of its own (patients' files are sent in a sandbox, src/healthfile.js).
+        if (!reply.getHeader('Content-Security-Policy')) {
+            reply.header('Content-Security-Policy', "default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'");
+        }
         if (config.production) reply.header('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
         if (request.url.startsWith('/api/')) reply.header('Cache-Control', 'no-store');
         return payload;
@@ -84,6 +88,7 @@ export async function buildApp({config, pool, sms, whatsapp, telegram, mail, doc
     await app.register(facilityRoutes);
     await app.register(resultRoutes);
     await app.register(accountRoutes);
+    await app.register(healthFileRoutes);
     await app.register(openapiRoutes, {routes});
     await app.register(fhirRoutes, {prefix: '/fhir/r4'});
     await app.register(fastifyStatic, {root: fileURLToPath(new URL('../public/', import.meta.url)), extensions: ['html']});

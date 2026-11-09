@@ -16,10 +16,22 @@ export const RESOURCES = {
     Endpoint: {read: true, search: {}}
 };
 
+// The health file (stage 2b): only for a signed-in patient and only the own profiles, listed while HEALTH_FILE=on.
+// Patient has no search at all: nobody can look for a person, only read a profile they already hold.
+export const HEALTH_RESOURCES = {
+    Patient: {read: true, search: {}, operations: [{name: 'everything', definition: 'http://hl7.org/fhir/OperationDefinition/Patient-everything'}]},
+    RelatedPerson: {read: true, search: {}},
+    DocumentReference: {read: true, search: {patient: 'reference', type: 'token', date: 'date'}},
+    Binary: {read: true, search: {}},
+    DiagnosticReport: {read: true, search: {patient: 'reference'}},
+    Consent: {read: false, search: {patient: 'reference'}},
+    Appointment: {read: false, search: {patient: 'reference'}}
+};
+
 // Parameters every search accepts.
 export const COMMON_PARAMS = ['_count'];
 
-export function capabilityStatement(base) {
+export function capabilityStatement(base, {health = false} = {}) {
     return {
         resourceType: 'CapabilityStatement', status: 'active', experimental: false, date: `${PUBLISHED}T00:00:00Z`,
         publisher: 'SyriaHC', kind: 'instance',
@@ -28,11 +40,14 @@ export function capabilityStatement(base) {
         fhirVersion: '4.0.1', format: ['json'],
         rest: [{
             mode: 'server',
-            resource: Object.entries(RESOURCES).map(([type, def]) => ({
+            ...(health && {security: {description: 'Health file resources (Patient, RelatedPerson, DocumentReference, Binary, DiagnosticReport, ' +
+                'Consent, Appointment) need a signed-in patient session and show only their own profiles. There is no patient search.'}}),
+            resource: Object.entries({...RESOURCES, ...(health ? HEALTH_RESOURCES : {})}).map(([type, def]) => ({
                 type,
                 interaction: [...(def.read ? [{code: 'read'}] : []), ...(Object.keys(def.search).length ? [{code: 'search-type'}] : [])],
                 // FHIR JSON forbids empty arrays, so resources without search parameters leave the element out.
-                ...(Object.keys(def.search).length && {searchParam: Object.entries(def.search).map(([name, type]) => ({name, type}))})
+                ...(Object.keys(def.search).length && {searchParam: Object.entries(def.search).map(([name, type]) => ({name, type}))}),
+                ...(def.operations && {operation: def.operations})
             }))
         }]
     };

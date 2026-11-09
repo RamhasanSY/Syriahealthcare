@@ -1,6 +1,6 @@
 // Master data codes as HL7 FHIR R4 CodeSystems, ValueSets and NamingSystems, built from src/catalog.js.
 // Every code has its English display and an Arabic designation, so other systems can show either language.
-import {facilityKinds, facilityServices, governorates, specialties} from '../catalog.js';
+import {documentCategories, documentSources, facilityKinds, facilityServices, governorates, specialties} from '../catalog.js';
 
 export const CANONICAL = 'https://syriahc.com/fhir';
 export const PUBLISHED = '2026-11-09';  // also the version of every CodeSystem and ValueSet: change it when a code is added
@@ -35,7 +35,11 @@ const CODE_SYSTEMS = [
         concepts: () => Object.entries(governorates).map(([code, labels]) => concept(code, labels, {
             property: [{code: 'iso3166-2', valueCode: GOVERNORATE_ISO[code]}]
         })),
-        property: [{code: 'iso3166-2', uri: 'urn:iso:std:iso:3166:-2', description: 'ISO 3166-2 subdivision code', type: 'code'}]}
+        property: [{code: 'iso3166-2', uri: 'urn:iso:std:iso:3166:-2', description: 'ISO 3166-2 subdivision code', type: 'code'}]},
+    {id: 'document-category', title: 'Kinds of health file entries', description: 'What an entry of a health file is (stage 2b).',
+        concepts: () => Object.entries(documentCategories).map(([code, c]) => concept(code, c.label))},
+    {id: 'document-source', title: 'Sources of health file entries', description: 'Where an entry of a health file came from (stage 2b).',
+        concepts: () => Object.entries(documentSources).map(([code, labels]) => concept(code, labels))}
 ];
 
 export const codeSystemUrl = id => `${CANONICAL}/CodeSystem/${id}`;
@@ -79,7 +83,8 @@ export function valueSets() {
 // Stable expansion identifiers (one fixed UUID per ValueSet).
 const expansionId = id => ({
     specialty: '6f7a5d0e-1c2b-4d3e-9f40-5a6b7c8d9e01', 'facility-kind': '6f7a5d0e-1c2b-4d3e-9f40-5a6b7c8d9e02',
-    'facility-service': '6f7a5d0e-1c2b-4d3e-9f40-5a6b7c8d9e03', governorate: '6f7a5d0e-1c2b-4d3e-9f40-5a6b7c8d9e04'
+    'facility-service': '6f7a5d0e-1c2b-4d3e-9f40-5a6b7c8d9e03', governorate: '6f7a5d0e-1c2b-4d3e-9f40-5a6b7c8d9e04',
+    'document-category': '6f7a5d0e-1c2b-4d3e-9f40-5a6b7c8d9e05', 'document-source': '6f7a5d0e-1c2b-4d3e-9f40-5a6b7c8d9e06'
 }[id]);
 
 // Identifiers SyriaHC issues. The patient number is used from stage 2b on.

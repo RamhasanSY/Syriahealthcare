@@ -9,7 +9,7 @@ await migrate(pool);
 const app = await buildApp({config, pool});
 
 // Email queue, clean-up and disk check (src/jobs.js).
-startJobs({pool, mail: app.mail, log: app.log, dir: config.documentDir});
+startJobs({pool, mail: app.mail, log: app.log, dir: config.documentDir, documents: app.documents});
 
 for (const signal of ['SIGINT', 'SIGTERM']) {
     process.on(signal, async () => {

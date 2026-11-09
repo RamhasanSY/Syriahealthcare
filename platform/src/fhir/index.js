@@ -8,6 +8,7 @@ import {
 } from './map.js';
 import {capabilityStatement, COMMON_PARAMS, RESOURCES} from './registry.js';
 import {codeSystems, namingSystems, valueSets} from './terminology.js';
+import healthFhirRoutes from './health.js';
 
 const FHIR_JSON = 'application/fhir+json; charset=utf-8';
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
@@ -78,7 +79,10 @@ export default async function fhirRoutes(app) {
             outcome('exception', 'The server could not process this request.', 'تعذر على الخادم معالجة هذا الطلب.'));
     });
 
-    app.get('/metadata', async (request, reply) => send(reply, 200, capabilityStatement(base)));
+    app.get('/metadata', async (request, reply) => send(reply, 200, capabilityStatement(base, {health: app.config.healthFile})));
+
+    // ---- Health file of the signed-in patient (stage 2b, src/fhir/health.js) ----
+    healthFhirRoutes(app, {base, send, outcome});
 
     // ---- Fixed resources ----
     app.get('/Endpoint/fhir-r4', async (request, reply) => send(reply, 200, endpoint(base)));
