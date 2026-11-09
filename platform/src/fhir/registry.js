@@ -25,13 +25,14 @@ export function capabilityStatement(base) {
         publisher: 'SyriaHC', kind: 'instance',
         software: {name: 'SyriaHC platform', version: '2.0'},
         implementation: {description: 'SyriaHC public directory (IHE mCSD style), HL7 FHIR R4', url: base},
-        fhirVersion: '4.0.1', format: ['json'], acceptUnknown: 'no',
+        fhirVersion: '4.0.1', format: ['json'],
         rest: [{
             mode: 'server',
             resource: Object.entries(RESOURCES).map(([type, def]) => ({
                 type,
                 interaction: [...(def.read ? [{code: 'read'}] : []), ...(Object.keys(def.search).length ? [{code: 'search-type'}] : [])],
-                searchParam: Object.entries(def.search).map(([name, type]) => ({name, type}))
+                // FHIR JSON forbids empty arrays, so resources without search parameters leave the element out.
+                ...(Object.keys(def.search).length && {searchParam: Object.entries(def.search).map(([name, type]) => ({name, type}))})
             }))
         }]
     };

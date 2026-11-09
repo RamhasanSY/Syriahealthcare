@@ -50,10 +50,12 @@ export async function loadSession(request) {
 }
 
 export function requireRole(...roles) {
-    return async request => {
+    const guard = async request => {
         if (!request.user) throw new HttpError(401, 'signin_required', 'Please sign in.');
         if (!roles.includes(request.user.role)) throw new HttpError(403, 'forbidden', 'You do not have access to this page.');
     };
+    guard.roles = roles;  // read by src/openapi.js, so the published description always matches the code
+    return guard;
 }
 
 // Per network address. Mobile carriers often share one address among many customers, so these are generous;

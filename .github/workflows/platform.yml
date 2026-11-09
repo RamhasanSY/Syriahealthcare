@@ -12,7 +12,7 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
     services:
       postgres:
         image: postgres:16-alpine
@@ -37,3 +37,21 @@ jobs:
       - run: npm test
         env:
           TEST_DATABASE_URL: postgres://postgres@127.0.0.1:5432/shc_test
+          # test/fhir-examples.test.js writes one example of every FHIR resource here, for the validator below.
+          FHIR_EXAMPLES_DIR: ${{ github.workspace }}/platform/fhir-examples
+      # The official HL7 FHIR validator checks every example against FHIR R4 (no terminology server: our own
+      # code systems live in the platform, and the validator must never call out with our data).
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: HL7 FHIR validator
+        run: |
+          curl -sSfL -o validator_cli.jar https://github.com/hapifhir/org.hl7.fhir.core/releases/latest/download/validator_cli.jar
+          java -jar validator_cli.jar fhir-examples -version 4.0.1 -tx n/a
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fhir-examples
+          path: platform/fhir-examples
+          if-no-files-found: ignore

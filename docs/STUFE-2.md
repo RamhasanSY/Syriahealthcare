@@ -1,6 +1,6 @@
 # Stufe 2: Gesundheitsakte, Teilen und Standard-Schnittstellen
 
-Stand: 8. November 2026. Grundlage sind die Analyse der Abläufe für Patienten, Ärzte, Labore und Kliniken vom 8. November (Stufenplan 1–6) und die Korrekturen des Kritikers dazu. Stufe 1 (Anmeldung per E-Mail-Code) ist live.
+Stand: 9. November 2026. Grundlage sind die Analyse der Abläufe für Patienten, Ärzte, Labore und Kliniken vom 8. November (Stufenplan 1–6) und die Korrekturen des Kritikers dazu. Stufe 1 (Anmeldung per E-Mail-Code) ist live.
 
 ## 1. Kurzfassung
 
@@ -209,8 +209,13 @@ Jeder Dienst ist ein Modul unter `platform/src/` mit eigenen Tests. Die Schnitts
 | 2.0 | `src/fhir/` (Verzeichnis, Codesysteme, Metadaten) | öffentliche FHIR-R4-Schnittstelle | ✅ live (PR #21) |
 | 2a | `src/outbox.js` (E-Mail-Warteschlange) | E-Mails mit Wiederholung und Aufgabe nach 8 Versuchen | ✅ live (PR #22) |
 | 2a | `src/profile-changes.js` (Profiländerungen prüfen) | Ärzte und Einrichtungen bleiben aktiv; Name, Fachrichtung, Gebiet, Adresse und Lizenz wartet auf den Admin, der Rest gilt sofort; Admin-Reiter „Änderungen prüfen“ mit bisher/neu | ✅ live (PR #23) |
-| 2a | Laborsuche über alle Befunde (`/api/lab/results?q=&from=&to=&cursor=`) | Suche nach Name, Telefon (ganz oder letzte Ziffern), Test und Zeitraum; 50 pro Seite, keine 90-Tage-Grenze; Code-Status statt Arztanzahl | ✅ gebaut, Branch `stage2a-lab-search` |
-| 2a | Admin-Zweitfaktor (`staff_login_codes`, `/api/auth/login/verify`) | nach dem Passwort ein E-Mail-Code, gebunden an den Anmeldeversuch; „Passwort vergessen“ meldet Admins nicht mehr direkt an | ✅ gebaut, Branch `stage2a-lab-search` |
+| 2a | Laborsuche über alle Befunde (`/api/lab/results?q=&from=&to=&cursor=`) | Suche nach Name, Telefon (ganz oder letzte Ziffern), Test und Zeitraum; 50 pro Seite, keine 90-Tage-Grenze; Code-Status statt Arztanzahl | ✅ live (PR #24) |
+| 2a | Admin-Zweitfaktor (`staff_login_codes`, `/api/auth/login/verify`) | nach dem Passwort ein E-Mail-Code, gebunden an den Anmeldeversuch; „Passwort vergessen“ meldet Admins nicht mehr direkt an | ✅ live (PR #24) |
+| 2a | `src/accounts.js` (Konten aus- und einschalten) | Admin schaltet Arzt-, Einrichtungs- und Admin-Konten mit Grund aus; Sitzungen enden sofort, Eintrag verschwindet aus dem Verzeichnis; gesperrte Ärzte sehen keine Termine mehr | ✅ gebaut, Branch `stage2-rest` |
+| 2a | `src/jobs.js` (Hintergrundaufgaben) | Postausgang alle 5 Minuten, Aufräumen stündlich, Warnung an Admins bei wenig Speicherplatz; Docker-Logs begrenzt; Index auf `audit_log` (Migration 012) | ✅ gebaut, Branch `stage2-rest` |
+| 2a | `src/fhir/audit.js` (Protokoll als FHIR AuditEvent, IHE BALP) | Grundlage für „Wer hat meine Akte geöffnet?“ in 2c | ✅ gebaut, Branch `stage2-rest` |
+| 2.0 | `src/openapi.js` und `/developers` | OpenAPI 3.1 unter `/api/openapi.json`, aus den Routen erzeugt; Entwicklerseite auf Arabisch und Englisch | ✅ gebaut, Branch `stage2-rest` |
+| 2.0 | HL7-Validator in GitHub Actions | prüft je ein Beispiel jeder FHIR-Ressource (`test/fhir-examples.test.js`) | ✅ gebaut, Branch `stage2-rest` |
 | 2a | Verschlüsselte Datensicherung außerhalb des Servers | restic, zweiter Anbieter | ⏳ braucht Bestellung |
 | 2b | `src/healthfile.js`: Patientenstamm, Akte, Uploads | Gesundheitsakte, Befund übernehmen mit zweitem Merkmal | ⏳ (Akte bleibt aus, bis Datenschutz geklärt) |
 | 2b | Patientennummer (`src/patient-number.js`) | SHC-XXXX-XXXX-X mit Prüfzeichen | ⏳ |
