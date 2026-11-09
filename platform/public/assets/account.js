@@ -1,7 +1,7 @@
 // "My account": shows who is signed in and what comes next for each role.
 document.addEventListener('DOMContentLoaded', async () => {
     const {$, tr, api} = Shc;
-    const roles = {patient: ['Patient', 'مريض'], doctor: ['Doctor', 'طبيب'], facility: ['Lab, hospital or clinic', 'مخبر أو مشفى أو مركز طبي'], admin: ['Administrator', 'مدير']};
+    const roles = {patient: ['Patient', 'مريض'], doctor: ['Doctor', 'طبيب'], facility: ['Health facility', 'منشأة صحية'], admin: ['Administrator', 'مدير']};
     const res = await api('/api/me');
     $('main').setAttribute('aria-busy', 'false');
     if (!res.ok) {

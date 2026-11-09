@@ -1,4 +1,4 @@
-// Facility profile (lab, imaging centre, hospital, clinic): public details, operating licence, and sending for review.
+// Facility profile (lab, imaging centre, hospital, clinic, pharmacy, blood bank): public details, operating licence, and sending for review.
 document.addEventListener('DOMContentLoaded', async () => {
     const FIELD_NAMES = {facility_name: ['name', 'الاسم'], governorate: ['governorate', 'المحافظة'], area: ['area', 'المنطقة'],
         address: ['address', 'العنوان'], licence_number: ['licence number', 'رقم الترخيص']};
@@ -7,7 +7,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const LABELS = {facility_name: ['Name', 'الاسم'], governorate: ['Governorate', 'المحافظة'], area: ['City or area', 'المدينة أو المنطقة'],
         address: ['Address', 'العنوان'], phone: ['Phone', 'الهاتف'], licence_number: ['Licence number', 'رقم الترخيص']};
     const NAMES = {lab: ['Laboratory name *', 'اسم المخبر *'], imaging: ['Imaging centre name *', 'اسم مركز الأشعة *'],
-        hospital: ['Hospital name *', 'اسم المشفى *'], clinic: ['Centre or clinic name *', 'اسم المركز أو المستوصف *']};
+        hospital: ['Hospital name *', 'اسم المشفى *'], clinic: ['Centre or clinic name *', 'اسم المركز أو المستوصف *'],
+        pharmacy: ['Pharmacy name *', 'اسم الصيدلية *'], blood_bank: ['Blood bank name *', 'اسم بنك الدم *']};
     const KINDS = {licence: ['Operating licence', 'ترخيص المنشأة'], other: ['Other document', 'وثيقة أخرى']};
     const STATUS = {
         draft: ['info', 'Not sent yet. Complete steps 1–3 below.', 'لم يُرسل بعد. أكملوا الخطوات 1–3 أدناه.'],
@@ -51,7 +52,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     function renderForm() {
         $('pageTitle').textContent = tr('My facility', 'منشأتي') + ' · ' + tr(...catalog.facilityKinds[kind]);
-        $('nameLabel').textContent = tr(...NAMES[kind]);
+        $('nameLabel').textContent = tr(...(NAMES[kind] || ['Name *', 'الاسم *']));
         const label = l => tr(l[0], l[1]);
         const select = $('governorate'), current = select.value || state.profile.governorate;
         select.replaceChildren(new Option(tr('Choose…', 'اختر…'), ''),

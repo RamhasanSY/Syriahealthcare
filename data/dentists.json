@@ -1,0 +1,814 @@
+{
+  "updated": "2026-11-09T14:28:56+00:00",
+  "source": "OpenStreetMap contributors (ODbL)",
+  "items": [
+    {
+      "name": "D.Giwan Ali ,Dentist",
+      "name_ar": "د.جوان علي علي - طبيب أسنان",
+      "city": "Al-Hasakah",
+      "city_ar": "الحسكة",
+      "phone": "+96352432321",
+      "hours": "Sa-Th 09:00-20:00",
+      "lat": 37.0541,
+      "lon": 41.22629,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/5465197322"
+    },
+    {
+      "name": "Marwan Ablahd",
+      "name_ar": "مروان ابلحد",
+      "city": "Al-Hasakah",
+      "city_ar": "الحسكة",
+      "lat": 37.04767,
+      "lon": 41.22989,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/6466366985"
+    },
+    {
+      "name": "حمد",
+      "city": "Al-Hasakah",
+      "city_ar": "الحسكة",
+      "lat": 37.01738,
+      "lon": 41.9573,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/7343439291"
+    },
+    {
+      "name": "نوري",
+      "city": "Al-Hasakah",
+      "city_ar": "الحسكة",
+      "lat": 37.01999,
+      "lon": 41.96215,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/7343439290"
+    },
+    {
+      "name": "Dr. Roupen Kevorkian",
+      "name_ar": "الدكتور روبين كيورك",
+      "city": "Aleppo",
+      "city_ar": "حلب",
+      "lat": 36.21254,
+      "lon": 37.15593,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/4924439121"
+    },
+    {
+      "name": "Smile",
+      "city": "Aleppo",
+      "city_ar": "حلب",
+      "lat": 36.41835,
+      "lon": 37.07324,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/10652090471"
+    },
+    {
+      "name": "Swiss center",
+      "name_ar": "مركز السويسري لزرع و تجميل الأسنان",
+      "city": "Aleppo",
+      "city_ar": "حلب",
+      "address": "ساحة العلائي",
+      "phone": "0994932292",
+      "hours": "Mo, Fr-Sa 09:00-18:00; Su, We 00:00-24:00",
+      "lat": 36.52634,
+      "lon": 37.95267,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/14247204801"
+    },
+    {
+      "name": "أكرم محمود خطاب PMCA",
+      "city": "Aleppo",
+      "city_ar": "حلب",
+      "lat": 36.25689,
+      "lon": 37.0748,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/13592297602"
+    },
+    {
+      "name": "الدكتور مجد كرم",
+      "city": "Aleppo",
+      "city_ar": "حلب",
+      "lat": 36.21406,
+      "lon": 37.15817,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/10060623362"
+    },
+    {
+      "name": "العيادات السنية",
+      "city": "Aleppo",
+      "city_ar": "حلب",
+      "lat": 36.19876,
+      "lon": 37.09891,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/10068610615"
+    },
+    {
+      "name": "العيادة السنية التجميلية Cosmetic dental clinic",
+      "city": "Aleppo",
+      "city_ar": "حلب",
+      "lat": 36.21038,
+      "lon": 37.15771,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/10060535672"
+    },
+    {
+      "name": "د. عبد الرحمن أوبري",
+      "city": "Aleppo",
+      "city_ar": "حلب",
+      "address": "شارع اشارات الفردوس",
+      "lat": 36.18473,
+      "lon": 37.15578,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/7732255592"
+    },
+    {
+      "name": "عيادة الدكتورة روكان حاج عبدو",
+      "city": "Aleppo",
+      "city_ar": "حلب",
+      "address": "دوار بولمان الشهباء",
+      "lat": 36.21371,
+      "lon": 37.12772,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/13628697601"
+    },
+    {
+      "name": "عيادة طب الأسنان",
+      "city": "Aleppo",
+      "city_ar": "حلب",
+      "lat": 36.19647,
+      "lon": 37.0953,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/10068612451"
+    },
+    {
+      "name": "محمد جمال كاشور",
+      "city": "Aleppo",
+      "city_ar": "حلب",
+      "lat": 36.22684,
+      "lon": 37.09554,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/10074511053"
+    },
+    {
+      "name": "Nizar Abou Assaf Dentist Liboratory",
+      "name_ar": "مخبر نزار أبوعساف لصناعة و تجميل الأسنان",
+      "city": "As-Suwayda",
+      "city_ar": "السويداء",
+      "phone": "00963993554360",
+      "hours": "Sa-Th 09:00-20:00",
+      "lat": 32.70715,
+      "lon": 36.56972,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/7880450885"
+    },
+    {
+      "name": "Al Bashir Dental Clinic",
+      "name_ar": "عيادة البشير السنية",
+      "city": "Damascus",
+      "city_ar": "دمشق",
+      "address": "دمشق",
+      "lat": 33.54421,
+      "lon": 36.31543,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/12115770885"
+    },
+    {
+      "name": "Artistry Dental & Cosmetic Clinics",
+      "city": "Damascus",
+      "city_ar": "دمشق",
+      "address": "شارع عمر المختار, Damascus",
+      "phone": "+963994503503",
+      "hours": "Sa-Th 10:00-22:00",
+      "lat": 33.52579,
+      "lon": 36.29316,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/9668430282"
+    },
+    {
+      "name": "Dr Arda Guiragossian",
+      "city": "Damascus",
+      "city_ar": "دمشق",
+      "lat": 33.51657,
+      "lon": 36.28023,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/452970097"
+    },
+    {
+      "name": "Dr Honen Shabrouny",
+      "name_ar": "الدكتور حنين شبروني",
+      "city": "Damascus",
+      "city_ar": "دمشق",
+      "address": "حارة عمرو بن مَعدي كَرب ٤, دمشق",
+      "phone": "+963 11 513 2985",
+      "lat": 33.54794,
+      "lon": 36.31705,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/9799306703"
+    },
+    {
+      "name": "Dr Nabih Khurdaji",
+      "name_ar": "دكتور نبيه خردجي",
+      "city": "Damascus",
+      "city_ar": "دمشق",
+      "lat": 33.5191,
+      "lon": 36.28491,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/569932420"
+    },
+    {
+      "name": "Dr. Mouhamad Al Adel",
+      "name_ar": "د. محمد العادل",
+      "city": "Damascus",
+      "city_ar": "دمشق",
+      "address": "ساحة عرنوس, دمشق",
+      "phone": "+963 11 3326894",
+      "hours": "Sa-Th 11:00-20:00",
+      "lat": 33.52082,
+      "lon": 36.29006,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/6579610585"
+    },
+    {
+      "name": "Dr. Nisreen Taghlibi",
+      "name_ar": "د. نسرين تغلبي",
+      "city": "Damascus",
+      "city_ar": "دمشق",
+      "lat": 33.52348,
+      "lon": 36.28682,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/8919613517"
+    },
+    {
+      "name": "Ibrahim Turkmani",
+      "name_ar": "ابراهيم تركماني",
+      "city": "Damascus",
+      "city_ar": "دمشق",
+      "address": "شارع عبد الكريم الخطابي",
+      "phone": "+963114411999",
+      "hours": "Sa-Th 09:00-20:00",
+      "lat": 33.52421,
+      "lon": 36.31093,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/4936507321"
+    },
+    {
+      "name": "العيادة السنية الحديثة",
+      "city": "Damascus",
+      "city_ar": "دمشق",
+      "lat": 33.49517,
+      "lon": 36.24147,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/1219113409"
+    },
+    {
+      "name": "العيادة السنية الحديثة",
+      "city": "Damascus",
+      "city_ar": "دمشق",
+      "address": "السبيل 011-8131193",
+      "hours": "24/7",
+      "lat": 33.47218,
+      "lon": 36.28121,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/7098704985"
+    },
+    {
+      "name": "د وليد متري",
+      "city": "Damascus",
+      "city_ar": "دمشق",
+      "phone": "+963933300808",
+      "lat": 33.52199,
+      "lon": 36.31866,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/5934202785"
+    },
+    {
+      "name": "د.صوفيا مشهدي \\د.اياد الصالح",
+      "city": "Damascus",
+      "city_ar": "دمشق",
+      "address": "شارع بغداد السادات, دمشق",
+      "lat": 33.51842,
+      "lon": 36.31056,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/10093400326"
+    },
+    {
+      "name": "دكتور معتز الخن",
+      "city": "Damascus",
+      "city_ar": "دمشق",
+      "address": "شارع بغداد",
+      "lat": 33.51986,
+      "lon": 36.3001,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/10729487405"
+    },
+    {
+      "name": "عيادة طب وتجميل الاسنان",
+      "city": "Damascus",
+      "city_ar": "دمشق",
+      "lat": 33.52811,
+      "lon": 36.22639,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/10021254590"
+    },
+    {
+      "name": "محمد وسيم احمد النمر",
+      "city": "Damascus",
+      "city_ar": "دمشق",
+      "lat": 33.52544,
+      "lon": 36.28917,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/4528548189"
+    },
+    {
+      "name": "معمر الحريري",
+      "city": "Daraa",
+      "city_ar": "درعا",
+      "lat": 32.74927,
+      "lon": 36.29879,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/6576487485"
+    },
+    {
+      "name": "Cosmetic dental clinic",
+      "name_ar": "العيادة السنية التجميلية، د. مصطفى حويجة",
+      "city": "Hama",
+      "city_ar": "حماة",
+      "address": "شارع الثورة, السلمية",
+      "lat": 35.01233,
+      "lon": 37.05597,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/5963449986"
+    },
+    {
+      "name": "Dr. Ammar Adi",
+      "name_ar": "الدكتور عمار عدي",
+      "city": "Hama",
+      "city_ar": "حماة",
+      "phone": "033-251-4722",
+      "lat": 35.12102,
+      "lon": 36.74018,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/9860783018"
+    },
+    {
+      "name": "Dt. Eyad Alahmad",
+      "name_ar": "عيادة الدكتور إياد الأحمد",
+      "city": "Hama",
+      "city_ar": "حماة",
+      "phone": "0955 964 566",
+      "lat": 35.15085,
+      "lon": 36.75212,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/6985930985"
+    },
+    {
+      "name": "Dt. Moayyad Zakkar",
+      "name_ar": "د. مؤيد زكار",
+      "city": "Hama",
+      "city_ar": "حماة",
+      "lat": 35.14715,
+      "lon": 36.76126,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/6987074287"
+    },
+    {
+      "name": "الدكتور احمد الكبريتي",
+      "city": "Hama",
+      "city_ar": "حماة",
+      "lat": 35.14236,
+      "lon": 36.77039,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/10074991150"
+    },
+    {
+      "name": "الدكتور عبد الباري بحري",
+      "city": "Hama",
+      "city_ar": "حماة",
+      "lat": 35.14642,
+      "lon": 36.74918,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/10075015877"
+    },
+    {
+      "name": "الدكتورة بثينة الحزواني",
+      "city": "Hama",
+      "city_ar": "حماة",
+      "hours": "Sa-Th 10:00-16:00",
+      "lat": 35.14434,
+      "lon": 36.75442,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/13887636801"
+    },
+    {
+      "name": "د. بانة آفه",
+      "city": "Hama",
+      "city_ar": "حماة",
+      "phone": "2417340",
+      "lat": 35.15015,
+      "lon": 36.77033,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/6016650486"
+    },
+    {
+      "name": "عيادة الدكتور باسل عبود لزرع وتجميل الأسنان",
+      "city": "Hama",
+      "city_ar": "حماة",
+      "lat": 35.1039,
+      "lon": 36.76266,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/10076430031"
+    },
+    {
+      "name": "عيادة الدكتور عبادة حويقة لطب وتجميل الأسنان",
+      "city": "Hama",
+      "city_ar": "حماة",
+      "lat": 35.14833,
+      "lon": 36.7277,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/10074904061"
+    },
+    {
+      "name": "عيادة الدكتورة أمامة سلطان",
+      "city": "Hama",
+      "city_ar": "حماة",
+      "lat": 35.14118,
+      "lon": 36.77268,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/10075003494"
+    },
+    {
+      "name": "عيادة الدكتورة رانيه قنوت لطب الأسنان",
+      "city": "Hama",
+      "city_ar": "حماة",
+      "lat": 35.13916,
+      "lon": 36.77178,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/10074972573"
+    },
+    {
+      "name": "عيادة الدكتورة منال الطرشة",
+      "city": "Hama",
+      "city_ar": "حماة",
+      "lat": 35.13479,
+      "lon": 36.74578,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/3748178213"
+    },
+    {
+      "name": "عيادة د.بهيرة بشر بازرباشي",
+      "city": "Hama",
+      "city_ar": "حماة",
+      "lat": 35.12695,
+      "lon": 36.73688,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/10076375251"
+    },
+    {
+      "name": "عيادة د.عبدالله طبشي",
+      "city": "Hama",
+      "city_ar": "حماة",
+      "lat": 35.12311,
+      "lon": 36.73713,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/10076388363"
+    },
+    {
+      "name": "كلارا للعناية بالأسنان CLARA DENTAL CARE",
+      "city": "Hama",
+      "city_ar": "حماة",
+      "lat": 35.10544,
+      "lon": 36.76022,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/10076437849"
+    },
+    {
+      "name": "مركز عرابي لطب الأسنان",
+      "city": "Hama",
+      "city_ar": "حماة",
+      "lat": 35.13948,
+      "lon": 36.75933,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/3748173836"
+    },
+    {
+      "name": "Smile dental Clinc",
+      "name_ar": "مركز الابتسامة",
+      "city": "Homs",
+      "city_ar": "حمص",
+      "address": "شارع مدرسة خديجة الكبرى",
+      "phone": "+963951510279",
+      "hours": "Su-Sa 9:00 م-11:00 ص",
+      "lat": 34.74469,
+      "lon": 36.71103,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/14156235601"
+    },
+    {
+      "name": "Smile Up Dental",
+      "city": "Homs",
+      "city_ar": "حمص",
+      "lat": 34.70786,
+      "lon": 36.71806,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/10044199122"
+    },
+    {
+      "name": "الدكتور إياد بلول",
+      "city": "Homs",
+      "city_ar": "حمص",
+      "lat": 34.73255,
+      "lon": 36.73606,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/10946900305"
+    },
+    {
+      "name": "حسان أشقر",
+      "city": "Homs",
+      "city_ar": "حمص",
+      "lat": 34.725,
+      "lon": 36.69752,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/6895723189"
+    },
+    {
+      "name": "عيادة الدكتور غياث خوري",
+      "city": "Homs",
+      "city_ar": "حمص",
+      "address": "شارع الجزيرة, حمص",
+      "phone": "+963933853856",
+      "lat": 34.71691,
+      "lon": 36.71964,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/13639432037"
+    },
+    {
+      "name": "غصن لتعويضات الأسنان",
+      "city": "Homs",
+      "city_ar": "حمص",
+      "lat": 34.78619,
+      "lon": 36.28465,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/2284950834"
+    },
+    {
+      "name": "Husam obaiden clinic",
+      "name_ar": "عيادة الدكتور حسام عبيدين",
+      "city": "Idlib",
+      "city_ar": "إدلب",
+      "lat": 35.81827,
+      "lon": 36.86635,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/6072796006"
+    },
+    {
+      "name": "Maxillofacial Surgery & Dental Implant Clinic",
+      "name_ar": "عيادة جراحة الوجه والفكين وزراعة الاسنان",
+      "city": "Idlib",
+      "city_ar": "إدلب",
+      "address": "معرة مصرين",
+      "phone": "+963 935 546 964",
+      "hours": "Sa-Th 09:30-19:00",
+      "lat": 36.01089,
+      "lon": 36.67148,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/14306870559"
+    },
+    {
+      "name": "خالد الحسن",
+      "city": "Idlib",
+      "city_ar": "إدلب",
+      "lat": 36.06485,
+      "lon": 36.6603,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/4964961123"
+    },
+    {
+      "name": "عيادة د.قدور القاسم",
+      "city": "Idlib",
+      "city_ar": "إدلب",
+      "address": "دوار أطمة",
+      "phone": "0536 684 4667",
+      "hours": "Mo-Su 09:00-20:00",
+      "lat": 36.30726,
+      "lon": 36.68913,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/4200008192"
+    },
+    {
+      "name": "Smiley Dental clinic",
+      "name_ar": "هشام بياسي",
+      "city": "Latakia",
+      "city_ar": "اللاذقية",
+      "address": "شارع عمر بن الخطاب, Lattakia",
+      "phone": "994777522",
+      "hours": "24/7",
+      "lat": 35.51416,
+      "lon": 35.77879,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/9234130374"
+    },
+    {
+      "name": "الدوماني",
+      "city": "Latakia",
+      "city_ar": "اللاذقية",
+      "lat": 35.51895,
+      "lon": 35.77915,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/5005888927"
+    },
+    {
+      "name": "شموط",
+      "city": "Latakia",
+      "city_ar": "اللاذقية",
+      "lat": 35.51896,
+      "lon": 35.77911,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/5005889030"
+    },
+    {
+      "name": "Dr. Ammar Shahadat",
+      "name_ar": "د. عمار الشحادات",
+      "city": "Rif Dimashq",
+      "city_ar": "ريف دمشق",
+      "lat": 33.42667,
+      "lon": 36.22996,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/5677962922"
+    },
+    {
+      "name": "Dr.Faiza Ahmad's dental clinic",
+      "name_ar": "عيادة الدكتورة فائزة أحمد للأسنان",
+      "city": "Rif Dimashq",
+      "city_ar": "ريف دمشق",
+      "address": "طريق ضاحية الاسد",
+      "phone": "+96311 535 7383",
+      "hours": "Sa-Th 16:00-20:00",
+      "lat": 33.58087,
+      "lon": 36.3605,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/4418974890"
+    },
+    {
+      "name": "Dr.mohammed nabil altarshan",
+      "name_ar": "عيادة الدكتور محمد نبيل الطرشان لطب و تجميل الأسنان",
+      "city": "Rif Dimashq",
+      "city_ar": "ريف دمشق",
+      "address": "شارع شكري القوتلي",
+      "lat": 33.35812,
+      "lon": 36.24465,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/13253801002"
+    },
+    {
+      "name": "Mstr Smile clinic",
+      "city": "Rif Dimashq",
+      "city_ar": "ريف دمشق",
+      "address": "شارع اشرفية صحنايا",
+      "phone": "+963959522950",
+      "hours": "Fr-We 09:00-18:00",
+      "lat": 33.43168,
+      "lon": 36.24466,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/11753725469"
+    },
+    {
+      "name": "الدكتور مهند الخطيب",
+      "city": "Rif Dimashq",
+      "city_ar": "ريف دمشق",
+      "lat": 33.46339,
+      "lon": 36.20136,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/14099433301"
+    },
+    {
+      "name": "العيادة التخصصية - د. خالد الهبشة",
+      "city": "Rif Dimashq",
+      "city_ar": "ريف دمشق",
+      "lat": 34.02554,
+      "lon": 36.72987,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/14098505701"
+    },
+    {
+      "name": "دكتور فادي لياس صائغ",
+      "city": "Rif Dimashq",
+      "city_ar": "ريف دمشق",
+      "lat": 33.48409,
+      "lon": 36.34398,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/11222741439"
+    },
+    {
+      "name": "دكتورة حنان",
+      "city": "Rif Dimashq",
+      "city_ar": "ريف دمشق",
+      "lat": 33.48573,
+      "lon": 36.34921,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/5934181386"
+    },
+    {
+      "name": "عيادة الجمال التخصصية لطب الأسنان",
+      "city": "Rif Dimashq",
+      "city_ar": "ريف دمشق",
+      "lat": 33.46259,
+      "lon": 36.2358,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/13968393733"
+    },
+    {
+      "name": "عيادة الدكتور صالح الشيخة",
+      "city": "Rif Dimashq",
+      "city_ar": "ريف دمشق",
+      "lat": 33.73775,
+      "lon": 36.60207,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/10156665294"
+    },
+    {
+      "name": "عيادة طب الأسنان التخصصية بإشراف د. خالد الهبشة",
+      "city": "Rif Dimashq",
+      "city_ar": "ريف دمشق",
+      "lat": 34.02582,
+      "lon": 36.72869,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/14129001601"
+    },
+    {
+      "name": "مركز لطب الأستان",
+      "city": "Rif Dimashq",
+      "city_ar": "ريف دمشق",
+      "address": "السيدة زينب",
+      "lat": 33.44561,
+      "lon": 36.34215,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/7211800186"
+    },
+    {
+      "name": "Dr Bashar Jarjous",
+      "name_ar": "د بشار جرجوس",
+      "city": "Tartus",
+      "city_ar": "طرطوس",
+      "phone": "0933511146",
+      "lat": 34.82068,
+      "lon": 36.11453,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/5821558153"
+    },
+    {
+      "name": "Ilias Dentist",
+      "name_ar": "عيادة الياس ابراهيم للأسنان",
+      "city": "Tartus",
+      "city_ar": "طرطوس",
+      "lat": 34.86506,
+      "lon": 36.24034,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/5058394225"
+    },
+    {
+      "name": "Khalili Dental Clinic",
+      "city": "Tartus",
+      "city_ar": "طرطوس",
+      "lat": 34.8949,
+      "lon": 35.89333,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/10057858807"
+    },
+    {
+      "name": "الدكتور نور الدين",
+      "city": "Tartus",
+      "city_ar": "طرطوس",
+      "lat": 34.99279,
+      "lon": 35.98449,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/14236068601"
+    },
+    {
+      "name": "الدكتورة غيداء سابا",
+      "city": "Tartus",
+      "city_ar": "طرطوس",
+      "address": "313346",
+      "lat": 34.88985,
+      "lon": 35.88312,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/4791675921"
+    },
+    {
+      "name": "د.احمد الوردية",
+      "city": "Tartus",
+      "city_ar": "طرطوس",
+      "lat": 35.0101,
+      "lon": 36.04965,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/11518897569"
+    },
+    {
+      "name": "مركز سلوم التخصصي للطب الاسنان",
+      "city": "Tartus",
+      "city_ar": "طرطوس",
+      "lat": 34.8862,
+      "lon": 35.88529,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/4529858889"
+    }
+  ]
+}

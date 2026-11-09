@@ -3,7 +3,7 @@
 import {facilityKinds, facilityServices, governorates, specialties} from '../catalog.js';
 
 export const CANONICAL = 'https://syriahc.com/fhir';
-export const PUBLISHED = '2026-11-08';
+export const PUBLISHED = '2026-11-09';  // also the version of every CodeSystem and ValueSet: change it when a code is added
 const PUBLISHER = 'SyriaHC';
 
 // Governorates <-> ISO 3166-2:SY subdivision codes.
@@ -22,7 +22,7 @@ const concept = (code, [en, ar], extra = {}) => ({
 const CODE_SYSTEMS = [
     {id: 'specialty', title: 'Medical specialties', description: 'Specialties of doctors listed on SyriaHC.',
         concepts: () => Object.entries(specialties).map(([code, labels]) => concept(code, labels))},
-    {id: 'facility-kind', title: 'Kinds of health facilities', description: 'Laboratories, imaging centres, hospitals and clinics.',
+    {id: 'facility-kind', title: 'Kinds of health facilities', description: 'Laboratories, imaging centres, hospitals, clinics, pharmacies and blood banks.',
         concepts: () => Object.entries(facilityKinds).map(([code, labels]) => concept(code, labels))},
     {id: 'facility-service', title: 'Services of health facilities', description: 'What a facility offers, grouped by kind of facility.',
         // The kinds only group the services: they are in the code system and its value set, but cannot be chosen.

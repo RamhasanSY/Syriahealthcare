@@ -149,6 +149,23 @@ describe('facilities', () => {
         assert.equal((await get(`/fhir/r4/Location/${org.id}`)).json().managingOrganization.reference, `Organization/${org.id}`);
     });
 
+    test('pharmacies and blood banks are published with their kind', async () => {
+        for (const [kind, email, name] of [['pharmacy', 'ph@example.org', 'Al Shifa Pharmacy'], ['blood_bank', 'bb@example.org', 'Aleppo Blood Bank']]) {
+            await post('/api/auth/facility/register', {name: 'Rana Saleh', email, password: 'facility password 123', consent: true, kind});
+            await pool.query(`UPDATE facility_profiles p SET status = 'approved', facility_name = $2, governorate = 'aleppo'
+                FROM users u WHERE u.id = p.user_id AND u.email = $1`, [email, name]);
+        }
+        const pharmacy = (await get('/fhir/r4/Location?type=pharmacy')).json();
+        assert.equal(pharmacy.total, 1);
+        assert.deepEqual(pharmacy.entry[0].resource.type.map(t => t.coding[0].code), ['PHARM', 'pharmacy']);
+        const bank = (await get('/fhir/r4/Location?type=blood_bank')).json().entry[0].resource;
+        assert.deepEqual(bank.type.map(t => t.coding[0].code), ['blood_bank'], 'HL7 RoleCode has no blood bank location type');
+        const org = (await get('/fhir/r4/Organization?type=blood_bank')).json().entry[0].resource;
+        assert.equal(org.name, 'Aleppo Blood Bank');
+        assert.equal(org.type[1].coding[0].display, 'Blood bank');
+        assert.equal((await get('/fhir/r4/HealthcareService?category=pharmacy')).json().total, 1);
+    });
+
     test('an unapproved facility is not published', async () => {
         const cookie = cookieOf(await post('/api/auth/facility/register', {name: 'Waiting Lab', email: 'wait@example.org', password: 'facility password 123', consent: true, kind: 'lab'}));
         assert.ok(cookie);
@@ -171,6 +188,16 @@ describe('code systems', () => {
         const cardiology = cs.concept.find(c => c.code === 'cardiology');
         assert.equal(cardiology.display, 'Cardiology');
         assert.equal(cardiology.designation[0].value, 'أمراض القلب');
+    });
+
+    test('the facility kinds include pharmacies and blood banks, each with its services', async () => {
+        const kinds = (await get('/fhir/r4/CodeSystem/facility-kind')).json();
+        assert.deepEqual(kinds.concept.map(c => c.code), ['lab', 'imaging', 'hospital', 'clinic', 'pharmacy', 'blood_bank']);
+        assert.equal(kinds.concept.find(c => c.code === 'blood_bank').designation[0].value, 'بنك دم');
+        const services = (await get('/fhir/r4/CodeSystem/facility-service')).json();
+        assert.deepEqual(services.concept.map(c => c.code), kinds.concept.map(c => c.code), 'every kind has a group of services');
+        const pharmacy = services.concept.find(c => c.code === 'pharmacy').concept.map(c => c.code);
+        assert.ok(pharmacy.includes('pharmacy.delivery') && pharmacy.includes('pharmacy.open_24h'));
     });
 
     test('a value set expands to the same codes', async () => {

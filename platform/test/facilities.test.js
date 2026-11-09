@@ -40,8 +40,8 @@ async function submittedFacility(kind = 'lab', email = 'lab@example.org', profil
 }
 
 describe('facility accounts', () => {
-    test('labs, imaging centres, hospitals and clinics can register and sign in', async () => {
-        for (const kind of ['lab', 'imaging', 'hospital', 'clinic']) {
+    test('labs, imaging centres, hospitals, clinics, pharmacies and blood banks can register and sign in', async () => {
+        for (const kind of ['lab', 'imaging', 'hospital', 'clinic', 'pharmacy', 'blood_bank']) {
             const res = await register(kind, `${kind}@example.org`);
             assert.equal(res.statusCode, 201, kind);
             assert.equal(res.json().user.role, 'facility');
@@ -52,11 +52,11 @@ describe('facility accounts', () => {
         assert.equal(login.statusCode, 200);
         assert.equal((await app.inject({url: '/api/me', headers: {cookie: cookieOf(login)}})).json().user.role, 'facility');
         const {rows: [audit]} = await pool.query("SELECT count(*)::int AS n FROM audit_log WHERE action = 'facility.registered'");
-        assert.equal(audit.n, 4);
+        assert.equal(audit.n, 6);
     });
 
     test('registration needs a known kind and a free email', async () => {
-        assert.equal((await register('pharmacy')).statusCode, 400);
+        assert.equal((await register('veterinary')).statusCode, 400);
         assert.equal((await register('lab')).statusCode, 201);
         assert.equal((await register('hospital')).json().error, 'email_taken');
         await signIn(post, 'doctor', 'dr@example.org');
@@ -84,6 +84,16 @@ describe('facility profile', () => {
         assert.equal((await post('/api/facility/profile', {phone: '12'}, {cookie})).json().error, 'invalid_phone');
         assert.equal((await post('/api/facility/profile', {status: 'approved', area: 'Al Jamiliyah'}, {cookie})).json().profile.status, 'draft', 'facilities cannot set their own status');
         assert.equal((await post('/api/facility/profile', {emergency: true}, {cookie})).json().profile.emergency, false, 'labs have no emergency department');
+    });
+
+    test('pharmacies and blood banks offer their own services and have no emergency department', async () => {
+        const pharmacy = cookieOf(await register('pharmacy', 'ph@example.org'));
+        const saved = (await post('/api/facility/profile', {services: ['open_24h', 'delivery'], emergency: true}, {cookie: pharmacy})).json().profile;
+        assert.deepEqual([saved.services, saved.emergency], [['open_24h', 'delivery'], false]);
+        assert.equal((await post('/api/facility/profile', {services: ['blood_count']}, {cookie: pharmacy})).json().error, 'invalid_service', 'blood count is a lab service');
+        const bank = cookieOf(await register('blood_bank', 'bb@example.org'));
+        assert.deepEqual((await post('/api/facility/profile', {services: ['donation', 'platelets']}, {cookie: bank})).json().profile.services, ['donation', 'platelets']);
+        assert.equal((await post('/api/facility/profile', {services: ['delivery']}, {cookie: bank})).json().error, 'invalid_service', 'delivery is a pharmacy service');
     });
 
     test('hospitals can mark an emergency department', async () => {
@@ -129,6 +139,15 @@ describe('facility review and public list', () => {
         assert.equal((await app.inject({url: '/api/facilities?kind=hospital'})).json().facilities.length, 0);
         assert.equal((await app.inject({url: '/api/facilities?kind=lab'})).json().facilities.length, 1);
         assert.equal((await upload(lab.cookie, 'other')).json().error, 'documents_locked');
+    });
+
+    test('an approved pharmacy is listed under its own kind', async () => {
+        const pharmacy = await submittedFacility('pharmacy', 'ph@example.org', {...complete, facility_name: 'Al Shifa Pharmacy', services: ['night_duty']});
+        const admin = await signIn(post, 'admin', 'admin@example.org');
+        assert.equal((await post(`/api/admin/facilities/${pharmacy.id}/approve`, {}, {cookie: admin})).json().profile.status, 'approved');
+        const [listed] = (await app.inject({url: '/api/facilities?kind=pharmacy'})).json().facilities;
+        assert.deepEqual([listed.kind, listed.facility_name, listed.services], ['pharmacy', 'Al Shifa Pharmacy', ['night_duty']]);
+        assert.equal((await app.inject({url: '/api/facilities?kind=hospital'})).json().facilities.length, 0);
     });
 
     test('admins get an email naming the facility; the facility gets the decision', async () => {

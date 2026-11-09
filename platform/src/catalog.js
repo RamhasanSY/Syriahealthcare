@@ -32,12 +32,15 @@ export const specialties = {
     dentistry: ['Dentistry', 'طب الأسنان']
 };
 
-// Labs, imaging centres, hospitals and clinics. Labs and imaging go to the website's Labs page, the others to Hospitals.
+// Labs and imaging go to the website's Labs page, hospitals and clinics to Hospitals, pharmacies and blood banks to their own pages.
+// A new kind also needs the CHECK constraint on facility_profiles.kind widened (see migrations/013_more_facility_kinds.sql).
 export const facilityKinds = {
     lab: ['Medical laboratory', 'مخبر تحاليل طبية'],
     imaging: ['Imaging centre', 'مركز أشعة'],
     hospital: ['Hospital', 'مشفى'],
-    clinic: ['Medical centre or clinic', 'مركز طبي أو مستوصف']
+    clinic: ['Medical centre or clinic', 'مركز طبي أو مستوصف'],
+    pharmacy: ['Pharmacy', 'صيدلية'],
+    blood_bank: ['Blood bank', 'بنك دم']
 };
 
 // What a facility offers, by kind. Shown as tags and used as a filter on the website.
@@ -89,6 +92,19 @@ export const facilityServices = {
         physiotherapy: ['Physiotherapy', 'علاج فيزيائي'],
         laboratory: ['Laboratory', 'مخبر'],
         pharmacy: ['Pharmacy', 'صيدلية']
+    },
+    pharmacy: {
+        open_24h: ['Open 24 hours', 'مفتوحة على مدار الساعة'],
+        night_duty: ['Night and holiday duty', 'مناوبة ليلية وفي العطل'],
+        delivery: ['Home delivery', 'توصيل إلى المنزل'],
+        vaccination: ['Vaccination', 'لقاحات'],
+        medical_supplies: ['Medical supplies', 'مستلزمات طبية']
+    },
+    blood_bank: {
+        donation: ['Blood donation', 'التبرع بالدم'],
+        blood_types: ['Blood group testing', 'تحديد الزمرة الدموية'],
+        platelets: ['Platelets', 'الصفيحات الدموية'],
+        plasma: ['Plasma', 'البلازما']
     }
 };
 

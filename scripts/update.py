@@ -67,14 +67,14 @@ def canonical_url(raw):
         return ''
 
 
-def fetch(url, timeout=25, payload=None):
+def fetch(url, timeout=25, payload=None, attempts=3):
     headers = {'User-Agent': USER_AGENT, 'Accept': 'application/rss+xml, application/json, text/html, */*'}
     body = None
     if payload is not None:
         body = json.dumps(payload).encode('utf-8')
         headers['Content-Type'] = 'application/json'
     req = urllib.request.Request(url, data=body, headers=headers)
-    for attempt in range(3):
+    for attempt in range(attempts):
         try:
             with urllib.request.urlopen(req, timeout=timeout) as response:
                 content = response.read(4_000_001)
@@ -84,7 +84,7 @@ def fetch(url, timeout=25, payload=None):
                     raise ValueError(f'Empty response (HTTP {response.status})')
                 return gzip.decompress(content) if content.startswith(b'\x1f\x8b') else content
         except (urllib.error.URLError, OSError, ValueError):
-            if attempt == 2:
+            if attempt == attempts - 1:
                 raise
             time.sleep(attempt + 1)
 
@@ -340,6 +340,35 @@ rel(area.sy)["admin_level"="4"]["boundary"="administrative"];
 map_to_area->.govs;
 foreach.govs->.g(.g out tags; nwr(area.g)["amenity"="hospital"]; out tags;);'''
 ARABIC = re.compile(r'[؀-ۿ]')
+# Governorate names as on the booking platform (platform/src/catalog.js), by ISO 3166-2 code, so OpenStreetMap and
+# platform entries share one governorate filter. Areas without a known code keep their OpenStreetMap name.
+GOVERNORATES = {
+    'SY-DI': ('Damascus', 'دمشق'), 'SY-RD': ('Rif Dimashq', 'ريف دمشق'), 'SY-HL': ('Aleppo', 'حلب'), 'SY-HI': ('Homs', 'حمص'),
+    'SY-HM': ('Hama', 'حماة'), 'SY-LA': ('Latakia', 'اللاذقية'), 'SY-TA': ('Tartus', 'طرطوس'), 'SY-ID': ('Idlib', 'إدلب'),
+    'SY-DR': ('Daraa', 'درعا'), 'SY-SU': ('As-Suwayda', 'السويداء'), 'SY-QU': ('Quneitra', 'القنيطرة'),
+    'SY-DY': ('Deir ez-Zor', 'دير الزور'), 'SY-RA': ('Raqqa', 'الرقة'), 'SY-HA': ('Al-Hasakah', 'الحسكة')
+}
+
+
+def osm_governorate(tags):
+    if tags.get('ISO3166-2') in GOVERNORATES:
+        city, city_ar = GOVERNORATES[tags['ISO3166-2']]
+        return {'city': city, 'city_ar': city_ar}
+    return {'city': re.sub(r'\s+Governorate$', '', tags.get('name:en') or tags.get('name', '')),
+            'city_ar': re.sub(r'^محافظة\s+', '', tags.get('name:ar') or tags.get('name', ''))}
+
+
+def osm_names(tags):
+    """English and Arabic name: name:en / name:ar, else the plain name in whichever script it is written."""
+    name = (tags.get('name') or '').strip()
+    name_en = (tags.get('name:en') or ('' if ARABIC.search(name) else name)).strip()
+    name_ar = (tags.get('name:ar') or (name if ARABIC.search(name) else '')).strip()
+    return name_en, name_ar
+
+
+def osm_address(tags):
+    street = ' '.join(x for x in (tags.get('addr:street'), tags.get('addr:housenumber')) if x)
+    return ', '.join(dict.fromkeys(x for x in (street, tags.get('addr:suburb') or tags.get('addr:district'), tags.get('addr:city')) if x))
 
 
 def osm_hospitals(elements):
@@ -347,20 +376,15 @@ def osm_hospitals(elements):
     for e in elements:
         tags = e.get('tags', {})
         if e.get('type') == 'area':
-            governorate = {'city': re.sub(r'\s+Governorate$', '', tags.get('name:en') or tags.get('name', '')),
-                           'city_ar': re.sub(r'^محافظة\s+', '', tags.get('name:ar') or tags.get('name', ''))}
+            governorate = osm_governorate(tags)
             continue
         key = f"{e.get('type')}/{e.get('id')}"
-        name = (tags.get('name') or '').strip()
-        name_en = (tags.get('name:en') or ('' if ARABIC.search(name) else name)).strip()
-        name_ar = (tags.get('name:ar') or (name if ARABIC.search(name) else '')).strip()
+        name_en, name_ar = osm_names(tags)
         same = (re.sub(r'\W+', '', (name_en or name_ar).casefold()), governorate.get('city'))
         if key in seen or same in seen or not (name_en or name_ar) or not governorate.get('city') or e.get('type') not in ('node', 'way', 'relation'):
             continue
         seen.update((key, same))
-        street = ' '.join(x for x in (tags.get('addr:street'), tags.get('addr:housenumber')) if x)
-        address = ', '.join(dict.fromkeys(x for x in (street, tags.get('addr:suburb') or tags.get('addr:district'), tags.get('addr:city')) if x))
-        record = {'name': name_en or name_ar, 'name_ar': name_ar or name_en, **governorate, 'address': address,
+        record = {'name': name_en or name_ar, 'name_ar': name_ar or name_en, **governorate, 'address': osm_address(tags),
                   'phone': (tags.get('phone') or tags.get('contact:phone') or '').split(';')[0].strip(),
                   'emergency': tags.get('emergency') == 'yes', 'osm': True,
                   'source_url': f"https://www.openstreetmap.org/{key}"}
@@ -381,6 +405,135 @@ def update_hospitals():
     write(path, {**old, 'updated': now().isoformat(timespec='seconds'), 'source': 'OpenStreetMap contributors (ODbL)',
                  'items': manual + hospitals})
     return len(hospitals)
+
+
+# Pharmacies, dentists and blood banks from OpenStreetMap (ODbL), in one request for all three. Few of these places have
+# a street address, so each keeps its map position (the centre of the building) for an exact Google Maps link.
+# Exact tag matches only: they keep this request at about a minute, as Overpass is often busy.
+OVERPASS_DIRECTORIES_QUERY = '''[out:json][timeout:240];
+area["ISO3166-1"="SY"]["admin_level"="2"]->.sy;
+rel(area.sy)["admin_level"="4"]["boundary"="administrative"];
+map_to_area->.govs;
+foreach.govs->.g(.g out tags; (
+nwr(area.g)["amenity"="pharmacy"]; nwr(area.g)["healthcare"="pharmacy"];
+nwr(area.g)["amenity"="dentist"]; nwr(area.g)["healthcare"="dentist"];
+nwr(area.g)["healthcare"="blood_donation"]; nwr(area.g)["healthcare"="blood_bank"];
+nwr(area.g)["amenity"="blood_donation"]; nwr(area.g)["amenity"="blood_bank"];
+); out tags center;);'''
+# A run that returns fewer entries than this keeps the previous file: OpenStreetMap had about 1,900 named pharmacies,
+# 80 dentists and 4 blood banks in Syria in November 2026, so a much smaller result means Overpass answered only in part.
+OSM_DIRECTORY_MINIMUM = {'pharmacies': 1000, 'dentists': 40, 'blood-banks': 1}
+# Some blood banks are mapped as hospitals; they are taken from data/hospitals.json by their name.
+BLOOD_BANK_NAME = re.compile(r'بنك\s*(?:ال)?دم|نقل\s*(?:ال)?دم|\bblood\b', re.I)
+SAME_PLACE_DEGREES = 0.0015  # about 150 m: two entries with the same name this close are one place mapped twice
+
+
+def osm_directory(tags):
+    """Which directory an OpenStreetMap feature belongs to: pharmacies, dentists, blood-banks, or None."""
+    kinds = (tags.get('amenity'), tags.get('healthcare'))
+    if any(k in ('blood_donation', 'blood_bank') for k in kinds):
+        return 'blood-banks'
+    if 'pharmacy' in kinds:
+        return 'pharmacies'
+    if 'dentist' in kinds:
+        return 'dentists'
+    return None
+
+
+def osm_position(e):
+    point = e.get('center') or e
+    try:
+        lat, lon = float(point['lat']), float(point['lon'])
+    except (KeyError, TypeError, ValueError):
+        return None
+    return (round(lat, 5), round(lon, 5)) if 32 <= lat <= 38 and 35 <= lon <= 43 else None  # inside Syria's bounding box
+
+
+def same_place(a, b):
+    """a and b are map positions (lat, lon) or, for features without one, address texts."""
+    if isinstance(a, tuple) and isinstance(b, tuple):
+        return abs(a[0] - b[0]) < SAME_PLACE_DEGREES and abs(a[1] - b[1]) < SAME_PLACE_DEGREES
+    return a == b
+
+
+def osm_directories(elements):
+    """Named pharmacies, dentists and blood banks by governorate. Empty fields are left out to keep the files small."""
+    governorate, seen, places = {}, set(), {}
+    result = {name: [] for name in OSM_DIRECTORY_MINIMUM}
+    for e in elements:
+        tags = e.get('tags', {})
+        if e.get('type') == 'area':
+            governorate = osm_governorate(tags)
+            continue
+        directory, key = osm_directory(tags), f"{e.get('type')}/{e.get('id')}"
+        name_en, name_ar = osm_names(tags)
+        if not directory or key in seen or not (name_en or name_ar) or not governorate.get('city') or e.get('type') not in ('node', 'way', 'relation'):
+            continue
+        seen.add(key)
+        position, address = osm_position(e), osm_address(tags)
+        # The same English or Arabic name nearby (or, without a position, at the same address) is one place mapped twice.
+        names = {re.sub(r'\W+', '', n.casefold()) for n in (name_en, name_ar)} - {''}
+        where, others = position or address, places.setdefault((directory, governorate['city']), [])
+        if any(names & other_names and same_place(where, other_where) for other_names, other_where in others):
+            continue
+        others.append((names, where))
+        record = {'name': name_en or name_ar}
+        if name_ar and name_ar != record['name']:
+            record['name_ar'] = name_ar
+        record.update(governorate)
+        phone = (tags.get('phone') or tags.get('contact:phone') or tags.get('mobile') or tags.get('contact:mobile') or '').split(';')[0].strip()
+        hours = (tags.get('opening_hours') or '').strip()[:100]
+        for field, text in (('address', address), ('phone', phone), ('hours', hours)):
+            if text:
+                record[field] = text
+        if position:
+            record['lat'], record['lon'] = position
+        record.update(osm=True, source_url=f'https://www.openstreetmap.org/{key}')
+        result[directory].append(record)
+    for rows in result.values():
+        rows.sort(key=lambda r: (r['city'], r['name'].casefold()))
+    return result
+
+
+def blood_banks_from_hospitals(hospitals, known):
+    """OpenStreetMap hospitals named as blood banks ("بنك الدم", "Central Blood Bank"), except those already in known."""
+    result = []
+    for h in hospitals:
+        if not isinstance(h, dict) or not h.get('osm') or h.get('source_url') in known or not h.get('name') or not h.get('city'):
+            continue
+        if not BLOOD_BANK_NAME.search(f"{h['name']} {h.get('name_ar', '')}"):
+            continue
+        record = {k: h[k] for k in ('name', 'name_ar', 'city', 'city_ar', 'address', 'phone') if h.get(k)}
+        if record.get('name_ar') == record['name']:
+            del record['name_ar']
+        result.append({**record, 'osm': True, 'source_url': h['source_url']})
+    return result
+
+
+def update_osm_directories():
+    """Refresh pharmacies.json, dentists.json and blood-banks.json; hand-added and platform entries stay in front.
+    Returns the accepted count per file and the files that were left unchanged because the result was too small.
+    Runs after update_hospitals. One attempt only: if Overpass is busy, the next run (twelve hours later) tries again,
+    and the collection stays well inside the workflow's time limit."""
+    payload = json.loads(fetch(OVERPASS_URL + '?' + urlencode({'data': OVERPASS_DIRECTORIES_QUERY}), timeout=260, attempts=1))
+    if 'error' in str(payload.get('remark', '')).lower():
+        raise ValueError('Overpass stopped early: ' + str(payload['remark'])[:200])
+    found, counts, refused = osm_directories(payload.get('elements', [])), {}, []
+    blood = found['blood-banks']
+    blood += blood_banks_from_hospitals(read(DATA / 'hospitals.json', {}).get('items', []), {b['source_url'] for b in blood})
+    blood.sort(key=lambda r: (r['city'], r['name'].casefold()))
+    for name, minimum in OSM_DIRECTORY_MINIMUM.items():
+        rows = found[name]
+        if len(rows) < minimum:
+            refused.append(f'OpenStreetMap returned only {len(rows)} {name}; the previous list was kept')
+            continue
+        path = DATA / f'{name}.json'
+        old = read(path, {})
+        kept = [x for x in old.get('items', []) if isinstance(x, dict) and not x.get('osm')]
+        write(path, {**old, 'updated': now().isoformat(timespec='seconds'), 'source': 'OpenStreetMap contributors (ODbL)',
+                     'items': kept + rows})
+        counts[name] = len(rows)
+    return counts, refused
 
 
 # Approved doctors from the booking platform (app.syriahc.com), with a link to book each one.
@@ -411,16 +564,18 @@ def platform_base_url():
     return platform_url
 
 
+def replace_platform_entries(name, platform_url, rows):
+    """Platform entries in data/<name>.json are replaced; hand-added and OpenStreetMap entries are kept after them."""
+    path = DATA / f'{name}.json'
+    old = read(path, {})
+    kept = [x for x in old.get('items', []) if isinstance(x, dict) and not x.get('platform')]
+    write(path, {**old, 'platform_url': platform_url, 'items': rows + kept})
+
+
 def update_platform_doctors():
     platform_url = platform_base_url()
     if not platform_url:
         return None
-def update_platform_doctors():
-    platform_url = os.environ.get('PLATFORM_URL', '').strip().rstrip('/')
-    if not platform_url:
-        return None
-    if urlsplit(platform_url).scheme != 'https' and not platform_url.startswith('http://127.0.0.1'):
-        raise ValueError('PLATFORM_URL must use https')
     catalog = json.loads(fetch(platform_url + '/api/catalog'))
     payload = json.loads(fetch(platform_url + '/api/doctors'))
     if not isinstance(payload.get('doctors'), list):
@@ -429,17 +584,24 @@ def update_platform_doctors():
     manual = [d for d in read(path, {}).get('items', []) if isinstance(d, dict) and not d.get('platform')]
     doctors = platform_doctors(platform_url, catalog, payload['doctors'])
     write(path, {'updated': now().isoformat(timespec='seconds'), 'platform_url': platform_url, 'items': manual + doctors})
-    return len(doctors)
+    # Dentists stay on the Doctors page and are also listed on the Dentists page, next to those mapped in OpenStreetMap.
+    dentists = platform_doctors(platform_url, catalog, [d for d in payload['doctors'] if d.get('specialty') == 'dentistry'])
+    replace_platform_entries('dentists', platform_url, dentists)
+    return len(doctors), len(dentists)
 
 
-# Approved labs, imaging centres, hospitals and clinics from the platform. Labs and imaging go to the Labs page,
-# hospitals and clinics to the Hospitals page, each marked as verified. Only public fields are copied.
+# Approved facilities from the platform, each marked as verified, on the page for their kind. Only public fields are copied.
+FACILITY_PAGES = {'lab': 'labs', 'imaging': 'labs', 'hospital': 'hospitals', 'clinic': 'hospitals',
+                  'pharmacy': 'pharmacies', 'blood_bank': 'blood-banks'}
+
+
 def platform_facilities(catalog, facilities):
     kinds, governorates, services = catalog.get('facilityKinds', {}), catalog.get('governorates', {}), catalog.get('facilityServices', {})
-    labs, hospitals = [], []
+    pages = {name: [] for name in dict.fromkeys(FACILITY_PAGES.values())}
     for f in facilities:
         kind = f.get('kind')
-        if not re.fullmatch(r'[0-9a-f-]{36}', str(f.get('id', ''))) or kind not in kinds or f.get('governorate') not in governorates or not f.get('facility_name'):
+        if (not re.fullmatch(r'[0-9a-f-]{36}', str(f.get('id', ''))) or kind not in kinds or kind not in FACILITY_PAGES
+                or f.get('governorate') not in governorates or not f.get('facility_name')):
             continue
         governorate, offered = governorates[f['governorate']], [services.get(kind, {}).get(s) for s in f.get('services') or []]
         offered = [s for s in offered if s]
@@ -448,13 +610,17 @@ def platform_facilities(catalog, facilities):
                   'type': kinds[kind][0], 'type_ar': kinds[kind][1], 'platform': True}
         if f.get('opening_hours'):
             record['hours'] = f['opening_hours'][:200]
-        if kind in ('lab', 'imaging'):
-            labs.append({**record, 'tests': [s[0] for s in offered], 'tests_ar': [s[1] for s in offered]})
+        page = FACILITY_PAGES[kind]
+        if page == 'labs':
+            record.update(tests=[s[0] for s in offered], tests_ar=[s[1] for s in offered])
         else:
-            hospitals.append({**record, 'emergency': f.get('emergency') is True, 'services': [s[0] for s in offered], 'services_ar': [s[1] for s in offered]})
-    for rows in (labs, hospitals):
+            if page == 'hospitals':
+                record['emergency'] = f.get('emergency') is True
+            record.update(services=[s[0] for s in offered], services_ar=[s[1] for s in offered])
+        pages[page].append(record)
+    for rows in pages.values():
         rows.sort(key=lambda r: (r['city'], r['name'].casefold()))
-    return labs, hospitals
+    return pages
 
 
 def update_platform_facilities():
@@ -465,13 +631,10 @@ def update_platform_facilities():
     payload = json.loads(fetch(platform_url + '/api/facilities'))
     if not isinstance(payload.get('facilities'), list):
         raise ValueError('Platform facility list has changed')
-    labs, hospitals = platform_facilities(catalog, payload['facilities'])
-    for name, rows in (('labs', labs), ('hospitals', hospitals)):
-        path = DATA / f'{name}.json'
-        old = read(path, {})
-        kept = [x for x in old.get('items', []) if isinstance(x, dict) and not x.get('platform')]
-        write(path, {**old, 'platform_url': platform_url, 'items': rows + kept})
-    return len(labs), len(hospitals)
+    pages = platform_facilities(catalog, payload['facilities'])
+    for name, rows in pages.items():
+        replace_platform_entries(name, platform_url, rows)
+    return {name: len(rows) for name, rows in pages.items()}
 
 
 def job_valid(item):
@@ -754,13 +917,20 @@ def main():
     except Exception as error:  # Keep the previous hospital list; this never blocks jobs and news.
         print(f'::warning::openstreetmap-hospitals: {error}', flush=True)
     try:
-        count = update_platform_doctors()
-        print('platform-doctors: ' + ('not configured (PLATFORM_URL is empty)' if count is None else f'ok, {count} accepted'), flush=True)
+        counts, refused = update_osm_directories()
+        print('openstreetmap-directories: ok, ' + (', '.join(f'{n} {name}' for name, n in counts.items()) or 'nothing accepted'), flush=True)
+        for problem in refused:
+            print(f'::warning::openstreetmap-directories: {problem}', flush=True)
+    except Exception as error:  # Keep the previous pharmacy, dentist and blood bank lists.
+        print(f'::warning::openstreetmap-directories: {error}', flush=True)
+    try:
+        counts = update_platform_doctors()
+        print('platform-doctors: ' + ('not configured (PLATFORM_URL is empty)' if counts is None else f'ok, {counts[0]} accepted, {counts[1]} of them dentists'), flush=True)
     except Exception as error:  # Keep the previous doctor list when the platform is unreachable.
         print(f'::warning::platform-doctors: {error}', flush=True)
     try:
         counts = update_platform_facilities()
-        print('platform-facilities: ' + ('not configured (PLATFORM_URL is empty)' if counts is None else f'ok, {counts[0]} labs and {counts[1]} hospitals or clinics'), flush=True)
+        print('platform-facilities: ' + ('not configured (PLATFORM_URL is empty)' if counts is None else 'ok, ' + ', '.join(f'{n} for {name}' for name, n in counts.items())), flush=True)
     except Exception as error:  # Keep the previous lists when the platform is unreachable.
         print(f'::warning::platform-facilities: {error}', flush=True)
     write(DATA / 'status.json', {'checked_at': checked, 'sources': sorted(status_rows, key=lambda s: s['id']), 'version': VERSION})
