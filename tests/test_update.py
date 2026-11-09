@@ -74,8 +74,9 @@ class CollectorTests(unittest.TestCase):
                'opening_hours': 'Sat–Thu 08:00–20:00', 'licence_number': 'LAB-1', 'email': 'private@example.org'}
         hospital = {**lab, 'id': '1b6f1d1e-3c55-4a43-9f6e-5d3c2a1b0c9d', 'kind': 'hospital', 'facility_name': 'Al Amal Hospital',
                     'services': ['surgery'], 'emergency': True}
-        labs, hospitals = u.platform_facilities(catalog, [lab, hospital, {**lab, 'kind': 'pharmacy'}, {**lab, 'id': '../x'}, {**lab, 'facility_name': ''}])
-        self.assertEqual((len(labs), len(hospitals)), (1, 1))
+        pages = u.platform_facilities(catalog, [lab, hospital, {**lab, 'kind': 'pharmacy'}, {**lab, 'id': '../x'}, {**lab, 'facility_name': ''}])
+        labs, hospitals = pages['labs'], pages['hospitals']
+        self.assertEqual((len(labs), len(hospitals), pages['pharmacies']), (1, 1, []), 'pharmacy is not in this catalog')
         self.assertEqual((labs[0]['tests'], labs[0]['tests_ar'], labs[0]['type']), (['Hormones'], ['هرمونات'], 'Medical laboratory'))
         self.assertEqual((labs[0]['address'], labs[0]['city_ar'], labs[0]['hours']), ('Street 9, Al Furqan', 'حلب', 'Sat–Thu 08:00–20:00'))
         self.assertTrue(labs[0]['platform'] and hospitals[0]['emergency'])
@@ -92,11 +93,135 @@ class CollectorTests(unittest.TestCase):
             facility = {'id': '1b6f1d1e-3c55-4a43-9f6e-5d3c2a1b0c9d', 'kind': 'hospital', 'facility_name': 'Al Amal Hospital', 'governorate': 'aleppo'}
             replies = {'https://app.example.org/api/catalog': catalog, 'https://app.example.org/api/facilities': {'facilities': [facility]}}
             with patch.object(u, 'fetch', side_effect=lambda url, **_: json.dumps(replies[url])):
-                self.assertEqual(u.update_platform_facilities(), (0, 1))
+                self.assertEqual(u.update_platform_facilities(), {'labs': 0, 'hospitals': 1, 'pharmacies': 0, 'blood-banks': 0})
             saved = u.read(Path(folder) / 'hospitals.json', {})
             self.assertEqual([h['name'] for h in saved['items']], ['Al Amal Hospital', 'Mouasat Hospital'])
             self.assertEqual((saved['source'], saved['platform_url']), ('OSM', 'https://app.example.org'))
             self.assertEqual(u.read(Path(folder) / 'labs.json', {})['items'], [])
+
+    def test_platform_pharmacies_and_blood_banks_get_their_own_pages(self):
+        catalog = {'governorates': {'homs': ['Homs', 'حمص']},
+                   'facilityKinds': {'pharmacy': ['Pharmacy', 'صيدلية'], 'blood_bank': ['Blood bank', 'بنك دم'], 'clinic': ['Clinic', 'مستوصف'],
+                                     'veterinary': ['Veterinary clinic', 'عيادة بيطرية']},
+                   'facilityServices': {'pharmacy': {'delivery': ['Home delivery', 'توصيل إلى المنزل']}, 'blood_bank': {'donation': ['Blood donation', 'التبرع بالدم']}}}
+        base = {'governorate': 'homs', 'area': 'Al Waer', 'address': 'Street 1', 'phone': '+963310000001', 'emergency': True, 'licence_number': 'X-1'}
+        rows = [{**base, 'id': '0b6f1d1e-3c55-4a43-9f6e-5d3c2a1b0c9d', 'kind': 'pharmacy', 'facility_name': 'Al Shifa Pharmacy', 'services': ['delivery', 'donation']},
+                {**base, 'id': '1b6f1d1e-3c55-4a43-9f6e-5d3c2a1b0c9d', 'kind': 'blood_bank', 'facility_name': 'Homs Blood Bank', 'services': ['donation']},
+                {**base, 'id': '2b6f1d1e-3c55-4a43-9f6e-5d3c2a1b0c9d', 'kind': 'clinic', 'facility_name': 'Al Waer Clinic', 'services': []},
+                {**base, 'id': '3b6f1d1e-3c55-4a43-9f6e-5d3c2a1b0c9d', 'kind': 'veterinary', 'facility_name': 'Unknown kind', 'services': []}]
+        pages = u.platform_facilities(catalog, rows)
+        pharmacy, blood_bank = pages['pharmacies'][0], pages['blood-banks'][0]
+        self.assertEqual([len(pages[name]) for name in ('labs', 'hospitals', 'pharmacies', 'blood-banks')], [0, 1, 1, 1])
+        self.assertEqual((pharmacy['type_ar'], pharmacy['services'], pharmacy['services_ar']), ('صيدلية', ['Home delivery'], ['توصيل إلى المنزل']))
+        self.assertEqual((blood_bank['name'], blood_bank['services_ar'], blood_bank['address']), ('Homs Blood Bank', ['التبرع بالدم'], 'Street 1, Al Waer'))
+        self.assertNotIn('emergency', pharmacy, 'only hospitals and clinics have an emergency department')
+        self.assertTrue(pages['hospitals'][0]['emergency'])
+        self.assertNotIn('licence_number', blood_bank)
+
+    def test_platform_dentists_are_also_listed_with_mapped_dentists(self):
+        with tempfile.TemporaryDirectory() as folder, patch.object(u, 'DATA', Path(folder)), \
+                patch.dict(u.os.environ, {'PLATFORM_URL': 'https://app.example.org'}):
+            mapped = {'name': 'Smile Dental Clinic', 'city': 'Damascus', 'osm': True}
+            u.write(Path(folder) / 'dentists.json', {'updated': 'x', 'source': 'OSM', 'items': [{'name': 'Old', 'city': 'Homs', 'platform': True}, mapped]})
+            catalog = {'specialties': {'dentistry': ['Dentistry', 'طب الأسنان'], 'cardiology': ['Cardiology', 'أمراض القلب']},
+                       'governorates': {'damascus': ['Damascus', 'دمشق']}}
+            dentist = {'id': '0b6f1d1e-3c55-4a43-9f6e-5d3c2a1b0c9d', 'name': 'Dr. Lina Haddad', 'specialty': 'dentistry', 'governorate': 'damascus'}
+            cardiologist = {**dentist, 'id': '1b6f1d1e-3c55-4a43-9f6e-5d3c2a1b0c9d', 'name': 'Dr. Omar Khalil', 'specialty': 'cardiology'}
+            replies = {'https://app.example.org/api/catalog': catalog, 'https://app.example.org/api/doctors': {'doctors': [dentist, cardiologist]}}
+            with patch.object(u, 'fetch', side_effect=lambda url, **_: json.dumps(replies[url])):
+                self.assertEqual(u.update_platform_doctors(), (2, 1))
+            saved = u.read(Path(folder) / 'dentists.json', {})
+            self.assertEqual([d['name'] for d in saved['items']], ['Dr. Lina Haddad', 'Smile Dental Clinic'])
+            self.assertEqual(saved['items'][0]['booking_url'], 'https://app.example.org/book?doctor=0b6f1d1e-3c55-4a43-9f6e-5d3c2a1b0c9d')
+            self.assertEqual((saved['source'], saved['platform_url']), ('OSM', 'https://app.example.org'))
+            self.assertEqual(len(u.read(Path(folder) / 'doctors.json', {})['items']), 2, 'dentists stay on the Doctors page')
+
+    def test_osm_directory_by_tags(self):
+        for tags, expected in [({'amenity': 'pharmacy'}, 'pharmacies'), ({'healthcare': 'pharmacy', 'shop': 'chemist'}, 'pharmacies'),
+                               ({'amenity': 'dentist'}, 'dentists'), ({'healthcare': 'dentist'}, 'dentists'),
+                               ({'healthcare': 'blood_donation'}, 'blood-banks'), ({'amenity': 'blood_bank'}, 'blood-banks'),
+                               ({'amenity': 'hospital', 'healthcare': 'blood_donation'}, 'blood-banks'),
+                               ({'amenity': 'hospital', 'name': 'مشفى دمشق'}, None), ({'amenity': 'clinic'}, None)]:
+            with self.subTest(tags=tags):
+                self.assertEqual(u.osm_directory(tags), expected)
+
+    def test_blood_banks_mapped_as_hospitals_are_found_by_name(self):
+        hospitals = [{'name': 'Central Blood Bank', 'name_ar': 'بنك الدم المركزي', 'city': 'Damascus', 'city_ar': 'دمشق', 'address': '', 'phone': '',
+                      'emergency': False, 'osm': True, 'source_url': 'https://www.openstreetmap.org/node/9'},
+                     {'name': 'بنك الدم', 'name_ar': 'بنك الدم', 'city': 'Homs', 'osm': True, 'source_url': 'https://www.openstreetmap.org/node/8'},
+                     {'name': 'Damascus Hospital', 'name_ar': 'مشفى دمشق', 'city': 'Damascus', 'osm': True, 'source_url': 'https://www.openstreetmap.org/node/7'},
+                     {'name': 'Blood Bank (hand-added)', 'city': 'Damascus'}]
+        rows = u.blood_banks_from_hospitals(hospitals, known={'https://www.openstreetmap.org/node/8'})
+        self.assertEqual(rows, [{'name': 'Central Blood Bank', 'name_ar': 'بنك الدم المركزي', 'city': 'Damascus', 'city_ar': 'دمشق',
+                                 'osm': True, 'source_url': 'https://www.openstreetmap.org/node/9'}])
+
+    def test_fetch_can_be_limited_to_one_attempt(self):
+        with patch.object(u.urllib.request, 'urlopen', side_effect=u.urllib.error.URLError('busy')) as urlopen, \
+                patch.object(u.time, 'sleep') as sleep, self.assertRaises(u.urllib.error.URLError):
+            u.fetch('https://overpass.example.org/api', attempts=1)
+        self.assertEqual((urlopen.call_count, sleep.call_count), (1, 0))
+
+    def osm_elements(self):
+        return [{'type': 'area', 'tags': {'ISO3166-2': 'SY-ID', 'name': 'محافظة إدلب', 'name:en': 'Idleb Governorate'}},
+                {'type': 'node', 'id': 1, 'lat': 35.93, 'lon': 36.63, 'tags': {'amenity': 'pharmacy', 'name': 'صيدلية الشفاء', 'name:en': 'Al Shifa Pharmacy',
+                                                                              'phone': '+963 23 1; +963 23 2', 'opening_hours': 'Mo-Sa 08:00-22:00', 'addr:street': 'Main Street'}},
+                # The same pharmacy mapped again as a building 50 m away, and the same name in another town.
+                {'type': 'way', 'id': 2, 'center': {'lat': 35.9304, 'lon': 36.6303}, 'tags': {'amenity': 'pharmacy', 'name': 'صيدلية الشفاء'}},
+                {'type': 'node', 'id': 3, 'lat': 36.21, 'lon': 36.52, 'tags': {'amenity': 'pharmacy', 'name': 'صيدلية الشفاء'}},
+                {'type': 'node', 'id': 4, 'lat': 35.9, 'lon': 36.6, 'tags': {'amenity': 'pharmacy'}},
+                {'type': 'node', 'id': 5, 'lat': 35.9, 'lon': 36.6, 'tags': {'amenity': 'dentist', 'name': 'Smile Dental', 'mobile': '+963 944 000 000'}},
+                {'type': 'node', 'id': 6, 'lat': 99, 'lon': 99, 'tags': {'healthcare': 'blood_donation', 'name': 'بنك الدم'}},
+                {'type': 'node', 'id': 7, 'lat': 35.9, 'lon': 36.6, 'tags': {'amenity': 'hospital', 'name': 'مشفى إدلب'}},
+                {'type': 'node', 'id': 1, 'lat': 35.93, 'lon': 36.63, 'tags': {'amenity': 'pharmacy', 'name': 'صيدلية الشفاء'}}]
+
+    def test_osm_directories_use_platform_governorates_and_skip_duplicates(self):
+        found = u.osm_directories(self.osm_elements())
+        pharmacies, dentists, blood = found['pharmacies'], found['dentists'], found['blood-banks']
+        self.assertEqual([p['source_url'] for p in pharmacies], ['https://www.openstreetmap.org/node/1', 'https://www.openstreetmap.org/node/3'])
+        first = pharmacies[0]
+        self.assertEqual((first['name'], first['name_ar'], first['city'], first['city_ar']), ('Al Shifa Pharmacy', 'صيدلية الشفاء', 'Idlib', 'إدلب'))
+        self.assertEqual((first['phone'], first['hours'], first['address'], first['lat'], first['lon']), ('+963 23 1', 'Mo-Sa 08:00-22:00', 'Main Street', 35.93, 36.63))
+        self.assertTrue(first['osm'])
+        second = pharmacies[1]
+        self.assertEqual(second['name'], 'صيدلية الشفاء')
+        for empty in ('name_ar', 'address', 'phone', 'hours'):
+            self.assertNotIn(empty, second, 'empty and repeated fields are left out')
+        self.assertEqual((dentists[0]['name'], dentists[0]['phone']), ('Smile Dental', '+963 944 000 000'))
+        self.assertEqual(blood[0]['name'], 'بنك الدم')
+        self.assertNotIn('lat', blood[0], 'a position outside Syria is dropped')
+
+    def test_osm_directories_keep_other_entries_and_refuse_small_results(self):
+        with tempfile.TemporaryDirectory() as folder, patch.object(u, 'DATA', Path(folder)), \
+                patch.dict(u.OSM_DIRECTORY_MINIMUM, {'pharmacies': 2, 'dentists': 2, 'blood-banks': 1}):
+            manual = {'name': 'Hand-added pharmacy', 'city': 'Idlib'}
+            platform = {'name': 'Verified pharmacy', 'city': 'Idlib', 'platform': True}
+            u.write(Path(folder) / 'pharmacies.json', {'platform_url': 'https://app.example.org', 'items': [platform, manual, {'name': 'Old', 'osm': True}]})
+            u.write(Path(folder) / 'dentists.json', {'updated': 'before', 'items': [{'name': 'Kept dentist', 'osm': True}]})
+            u.write(Path(folder) / 'hospitals.json', {'items': [{'name': 'Central Blood Bank', 'city': 'Damascus', 'osm': True,
+                                                                  'source_url': 'https://www.openstreetmap.org/node/9'}]})
+            with patch.object(u, 'fetch', return_value=json.dumps({'elements': self.osm_elements()}).encode()):
+                counts, refused = u.update_osm_directories()
+            self.assertEqual(counts, {'pharmacies': 2, 'blood-banks': 2})
+            self.assertEqual([b['name'] for b in u.read(Path(folder) / 'blood-banks.json', {})['items']], ['Central Blood Bank', 'بنك الدم'])
+            self.assertEqual(len(refused), 1)
+            self.assertIn('dentists', refused[0])
+            saved = u.read(Path(folder) / 'pharmacies.json', {})
+            self.assertEqual([p['name'] for p in saved['items']], ['Verified pharmacy', 'Hand-added pharmacy', 'Al Shifa Pharmacy', 'صيدلية الشفاء'])
+            self.assertEqual((saved['source'], saved['platform_url']), ('OpenStreetMap contributors (ODbL)', 'https://app.example.org'))
+            self.assertEqual(u.read(Path(folder) / 'dentists.json', {}), {'updated': 'before', 'items': [{'name': 'Kept dentist', 'osm': True}]})
+
+    def test_osm_directories_stop_when_overpass_reports_an_error(self):
+        payload = {'remark': 'runtime error: Query timed out in "query" at line 6 after 181 seconds.', 'elements': self.osm_elements()}
+        with tempfile.TemporaryDirectory() as folder, patch.object(u, 'DATA', Path(folder)), \
+                patch.object(u, 'fetch', return_value=json.dumps(payload).encode()):
+            with self.assertRaises(ValueError):
+                u.update_osm_directories()
+            self.assertEqual(list(Path(folder).iterdir()), [])
+
+    def test_hospitals_use_platform_governorate_names(self):
+        rows = u.osm_hospitals([{'type': 'area', 'tags': {'ISO3166-2': 'SY-HA', 'name': 'محافظة الحسكة', 'name:en': 'Al-Hasaka Governorate'}},
+                                {'type': 'node', 'id': 1, 'tags': {'amenity': 'hospital', 'name': 'مشفى الرازي'}}])
+        self.assertEqual((rows[0]['city'], rows[0]['city_ar']), ('Al-Hasakah', 'الحسكة'))
 
     def test_platform_doctors_skipped_until_configured(self):
         with patch.dict(u.os.environ, {'PLATFORM_URL': ''}), patch.object(u, 'fetch') as fetch:
