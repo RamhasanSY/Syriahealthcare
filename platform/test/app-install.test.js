@@ -51,7 +51,7 @@ describe('installable app', () => {
             const res = await app.inject({url: page});
             assert.equal(res.statusCode, 200, page);
             assert.match(res.body, /<link rel="manifest" href="\/manifest\.webmanifest">/, page);
-            assert.match(res.body, /<link rel="apple-touch-icon" href="\/assets\/apple-touch-icon\.png">/, page);
+            assert.match(res.body, /<link rel="apple-touch-icon" href="\/assets\/apple-touch-icon\.png(\?v=[\w-]+)?">/, page);  // with its version (src/pages.js)
         }
     });
 });

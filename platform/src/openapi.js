@@ -108,6 +108,7 @@ export const SUMMARIES = {
     'POST /api/lab/home-visits/{id}/decline': 'Lab: decline a home visit (with a reason).',
     'POST /api/lab/home-visits/{id}/cancel': 'Lab: cancel a confirmed home visit (with a reason).',
     'POST /api/lab/home-visits/{id}/done': 'Lab: mark a home visit as done.',
+    'GET /api/admin/status': 'Administrator: speed and health of the platform (response times, memory, database, email queue, disk).',
     // Administrators
     'GET /api/admin/doctors': 'Administrator: doctors by review status.',
     'GET /api/admin/doctors/{id}': 'Administrator: one doctor with documents, held changes and history.',

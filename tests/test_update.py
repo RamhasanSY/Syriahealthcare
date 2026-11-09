@@ -85,6 +85,14 @@ class CollectorTests(unittest.TestCase):
             self.assertNotIn(secret, labs[0])
         self.assertNotIn('lab_url', labs[0], 'no link without a price list or home collection')
 
+    def test_gzip_bomb_is_refused_and_normal_gzip_unpacks(self):
+        import gzip as gz
+        self.assertEqual(u.gunzip_limited(gz.compress(b'hello')), b'hello')
+        bomb = gz.compress(bytes(u.MAX_UNPACKED + 10))
+        self.assertLess(len(bomb), 10_000)
+        with self.assertRaises(ValueError):
+            u.gunzip_limited(bomb)
+
     def test_platform_labs_link_to_their_price_list_and_home_collection(self):
         catalog = {'governorates': {'aleppo': ['Aleppo', 'حلب']}, 'facilityKinds': {'lab': ['Medical laboratory', 'مخبر تحاليل طبية']},
                    'facilityServices': {'lab': {'home_collection': ['Home sample collection', 'سحب العينات من المنزل']}}}

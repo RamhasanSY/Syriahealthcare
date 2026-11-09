@@ -114,9 +114,12 @@ for (const file of ['sources.json', 'data/news.json', 'data/jobs.json', 'data/st
 const layout = await readFile(path.join(root, 'pages', '_layout.html'), 'utf8');
 const worker = await readFile(path.join(root, 'scripts', 'sw.js'), 'utf8');
 
+// Where dist/ and dist-news/ go: the project by default. The server builds from a read-only copy into an empty folder of
+// its own (BUILD_OUT, see platform/server/update-website.sh), so the build can change nothing but its output.
+const outRoot = process.env.BUILD_OUT ? path.resolve(process.env.BUILD_OUT) : root;
 for (const site of sites) {
-  const output = path.join(root, site.out);
-  if (path.dirname(output) !== path.resolve(root) || !/^dist(-news)?$/.test(site.out)) throw new Error('Build output must be dist or dist-news in the project.');
+  const output = path.join(outRoot, site.out);
+  if (path.dirname(output) !== path.resolve(outRoot) || !/^dist(-news)?$/.test(site.out)) throw new Error('Build output must be dist or dist-news in the output folder.');
   await rm(output, { recursive: true, force: true });
   await mkdir(path.join(output, 'data'), { recursive: true });
   for (const file of site.files) {

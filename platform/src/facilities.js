@@ -38,7 +38,7 @@ function cleanProfile(body, kind) {
         out[key] = value || null;
     }
     if ('governorate' in body) {
-        if (body.governorate && !governorates[body.governorate]) throw new HttpError(400, 'invalid_governorate', 'Choose a governorate from the list.');
+        if (body.governorate && !Object.hasOwn(governorates, body.governorate)) throw new HttpError(400, 'invalid_governorate', 'Choose a governorate from the list.');
         out.governorate = body.governorate || null;
     }
     if ('phone' in body) {
@@ -48,7 +48,7 @@ function cleanProfile(body, kind) {
     }
     if ('services' in body) {
         const allowed = facilityServices[kind];
-        if (body.services.some(s => !allowed[s])) throw new HttpError(400, 'invalid_service', 'Choose services from the list.');
+        if (body.services.some(s => !Object.hasOwn(allowed, s))) throw new HttpError(400, 'invalid_service', 'Choose services from the list.');
         out.services = [...new Set(body.services)];
     }
     if ('emergency' in body) out.emergency = body.emergency === true && ['hospital', 'clinic'].includes(kind);
@@ -69,13 +69,13 @@ export default async function facilityRoutes(app) {
 
     // ---- Public ----
 
-    app.get('/api/facilities', {schema: {querystring: {type: 'object', properties: {
+    app.get('/api/facilities', {config: {cache: 'public, max-age=60'}, schema: {querystring: {type: 'object', properties: {
         kind: {enum: Object.keys(facilityKinds)}, governorate: {type: 'string', maxLength: 40}
     }}}}, async request => {
         const {kind, governorate} = request.query;
         const where = [APPROVED], args = [];
         if (kind) where.push(`p.kind = $${args.push(kind)}`);
-        if (governorate && governorates[governorate]) where.push(`p.governorate = $${args.push(governorate)}`);
+        if (governorate && Object.hasOwn(governorates, governorate)) where.push(`p.governorate = $${args.push(governorate)}`);
         const {rows} = await app.pg.query(
             `SELECT ${PUBLIC_FACILITY} FROM users u JOIN facility_profiles p ON p.user_id = u.id
              WHERE ${where.join(' AND ')} ORDER BY p.facility_name LIMIT 1000`, args);

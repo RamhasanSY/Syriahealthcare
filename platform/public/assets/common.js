@@ -40,6 +40,9 @@ const Shc = (() => {
         too_long: 'أحد الحقول أطول من المسموح.',
         suspended: 'ملفك موقوف. يرجى التواصل مع الدعم.',
         own_account: 'لا يمكنك إيقاف حسابك أنت.',
+        pdf_encrypted: 'ملف PDF هذا محمي أو مشفّر ولا يمكن فحصه. احفظه دون حماية أو التقط صورة له بدلاً من ذلك.',
+        pdf_unsupported: 'ملف PDF هذا مبني بطريقة غير معتادة ولا يمكن فحصه. اطبعه إلى ملف PDF جديد أو التقط صورة له بدلاً من ذلك.',
+        lab_not_approved: 'يجب اعتماد منشأتكم أولاً.',
         not_a_lab: 'قائمة الأسعار والزيارات المنزلية للمخابر ومراكز الأشعة فقط.',
         invalid_test_name: 'أدخل اسم التحليل.',
         test_exists: 'هذا التحليل موجود في قائمة الأسعار مسبقاً.',
@@ -285,5 +288,29 @@ const Shc = (() => {
         wrap.append(button, box);
         return wrap;
     }
-    return {$, tr, api, showError, busy, saveProfiles, savedProfiles, forgetProfiles, valuesTable, valuesButton, get lang() { return lang; }};
+    // Where to go after signing in: only a page of this site. The browser drops tabs and line breaks from addresses, so
+    // "/%09/evil.example" would become "//evil.example"; such characters and backslashes are refused outright.
+    function localNext(fallback = '/account') {
+        const next = new URLSearchParams(window.location.search).get('next') || '';
+        if (!next.startsWith('/') || /[\t\n\r\\]/.test(next)) return fallback;
+        try {
+            const url = new URL(next, window.location.origin);
+            return url.origin === window.location.origin ? url.pathname + url.search + url.hash : fallback;
+        } catch (_) {
+            return fallback;
+        }
+    }
+    // A new sign-in on this device: nothing the previous person left (saved patient numbers, cached pages) stays.
+    async function freshDevice() {
+        forgetProfiles();
+        try {
+            for (const key of await caches.keys()) if (key.startsWith('shc-app-')) await caches.delete(key);
+        } catch (_) {}
+    }
+    // Reads the part after "#" of the address; a malformed "%" must not break the page.
+    function hashValue() {
+        try { return decodeURIComponent(window.location.hash.slice(1)); } catch (_) { return ''; }
+    }
+    return {$, tr, api, showError, busy, saveProfiles, savedProfiles, forgetProfiles, valuesTable, valuesButton, localNext, freshDevice, hashValue,
+        get lang() { return lang; }};
 })();

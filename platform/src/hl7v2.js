@@ -12,11 +12,16 @@ const ER7 = 'x-application/hl7-v2+er7';
 
 // ---- Parsing ----
 
+export const MAX_SEGMENTS = 2000;
+
 export function parseMessage(text) {
     const lines = String(text || '').replace(/^﻿/, '').split(/\r\n|\r|\n/).filter(l => l.trim());
+    if (lines.length > MAX_SEGMENTS) throw new IngestError('too_many_segments', `At most ${MAX_SEGMENTS} segments per message.`, 'MSH');
     if (!lines[0]?.startsWith('MSH')) throw new IngestError('no_msh', 'The message must start with an MSH segment.', 'MSH');
     const field = lines[0][3], [component, repetition, escape, sub] = lines[0].slice(4, 8).split('');
     const enc = {field, component: component || '^', repetition: repetition || '~', escape: escape || '\\', sub: sub || '&'};
+    // The escape pattern is built once per message (not once per field read).
+    enc.pattern = new RegExp(`\\${enc.escape}([FSTRE])\\${enc.escape}`, 'g');
     const segments = lines.map(line => {
         const parts = line.split(enc.field);
         // MSH-1 is the field separator itself, so MSH fields are shifted by one.
@@ -25,7 +30,7 @@ export function parseMessage(text) {
     return {enc, segments};
 }
 
-const unescape = (value, enc) => String(value ?? '').replace(new RegExp(`\\${enc.escape}([FSTRE])\\${enc.escape}`, 'g'), (_, c) =>
+const unescape = (value, enc) => String(value ?? '').replace(enc.pattern || new RegExp(`\\${enc.escape}([FSTRE])\\${enc.escape}`, 'g'), (_, c) =>
     ({F: enc.field, S: enc.component, T: enc.sub, R: enc.repetition, E: enc.escape})[c]);
 
 // Field n of a segment (1-based, as in the HL7 tables), split into components; repetition r.
@@ -121,7 +126,16 @@ export default async function hl7v2Routes(app) {
         app.addContentTypeParser(type, {parseAs: 'string', bodyLimit: MAX_MESSAGE_BYTES}, (request, body, done) => done(null, body));
     }
 
-    app.post('/hl7v2', {bodyLimit: MAX_MESSAGE_BYTES, config: {rateLimit: {max: 600, timeWindow: '15 minutes'}}}, async (request, reply) => {
+    // The access token is checked before the message is even read: without a valid one, nothing is parsed.
+    const tokenFirst = async (request, reply) => {
+        try {
+            request.apiClient = await tokenClient(app.pg, request);
+        } catch (error) {
+            reply.code(error.statusCode || 401).type(ER7).header('Cache-Control', 'no-store');
+            return reply.send(ack(null, 'AR', error.message, {error: {field: 'Authorization', message: error.message, hl7: '207^Application internal error^HL70357'}}));
+        }
+    };
+    app.post('/hl7v2', {bodyLimit: MAX_MESSAGE_BYTES, onRequest: tokenFirst, config: {rateLimit: {max: 600, timeWindow: '15 minutes'}}}, async (request, reply) => {
         reply.type(ER7).header('Cache-Control', 'no-store');
         let message = null;
         try {
@@ -137,12 +151,11 @@ export default async function hl7v2Routes(app) {
             if (!(error instanceof IngestError)) throw error;
             return ack(message, error.refuse ? 'AR' : 'AE', error.message, {error: {field: error.field, message: error.message, hl7: HL7_ERROR[error.code]}});
         }
-        let client;
-        try {
-            client = await tokenClient(app.pg, request, item.scope);
-        } catch (error) {
-            reply.code(error.statusCode || 401);
-            return ack(message, 'AR', error.message, {error: {field: 'Authorization', message: error.message, hl7: '207^Application internal error^HL70357'}});
+        const client = request.apiClient;
+        if (!client.scopes.includes(item.scope)) {
+            reply.code(403);
+            const text = `This needs the scope ${item.scope}.`;
+            return ack(message, 'AR', text, {error: {field: 'Authorization', message: text, hl7: '207^Application internal error^HL70357'}});
         }
         try {
             const result = await ingest(app, client, {...item, source: 'hl7v2'}, {ip: request.ip});

@@ -5,7 +5,9 @@ import {phoneSignInAvailable, sendCode} from './messaging.js';
 import {emailCodeEmail, passwordChangedEmail, resetEmail, sendEmail, staffAddressEmail, staffCodeEmail, confirmCodeEmail, welcomeEmail} from './notify.js';
 import {dummyPasswordHash, hashPassword, newOtp, newToken, normalizeEmail, normalizePhone, otpHash, passwordProblem, rateLimitKey, sameHash, sha256, verifyPassword} from './security.js';
 
-export const SESSION_COOKIE = 'shc_session';
+// In production "__Host-shc_session": browsers accept it only from this exact host over HTTPS, so no other site on
+// syriahc.com could plant a session cookie. Locally (http) the plain name, which tests also use.
+export const SESSION_COOKIE = process.env.NODE_ENV === 'production' ? '__Host-shc_session' : 'shc_session';
 const OTP_MINUTES = 5, OTP_PER_PHONE = 3, OTP_WINDOW_MINUTES = 15, OTP_MAX_ATTEMPTS = 5;
 // Email is slower than SMS, so its codes last longer. Per address: 3 codes per 15 minutes and 10 per day; all code
 // emails together are capped per hour to protect the sending mailbox from being used to spam people.
@@ -94,6 +96,10 @@ export default async function authRoutes(app) {
         const {rows: [recent]} = await app.pg.query(
             'SELECT count(*)::int AS n FROM otp_codes WHERE phone = $1 AND created_at > now() - make_interval(mins => $2)', [phone, OTP_WINDOW_MINUTES]);
         if (recent.n >= OTP_PER_PHONE) throw new HttpError(429, 'too_many_codes', 'Too many codes requested. Please wait 15 minutes and try again.');
+        // At most 10 codes a day per number (each with 5 tries): guessing stays hopeless and nobody can run up message costs.
+        const {rows: [today]} = await app.pg.query(
+            "SELECT count(*)::int AS n FROM otp_codes WHERE phone = $1 AND created_at > now() - interval '1 day'", [phone]);
+        if (today.n >= 10) throw new HttpError(429, 'too_many_codes_today', 'Too many codes requested today. Please try again tomorrow.');
         const code = newOtp();
         const {rows: [otp]} = await app.pg.query(
             'INSERT INTO otp_codes (phone, code_hash, expires_at, ip) VALUES ($1, $2, now() + make_interval(mins => $3), $4) RETURNING id',
@@ -471,6 +477,10 @@ export default async function authRoutes(app) {
     }, async (request, reply) => {
         const problem = passwordProblem(request.body.password);
         if (problem) throw new HttpError(400, 'weak_password', problem);
+        // The link is checked first (cheap), so unknown links cannot make the server compute password hashes.
+        const {rows: [open]} = await app.pg.query(
+            'SELECT 1 FROM password_resets WHERE token_hash = $1 AND used_at IS NULL AND expires_at > now()', [sha256(request.body.token)]);
+        if (!open) throw new HttpError(400, 'reset_invalid', 'This link is invalid or has expired. Please request a new one.');
         const hash = await hashPassword(request.body.password);
         const user = await transaction(app.pg, async db => {
             // Single use: a second request with the same link finds it already used.
@@ -482,6 +492,7 @@ export default async function authRoutes(app) {
             await db.query('UPDATE users SET password_hash = $2 WHERE id = $1', [account.id, hash]);
             await db.query('UPDATE password_resets SET used_at = now() WHERE user_id = $1 AND used_at IS NULL', [account.id]);
             await db.query('DELETE FROM sessions WHERE user_id = $1', [account.id]);
+            await db.query('DELETE FROM trusted_devices WHERE user_id = $1', [account.id]);
             await db.query('DELETE FROM login_failures WHERE email = $1', [account.email]);
             await audit(db, {actorId: account.id, action: 'password.reset', targetId: account.id, ip: request.ip});
             return account;

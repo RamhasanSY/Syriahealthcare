@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 """Publish source-backed Syria healthcare records without an AI dependency."""
-import gzip
 import html
 import json
 import os
@@ -9,6 +8,7 @@ import sys
 import time
 import urllib.error
 import urllib.request
+import zlib
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timedelta, timezone
 from email.utils import parsedate_to_datetime, format_datetime
@@ -67,6 +67,18 @@ def canonical_url(raw):
         return ''
 
 
+MAX_UNPACKED = 4_000_000
+
+
+# A compressed answer is unpacked to at most 4 MB: a small "gzip bomb" from a broken or hostile source cannot fill the memory.
+def gunzip_limited(content, limit=MAX_UNPACKED):
+    inflater = zlib.decompressobj(31)
+    data = inflater.decompress(content, limit + 1)
+    if len(data) > limit or inflater.unconsumed_tail:
+        raise ValueError('Source exceeded the maximum response size after unpacking')
+    return data
+
+
 def fetch(url, timeout=25, payload=None, attempts=3):
     headers = {'User-Agent': USER_AGENT, 'Accept': 'application/rss+xml, application/json, text/html, */*'}
     body = None
@@ -82,7 +94,7 @@ def fetch(url, timeout=25, payload=None, attempts=3):
                     raise ValueError('Source exceeded the maximum response size')
                 if not content:
                     raise ValueError(f'Empty response (HTTP {response.status})')
-                return gzip.decompress(content) if content.startswith(b'\x1f\x8b') else content
+                return gunzip_limited(content) if content.startswith(b'\x1f\x8b') else content
         except (urllib.error.URLError, OSError, ValueError):
             if attempt == attempts - 1:
                 raise
@@ -559,7 +571,7 @@ def platform_doctors(platform_url, catalog, doctors):
 
 def platform_base_url():
     platform_url = os.environ.get('PLATFORM_URL', '').strip().rstrip('/')
-    if platform_url and urlsplit(platform_url).scheme != 'https' and not platform_url.startswith('http://127.0.0.1'):
+    if platform_url and urlsplit(platform_url).scheme != 'https' and urlsplit(platform_url).hostname != '127.0.0.1':
         raise ValueError('PLATFORM_URL must use https')
     return platform_url
 

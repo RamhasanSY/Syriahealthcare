@@ -95,13 +95,15 @@ describe('measured values in the health file and for doctors', () => {
         const {token} = await lab();
         const res = await send(token, oru('', 'L-2'));
         const code = res.body.match(/[2-9A-HJ-NP-Z]{4}-[2-9A-HJ-NP-Z]{4}-[2-9A-HJ-NP-Z]{4}/)[0];
-        const doctor = await approvedDoctor(post);
+        const doctor = await approvedDoctor(post, undefined, undefined, {confirmed: true});
         const added = (await post('/api/doctor/results/add', {code}, {cookie: doctor.cookie})).json().result;
         assert.equal(added.has_values, true);
         const scanned = (await get(`/api/doctor/results/${added.id}/values`, doctor.cookie)).json().values;
         assert.equal(scanned[0].flag, 'H');
+        const stranger = await approvedDoctor(post, 'stranger@example.org', 'Dr. Stranger', {confirmed: true});
+        assert.equal((await get(`/api/doctor/results/${added.id}/values`, stranger.cookie)).statusCode, 404, 'not this doctor\'s slip');
         const other = await approvedDoctor(post, 'other@example.org', 'Dr. Other');
-        assert.equal((await get(`/api/doctor/results/${added.id}/values`, other.cookie)).statusCode, 404);
+        assert.equal((await get(`/api/doctor/results/${added.id}/values`, other.cookie)).json().error, 'second_factor_required');
 
         // The patient takes the result into her file and shares it with a second doctor.
         const cookie = await signInPatientByEmail(post, mail, 'lina@example.org', 'Lina Haddad');

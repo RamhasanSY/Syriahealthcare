@@ -8,6 +8,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const res = await api('/api/doctor/records');
     $('main').setAttribute('aria-busy', 'false');
     if (res.status === 401) return window.location.assign('/staff?next=/records');
+    // Lab results need the emailed code first (once per session, or once in 30 days on a remembered device).
+    if (res.data?.error === 'second_factor_required') return window.location.assign('/confirm?next=/records');
     if (!res.ok) return showError('pageError', res.data);
     const patients = res.data.patients;
     $('content').hidden = false;

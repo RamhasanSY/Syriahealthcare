@@ -154,8 +154,8 @@ describe('show to the doctor (QR, 15 minutes)', () => {
         assert.equal((await get(`/api/doctor/shared/${items[1].id}/pages/1`, doctor.cookie)).statusCode, 200);
         assert.equal((await get(`/api/doctor/shared/${items[0].id}/pages/1`, doctor.cookie)).statusCode, 404);
         assert.equal((await post('/api/doctor/share-codes/redeem', {code: code.code}, {cookie: second.cookie})).json().error, 'share_code_invalid', 'once only');
-        const {rows: [g]} = await pool.query("SELECT expires_at - starts_at AS length FROM access_grants WHERE source = 'qr'");
-        assert.equal(g.length.minutes, 15);
+        const {rows: [g]} = await pool.query("SELECT extract(epoch FROM expires_at - starts_at)::float AS seconds FROM access_grants WHERE source = 'qr'");
+        assert.ok(Math.abs(g.seconds - 900) < 5, `${g.seconds} s`);
 
         const late = (await post(`/api/file/profiles/${profile.id}/share-codes`, {item_ids: [items[0].id]}, {cookie})).json();
         await pool.query("UPDATE share_codes SET expires_at = now() - interval '1 second' WHERE used_at IS NULL");

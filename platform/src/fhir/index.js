@@ -75,7 +75,8 @@ export default async function fhirRoutes(app) {
     });
     app.setNotFoundHandler((request, reply) => send(reply, 404, outcome('not-found', 'Unknown FHIR endpoint.', 'نقطة نهاية غير معروفة.')));
     app.setErrorHandler((error, request, reply) => {
-        request.log.error({err: error}, 'FHIR request failed');
+        if ((error.statusCode || 500) >= 500) request.log.error({err: error}, 'FHIR request failed');
+        else request.log.info({code: error.code, status: error.statusCode}, 'FHIR request refused');
         send(reply, error.statusCode && error.statusCode < 500 ? error.statusCode : 500,
             outcome('exception', 'The server could not process this request.', 'تعذر على الخادم معالجة هذا الطلب.'));
     });

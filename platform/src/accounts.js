@@ -42,7 +42,10 @@ export default async function accountRoutes(app) {
             if (Boolean(target.disabled_at) === disable) throw new HttpError(409, 'wrong_status', disable ? 'This account is already switched off.' : 'This account is already active.');
             const {rows: [updated]} = await db.query(
                 `UPDATE users SET disabled_at = ${disable ? 'now()' : 'NULL'} WHERE id = $1 RETURNING id, disabled_at`, [target.id]);
-            if (disable) await db.query('DELETE FROM sessions WHERE user_id = $1', [target.id]);
+            if (disable) {
+                await db.query('DELETE FROM sessions WHERE user_id = $1', [target.id]);
+                await db.query('DELETE FROM trusted_devices WHERE user_id = $1', [target.id]);
+            }
             await audit(db, {actorId: request.user.id, action: disable ? 'account.disabled' : 'account.enabled', targetId: target.id,
                 details: note ? {note} : {}, ip: request.ip});
             return {...target, disabled_at: updated.disabled_at};

@@ -7,7 +7,8 @@ import {randomInt} from 'node:crypto';
 import {HttpError, requireRole} from './auth.js';
 import {audit} from './db.js';
 import {sendDocument} from './doctors.js';
-import {MAX_DOCUMENT_BYTES, sniffType} from './documents.js';
+import {MAX_DOCUMENT_BYTES} from './documents.js';
+import {cleanUpload, UploadError} from './uploads.js';
 import {normalizePhone, resultCodeHash} from './security.js';
 import {valueRows} from './lab-values.js';
 
@@ -76,9 +77,12 @@ export default async function resultRoutes(app) {
         return lab;
     }
 
-    async function checkDoctor(userId) {
-        const {rows: [doctor]} = await app.pg.query('SELECT status FROM doctor_profiles WHERE user_id = $1', [userId]);
+    // Lab results are health data: an approved doctor who confirmed it is them with the emailed code in this session
+    // (or on a remembered device), as for shared health files. A stolen password alone opens nothing.
+    async function checkDoctor(request) {
+        const {rows: [doctor]} = await app.pg.query('SELECT status FROM doctor_profiles WHERE user_id = $1', [request.user.id]);
         if (doctor?.status !== 'approved') throw new HttpError(403, 'doctor_not_approved', 'Your profile must be approved before you can use patient files.');
+        if (!request.user.second_factor_at) throw new HttpError(403, 'second_factor_required', 'Please confirm it is you with a code sent to your email.');
     }
 
     // Unknown, mistyped and expired codes get the same answer.
@@ -142,9 +146,15 @@ export default async function resultRoutes(app) {
             if (error.code === 'FST_REQ_FILE_TOO_LARGE') throw new HttpError(413, 'file_too_large', 'The file is larger than 5 MB.');
             throw error;
         });
-        const mime = sniffType(buffer);
-        if (!mime) throw new HttpError(400, 'invalid_file_type', 'Upload a PDF, JPG or PNG file.');
-        const stored = await app.documents.save(buffer), code = newResultCode();
+        let clean;
+        try {
+            clean = cleanUpload(buffer);
+        } catch (error) {
+            if (error instanceof UploadError) throw new HttpError(400, error.code, error.message);
+            throw error;
+        }
+        const {mime} = clean;
+        const stored = await app.documents.save(clean.buffer), code = newResultCode();
         const filename = String(part.filename || 'result').replace(/[^\p{L}\p{N}._ -]/gu, '_').slice(0, 200);
         try {
             const {rows: [result]} = await app.pg.query(
@@ -152,8 +162,8 @@ export default async function resultRoutes(app) {
                      filename, mime, size_bytes, sha256, storage_key, iv, auth_tag, birth_year, slip_version)
                  VALUES ($1, $2, $3, $4, $5, now() + make_interval(days => $6), $7, $8, $9, $10, $11, $12, $13, $14, $15) RETURNING *`,
                 [request.user.id, patientName, patientPhone, title, codeHash(code), CODE_DAYS,
-                    filename, mime, buffer.length, stored.sha256, stored.storageKey, stored.iv, stored.authTag, birthYear, slipVersion(app)]);
-            await audit(app.pg, {actorId: request.user.id, action: 'result.uploaded', targetId: result.id, details: {size: buffer.length}, ip: request.ip});
+                    filename, mime, clean.buffer.length, stored.sha256, stored.storageKey, stored.iv, stored.authTag, birthYear, slipVersion(app)]);
+            await audit(app.pg, {actorId: request.user.id, action: 'result.uploaded', targetId: result.id, details: {size: clean.buffer.length}, ip: request.ip});
             reply.code(201);
             return slip(app, result, code, lab.facility_name);
         } catch (error) {
@@ -182,14 +192,15 @@ export default async function resultRoutes(app) {
 
     // Shows whose result a scanned code is, so the doctor can check it before adding it.
     app.post('/api/doctor/results/lookup', codeRoute, async request => {
-        await checkDoctor(request.user.id);
+        await checkDoctor(request);
         const result = await findByCode(request.body.code);
         const {rows: [added]} = await app.pg.query('SELECT 1 FROM patient_file_results WHERE doctor_id = $1 AND result_id = $2', [request.user.id, result.id]);
+        await audit(app.pg, {actorId: request.user.id, action: 'result.looked_up', targetId: result.id, ip: request.ip});
         return {result: {...doctorView(result), added: Boolean(added)}};
     });
 
     app.post('/api/doctor/results/add', codeRoute, async request => {
-        await checkDoctor(request.user.id);
+        await checkDoctor(request);
         const result = await findByCode(request.body.code);
         const {rowCount} = await app.pg.query(
             'INSERT INTO patient_file_results (doctor_id, result_id) VALUES ($1, $2) ON CONFLICT DO NOTHING', [request.user.id, result.id]);
@@ -199,11 +210,12 @@ export default async function resultRoutes(app) {
 
     // The doctor's patient files: every scanned result, grouped by patient (mobile number), newest first.
     app.get('/api/doctor/records', doctorOnly, async request => {
-        await checkDoctor(request.user.id);
+        await checkDoctor(request);
         const {rows} = await app.pg.query(
             `SELECT r.id, r.title, r.patient_name, r.patient_phone, r.mime, r.created_at, r.observations, f.added_at, p.facility_name AS lab_name
              FROM patient_file_results f JOIN lab_results r ON r.id = f.result_id JOIN facility_profiles p ON p.user_id = r.facility_id
              WHERE f.doctor_id = $1 AND f.revoked_at IS NULL ORDER BY r.created_at DESC LIMIT 1000`, [request.user.id]);
+        await audit(app.pg, {actorId: request.user.id, action: 'records.listed', targetId: request.user.id, details: {results: rows.length}, ip: request.ip});
         const patients = new Map();
         for (const row of rows) {
             if (!patients.has(row.patient_phone)) patients.set(row.patient_phone, {phone: row.patient_phone, name: row.patient_name, results: []});
@@ -214,7 +226,7 @@ export default async function resultRoutes(app) {
 
     // The measured values of a scanned result, as table rows. Every look is recorded.
     app.get('/api/doctor/results/:id/values', {...doctorOnly, schema: uuidParam}, async request => {
-        await checkDoctor(request.user.id);
+        await checkDoctor(request);
         const {rows: [result]} = await app.pg.query(
             `SELECT r.id, r.observations FROM lab_results r JOIN patient_file_results f ON f.result_id = r.id AND f.doctor_id = $2 AND f.revoked_at IS NULL WHERE r.id = $1`,
             [request.params.id, request.user.id]);
@@ -225,7 +237,7 @@ export default async function resultRoutes(app) {
 
     // Opens a result from the doctor's own patient files. Every view is recorded.
     app.get('/api/doctor/results/:id/file', {...doctorOnly, schema: uuidParam}, async (request, reply) => {
-        await checkDoctor(request.user.id);
+        await checkDoctor(request);
         const {rows: [result]} = await app.pg.query(
             `SELECT r.* FROM lab_results r JOIN patient_file_results f ON f.result_id = r.id AND f.doctor_id = $2 AND f.revoked_at IS NULL WHERE r.id = $1`,
             [request.params.id, request.user.id]);

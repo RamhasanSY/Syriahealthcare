@@ -69,6 +69,8 @@ services:
     ports:
       - "80:80"
       - "443:443"
+      # HTTP/3 (QUIC) needs UDP: fewer round trips, better on slow and changing mobile networks. Also open it in ufw.
+      - "443:443/udp"
     environment:
       APP_DOMAIN: ${APP_DOMAIN}
       SITE_DOMAIN: ${SITE_DOMAIN:?Set SITE_DOMAIN in .env}
@@ -98,6 +100,7 @@ services:
     entrypoint: ["/bin/sh", "-c"]
     command:
       - |
+        umask 077  # backups are readable by root only
         while true; do
           sleep $$(( (26 - $$(date +%H)) % 24 * 3600 ))
           pg_dump -h db -U shc -d shc -Fc -f /backups/shc-$$(date +%Y-%m-%d).dump && echo "database backup ok"

@@ -75,6 +75,10 @@ export default async function dashboardRoutes(app) {
                 throw new HttpError(409, 'wrong_status', 'This appointment has changed. Please reload.');
             }
             await audit(app.pg, {actorId: request.user.id, action: `appointment.${rule.to}`, targetId: updated.id, details: note ? {note} : {}, ip: request.ip});
+            // A share made when booking ends with the appointment: a doctor who declines or cancels keeps nothing.
+            if (['declined', 'cancelled_by_doctor'].includes(updated.status)) {
+                await app.pg.query('UPDATE access_grants SET revoked_at = COALESCE(revoked_at, now()) WHERE appointment_id = $1', [updated.id]);
+            }
             if (MESSAGES[rule.to]) await notifyPatient(app, request, updated);
             return {appointment: {id: updated.id, status: updated.status, status_note: updated.status_note}};
         });

@@ -2,6 +2,8 @@
 <html lang="en" dir="ltr" data-site="{{site}}" data-title-en="{{title}}" data-title-ar="{{title_ar}}" data-desc-en="{{description}}" data-desc-ar="{{description_ar}}">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="{{theme_color}}">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
   <title>{{title}}</title>
   <meta name="description" content="{{description}}">
   <meta property="og:title" content="{{title}}"><meta property="og:description" content="{{description}}"><meta property="og:type" content="website">

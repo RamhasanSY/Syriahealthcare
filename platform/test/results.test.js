@@ -91,7 +91,7 @@ describe('lab side', () => {
 
     test('a new QR code replaces the old one', async () => {
         const cookie = await lab(), first = (await upload(cookie)).json();
-        const {cookie: doctor} = await approvedDoctor(post);
+        const {cookie: doctor} = await approvedDoctor(post, undefined, undefined, {confirmed: true});
         const renewed = await post(`/api/lab/results/${first.result.id}/code`, {}, {cookie});
         assert.equal(renewed.statusCode, 200);
         assert.notEqual(renewed.json().code, first.code);
@@ -106,7 +106,7 @@ describe('lab side', () => {
 describe('doctor side', () => {
     test('scanning shows whose result it is, adding puts it in the patient file, and the doctor can open it', async () => {
         const {code, result} = (await upload(await lab())).json();
-        const {cookie} = await approvedDoctor(post);
+        const {cookie} = await approvedDoctor(post, undefined, undefined, {confirmed: true});
         const lookup = await post('/api/doctor/results/lookup', {code: code.toLowerCase()}, {cookie});
         assert.equal(lookup.statusCode, 200);
         assert.deepEqual([lookup.json().result.patient_name, lookup.json().result.lab_name, lookup.json().result.added], ['Ahmad Khaled', 'Al Shifa Laboratory', false]);
@@ -124,26 +124,26 @@ describe('doctor side', () => {
         assert.equal(file.headers['cache-control'], 'no-store');
         assert.deepEqual(file.rawPayload, PDF);
         const {rows} = await pool.query("SELECT action FROM audit_log WHERE action LIKE 'result.%' ORDER BY id");
-        assert.deepEqual(rows.map(r => r.action), ['result.uploaded', 'result.added', 'result.viewed']);
+        assert.deepEqual(rows.map(r => r.action), ['result.uploaded', 'result.looked_up', 'result.added', 'result.viewed']);
     });
 
     test('results of one patient are grouped, and other doctors see nothing without scanning', async () => {
         const labCookie = await lab();
         const first = (await upload(labCookie)).json(), second = (await upload(labCookie, {...patient, title: 'HbA1c'})).json();
         const third = (await upload(labCookie, {...patient, patient_name: 'Lina Haddad', patient_phone: '0933 111 222'})).json();
-        const {cookie} = await approvedDoctor(post);
+        const {cookie} = await approvedDoctor(post, undefined, undefined, {confirmed: true});
         for (const s of [first, second, third]) await post('/api/doctor/results/add', {code: s.code}, {cookie});
         const records = (await app.inject({url: '/api/doctor/records', headers: {cookie}})).json();
         assert.deepEqual(records.patients.map(p => [p.name, p.results.length]).sort(), [['Ahmad Khaled', 2], ['Lina Haddad', 1]]);
 
-        const {cookie: other} = await approvedDoctor(post, 'dr2@example.org');
+        const {cookie: other} = await approvedDoctor(post, 'dr2@example.org', undefined, {confirmed: true});
         assert.deepEqual((await app.inject({url: '/api/doctor/records', headers: {cookie: other}})).json().patients, []);
         assert.equal((await app.inject({url: `/api/doctor/results/${first.result.id}/file`, headers: {cookie: other}})).statusCode, 404);
     });
 
     test('wrong and expired codes are refused, and only approved doctors can scan', async () => {
         const {code} = (await upload(await lab())).json();
-        const {cookie} = await approvedDoctor(post);
+        const {cookie} = await approvedDoctor(post, undefined, undefined, {confirmed: true});
         assert.equal((await post('/api/doctor/results/lookup', {code: 'ABCD-EFGH-JKLM'}, {cookie})).json().error, 'code_invalid');
         assert.equal((await post('/api/doctor/results/lookup', {code: 'nonsense'}, {cookie})).json().error, 'code_invalid');
         const pending = await signIn(post, 'doctor', 'new@example.org');

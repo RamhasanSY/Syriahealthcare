@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {readdir, readFile} from 'node:fs/promises';
 import path from 'node:path';
 import {config, origin, pool, setup, signIn, teardown} from './helpers.js';
+import {pngWithText} from './fixtures.js';
 
 let app, mail, post;
 beforeEach(async () => {
@@ -12,7 +13,8 @@ beforeEach(async () => {
 after(() => teardown(app));
 
 const PDF = Buffer.from('%PDF-1.4\n1 0 obj<<>>endobj\ntrailer<<>>\n%%EOF\n');
-const PNG = Buffer.concat([Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]), Buffer.alloc(32, 1)]);
+// A small but complete PNG (signature, header, data, end): uploads are checked as real pictures.
+const PNG = pngWithText();
 const complete = {
     specialty: 'cardiology', governorate: 'damascus', area: 'Al Mazzeh', clinic_name: 'Heart Clinic',
     clinic_address: 'Mezzeh Highway, Building 12, 3rd floor', clinic_phone: '011 234 5678', licence_number: 'SY-12345', bio: 'Adult cardiology.'

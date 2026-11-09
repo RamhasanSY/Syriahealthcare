@@ -35,9 +35,10 @@ document.addEventListener('DOMContentLoaded', () => {
     renderType();
 
     // Pages that need a signed-in doctor or lab send people here with ?next=/page; only plain local paths are followed.
-    const goOn = () => {
+    const goOn = async () => {
         const next = new URLSearchParams(window.location.search).get('next');
-        window.location.assign(/^\/[a-z]+$/.test(next || '') ? next : '/account');
+        await Shc.freshDevice();  // nothing a previous person left on this device stays
+        window.location.assign(/^\/[a-z-]+$/.test(next || '') ? next : '/account');
     };
     // Administrators get a second step: the code from their email, tied to this sign-in attempt.
     let challenge = null;

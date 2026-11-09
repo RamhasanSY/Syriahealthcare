@@ -1,6 +1,6 @@
 import {after, beforeEach, describe, test} from 'node:test';
 import assert from 'node:assert/strict';
-import {config, cookieOf, pool, setup, signIn, signInPatientByEmail, teardown} from './helpers.js';
+import {config, confirmSession, cookieOf, pool, setup, signIn, signInPatientByEmail, teardown} from './helpers.js';
 import {PDF} from './fixtures.js';
 import {parseMessage} from '../src/hl7v2.js';
 
@@ -140,7 +140,7 @@ describe('FHIR transaction from lab software', () => {
         assert.equal(outcome.details.text, 'not-delivered');
         const code = outcome.diagnostics.match(/[2-9A-HJ-NP-Z]{4}-[2-9A-HJ-NP-Z]{4}-[2-9A-HJ-NP-Z]{4}/)[0];
         assert.equal((await get(`/api/file/profiles/${profile.id}/items`, cookie)).json().items.length, 0);
-        const doctor = await signIn(post, 'doctor', 'dr@example.org');
+        const doctor = await confirmSession(await signIn(post, 'doctor', 'dr@example.org'));
         await pool.query("UPDATE doctor_profiles SET status = 'approved'");
         assert.equal((await post('/api/doctor/results/lookup', {code}, {cookie: doctor})).statusCode, 200, 'the slip code works as always');
     });

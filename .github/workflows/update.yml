@@ -22,6 +22,9 @@ jobs:
         with:
           ref: main
           fetch-depth: 0
+          # The push token is not left in .git/config while scripts/update.py parses third-party feeds and pages;
+          # only the commit step below gets it.
+          persist-credentials: false
 
       - uses: actions/setup-python@v5
         with:
@@ -41,7 +44,10 @@ jobs:
         run: python scripts/update.py
 
       - name: Commit changes
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
+          git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git"
           git config user.name "syriahealthcare-bot"
           git config user.email "actions@github.com"
           git add data/news.json data/news.xml data/jobs.json data/jobs.xml data/status.json data/hospitals.json data/doctors.json data/labs.json \

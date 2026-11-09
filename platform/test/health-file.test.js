@@ -212,7 +212,7 @@ describe('taking over a lab result from the slip', () => {
         assert.equal(page.statusCode, 200);
         assert.match(page.rawPayload.toString('latin1'), /^%PDF/);
 
-        const doctor = await approvedDoctor(post);
+        const doctor = await approvedDoctor(post, undefined, undefined, {confirmed: true});
         assert.equal((await post('/api/doctor/results/lookup', {code: slip.code}, {cookie: doctor.cookie})).statusCode, 200, 'the slip still works for doctors');
     });
 
