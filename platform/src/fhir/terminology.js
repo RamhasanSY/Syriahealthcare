@@ -25,9 +25,12 @@ const CODE_SYSTEMS = [
     {id: 'facility-kind', title: 'Kinds of health facilities', description: 'Laboratories, imaging centres, hospitals and clinics.',
         concepts: () => Object.entries(facilityKinds).map(([code, labels]) => concept(code, labels))},
     {id: 'facility-service', title: 'Services of health facilities', description: 'What a facility offers, grouped by kind of facility.',
+        // The kinds only group the services: they are in the code system and its value set, but cannot be chosen.
         concepts: () => Object.entries(facilityServices).map(([kind, services]) => concept(kind, facilityKinds[kind], {
+            property: [{code: 'notSelectable', valueBoolean: true}],
             concept: Object.entries(services).map(([key, labels]) => concept(serviceCode(kind, key), labels))
-        }))},
+        })),
+        property: [{code: 'notSelectable', uri: 'http://hl7.org/fhir/concept-properties#notSelectable', description: 'A grouping code that cannot be chosen', type: 'boolean'}]},
     {id: 'governorate', title: 'Governorates of Syria', description: 'The 14 governorates, with their ISO 3166-2:SY codes.',
         concepts: () => Object.entries(governorates).map(([code, labels]) => concept(code, labels, {
             property: [{code: 'iso3166-2', valueCode: GOVERNORATE_ISO[code]}]
@@ -54,11 +57,13 @@ export function codeSystems() {
 }
 
 // Each ValueSet holds every code of its CodeSystem, already expanded so a client needs no terminology server.
+// Grouping codes are listed too (the HL7 validator checks that an "all codes" value set has them all), marked abstract.
 export function valueSets() {
     return codeSystems().map(cs => {
         const flat = [];
         const walk = list => list.forEach(c => {
-            if (!(cs.id === 'facility-service' && c.concept)) flat.push({system: cs.url, code: c.code, display: c.display});
+            const grouping = c.property?.some(p => p.code === 'notSelectable' && p.valueBoolean);
+            flat.push({system: cs.url, ...(grouping && {abstract: true}), code: c.code, display: c.display});
             if (c.concept) walk(c.concept);
         });
         walk(cs.concept);

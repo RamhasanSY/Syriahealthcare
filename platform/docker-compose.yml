@@ -1,7 +1,16 @@
 # Production stack: PostgreSQL, the platform, HTTPS (Caddy, which also serves the public website) and nightly database backups.
 # Start with: docker compose up -d --build      (settings come from .env — copy .env.example first)
+
+# Container logs are capped (3 files of 10 MB per service), so they can never fill the disk.
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
 services:
   db:
+    logging: *logging
     image: postgres:16-alpine
     restart: unless-stopped
     environment:
@@ -17,6 +26,7 @@ services:
     # Not published to the internet: only the app container can reach it.
 
   app:
+    logging: *logging
     build: .
     restart: unless-stopped
     depends_on:
@@ -50,6 +60,7 @@ services:
       - documents:/data/documents
 
   caddy:
+    logging: *logging
     image: caddy:2-alpine
     restart: unless-stopped
     depends_on: [app]
@@ -69,6 +80,7 @@ services:
       - caddy-config:/config
 
   backup:
+    logging: *logging
     image: postgres:16-alpine
     restart: unless-stopped
     depends_on:

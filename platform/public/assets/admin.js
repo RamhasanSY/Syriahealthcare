@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         'doctor.changed_after_approval': ['Edited after approval', 'عُدّل بعد الاعتماد'], 'document.uploaded': ['Document uploaded', 'رُفعت وثيقة'],
         'document.deleted': ['Document removed', 'حُذفت وثيقة'], 'document.viewed': ['Document opened', 'فُتحت وثيقة'],
         'facility.registered': ['Account created', 'إنشاء الحساب'], 'facility.submitted': ['Sent for review', 'أُرسل للمراجعة'],
-        'facility.approved': ['Approved', 'اعتُمد'], 'facility.rejected': ['Changes requested', 'طُلبت تعديلات'], 'facility.suspended': ['Suspended', 'أُوقف'],
+        'facility.approved': ['Approved', 'اعتُمد'], 'facility.rejected': ['Changes requested', 'طُلبت تعديلات'], 'facility.suspended': ['Suspended', 'أُوقف'], 'account.disabled': ['Account switched off', 'أُوقف الحساب'], 'account.enabled': ['Account switched on again', 'أُعيد تفعيل الحساب'],
         'facility.changed_after_approval': ['Edited after approval', 'عُدّل بعد الاعتماد'],
         'doctor.change_pending': ['Changes sent for review', 'أُرسلت تعديلات للمراجعة'], 'doctor.change_accepted': ['Changes accepted', 'قُبلت التعديلات'],
         'doctor.change_rejected': ['Changes rejected', 'رُفضت التعديلات'], 'facility.change_pending': ['Changes sent for review', 'أُرسلت تعديلات للمراجعة'],
@@ -160,7 +160,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         $('approve').hidden = !['pending', 'suspended'].includes(profile.status);
         $('reject').hidden = profile.status !== 'pending';
         $('suspend').hidden = profile.status !== 'approved';
-        $('decisionForm').hidden = $('approve').hidden && $('reject').hidden && $('suspend').hidden && !pending.length;
+        const account = current[G().one];
+        $('disableAccount').hidden = Boolean(account.disabled_at);
+        $('enableAccount').hidden = !account.disabled_at;
+        if (account.disabled_at) $('detailStatus').append(el('span', tr('Account switched off', 'الحساب موقوف'), 'pill wait'));
         $('history').replaceChildren(...history.map(h => {
             const li = el('li');
             li.append(el('time', when(h.created_at)), el('span', ' ' + (ACTIONS[h.action] ? tr(...ACTIONS[h.action]) : h.action) + (h.actor_name ? ' · ' + h.actor_name : '')));
@@ -186,6 +189,20 @@ document.addEventListener('DOMContentLoaded', async () => {
             renderTabs();
         }
     }
+    // Switching the whole account off or on goes to /api/admin/users, for doctors and facilities alike.
+    async function setAccount(disable) {
+        $('decisionError').hidden = true;
+        const button = $(disable ? 'disableAccount' : 'enableAccount');
+        busy(button, true);
+        const id = current[G().one].id;
+        const res = await api(`/api/admin/users/${id}/${disable ? 'disable' : 'enable'}`, {note: $('note').value});
+        busy(button, false);
+        if (!res.ok) return showError('decisionError', res.data);
+        $('note').value = '';
+        await openDoctor(id);
+    }
+    $('disableAccount').addEventListener('click', () => setAccount(true));
+    $('enableAccount').addEventListener('click', () => setAccount(false));
     ['approve', 'reject', 'suspend'].forEach(a => $(a).addEventListener('click', () => decide(a)));
     $('acceptChanges').addEventListener('click', () => decide('changes/accept', 'acceptChanges'));
     $('rejectChanges').addEventListener('click', () => decide('changes/reject', 'rejectChanges'));

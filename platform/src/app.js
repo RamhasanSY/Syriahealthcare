@@ -16,6 +16,8 @@ import facilityRoutes from './facilities.js';
 import resultRoutes from './results.js';
 import {createDocumentStore} from './documents.js';
 import fhirRoutes from './fhir/index.js';
+import accountRoutes from './accounts.js';
+import openapiRoutes, {collectRoutes} from './openapi.js';
 
 const UNSAFE = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
 
@@ -68,6 +70,8 @@ export async function buildApp({config, pool, sms, whatsapp, telegram, mail, doc
         });
     });
 
+    // Every /api route, for the OpenAPI description (/api/openapi.json). Must come before the routes.
+    const routes = collectRoutes(app);
     app.get('/api/health', async () => {
         await pool.query('SELECT 1');
         return {ok: true};
@@ -79,6 +83,8 @@ export async function buildApp({config, pool, sms, whatsapp, telegram, mail, doc
     await app.register(dashboardRoutes);
     await app.register(facilityRoutes);
     await app.register(resultRoutes);
+    await app.register(accountRoutes);
+    await app.register(openapiRoutes, {routes});
     await app.register(fhirRoutes, {prefix: '/fhir/r4'});
     await app.register(fastifyStatic, {root: fileURLToPath(new URL('../public/', import.meta.url)), extensions: ['html']});
     return app;

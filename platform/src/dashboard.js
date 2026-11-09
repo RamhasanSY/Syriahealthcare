@@ -30,7 +30,12 @@ const ACTIONS = {
 };
 
 export default async function dashboardRoutes(app) {
-    const doctorOnly = requireRole('doctor');
+    // A suspended doctor keeps the profile page (to fix it), but no longer sees patients or acts on appointments.
+    const signedIn = requireRole('doctor');
+    const doctorOnly = [signedIn, async request => {
+        const {rows: [p]} = await app.pg.query('SELECT status FROM doctor_profiles WHERE user_id = $1', [request.user.id]);
+        if (p?.status === 'suspended') throw new HttpError(403, 'suspended', 'Your profile is suspended. Please contact support.');
+    }];
 
     app.get('/api/doctor/appointments', {preHandler: doctorOnly, schema: {querystring: {type: 'object', properties: {
         scope: {enum: ['requests', 'upcoming', 'past']}

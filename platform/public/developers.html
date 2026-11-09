@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="ar" dir="rtl" data-title-en="For developers — SyriaHC" data-title-ar="للمطوّرين — صحة تك">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#1a3a5c">
+<title>للمطوّرين — صحة تك</title>
+<link rel="manifest" href="/manifest.webmanifest"><link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/assets/app.css">
+<script src="/assets/common.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#main" data-en="Skip to content" data-ar="انتقل إلى المحتوى">انتقل إلى المحتوى</a>
+<header class="top"><div class="top-inner"><a class="brand" href="/"><img src="/assets/logo.svg" alt=""><span data-en="SyriaHC" data-ar="صحة تك">صحة تك</span></a><div class="top-actions"><button class="lang" id="langToggle" type="button">English</button></div></div></header>
+<main id="main" class="wrap legal">
+  <h1 data-en="For developers" data-ar="للمطوّرين">للمطوّرين</h1>
+  <p data-en="Health portals, authorities, aid organisations and software makers can reuse the SyriaHC directory of approved doctors, labs, imaging centres, hospitals and clinics. Everything on this page is public and contains no patient data." data-ar="يمكن لبوابات الصحة والجهات الرسمية والمنظمات الإنسانية ومطوّري البرمجيات إعادة استخدام دليل صحة تك للأطباء والمخابر ومراكز الأشعة والمشافي والمراكز المعتمدة. كل ما في هذه الصفحة عام ولا يحتوي على أي بيانات مرضى.">يمكن لبوابات الصحة والجهات الرسمية والمنظمات الإنسانية ومطوّري البرمجيات إعادة استخدام دليل صحة تك للأطباء والمخابر ومراكز الأشعة والمشافي والمراكز المعتمدة. كل ما في هذه الصفحة عام ولا يحتوي على أي بيانات مرضى.</p>
+
+  <h2 data-en="HL7 FHIR R4 directory" data-ar="الدليل بمعيار HL7 FHIR R4">الدليل بمعيار HL7 FHIR R4</h2>
+  <p data-en="Base address (JSON only):" data-ar="العنوان الأساسي (JSON فقط):">العنوان الأساسي (JSON فقط):</p>
+  <p dir="ltr"><code>https://app.syriahc.com/fhir/r4</code></p>
+  <ul>
+    <li><a href="/fhir/r4/metadata" dir="ltr">/fhir/r4/metadata</a> <span data-en="— the CapabilityStatement: every resource and search parameter offered." data-ar="— بيان القدرات: كل الموارد ومعاملات البحث المتاحة.">— بيان القدرات: كل الموارد ومعاملات البحث المتاحة.</span></li>
+    <li><span data-en="Doctors (IHE mCSD style):" data-ar="الأطباء (بأسلوب IHE mCSD):">الأطباء (بأسلوب IHE mCSD):</span> <a href="/fhir/r4/Practitioner" dir="ltr">Practitioner</a>, <a href="/fhir/r4/PractitionerRole" dir="ltr">PractitionerRole</a></li>
+    <li><span data-en="Facilities and places:" data-ar="المنشآت والأماكن:">المنشآت والأماكن:</span> <a href="/fhir/r4/Organization" dir="ltr">Organization</a>, <a href="/fhir/r4/Location" dir="ltr">Location</a>, <a href="/fhir/r4/HealthcareService" dir="ltr">HealthcareService</a></li>
+    <li><span data-en="Free appointment times:" data-ar="أوقات المواعيد المتاحة:">أوقات المواعيد المتاحة:</span> <code dir="ltr">Schedule</code>, <code dir="ltr">Slot?schedule=…</code></li>
+    <li><span data-en="Code systems with Arabic names (specialties, facility kinds, services, governorates):" data-ar="أنظمة الترميز بأسماء عربية (الاختصاصات، أنواع المنشآت، الخدمات، المحافظات):">أنظمة الترميز بأسماء عربية (الاختصاصات، أنواع المنشآت، الخدمات، المحافظات):</span> <code dir="ltr">CodeSystem</code>, <code dir="ltr">ValueSet</code>, <code dir="ltr">NamingSystem</code></li>
+  </ul>
+  <p data-en="Examples:" data-ar="أمثلة:">أمثلة:</p>
+  <ul dir="ltr">
+    <li><a href="/fhir/r4/PractitionerRole?specialty=cardiology">/fhir/r4/PractitionerRole?specialty=cardiology</a></li>
+    <li><a href="/fhir/r4/Organization?type=lab">/fhir/r4/Organization?type=lab</a></li>
+    <li><a href="/fhir/r4/HealthcareService?category=hospital">/fhir/r4/HealthcareService?category=hospital</a></li>
+  </ul>
+  <p data-en="At most 50 entries per answer (_count). An unknown search parameter gets HTTP 400 with an OperationOutcome in English and Arabic." data-ar="50 نتيجة كحد أقصى في كل إجابة (_count). معامل البحث غير المعروف يعطي الخطأ HTTP 400 مع OperationOutcome بالعربية والإنجليزية.">50 نتيجة كحد أقصى في كل إجابة (_count). معامل البحث غير المعروف يعطي الخطأ HTTP 400 مع OperationOutcome بالعربية والإنجليزية.</p>
+
+  <h2 data-en="App interface (OpenAPI 3.1)" data-ar="واجهة التطبيق (OpenAPI 3.1)">واجهة التطبيق (OpenAPI 3.1)</h2>
+  <p data-en="The description of the interface our own web app uses, generated from the code:" data-ar="وصف الواجهة التي يستخدمها تطبيقنا، مولَّد من الشيفرة مباشرة:">وصف الواجهة التي يستخدمها تطبيقنا، مولَّد من الشيفرة مباشرة:</p>
+  <p dir="ltr"><a href="/api/openapi.json">/api/openapi.json</a></p>
+  <p data-en="Public routes (directory, catalog, free times) need no account. All other routes need a signed-in session and are meant for the SyriaHC app only." data-ar="المسارات العامة (الدليل، القوائم، الأوقات المتاحة) لا تحتاج إلى حساب. أما باقي المسارات فتحتاج إلى جلسة دخول وهي مخصصة لتطبيق صحة تك فقط.">المسارات العامة (الدليل، القوائم، الأوقات المتاحة) لا تحتاج إلى حساب. أما باقي المسارات فتحتاج إلى جلسة دخول وهي مخصصة لتطبيق صحة تك فقط.</p>
+
+  <h2 data-en="Rules" data-ar="القواعد">القواعد</h2>
+  <ul>
+    <li data-en="Only approved, active profiles and their public fields are published. Licence numbers, emails and documents never are." data-ar="تُنشر فقط الملفات المعتمدة والفعّالة وحقولها العامة. لا تُنشر أبداً أرقام التراخيص أو عناوين البريد أو الوثائق.">تُنشر فقط الملفات المعتمدة والفعّالة وحقولها العامة. لا تُنشر أبداً أرقام التراخيص أو عناوين البريد أو الوثائق.</li>
+    <li data-en="There is no patient search of any kind, for anyone." data-ar="لا يوجد بحث عن المرضى بأي شكل، لأي جهة.">لا يوجد بحث عن المرضى بأي شكل، لأي جهة.</li>
+    <li data-en="Please fetch changes instead of everything: each resource carries meta.lastUpdated. Keep to a few requests per second." data-ar="يرجى جلب التغييرات بدلاً من كل شيء: كل مورد يحمل meta.lastUpdated. التزم ببضع طلبات في الثانية.">يرجى جلب التغييرات بدلاً من كل شيء: كل مورد يحمل meta.lastUpdated. التزم ببضع طلبات في الثانية.</li>
+    <li data-en="Labs and clinics that want to send results from their own software: this is planned with HL7 FHIR, HL7 v2 (ORU, MDM) and OAuth 2.0. Write to us to become a pilot." data-ar="المخابر والمراكز التي تريد إرسال النتائج من برمجياتها الخاصة: هذا مخطط له عبر HL7 FHIR وHL7 v2 (ORU وMDM) وOAuth 2.0. راسلنا لتكون جهة تجريبية.">المخابر والمراكز التي تريد إرسال النتائج من برمجياتها الخاصة: هذا مخطط له عبر HL7 FHIR وHL7 v2 (ORU وMDM) وOAuth 2.0. راسلنا لتكون جهة تجريبية.</li>
+  </ul>
+</main>
+<footer><div class="wrap"><a href="/" data-en="← Back" data-ar="رجوع ←">رجوع ←</a></div></footer>
+</body>
+</html>

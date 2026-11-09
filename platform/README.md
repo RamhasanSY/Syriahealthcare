@@ -19,8 +19,20 @@ Accounts and (in later steps) appointment booking for patients and doctors. It r
 2. **Doctor** uploads their licence to practise (required) and optionally a syndicate card: PDF, JPG or PNG, up to 5 MB and at most 6 files. The file's real content is checked, not its name. Files are encrypted with AES-256-GCM before they touch the disk.
 3. **Doctor** sends the profile for review. This only works when every required field is filled and a licence is uploaded.
 4. **Admin** (`/admin`) sees doctors by status, opens the documents (every opening is logged), and either approves the doctor or asks for changes with a note the doctor sees.
-5. A doctor who changes an approved profile goes back to "waiting for review", so patients only ever see reviewed details. Documents are locked after approval.
-6. **Admin** can suspend an approved doctor with a reason, and reinstate them later. Every step appears in the doctor's history.
+5. A doctor who changes an approved profile stays listed. Name, specialty, governorate, area, address and licence number wait in "Changes to review" until an admin accepts them; other details apply at once. Documents are locked after approval.
+6. **Admin** can suspend an approved doctor with a reason, and reinstate them later. A suspended doctor keeps the profile page but no longer sees patients or appointments. Every step appears in the doctor's history.
+7. **Admin** can switch off a whole account (doctor, facility or another admin, never their own) with a reason, and switch it on again. A switched-off account is signed out at once, cannot sign in and disappears from the directory. The person gets an email.
+
+### For developers
+
+- `/developers` (Arabic and English) explains the public interfaces.
+- `/fhir/r4` is the public HL7 FHIR R4 directory (start at `/fhir/r4/metadata`). GitHub Actions checks one example of every resource with the official HL7 validator.
+- `/api/openapi.json` is the OpenAPI 3.1 description of the app interface. It is generated from the routes, so it always matches the code; `test/openapi.test.js` fails when a route has no summary in `src/openapi.js`.
+- The audit trail maps to FHIR AuditEvent (IHE BALP) in `src/fhir/audit.js`, for "who opened my file" in stage 2c.
+
+### Background jobs (`src/jobs.js`)
+
+Every 5 minutes queued emails are sent; every hour expired sessions, codes and reset links are removed (sent emails after 30 days); every hour the disk is checked, and when less than 2 GB or 10 % is free all active admins get one email per day. Container logs are capped at 3 × 10 MB per service (`docker-compose.yml`).
 
 ### Labs, imaging centres, hospitals and clinics
 

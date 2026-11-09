@@ -1,0 +1,93 @@
+// Fetches one example of every FHIR resource the platform produces. With FHIR_EXAMPLES_DIR set (in GitHub Actions),
+// each answer is written there and then checked by the official HL7 FHIR validator (see .github/workflows/platform.yml).
+import {after, before, describe, test} from 'node:test';
+import assert from 'node:assert/strict';
+import {mkdir, writeFile} from 'node:fs/promises';
+import path from 'node:path';
+import {approvedDoctor, pool, setup, signIn, teardown} from './helpers.js';
+import {auditEvent} from '../src/fhir/audit.js';
+import {codeSystems, namingSystems, valueSets} from '../src/fhir/terminology.js';
+import {addDays, localDate} from '../src/slots.js';
+
+const dir = process.env.FHIR_EXAMPLES_DIR;
+let app, post, doctor, facilities = [];
+const saved = [];
+
+before(async () => {
+    ({app, post} = await setup());
+    doctor = await approvedDoctor(post, 'dr@example.org', 'Dr. Approved');
+    for (const [kind, email, services] of [['lab', 'lab@example.org', ['blood_count', 'pcr']], ['hospital', 'hospital@example.org', ['emergency_care', 'surgery']]]) {
+        await post('/api/auth/facility/register', {name: 'Rana Saleh', email, password: 'facility password 123', consent: true, kind});
+        const {rows: [f]} = await pool.query(`UPDATE facility_profiles p SET status = 'approved', facility_name = $2, governorate = 'aleppo',
+            area = 'Al Aziziyah', address = 'Main street 4', phone = '+963211234567', services = $3, opening_hours = 'Sat-Thu 08:00-20:00',
+            emergency = $4 FROM users u WHERE u.id = p.user_id AND u.email = $1 RETURNING p.user_id`,
+            [email, kind === 'lab' ? 'Al Shifa Laboratory' : 'Aleppo University Hospital', services, kind === 'hospital']);
+        facilities.push(f.user_id);
+    }
+    await signIn(post, 'admin', 'admin@example.org');
+    if (dir) await mkdir(dir, {recursive: true});
+});
+after(() => teardown(app));
+
+async function keep(name, url) {
+    const res = await app.inject({url});
+    assert.ok([200, 400, 404].includes(res.statusCode), `${url} → ${res.statusCode}`);
+    const body = res.json();
+    assert.ok(body.resourceType, `${url} returns a FHIR resource`);
+    assert.doesNotMatch(res.body, /:null|:\[\]|:\{\}|:""/, `${url} has no empty elements`);
+    saved.push(name);
+    if (dir) await writeFile(path.join(dir, `${name}.json`), JSON.stringify(body, null, 2));
+    return body;
+}
+
+describe('FHIR examples for the HL7 validator', () => {
+    test('directory, slots, code systems and errors', async () => {
+        const [lab, hospital] = facilities;
+        await keep('capability-statement', '/fhir/r4/metadata');
+        await keep('endpoint', '/fhir/r4/Endpoint/fhir-r4');
+        await keep('practitioner', `/fhir/r4/Practitioner/${doctor.id}`);
+        await keep('practitioner-search', '/fhir/r4/Practitioner?name=Approved');
+        await keep('practitioner-role', `/fhir/r4/PractitionerRole/${doctor.id}`);
+        await keep('practitioner-role-search', '/fhir/r4/PractitionerRole?specialty=cardiology');
+        await keep('location-practice', `/fhir/r4/Location/${doctor.id}`);
+        await keep('location-facility', `/fhir/r4/Location/${hospital}`);
+        await keep('location-search', '/fhir/r4/Location');
+        await keep('organization-lab', `/fhir/r4/Organization/${lab}`);
+        await keep('organization-hospital', `/fhir/r4/Organization/${hospital}`);
+        await keep('organization-search', '/fhir/r4/Organization?type=lab');
+        await keep('healthcare-service', `/fhir/r4/HealthcareService/${hospital}`);
+        await keep('healthcare-service-search', '/fhir/r4/HealthcareService?category=lab');
+        await keep('schedule', `/fhir/r4/Schedule/${doctor.id}`);
+        const day = addDays(localDate(Date.now(), 'Asia/Damascus'), 1);
+        const slots = await keep('slot-search', `/fhir/r4/Slot?schedule=Schedule/${doctor.id}&start=ge${day}&start=le${day}`);
+        assert.ok(slots.entry?.length, 'tomorrow has free slots');
+        await keep('slot', `/fhir/r4/Slot/${slots.entry[0].resource.id}`);
+        for (const cs of codeSystems()) await keep(`codesystem-${cs.id}`, `/fhir/r4/CodeSystem/${cs.id}`);
+        for (const vs of valueSets()) await keep(`valueset-${vs.id}`, `/fhir/r4/ValueSet/${vs.id}`);
+        for (const ns of namingSystems()) await keep(`namingsystem-${ns.id}`, `/fhir/r4/NamingSystem/${ns.id}`);
+        await keep('operation-outcome-unknown-parameter', '/fhir/r4/Practitioner?colour=blue');
+        await keep('operation-outcome-not-found', '/fhir/r4/Practitioner/00000000-0000-4000-8000-000000000000');
+    });
+
+    test('audit trail entries as AuditEvent', async () => {
+        const {rows} = await pool.query(`SELECT a.*, u.role::text AS actor_role, u.name AS actor_name FROM audit_log a
+            LEFT JOIN users u ON u.id = a.actor_id ORDER BY a.id`);
+        const sample = [...new Map(rows.map(r => [r.action, r])).values()];
+        assert.ok(sample.length >= 3);
+        for (const r of sample) {
+            const name = `auditevent-${r.action.replace(/\W+/g, '-')}`;
+            saved.push(name);
+            if (dir) await writeFile(path.join(dir, `${name}.json`), JSON.stringify(auditEvent(r), null, 2));
+        }
+        // A doctor opening a lab result, the main case for patients later; without the network address as patients see it.
+        const viewed = auditEvent({id: 1, action: 'result.viewed', actor_id: doctor.id, actor_role: 'doctor', actor_name: 'Dr. Approved',
+            target_id: facilities[0], ip: '203.0.113.9', created_at: new Date()}, {withNetwork: false});
+        saved.push('auditevent-result-viewed-patient-view');
+        if (dir) await writeFile(path.join(dir, 'auditevent-result-viewed-patient-view.json'), JSON.stringify(viewed, null, 2));
+    });
+
+    test('nothing is missing', () => {
+        assert.ok(saved.length >= 25, `${saved.length} examples`);
+        if (dir) console.log(`Wrote ${saved.length} FHIR examples to ${dir}`);
+    });
+});
