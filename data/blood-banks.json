@@ -1,0 +1,40 @@
+{
+  "updated": "2026-11-09T14:28:56+00:00",
+  "source": "OpenStreetMap contributors (ODbL)",
+  "items": [
+    {
+      "name": "Blood Bank",
+      "name_ar": "بنك الدم",
+      "city": "As-Suwayda",
+      "city_ar": "السويداء",
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/1334332741"
+    },
+    {
+      "name": "Central Blood Bank",
+      "name_ar": "بنك الدم المركزي",
+      "city": "Damascus",
+      "city_ar": "دمشق",
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/4813798123"
+    },
+    {
+      "name": "بنك الدم المزة",
+      "city": "Damascus",
+      "city_ar": "دمشق",
+      "lat": 33.51286,
+      "lon": 36.26153,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/9974449556"
+    },
+    {
+      "name": "بنك الدم",
+      "city": "Homs",
+      "city_ar": "حمص",
+      "lat": 34.74659,
+      "lon": 36.68727,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/way/1220301438"
+    }
+  ]
+}

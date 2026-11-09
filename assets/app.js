@@ -481,12 +481,14 @@
         $(progressId).textContent = n === boxes.length ? tr('All set — good luck!', 'كل شيء جاهز، بالتوفيق!') : tr(`${n} of ${boxes.length} ready`, `${n} من ${boxes.length} جاهز`);
     }
 
-    // Directories of doctors, labs and hospitals. Records come only from data/*.json; nothing is generated.
+    // Directories of doctors, dentists, labs, hospitals, pharmacies and blood banks. Records come only from data/*.json; nothing is generated.
     const availability = {
         accepting: ['Accepting patients', 'يستقبل المرضى'],
         limited: ['Limited availability', 'مواعيد محدودة'],
         not_accepting: ['Not accepting new patients', 'لا يستقبل مرضى جدداً']
     };
+    const governorateFilter = {all: ['All governorates', 'جميع المحافظات'], values: h => [value(h, 'city')]};
+    // Each directory reads data/<file or key>.json and uses the page elements <key>List, <key>Search, <key>City and so on.
     const directories = {
         doctors: {
             // Platform doctors are bookable online; hand-added entries state their availability.
@@ -532,36 +534,87 @@
         hospitals: {
             valid: h => value(h, 'name') && value(h, 'city'),
             rank: h => (h.platform === true ? 8 : 0) + (h.phone ? 4 : 0) + (h.emergency === true ? 2 : 0) + (h.address ? 1 : 0),
-            text: h => [h.name, h.name_ar, h.city, h.city_ar, h.address, h.address_ar],
-            filters: {
-                City: {all: ['All governorates', 'جميع المحافظات'], values: h => [value(h, 'city')]}
-            },
+            text: placeText,
+            filters: {City: governorateFilter},
             count: n => tr(n === 1 ? '1 hospital found' : `${n} hospitals found`, `${n} مشافٍ`),
-            card: (li, h) => {
-                const address = value(h, 'address');
-                li.append(node('p', 'job-organisation', [value(h, 'type'), value(h, 'city')].filter(Boolean).join(' · ')), heading(value(h, 'name')));
-                if (address) li.append(node('p', 'job-location', address));
-                const services = (lang === 'ar' && h.services_ar) || h.services || [];
-                if (h.emergency === true || h.platform === true || services.length) {
+            card: placeCard
+        },
+        // Pharmacies and blood banks: OpenStreetMap entries and verified ones from the platform, like hospitals.
+        pharmacies: {
+            valid: p => value(p, 'name') && value(p, 'city'),
+            rank: p => (p.platform === true ? 8 : 0) + (p.phone ? 4 : 0) + (p.hours ? 2 : 0) + (p.address ? 1 : 0),
+            text: placeText,
+            filters: {City: governorateFilter},
+            count: n => tr(n === 1 ? '1 pharmacy found' : `${n} pharmacies found`, `عدد الصيدليات: ${n}`),
+            card: placeCard
+        },
+        bloodBanks: {
+            file: 'blood-banks',
+            valid: b => value(b, 'name') && value(b, 'city'),
+            rank: b => (b.platform === true ? 8 : 0) + (b.phone ? 4 : 0) + (b.address ? 1 : 0),
+            text: placeText,
+            filters: {City: governorateFilter},
+            count: n => tr(n === 1 ? '1 blood bank found' : `${n} blood banks found`, `عدد بنوك الدم: ${n}`),
+            card: placeCard
+        },
+        // Dentists bookable on the platform first, then dental clinics mapped in OpenStreetMap.
+        dentists: {
+            valid: d => value(d, 'name') && value(d, 'city'),
+            rank: d => (safeURL(d.booking_url) ? 8 : 0) + (d.phone ? 4 : 0) + (d.address ? 1 : 0),
+            text: d => [...placeText(d), d.specialty, d.specialty_ar],
+            filters: {City: governorateFilter},
+            count: n => tr(n === 1 ? '1 dentist found' : `${n} dentists found`, `عدد أطباء الأسنان: ${n}`),
+            card: (li, d) => {
+                const online = safeURL(d.booking_url);
+                li.append(node('p', 'job-organisation', [value(d, 'specialty'), value(d, 'city')].filter(Boolean).join(' · ')), heading(value(d, 'name')));
+                if (value(d, 'address')) li.append(node('p', 'job-location', value(d, 'address')));
+                if (online) {
                     const tags = node('div', 'job-tags');
-                    if (h.platform === true) tags.append(verifiedPill());
-                    if (h.emergency === true) tags.append(node('span', 'pill warm', tr('Emergency department', 'قسم إسعاف')));
-                    services.forEach(s => tags.append(node('span', 'pill', s)));
+                    tags.append(node('span', 'pill', tr('Online booking', 'حجز إلكتروني')));
                     li.append(tags);
                 }
-                if (value(h, 'hours')) li.append(node('p', 'job-reference', value(h, 'hours')));
-                contact(li, h, link(tr('Open in Google Maps ↗', 'افتح في خرائط Google ↖'), mapsURL(h), 'apply-link'));
+                if (value(d, 'hours')) li.append(node('p', 'job-reference', value(d, 'hours')));
+                contact(li, d, online ? link(tr('Book online ↗', 'احجز موعداً ↖'), online, 'apply-link') : mapsLink(d));
             }
         }
     };
     const directoryState = Object.fromEntries(Object.keys(directories).map(k => [k, {items: [], loading: true, error: false, query: '', picks: {}, limit: 12}]));
 
-    // A plain Maps search URL from the stored address fields: no API key, no coordinates.
     // Entries that came from the platform: their operating licence was checked by our team.
     const verifiedPill = () => node('span', 'pill verified', tr('Verified licence', 'ترخيص موثَّق'));
 
+    function placeText(h) {
+        return [h.name, h.name_ar, h.city, h.city_ar, h.address, h.address_ar, ...(h.services || []), ...(h.services_ar || [])];
+    }
+
+    // Hospitals, pharmacies and blood banks: type and governorate, name, address, tags, opening hours, phone and map link.
+    function placeCard(li, h) {
+        const address = value(h, 'address');
+        li.append(node('p', 'job-organisation', [value(h, 'type'), value(h, 'city')].filter(Boolean).join(' · ')), heading(value(h, 'name')));
+        if (address) li.append(node('p', 'job-location', address));
+        const services = (lang === 'ar' && h.services_ar) || h.services || [];
+        if (h.emergency === true || h.platform === true || services.length) {
+            const tags = node('div', 'job-tags');
+            if (h.platform === true) tags.append(verifiedPill());
+            if (h.emergency === true) tags.append(node('span', 'pill warm', tr('Emergency department', 'قسم إسعاف')));
+            services.forEach(s => tags.append(node('span', 'pill', s)));
+            li.append(tags);
+        }
+        if (value(h, 'hours')) li.append(node('p', 'job-reference', value(h, 'hours')));
+        contact(li, h, mapsLink(h));
+    }
+
+    // A plain Google Maps search URL: no API key. Entries mapped in OpenStreetMap open at their exact position;
+    // the others are searched by name, address and governorate.
     function mapsURL(h) {
-        return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent([h.name, h.address, h.city, h.country || 'Syria'].filter(Boolean).join(', '));
+        const position = [h.lat, h.lon].every(n => typeof n === 'number' && Number.isFinite(n)) ? `${h.lat},${h.lon}` : '';
+        return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(position || [h.name, h.address, h.city, h.country || 'Syria'].filter(Boolean).join(', '));
+    }
+
+    function mapsLink(h) {
+        const a = link(tr('Open in Google Maps ↗', 'افتح في خرائط Google ↖'), mapsURL(h), 'apply-link');
+        a.setAttribute('aria-label', tr('Open in Google Maps: ', 'افتح في خرائط Google: ') + value(h, 'name'));
+        return a;
     }
 
     function heading(text) {
@@ -570,15 +623,21 @@
         return h;
     }
 
+    // Phone, source and action links. Screen readers also hear whose number or entry each link is.
     function contact(li, item, action) {
-        const bottom = node('div', 'job-card-bottom'), phone = String(item.phone || '').trim();
+        const bottom = node('div', 'job-card-bottom'), phone = String(item.phone || '').trim(), name = value(item, 'name');
         if (phone) {
             const a = node('a', 'job-deadline', phone);
             a.href = 'tel:' + phone.replace(/[^\d+]/g, '');
             a.dir = 'ltr';
+            a.setAttribute('aria-label', tr(`${phone}, call ${name}`, `${phone}، اتصل بـ${name}`));
             bottom.append(a);
         }
-        if (safeURL(item.source_url)) bottom.append(link(item.osm ? tr('OpenStreetMap ↗', 'OpenStreetMap ↖') : tr('Source ↗', 'المصدر ↖'), item.source_url, 'read-link'));
+        if (safeURL(item.source_url)) {
+            const source = link(item.osm ? tr('OpenStreetMap ↗', 'OpenStreetMap ↖') : tr('Source ↗', 'المصدر ↖'), item.source_url, 'read-link');
+            source.setAttribute('aria-label', (item.osm ? 'OpenStreetMap: ' : tr('Source: ', 'المصدر: ')) + name);
+            bottom.append(source);
+        }
         if (action) bottom.append(action);
         if (bottom.children.length) li.append(bottom);
     }
@@ -653,7 +712,8 @@
         banner.hidden = false;
     }
 
-    const joinPaths = {doctors: '/staff#register', labs: '/staff#register-lab', hospitals: '/staff#register-hospital'};
+    const joinPaths = {doctors: '/staff#register', dentists: '/staff#register', labs: '/staff#register-lab', hospitals: '/staff#register-hospital',
+        pharmacies: '/staff#register-pharmacy', bloodBanks: '/staff#register-blood_bank'};
     function renderJoinLink(kind, platformUrl) {
         const box = $(kind + 'Join'), url = safeURL(platformUrl || '');
         if (!box || !url) return;
@@ -662,7 +722,7 @@
     }
 
     function loadDirectory(kind) {
-        json(`data/${kind}.json`).then(data => {
+        json(`data/${directories[kind].file || kind}.json`).then(data => {
             if (!Array.isArray(data.items)) throw new Error('Invalid directory');
             directoryState[kind].items = data.items.filter(i => i && typeof i === 'object');
             if (kind === 'doctors') renderBookingBanner(data.platform_url);

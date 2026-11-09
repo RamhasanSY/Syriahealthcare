@@ -1906,3 +1906,24 @@ body[dir=rtl] .section-head h2 {
 .install-app[hidden],.install-app [hidden]{display:none}
 .install-app p{margin:0}
 .install-app button{font-family:inherit;cursor:pointer}
+
+/* Pharmacies, dentists and blood banks: a hint above the list and links to related pages below it */
+.directory-hint{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px 24px;margin:0 0 22px;padding:18px 22px;background:var(--sage);border-radius:14px}
+.directory-hint p{margin:0;max-width:62ch}
+.related-links{display:flex;flex-wrap:wrap;gap:0 22px;margin:10px 0 0;font-size:14px}
+.related-links a{display:inline-flex;align-items:center;min-height:44px;font-weight:600;color:var(--green)}
+
+/* Emergency numbers */
+.emergency-list{list-style:none;margin:0 0 24px;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.emergency-list li{background:var(--white);border:1px solid var(--rule);border-radius:18px;padding:24px}
+.emergency-list h2{margin:0;font:600 22px/1.25 var(--serif)}
+.emergency-number{display:inline-flex;align-items:center;min-height:56px;font:700 46px/1 var(--serif);color:#7a3a1f;text-decoration:none}
+.emergency-number:hover{text-decoration:underline}
+.emergency-number:focus-visible{outline:3px solid var(--green);outline-offset:3px}
+.emergency-list p{margin:6px 0 0;color:var(--muted);font-size:14.5px}
+.emergency-sources{margin-top:36px;padding-top:20px;border-top:1px solid var(--rule)}
+.emergency-sources h2{margin:0 0 6px;font:600 20px/1.25 var(--serif)}
+.emergency-sources p{margin:0 0 10px;color:var(--muted);font-size:13px}
+.emergency-sources ul{margin:0;padding-inline-start:20px;font-size:13px}
+.emergency-sources li{margin-bottom:8px}
+.emergency-sources a{color:var(--ink)}

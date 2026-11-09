@@ -6,10 +6,13 @@ import path from 'node:path';
 const root = fileURLToPath(new URL('../', import.meta.url));
 
 // Two websites are built from this repository and link to each other:
-// - syriahc.com, SyriaHC (صحة تك): health services. Doctors, labs, hospitals, pregnancy planning and online booking.
+// - syriahc.com, SyriaHC (صحة تك): health services. Doctors, dentists, hospitals, pharmacies, labs, blood banks,
+//   emergency numbers, pregnancy planning and online booking.
 // - syriahealthcare.com, Syria Healthcare: healthcare and NGO jobs and healthcare news, in its original green look.
 // Both use pages/_layout.html, assets/style.css and assets/app.js.
 const HC = 'https://syriahc.com/', NEWS = 'https://syriahealthcare.com/', PLATFORM = 'https://app.syriahc.com/';
+// SyriaHC's directories. The installed app saves them all for use without internet.
+const DIRECTORIES = ['doctors.json', 'dentists.json', 'labs.json', 'hospitals.json', 'pharmacies.json', 'blood-banks.json'];
 
 // The stylesheet is written in SyriaHC colours; the Syria Healthcare copy swaps each for its original colour.
 const SYRIA_HEALTHCARE_COLOURS = {
@@ -39,20 +42,33 @@ const sites = [{
   // The other website, at the end of the menus.
   elsewhere: menuLink(NEWS, ['Jobs & news ↗', 'الوظائف والأخبار ↖']),
   feeds: '',
-  offlineNote: ['This page has not been saved on your phone yet. Hospitals, labs and doctors, and every page you opened before, still work without internet:',
-    'لم تُحفظ هذه الصفحة على هاتفك بعد. المشافي والمخابر والأطباء وكل صفحة فتحتها سابقاً تعمل دون إنترنت:'],
+  offlineNote: ['This page has not been saved on your phone yet. Emergency numbers, hospitals, pharmacies, labs and doctors, and every page you opened before, still work without internet:',
+    'لم تُحفظ هذه الصفحة على هاتفك بعد. أرقام الطوارئ والمشافي والصيدليات والمخابر والأطباء وكل صفحة فتحتها سابقاً تعمل دون إنترنت:'],
   files: ['manifest.webmanifest', 'assets'],
-  data: ['doctors.json', 'labs.json', 'hospitals.json'],
+  data: DIRECTORIES,
   pages: [
     page('index', ['Home', 'الرئيسية'], ['SyriaHC — doctors, labs and hospitals in Syria', 'صحة تك — أطباء ومخابر ومشافٍ في سوريا'],
-      ['Find doctors, labs and hospitals in Syria, book an appointment online with verified doctors and plan a pregnancy — in English and Arabic.',
-        'ابحث عن أطباء ومخابر ومشافٍ في سوريا، واحجز موعداً عبر الإنترنت مع أطباء موثقين، وخطط لحملك — بالعربية والإنجليزية.'], {nav: false}),
+      ['Find doctors, dentists, pharmacies, labs and hospitals in Syria, the emergency numbers, online booking with verified doctors and pregnancy planning — in English and Arabic.',
+        'ابحث عن أطباء وأطباء أسنان وصيدليات ومخابر ومشافٍ في سوريا، وأرقام الطوارئ، واحجز موعداً عبر الإنترنت مع أطباء موثقين، وخطط لحملك — بالعربية والإنجليزية.'], {nav: false}),
     page('doctors', ['Doctors', 'الأطباء'], ['Find a doctor in Syria — SyriaHC', 'ابحث عن طبيب في سوريا — صحة تك'],
       ['Search doctors in Syria by name, specialty and city.', 'ابحث عن الأطباء في سوريا حسب الاسم والاختصاص والمدينة.']),
+    // Dentists and blood banks are in the footer, on the home page and linked from related pages, so the menu stays short on phones.
+    page('dentists', ['Dentists', 'أطباء الأسنان'], ['Find a dentist in Syria — SyriaHC', 'ابحث عن طبيب أسنان في سوريا — صحة تك'],
+      ['Dentists and dental clinics in Syria with their location in Google Maps, and verified dentists you can book online.',
+        'أطباء وعيادات أسنان في سوريا مع مواقعهم على خرائط Google، وأطباء أسنان موثَّقون يمكنك الحجز لديهم عبر الإنترنت.'], {nav: false}),
     page('hospitals', ['Hospitals', 'المشافي'], ['Hospitals in Syria with directions — SyriaHC', 'المشافي في سوريا مع الاتجاهات — صحة تك'],
       ['Hospitals in every Syrian governorate, in English and Arabic, with phone numbers where known and Google Maps directions.', 'مشافٍ في كل المحافظات السورية بالعربية والإنجليزية، مع أرقام الهاتف المتوفرة واتجاهات خرائط Google.']),
+    page('pharmacies', ['Pharmacies', 'الصيدليات'], ['Pharmacies in Syria with directions — SyriaHC', 'الصيدليات في سوريا مع الاتجاهات — صحة تك'],
+      ['Pharmacies in Syria by governorate, in English and Arabic, with phone numbers where known and Google Maps directions.',
+        'صيدليات في سوريا حسب المحافظة بالعربية والإنجليزية، مع أرقام الهاتف المتوفرة واتجاهات خرائط Google.']),
     page('labs', ['Labs', 'المخابر'], ['Medical labs in Syria — SyriaHC', 'المخابر الطبية في سوريا — صحة تك'],
       ['Find medical laboratories in Syria and the tests they offer, with address and contact details.', 'ابحث عن المخابر الطبية في سوريا والتحاليل التي تقدمها، مع العنوان ووسائل التواصل.']),
+    page('blood-banks', ['Blood banks', 'بنوك الدم'], ['Blood banks and blood donation in Syria — SyriaHC', 'بنوك الدم والتبرع بالدم في سوريا — صحة تك'],
+      ['Where to give blood or ask for blood in Syria: blood banks and donation centres with directions.',
+        'أين تتبرع بالدم أو تطلبه في سوريا: بنوك الدم ومراكز التبرع مع الاتجاهات.'], {nav: false}),
+    page('emergency', ['Emergency numbers', 'أرقام الطوارئ'], ['Emergency numbers in Syria: ambulance, police, fire — SyriaHC', 'أرقام الطوارئ في سوريا: الإسعاف والشرطة والإطفاء — صحة تك'],
+      ['Ambulance 110, police 112 and fire 113 in Syria, with tap-to-call links and the sources we checked.',
+        'الإسعاف 110 والشرطة 112 والإطفاء 113 في سوريا، مع إمكانية الاتصال بلمسة والمصادر التي تحققنا منها.']),
     page('pregnancy', ['Pregnancy', 'الحمل'], ['Pregnancy planning: due date and checkups — SyriaHC', 'التخطيط للحمل: موعد الولادة والزيارات — صحة تك'],
       ['A step-by-step pregnancy guide based on WHO recommendations, a due-date and checkup planner, warning signs and a birth checklist.', 'دليل للحمل خطوة بخطوة مبني على توصيات منظمة الصحة العالمية، ومخطط لموعد الولادة والزيارات، وعلامات الخطر وقائمة الاستعداد للولادة.']),
     notFound(['SyriaHC', 'صحة تك']), offline(['SyriaHC', 'صحة تك'])
@@ -92,7 +108,7 @@ const menu = (current, list) => list.map(p => `<a href="${href(p)}"${p === curre
 const recolour = (css, colours) => css.replace(/#[0-9a-f]{3,8}\b|rgba?\([^)]*\)/gi, colour => colours[colour.toLowerCase()] || colour);
 
 // Validate feed syntax before producing a deployable copy of the static sites.
-for (const file of ['sources.json', 'data/news.json', 'data/jobs.json', 'data/status.json', 'data/editor.json', 'data/doctors.json', 'data/labs.json', 'data/hospitals.json']) {
+for (const file of ['sources.json', 'data/news.json', 'data/jobs.json', 'data/status.json', 'data/editor.json', ...DIRECTORIES.map(file => 'data/' + file)]) {
   JSON.parse(await readFile(path.join(root, file), 'utf8'));
 }
 const layout = await readFile(path.join(root, 'pages', '_layout.html'), 'utf8');
@@ -145,7 +161,7 @@ for (const site of sites) {
   // Its version follows every page and asset, so phones pick up each release.
   const shell = [...site.pages.filter(p => p.name !== '404').map(href),
     `assets/style.css?v=${version}`, `assets/app.js?v=${version}`, 'assets/logo.svg', `assets/favicon.svg?v=${site.faviconVersion}`, 'assets/icon-192.png',
-    'manifest.webmanifest', ...site.data.filter(file => ['hospitals.json', 'labs.json', 'doctors.json'].includes(file)).map(file => 'data/' + file)];
+    'manifest.webmanifest', ...site.data.filter(file => DIRECTORIES.includes(file)).map(file => 'data/' + file)];
   shellHash.update(version + worker + await readFile(path.join(output, 'manifest.webmanifest'), 'utf8'));
   await writeFile(path.join(output, 'sw.js'), `const VERSION = '${shellHash.digest('hex').slice(0, 10)}', SHELL = ${JSON.stringify(shell)};
 ${worker}`);

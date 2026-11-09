@@ -13,7 +13,8 @@ BASE = os.environ.get('SITE_URL', 'http://127.0.0.1:8001').rstrip('/')
 HEALTH = os.environ.get('HEALTH_URL', 'http://127.0.0.1:8000').rstrip('/')
 HOME, JOBS, NEWS = BASE + '/', BASE + '/jobs.html', BASE + '/news.html'
 PAGES = ([BASE + '/' + name for name in ['', 'jobs.html', 'news.html', 'about.html', '404.html']] +
-         [HEALTH + '/' + name for name in ['', 'doctors.html', 'hospitals.html', 'labs.html', 'pregnancy.html', '404.html']])
+         [HEALTH + '/' + name for name in ['', 'doctors.html', 'dentists.html', 'hospitals.html', 'pharmacies.html', 'labs.html', 'blood-banks.html',
+                                           'emergency.html', 'pregnancy.html', '404.html']])
 preview = Path(__file__).resolve().parents[1] / ".preview"
 preview.mkdir(exist_ok=True)
 now = datetime.now(timezone.utc)
@@ -84,6 +85,20 @@ with sync_playwright() as p:
             page.set_viewport_size({"width": 390, "height": 844})
             page.screenshot(path=str(preview / f"{language}-mobile-{name.replace('.html', '') or 'home'}.png"), full_page=True)
         page.set_viewport_size({"width": 1440, "height": 1100})
+    # Emergency numbers call with one tap; the directories filter by governorate and open OpenStreetMap entries at their position.
+    page.goto(HEALTH + '/emergency.html', wait_until="networkidle")
+    assert page.locator('.emergency-number').evaluate_all('(links) => links.map(a => a.getAttribute("href"))') == ['tel:110', 'tel:112', 'tel:113']
+    pharmacies = json.loads((preview.parent / 'data/pharmacies.json').read_text(encoding='utf-8'))['items']
+    page.goto(HEALTH + '/pharmacies.html', wait_until="networkidle")
+    expect(page.locator('#pharmaciesList li')).to_have_count(min(12, len(pharmacies)))
+    if pharmacies:
+        governorate = page.locator('#pharmaciesCity option').nth(1).get_attribute('value')
+        page.locator('#pharmaciesCity').select_option(governorate)
+        expect(page.locator('#pharmaciesCount')).to_contain_text(str(sum(1 for p in pharmacies if governorate in (p.get('city'), p.get('city_ar')))))
+        if any('lat' in p for p in pharmacies):
+            assert re.search(r'query=\d+\.\d+%2C\d+\.\d+$', page.locator('#pharmaciesList .apply-link').first.get_attribute('href'))
+    page.goto(HEALTH + '/blood-banks.html', wait_until="networkidle")
+    expect(page.locator('.directory-hint a')).to_have_attribute('href', 'hospitals.html')
     page.goto(NEWS, wait_until="networkidle")
     expect(page.locator("html")).to_have_attribute("dir", "rtl")
     if any(n.get('title_ar') for n in actual_news):

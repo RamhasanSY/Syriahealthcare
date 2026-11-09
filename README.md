@@ -94,8 +94,11 @@ The job board supports keyword search, location and organization filters, health
 - Doctor: `name`, `specialty`, `city`, `availability` (`accepting`, `limited` or `not_accepting`), optional `hours`, `address`.
 - Lab: `name`, `city`, `address`, optional `tests` (list of test names, with `tests_ar` in the same order).
 - Hospital: `name`, `city`, optional `address`, `emergency` (true/false), `country` (defaults to Syria). The "Open in Google Maps" link is a plain search URL built from these fields — no API key or coordinates.
+- Pharmacy (`data/pharmacies.json`), blood bank (`data/blood-banks.json`) and dentist (`data/dentists.json`): `name`, `city` (the governorate), optional `address`, `hours`, `lat` and `lon`. With `lat`/`lon` the Google Maps link opens that exact position.
 
-Hospitals are refreshed automatically from OpenStreetMap (© OpenStreetMap contributors, ODbL) on every collection run; entries you add by hand (without `"osm": true`) are kept in front of them. If OpenStreetMap is unreachable the previous list stays.
+Hospitals are refreshed automatically from OpenStreetMap (© OpenStreetMap contributors, ODbL) on every collection run; entries you add by hand (without `"osm": true`) are kept in front of them. If OpenStreetMap is unreachable the previous list stays. Pharmacies (`amenity=pharmacy`), dentists (`amenity=dentist`) and blood banks (`healthcare=blood_donation`, and hospitals named as blood banks) are refreshed the same way, in one Overpass request. A run that returns far fewer entries than usual (under 1,000 pharmacies, 40 dentists or 1 blood bank) keeps the previous file. Governorate names follow the booking platform's list, so both kinds of entry share one filter.
+
+The emergency numbers on `emergency.html` are written into the page by hand. Each number is listed only when at least two reliable sources agree; the sources are linked at the bottom of the page. Check them again before changing a number.
 
 ### ReliefWeb jobs
 
@@ -107,7 +110,7 @@ Entries missing a required field are not shown. The pregnancy planner computes d
 
 The booking platform (`platform/`, at app.syriahc.com) has its own README. Once it is online, add a repository variable `PLATFORM_URL` (for example `https://app.syriahc.com`) under GitHub Settings → Secrets and variables → Actions → Variables. From then on, every collection run copies the platform's approved doctors (public details only) into `data/doctors.json` with a "Book online" link for each, and the Doctors page shows a "Book online with verified doctors" banner. Until `PLATFORM_URL` is set, nothing is fetched and the site never links to the platform. Hand-added entries in `data/doctors.json` (without `"platform": true`) are kept.
 
-Labs, imaging centres, hospitals and clinics register on the same platform and are reviewed there. With `PLATFORM_URL` set, approved labs and imaging centres are copied into `data/labs.json` and approved hospitals and clinics into `data/hospitals.json` (next to the OpenStreetMap hospitals), each marked "Verified licence". The Doctors, Labs and Hospitals pages then also show a short invitation for doctors, labs and hospitals to list themselves for free.
+Labs, imaging centres, hospitals, clinics, pharmacies and blood banks register on the same platform and are reviewed there. With `PLATFORM_URL` set, approved labs and imaging centres are copied into `data/labs.json`, approved hospitals and clinics into `data/hospitals.json`, pharmacies into `data/pharmacies.json` and blood banks into `data/blood-banks.json` (next to the OpenStreetMap entries), each marked "Verified licence". Approved dentists (specialty Dentistry) stay in `data/doctors.json` and are also copied into `data/dentists.json`. The directory pages then also show a short invitation to list yourself for free.
 
 ### Booking platform doctors
 
