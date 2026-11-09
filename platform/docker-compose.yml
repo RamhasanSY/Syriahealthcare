@@ -56,6 +56,8 @@ services:
       SMTP_USER: ${SMTP_USER:?Set SMTP_USER in .env}
       SMTP_PASSWORD: ${SMTP_PASSWORD:?Set SMTP_PASSWORD in .env}
       MAIL_FROM: ${MAIL_FROM:?Set MAIL_FROM in .env}
+      # Health file for patients: "on" only after the new privacy policy is published (docs/STUFE-2.md, decision 1).
+      HEALTH_FILE: ${HEALTH_FILE:-off}
     volumes:
       - documents:/data/documents
 

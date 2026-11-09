@@ -1,3 +1,4 @@
+import {ensureSelfProfile} from './access.js';
 import {facilityKinds} from './catalog.js';
 import {audit, transaction} from './db.js';
 import {phoneSignInAvailable, sendCode} from './messaging.js';
@@ -35,6 +36,9 @@ export async function startSession(app, request, reply, user) {
     reply.setCookie(SESSION_COOKIE, token, {
         path: '/', httpOnly: true, sameSite: 'lax', secure: app.config.production, maxAge: days * 86400
     });
+    // Every patient gets an own profile with a SyriaHC patient number at sign-in (stage 2b). A failure here must never
+    // stop the sign-in; the profile is created again on the next need.
+    if (user.role === 'patient') await ensureSelfProfile(app.pg, user).catch(error => request.log.error({err: error}, 'Own profile not created'));
 }
 
 // Loads the signed-in user (if any) on every request.

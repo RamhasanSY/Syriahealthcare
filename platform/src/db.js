@@ -1,5 +1,9 @@
 import pg from 'pg';
 
+// Calendar dates (birth dates, document dates) stay "YYYY-MM-DD" text. As JavaScript dates they would be read at local
+// midnight and could shift by a day when turned back into text on a computer outside UTC.
+pg.types.setTypeParser(pg.types.builtins.DATE, value => value);
+
 export function createPool(connectionString) {
     return new pg.Pool({connectionString, max: 10});
 }

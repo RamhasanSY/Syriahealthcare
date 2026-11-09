@@ -17,7 +17,7 @@ const documentDir = await mkdtemp(path.join(tmpdir(), 'shc-docs-'));
 export const config = {
     production: false, appOrigin: origin, otpSecret: 'test-secret-test-secret-test-secret', smsProvider: 'test', mailProvider: 'test',
     documentKey: 'ab'.repeat(32), documentDir,
-    whatsapp: {provider: '', blockedPrefixes: DEFAULT_BLOCKED_PREFIXES, templates: TEMPLATES}, telegram: {provider: ''}, sessionDays: {patient: 30, doctor: 7, facility: 7, admin: 1}, trustProxy: false
+    whatsapp: {provider: '', blockedPrefixes: DEFAULT_BLOCKED_PREFIXES, templates: TEMPLATES}, telegram: {provider: ''}, sessionDays: {patient: 30, doctor: 7, facility: 7, admin: 1}, trustProxy: false, healthFile: true
 };
 
 let migrated = false;
@@ -28,7 +28,7 @@ export async function setup({whatsapp: withWhatsApp = false, telegram: withTeleg
         await migrate(pool);
         migrated = true;
     }
-    await pool.query('TRUNCATE users, otp_codes, sessions, login_failures, audit_log RESTART IDENTITY CASCADE');
+    await pool.query('TRUNCATE users, otp_codes, sessions, login_failures, audit_log, patients RESTART IDENTITY CASCADE');
     const sms = createSms(config), mail = createMail(config);
     const whatsapp = withWhatsApp ? createWhatsApp({whatsapp: {provider: 'test'}}) : null;
     const telegram = withTelegram ? createTelegramGateway({telegram: {provider: 'test'}}) : null;

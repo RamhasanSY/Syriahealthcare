@@ -1,5 +1,5 @@
-// Background work of the running server (stage 2a): send queued emails, remove expired sign-in data and warn the
-// administrators by email when the disk is nearly full. Each job is a plain function, so tests can run it directly.
+// Background work of the running server (stage 2a): send queued emails, remove expired sign-in data and old entries in
+// the health file's bin, and warn the administrators by email when the disk is nearly full. Each job is a plain function, so tests can run it directly.
 import {statfs} from 'node:fs/promises';
 import {enqueueEmail, deliverDue} from './outbox.js';
 
@@ -24,6 +24,17 @@ export async function cleanup(pool) {
     const removed = {};
     for (const [table, sql] of CLEANUP) removed[table] = (await pool.query(sql)).rowCount;
     return removed;
+}
+
+// Health file entries in the bin for more than 30 days are removed for good, with their encrypted files (stage 2b).
+// Lab results taken over from a slip have no files of their own: only the link to the lab's result goes.
+export async function purgeBin({pool, documents, days = 30}) {
+    const {rows} = await pool.query(
+        `DELETE FROM clinical_documents WHERE deleted_at < now() - make_interval(days => $1)
+         RETURNING (SELECT coalesce(json_agg(storage_key), '[]'::json) FROM clinical_document_files WHERE document_id = clinical_documents.id) AS keys`, [days]);
+    const keys = rows.flatMap(r => r.keys);
+    for (const key of keys) await documents.remove(key);
+    return {documents: rows.length, files: keys.length};
 }
 
 // Free space of the file system that holds `dir`. Returns null where the platform cannot tell.
@@ -64,12 +75,12 @@ export async function checkDisk({pool, dir, log, state, stat, now = Date.now()})
 }
 
 // Starts the timers. They never keep the process alive on their own (unref), and a failing job only logs.
-export function startJobs({pool, mail, log, dir}) {
+export function startJobs({pool, mail, log, dir, documents}) {
     const state = {};
     const run = (name, job) => () => job().catch(error => log.error({err: error}, `Job ${name} failed`));
     const timers = [
         setInterval(run('outbox', () => deliverDue({pool, mail, log})), EVERY.outbox),
-        setInterval(run('cleanup', () => cleanup(pool)), EVERY.cleanup),
+        setInterval(run('cleanup', () => cleanup(pool).then(() => purgeBin({pool, documents}))), EVERY.cleanup),
         setInterval(run('disk', () => checkDisk({pool, dir, log, state})), EVERY.disk)
     ];
     timers.forEach(t => t.unref());

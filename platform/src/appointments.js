@@ -1,5 +1,6 @@
 // Public doctor directory and patient booking.
 import {HttpError, requireRole} from './auth.js';
+import {ensureSelfProfile, patientFor} from './access.js';
 import {governorates, specialties} from './catalog.js';
 import {audit} from './db.js';
 import {slotsFor} from './schedule.js';
@@ -45,7 +46,8 @@ export default async function appointmentRoutes(app) {
         preHandler: patientOnly,
         config: {rateLimit: {max: 30, timeWindow: '15 minutes'}},
         schema: {body: {type: 'object', required: ['doctor_id', 'starts_at'], additionalProperties: false, properties: {
-            doctor_id: {type: 'string', format: 'uuid'}, starts_at: {type: 'string', format: 'date-time'}, reason: {type: 'string', maxLength: 300}
+            doctor_id: {type: 'string', format: 'uuid'}, starts_at: {type: 'string', format: 'date-time'}, reason: {type: 'string', maxLength: 300},
+            subject_id: {type: 'string', format: 'uuid'}
         }}}
     }, async (request, reply) => {
         const patientId = request.user.id, doctorId = request.body.doctor_id;
@@ -55,6 +57,8 @@ export default async function appointmentRoutes(app) {
         const {rows: [doctor]} = await app.pg.query(
             `SELECT u.id FROM users u JOIN doctor_profiles p ON p.user_id = u.id WHERE u.id = $1 AND ${APPROVED}`, [doctorId]);
         if (!doctor) throw new HttpError(404, 'not_found', 'Doctor not found.');
+        // For whom: the own profile, or (with subject_id) a child's profile of this login (stage 2b).
+        const subject = request.body.subject_id ? await patientFor(app.pg, request.user, request.body.subject_id) : await ensureSelfProfile(app.pg, request.user);
 
         const {rows: [counts]} = await app.pg.query(
             `SELECT count(*) FILTER (WHERE status IN ${ACTIVE} AND ends_at > now())::int AS active,
@@ -73,8 +77,8 @@ export default async function appointmentRoutes(app) {
         let appointment;
         try {
             ({rows: [appointment]} = await app.pg.query(
-                `INSERT INTO appointments (doctor_id, patient_id, starts_at, ends_at, reason) VALUES ($1, $2, $3, $4, $5) RETURNING *`,
-                [doctorId, patientId, slot.starts_at, slot.ends_at, request.body.reason?.trim() || null]));
+                `INSERT INTO appointments (doctor_id, patient_id, starts_at, ends_at, reason, subject_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
+                [doctorId, patientId, slot.starts_at, slot.ends_at, request.body.reason?.trim() || null, subject.id]));
         } catch (error) {
             // Someone else booked it a moment earlier, or the patient already has something at that time.
             if (error.code === '23P01' && error.constraint === 'no_double_booking_patient') throw new HttpError(409, 'patient_busy', 'You already have an appointment at this time.');

@@ -49,14 +49,19 @@ function decodeCursor(raw) {
 const doctorView = r => ({id: r.id, title: r.title, patient_name: r.patient_name, patient_phone: r.patient_phone, lab_name: r.lab_name,
     mime: r.mime, created_at: r.created_at});
 
+// Slips printed while the health file is on tell the patient they can take the result into their own file (version 2).
+// Only those can be taken over: a patient holding an older slip was never told about it.
+const slipVersion = app => app.config.healthFile ? 2 : 1;
+
 // What the lab prints for the patient. The code is shown only here, right after it is made; the server keeps just its HMAC.
 function slip(app, result, code, labName) {
     const url = `${app.config.appOrigin}/scan#${code}`;
-    return {result: labView(result), lab_name: labName, code, scan_url: url, qr_svg: qrSvg(url)};
+    return {result: labView(result), lab_name: labName, code, scan_url: url, qr_svg: qrSvg(url),
+        health_file: result.slip_version >= 2 ? {url: `${app.config.appOrigin}/file`, check: result.birth_year ? 'birth_year_or_phone' : 'phone'} : null};
 }
 
 export default async function resultRoutes(app) {
-    await app.register(multipart, {limits: {fileSize: MAX_DOCUMENT_BYTES, files: 1, fields: 3, fieldSize: 1000}});
+    await app.register(multipart, {limits: {fileSize: MAX_DOCUMENT_BYTES, files: 1, fields: 4, fieldSize: 1000}});
     const facilityOnly = {preHandler: requireRole('facility')};
     const doctorOnly = {preHandler: requireRole('doctor')};
     const uuidParam = {params: {type: 'object', properties: {id: {type: 'string', format: 'uuid'}}}};
@@ -126,6 +131,11 @@ export default async function resultRoutes(app) {
         if (patientName.length < 2 || patientName.length > 120) throw new HttpError(400, 'invalid_patient_name', 'Enter the patient\'s full name.');
         if (!patientPhone) throw new HttpError(400, 'invalid_phone', 'Enter a valid mobile number, for example 0912 345 678.');
         if (title.length < 2 || title.length > 120) throw new HttpError(400, 'invalid_title', 'Enter what was tested, for example "Complete blood count".');
+        // Optional: the patient's birth year. With the health file on, it lets the patient take the result into their own file.
+        const birthYear = field('birth_year') ? Number(field('birth_year')) : null;
+        if (birthYear !== null && !(Number.isInteger(birthYear) && birthYear >= 1900 && birthYear <= new Date().getFullYear())) {
+            throw new HttpError(400, 'invalid_birth_year', 'Enter the birth year with 4 digits, for example 1985.');
+        }
         const buffer = await part.toBuffer().catch(error => {
             if (error.code === 'FST_REQ_FILE_TOO_LARGE') throw new HttpError(413, 'file_too_large', 'The file is larger than 5 MB.');
             throw error;
@@ -137,10 +147,10 @@ export default async function resultRoutes(app) {
         try {
             const {rows: [result]} = await app.pg.query(
                 `INSERT INTO lab_results (facility_id, patient_name, patient_phone, title, code_hash, code_expires_at,
-                     filename, mime, size_bytes, sha256, storage_key, iv, auth_tag)
-                 VALUES ($1, $2, $3, $4, $5, now() + make_interval(days => $6), $7, $8, $9, $10, $11, $12, $13) RETURNING *`,
+                     filename, mime, size_bytes, sha256, storage_key, iv, auth_tag, birth_year, slip_version)
+                 VALUES ($1, $2, $3, $4, $5, now() + make_interval(days => $6), $7, $8, $9, $10, $11, $12, $13, $14, $15) RETURNING *`,
                 [request.user.id, patientName, patientPhone, title, codeHash(code), CODE_DAYS,
-                    filename, mime, buffer.length, stored.sha256, stored.storageKey, stored.iv, stored.authTag]);
+                    filename, mime, buffer.length, stored.sha256, stored.storageKey, stored.iv, stored.authTag, birthYear, slipVersion(app)]);
             await audit(app.pg, {actorId: request.user.id, action: 'result.uploaded', targetId: result.id, details: {size: buffer.length}, ip: request.ip});
             reply.code(201);
             return slip(app, result, code, lab.facility_name);
@@ -154,9 +164,10 @@ export default async function resultRoutes(app) {
     app.post('/api/lab/results/:id/code', {...facilityOnly, schema: uuidParam}, async request => {
         const lab = await loadLab(request.user.id), code = newResultCode();
         const {rows: [result]} = await app.pg.query(
-            `UPDATE lab_results r SET code_hash = $3, code_expires_at = now() + make_interval(days => $4) WHERE r.id = $1 AND r.facility_id = $2
+            `UPDATE lab_results r SET code_hash = $3, code_expires_at = now() + make_interval(days => $4), claim_attempts = 0,
+                 slip_version = GREATEST(r.slip_version, $5) WHERE r.id = $1 AND r.facility_id = $2
              RETURNING r.*`,
-            [request.params.id, request.user.id, codeHash(code), CODE_DAYS]);
+            [request.params.id, request.user.id, codeHash(code), CODE_DAYS, slipVersion(app)]);
         if (!result) throw new HttpError(404, 'not_found', 'Result not found.');
         await audit(app.pg, {actorId: request.user.id, action: 'result.new_code', targetId: result.id, ip: request.ip});
         return slip(app, result, code, lab.facility_name);

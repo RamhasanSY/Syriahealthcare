@@ -44,6 +44,8 @@ export const config = {
     documentKey: required('DOCUMENT_KEY', '0'.repeat(64)),
     documentDir: env.DOCUMENT_DIR || fileURLToPath(new URL('../storage/documents/', import.meta.url)),
     sessionDays: {patient: 30, doctor: 7, facility: 7, admin: 1},
+    // Health file for patients (stage 2b). Stays off until the new privacy policy is checked and published (decision 1).
+    healthFile: env.HEALTH_FILE === 'on',
     trustProxy: env.TRUST_PROXY === 'true'
 };
 
