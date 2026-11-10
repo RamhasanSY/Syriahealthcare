@@ -111,7 +111,11 @@ const Shc = (() => {
         push_unavailable: 'الإشعارات غير متاحة بعد.',
         push_denied: 'رفض المتصفح الإشعارات. اسمح بها من إعدادات المتصفح لهذا الموقع ثم حاول مجدداً.',
         push_failed: 'تعذر تفعيل الإشعارات على هذا الجهاز. حاول مجدداً لاحقاً.',
-        invalid_endpoint: 'لا يستطيع هذا المتصفح استقبال إشعارات صحة تك.'
+        invalid_endpoint: 'لا يستطيع هذا المتصفح استقبال إشعارات صحة تك.',
+        // Appointments: moving and waiting list
+        cannot_reschedule: 'لم يعد بالإمكان نقل هذا الموعد.',
+        too_many_reschedules: 'يمكن نقل الموعد 3 مرات فقط. ألغِه واحجز موعداً جديداً.',
+        too_many_waitlist: 'يمكنك الانتظار لدى 3 أطباء كحد أقصى في الوقت نفسه.'
     };
 
     function applyLanguage() {

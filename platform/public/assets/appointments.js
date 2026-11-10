@@ -53,9 +53,17 @@ document.addEventListener('DOMContentLoaded', async () => {
                 li.append(box);
                 setTimeout(() => no.focus());
             } else {
+                const links = el('div', {className: 'appt-links'});
+                links.append(el('a', {className: 'link-btn', href: `/api/appointments/${a.id}/calendar.ics`, download: 'syriahc-appointment.ics',
+                    textContent: tr('Add to calendar', 'أضف إلى التقويم')}));
+                if ((a.reschedule_count || 0) < 3) {
+                    links.append(el('a', {className: 'link-btn', href: `/book?doctor=${encodeURIComponent(a.doctor_id)}&move=${encodeURIComponent(a.id)}`,
+                        textContent: tr('Move to another time', 'نقل إلى وقت آخر')}));
+                }
                 const cancel = el('button', {type: 'button', className: 'link-btn', textContent: tr('Cancel appointment', 'إلغاء الموعد')});
                 cancel.onclick = () => { confirming = a.id; render(); };
-                li.append(cancel);
+                links.append(cancel);
+                li.append(links);
             }
         }
         return li;
@@ -70,7 +78,40 @@ document.addEventListener('DOMContentLoaded', async () => {
         $('past').replaceChildren(...(past.length ? past.map(card) : [empty(tr('Nothing here yet.', 'لا يوجد شيء بعد.'))]));
     }
 
+    // Waiting lists: doctors this patient wants to hear from when a time becomes free.
+    let waiting = [];
+    async function loadWaiting() {
+        const res = await api('/api/waitlist/mine');
+        waiting = res.ok ? res.data.entries : [];
+        renderWaiting();
+    }
+    function renderWaiting() {
+        $('waitBox').hidden = !waiting.length;
+        const date = iso => new Date(iso).toLocaleDateString(Shc.lang === 'ar' ? 'ar' : 'en-GB', {day: 'numeric', month: 'long', timeZone: TZ});
+        $('waitList').replaceChildren(...waiting.map(w => {
+            const li = el('li', {className: 'appt'});
+            const spec = catalog?.specialties[w.specialty] ? tr(...catalog.specialties[w.specialty]) : '';
+            li.append(el('p', {className: 'appt-doctor', textContent: [w.doctor_name, spec].filter(Boolean).join(' · '), dir: 'auto'}),
+                el('p', {className: 'muted-small', textContent: tr(`We tell you when a time becomes free, until ${date(w.expires_at)}.`, `نخبرك عند توفر وقت حتى ${date(w.expires_at)}.`)}));
+            const links = el('div', {className: 'appt-links'});
+            links.append(el('a', {className: 'link-btn', href: `/book?doctor=${encodeURIComponent(w.doctor_id)}`, textContent: tr('See free times', 'عرض الأوقات المتاحة')}));
+            const leave = el('button', {type: 'button', className: 'link-btn', textContent: tr('Remove', 'إزالة')});
+            leave.onclick = async () => {
+                busy(leave, true);
+                const res = await api(`/api/waitlist/${w.id}/leave`, {});
+                busy(leave, false);
+                if (!res.ok) return showError('listError', res.data);
+                await loadWaiting();
+                $('waitHeading').focus();
+            };
+            links.append(leave);
+            li.append(links);
+            return li;
+        }));
+    }
+
     catalog = (await api('/api/catalog')).data;
-    document.addEventListener('shc:language', render);
+    document.addEventListener('shc:language', () => { render(); renderWaiting(); });
     load();
+    loadWaiting();
 });

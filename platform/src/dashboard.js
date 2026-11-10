@@ -5,6 +5,7 @@ import {audit} from './db.js';
 import {sendAppointmentUpdate, whatsappReaches} from './messaging.js';
 import {appointmentEmail, sendEmail} from './notify.js';
 import {pushToUser} from './push.js';
+import {notifyWaitlist} from './appointment-comfort.js';
 
 const TZ = 'Asia/Damascus';
 const uuidParam = {params: {type: 'object', properties: {id: {type: 'string', format: 'uuid'}}}};
@@ -79,6 +80,7 @@ export default async function dashboardRoutes(app) {
             // A share made when booking ends with the appointment: a doctor who declines or cancels keeps nothing.
             if (['declined', 'cancelled_by_doctor'].includes(updated.status)) {
                 await app.pg.query('UPDATE access_grants SET revoked_at = COALESCE(revoked_at, now()) WHERE appointment_id = $1', [updated.id]);
+                await notifyWaitlist(app, updated.doctor_id, updated.starts_at);
             }
             if (MESSAGES[rule.to]) await notifyPatient(app, request, updated);
             return {appointment: {id: updated.id, status: updated.status, status_note: updated.status_note}};

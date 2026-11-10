@@ -7,6 +7,7 @@ import {audit} from './db.js';
 import {slotsFor} from './schedule.js';
 import {localDate} from './slots.js';
 import {pushToUser} from './push.js';
+import {notifyWaitlist} from './appointment-comfort.js';
 
 const MAX_ACTIVE = 5;             // upcoming requested/confirmed appointments per patient
 const MAX_ACTIVE_PER_DOCTOR = 2;  // ...of which with the same doctor
@@ -91,6 +92,7 @@ export default async function appointmentRoutes(app) {
             throw error;
         }
         await audit(app.pg, {actorId: patientId, action: 'appointment.requested', targetId: appointment.id, details: {doctor_id: doctorId}, ip: request.ip});
+        await app.pg.query('DELETE FROM waitlist_entries WHERE patient_id = $1 AND doctor_id = $2', [patientId, doctorId]);
         await pushToUser(app, doctorId, {title: ['New appointment request', 'طلب موعد جديد'], body: ['Open your appointments to confirm or decline.', 'افتح المواعيد للتأكيد أو الاعتذار.'],
             url: '/dashboard', tag: 'requests'});
         if (request.body.share_item_ids?.length) {
@@ -108,7 +110,7 @@ export default async function appointmentRoutes(app) {
 
     app.get('/api/appointments/mine', {preHandler: patientOnly}, async request => {
         const {rows} = await app.pg.query(
-            `SELECT a.id, a.status, a.starts_at, a.ends_at, a.reason, a.status_note, a.created_at,
+            `SELECT a.id, a.status, a.starts_at, a.ends_at, a.reason, a.status_note, a.created_at, a.reschedule_count,
                     u.id AS doctor_id, u.name AS doctor_name, p.specialty, p.clinic_name, p.clinic_address, p.clinic_phone, p.area, p.governorate
              FROM appointments a JOIN users u ON u.id = a.doctor_id JOIN doctor_profiles p ON p.user_id = a.doctor_id
              WHERE a.patient_id = $1 ORDER BY a.starts_at DESC LIMIT 100`, [request.user.id]);
@@ -130,6 +132,7 @@ export default async function appointmentRoutes(app) {
         await pushToUser(app, appointment.doctor_id, {title: ['Appointment cancelled by the patient', 'ألغى مريض موعده'], body: ['The time is free again.', 'أصبح الوقت متاحاً من جديد.'],
             url: '/dashboard', tag: `appointment-${appointment.id}`});
         await app.pg.query('UPDATE access_grants SET revoked_at = COALESCE(revoked_at, now()) WHERE appointment_id = $1', [appointment.id]);
+        await notifyWaitlist(app, appointment.doctor_id, appointment.starts_at);
         return {appointment: {id: appointment.id, status: appointment.status}};
     });
 }

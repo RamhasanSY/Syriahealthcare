@@ -3,6 +3,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const {$, tr, api, showError, busy} = Shc;
     const params = new URLSearchParams(window.location.search);
     const doctorId = params.get('doctor') || '';
+    // "Move to another time" from My appointments: the same page picks the new time (src/appointment-comfort.js).
+    const moveId = params.get('move') || '';
     const TZ = 'Asia/Damascus';
     let doctor, me = null, catalog, slots = [], from = null, days = 14, day = null, chosen = params.get('slot');
     const el = (tag, props = {}) => Object.assign(document.createElement(tag), props);
@@ -148,10 +150,50 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     $('moreDays').addEventListener('click', () => loadSlots(new Date(Date.parse(from + 'T00:00:00Z') + days * 86400000).toISOString().slice(0, 10)));
 
+    // Texts that change in "move" mode keep both languages on the element, so switching the language keeps them.
+    const relabel = (node, en, ar) => { node.dataset.en = en; node.dataset.ar = ar; node.textContent = tr(en, ar); };
+    const moving = Boolean(moveId) && me?.role === 'patient';
+    if (moving) {
+        relabel($('confirmHeading'), '2. Confirm the new time', '2. تأكيد الوقت الجديد');
+        relabel($('bookButton'), 'Move my appointment to this time', 'انقل موعدي إلى هذا الوقت');
+        relabel($('doneHeading'), 'Appointment moved', 'تم نقل الموعد');
+        $('reason').closest('.field').hidden = true;
+        $('shareOnBook').remove();
+    }
+
+    // Waiting list: told by notification and email when a time with this doctor becomes free.
+    $('waitBox').hidden = !(me?.role === 'patient' && !moving);
+    $('waitButton').addEventListener('click', async () => {
+        $('waitError').hidden = true;
+        busy($('waitButton'), true);
+        const res = await api('/api/waitlist', {doctor_id: doctorId});
+        busy($('waitButton'), false);
+        if (!res.ok) return showError('waitError', res.data);
+        $('waitButton').hidden = true;
+        relabel($('waitDone'), 'You are on the waiting list for 30 days. You can remove it under My appointments.',
+            'أنت على قائمة الانتظار لمدة 30 يوماً. يمكنك إزالتها من «مواعيدي».');
+    });
+
     $('bookForm').addEventListener('submit', async event => {
         event.preventDefault();
         $('bookError').hidden = true;
         busy($('bookButton'), true);
+        if (moving) {
+            const moved = await api(`/api/appointments/${encodeURIComponent(moveId)}/reschedule`, {starts_at: chosen});
+            busy($('bookButton'), false);
+            if (!moved.ok) {
+                showError('bookError', moved.data);
+                if (moved.data.error === 'slot_taken') await loadSlots(from);
+                return;
+            }
+            const slot = slots.find(s => s.starts_at === chosen);
+            $('booking').hidden = true;
+            $('done').hidden = false;
+            $('doneText').textContent = tr(`Your appointment with ${doctor.name} is now on ${dayName(slot.date, 'long')} at ${timeOf(slot.starts_at)}. The doctor confirms the new time; until then it shows as waiting.`,
+                `أصبح موعدك لدى ${doctor.name} ${dayName(slot.date, 'long')} الساعة ${timeOf(slot.starts_at)}. يؤكد الطبيب الوقت الجديد، وحتى ذلك يظهر الموعد بانتظار التأكيد.`);
+            $('done').focus();
+            return;
+        }
         const shared = [...$('shareList').querySelectorAll('input:checked')].map(i => i.value);
         const res = await api('/api/appointments', {doctor_id: doctorId, starts_at: chosen, reason: $('reason').value, ...(subject && {subject_id: subject}),
             ...(shared.length && {share_item_ids: shared})});
@@ -173,8 +215,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         $('done').focus();
     });
 
-    document.addEventListener('shc:language', () => { render(); renderShareItems(); });
+    document.addEventListener('shc:language', () => { render(); if (!moving) renderShareItems(); });
     $('booking').hidden = false;
-    if (me?.role === 'patient') loadShareItems();
+    if (me?.role === 'patient' && !moving) loadShareItems();
     await loadSlots();
 });

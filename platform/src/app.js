@@ -27,6 +27,7 @@ import hl7v2Routes from './hl7v2.js';
 import labServiceRoutes from './lab-services.js';
 import statusRoutes from './status.js';
 import pushRoutes, {createPush} from './push.js';
+import appointmentComfortRoutes from './appointment-comfort.js';
 import openapiRoutes, {collectRoutes} from './openapi.js';
 
 const UNSAFE = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
@@ -126,6 +127,7 @@ export async function buildApp({config, pool, sms, whatsapp, telegram, mail, doc
     await app.register(labServiceRoutes);
     await app.register(statusRoutes);
     await app.register(pushRoutes);
+    await app.register(appointmentComfortRoutes);
     await app.register(openapiRoutes, {routes});
     await app.register(fhirRoutes, {prefix: '/fhir/r4'});
     const publicDir = fileURLToPath(new URL('../public/', import.meta.url));

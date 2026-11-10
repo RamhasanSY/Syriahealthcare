@@ -266,3 +266,5 @@ table.values tr.flag-hh,table.values tr.flag-ll,table.values tr.flag-aa{backgrou
 #statusBox summary{cursor:pointer}
 .inline-h{display:inline;margin:0}
 #statusBox .values-box{margin:14px 0}
+.appt-links{display:flex;flex-wrap:wrap;gap:4px 18px}
+.wait-box{margin-top:12px;border-top:1px solid var(--rule);padding-top:12px}

@@ -29,6 +29,12 @@
         <div class="day-strip" id="days" role="radiogroup" aria-labelledby="pickHeading"></div>
         <div class="chips times" id="times" role="radiogroup" aria-live="polite"></div>
         <button class="link-btn" type="button" id="moreDays" data-en="Show later days" data-ar="أيام لاحقة">أيام لاحقة</button>
+        <div class="wait-box" id="waitBox" hidden>
+          <p class="hint" data-en="Need an earlier time? We tell you as soon as one becomes free." data-ar="تحتاج وقتاً أبكر؟ نخبرك فور توفر وقت.">تحتاج وقتاً أبكر؟ نخبرك فور توفر وقت.</p>
+          <button class="btn ghost" type="button" id="waitButton" data-en="Tell me when a time becomes free" data-ar="أخبرني عند توفر وقت">أخبرني عند توفر وقت</button>
+          <p class="hint" id="waitDone" role="status"></p>
+          <div class="msg error" id="waitError" role="alert" tabindex="-1" hidden></div>
+        </div>
       </section>
 
       <section class="card" aria-labelledby="confirmHeading">
@@ -55,7 +61,7 @@
   </div>
 
   <div class="card success" id="done" hidden tabindex="-1">
-    <h1 data-en="Request sent" data-ar="تم إرسال الطلب">تم إرسال الطلب</h1>
+    <h1 id="doneHeading" data-en="Request sent" data-ar="تم إرسال الطلب">تم إرسال الطلب</h1>
     <p id="doneText"></p>
     <p class="msg info" data-en="In an emergency do not wait for an appointment: go to the nearest hospital." data-ar="في حالات الطوارئ لا تنتظر موعداً: توجّه إلى أقرب مشفى.">في حالات الطوارئ لا تنتظر موعداً: توجّه إلى أقرب مشفى.</p>
     <div class="actions"><a class="btn" href="/appointments" data-en="My appointments" data-ar="مواعيدي">مواعيدي</a><a class="btn ghost" href="/doctors" data-en="Find another doctor" data-ar="ابحث عن طبيب آخر">ابحث عن طبيب آخر</a></div>

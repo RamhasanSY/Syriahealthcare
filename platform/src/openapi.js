@@ -30,6 +30,11 @@ export const SUMMARIES = {
     'POST /api/appointments': 'Patient: request an appointment.',
     'GET /api/appointments/mine': 'Patient: own appointments.',
     'POST /api/appointments/{id}/cancel': 'Patient: cancel an own appointment.',
+    'POST /api/appointments/{id}/reschedule': 'Patient: move an own appointment to another free time of the same doctor (the doctor confirms again).',
+    'GET /api/appointments/{id}/calendar.ics': 'Patient or doctor: the appointment as a calendar file.',
+    'POST /api/waitlist': 'Patient: be told when a time with this doctor becomes free (30 days).',
+    'GET /api/waitlist/mine': 'Patient: the doctors on the own waiting list.',
+    'POST /api/waitlist/{id}/leave': 'Patient: leave a waiting list.',
     // Doctors
     'GET /api/doctor/profile': 'Doctor: own profile and review status.',
     'POST /api/doctor/profile': 'Doctor: update the profile (identifying fields wait for review once approved).',
