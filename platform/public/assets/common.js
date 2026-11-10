@@ -141,7 +141,11 @@ const Shc = (() => {
         invalid_medicine_name: 'اكتب اسم الدواء.',
         invalid_times: 'أضف وقتاً واحداً على الأقل.',
         too_many_medicines: 'يمكن حفظ 20 دواءً كحد أقصى لكل ملف.',
-        invalid_dose: 'هذا ليس أحد أوقات هذا الدواء.'
+        invalid_dose: 'هذا ليس أحد أوقات هذا الدواء.',
+        // Reviews
+        not_completed: 'يمكنك التقييم بعد أن يسجّل الطبيب الموعد منجزاً.',
+        review_too_late: 'يمكن التقييم خلال 60 يوماً بعد الموعد.',
+        already_reviewed: 'قيّمت هذا الموعد مسبقاً.'
     };
 
     function applyLanguage() {

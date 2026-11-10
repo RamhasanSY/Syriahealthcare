@@ -163,7 +163,17 @@ export const SUMMARIES = {
     'POST /api/medications': 'Patient: add a medicine with its times of day.',
     'POST /api/medications/{id}': 'Patient: change, pause or resume a medicine.',
     'POST /api/medications/{id}/delete': 'Patient: delete a medicine.',
-    'POST /api/medications/{id}/dose': 'Patient: tick a dose of the last 24 hours as taken (or not).'
+    'POST /api/medications/{id}/dose': 'Patient: tick a dose of the last 24 hours as taken (or not).',
+    // Reviews of doctors (src/reviews.js)
+    'GET /api/reviews/mine': 'Patient: which own appointments were reviewed, and their status.',
+    'POST /api/appointments/{id}/review': 'Patient: review a completed appointment (within 60 days; checked before it is public).',
+    'GET /api/doctors/{id}/reviews': 'Approved reviews of a doctor with the doctor\'s answers; the average from 3 reviews on.',
+    'GET /api/doctor/reviews': 'Doctor: own approved reviews.',
+    'POST /api/doctor/reviews/{id}/reply': 'Doctor: answer a review publicly (empty text removes the answer).',
+    'POST /api/doctor/reviews/{id}/report': 'Doctor: report a review; it is hidden until an administrator checks it again.',
+    'GET /api/admin/reviews': 'Administrator: reviews by status, reported ones first.',
+    'POST /api/admin/reviews/{id}/approve': 'Administrator: publish a review.',
+    'POST /api/admin/reviews/{id}/reject': 'Administrator: reject a review (with a reason).'
 };
 
 const ROLE_TAGS = {patient: 'Patients', doctor: 'Doctors', facility: 'Facilities', admin: 'Administrators'};

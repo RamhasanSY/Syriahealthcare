@@ -8,6 +8,7 @@ import {slotsFor} from './schedule.js';
 import {localDate} from './slots.js';
 import {pushToUser} from './push.js';
 import {notifyWaitlist} from './appointment-comfort.js';
+import {ratingSummaries} from './reviews.js';
 
 const MAX_ACTIVE = 5;             // upcoming requested/confirmed appointments per patient
 const MAX_ACTIVE_PER_DOCTOR = 2;  // ...of which with the same doctor
@@ -34,7 +35,8 @@ export default async function appointmentRoutes(app) {
         if (q?.trim()) where.push(`(u.name ILIKE $${args.push('%' + q.trim().replace(/[%_\\]/g, '\\$&') + '%')} OR p.clinic_name ILIKE $${args.length} OR p.area ILIKE $${args.length})`);
         const {rows} = await app.pg.query(
             `SELECT ${PUBLIC_DOCTOR} FROM users u JOIN doctor_profiles p ON p.user_id = u.id WHERE ${where.join(' AND ')} ORDER BY u.name LIMIT 200`, args);
-        return {doctors: rows};
+        const ratings = await ratingSummaries(app.pg, rows.map(d => d.id));
+        return {doctors: rows.map(d => ({...d, rating: ratings.get(d.id) || {count: 0, average: null}}))};
     });
 
     app.get('/api/doctors/:id', {config: {cache: 'public, max-age=60'}, schema: uuidParam}, async request => {
@@ -43,7 +45,8 @@ export default async function appointmentRoutes(app) {
              FROM users u JOIN doctor_profiles p ON p.user_id = u.id LEFT JOIN doctor_schedules s ON s.doctor_id = u.id
              WHERE u.id = $1 AND ${APPROVED}`, [request.params.id]);
         if (!doctor) throw new HttpError(404, 'not_found', 'Doctor not found.');
-        return {doctor};
+        const rating = (await ratingSummaries(app.pg, [doctor.id])).get(doctor.id) || {count: 0, average: null};
+        return {doctor: {...doctor, rating}};
     });
 
     app.post('/api/appointments', {

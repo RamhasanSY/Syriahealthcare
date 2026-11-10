@@ -215,7 +215,28 @@ document.addEventListener('DOMContentLoaded', async () => {
         $('done').focus();
     });
 
-    document.addEventListener('shc:language', () => { render(); if (!moving) renderShareItems(); });
+    // Reviews (src/reviews.js): the average from 3 reviews on, and the latest reviews with the doctor's answers.
+    let reviews = null;
+    function renderReviews() {
+        if (!reviews || !reviews.reviews.length) return;
+        $('reviewsBox').hidden = false;
+        const s = reviews.summary;
+        $('reviewsSummary').textContent = s.average !== null ? tr(`${s.average} of 5 from ${s.count} reviews`, `${s.average} من 5 من ${s.count} تقييمات`) : tr(`${s.count} reviews`, `${s.count} تقييمات`);
+        const date = iso => new Date(iso).toLocaleDateString(Shc.lang === 'ar' ? 'ar' : 'en-GB', {month: 'long', year: 'numeric', timeZone: TZ});
+        $('reviewsList').replaceChildren(...reviews.reviews.slice(0, 10).map(r => {
+            const stars = el('p', {className: 'stars', textContent: '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating)});
+            stars.setAttribute('role', 'img');
+            stars.setAttribute('aria-label', tr(`${r.rating} of 5 stars`, `${r.rating} من 5 نجوم`));
+            const li = el('li', {className: 'appt'});
+            li.append(stars, el('p', {className: 'muted-small', textContent: `${r.author || tr('Patient', 'مريض')} · ${date(r.created_at)}`}));
+            if (r.comment) li.append(el('p', {dir: 'auto', textContent: r.comment}));
+            if (r.reply) li.append(el('p', {className: 'appt-reason', dir: 'auto', textContent: tr('Answer of the doctor: ', 'رد الطبيب: ') + r.reply}));
+            return li;
+        }));
+    }
+    api(`/api/doctors/${encodeURIComponent(doctorId)}/reviews`).then(res => { if (res.ok) { reviews = res.data; renderReviews(); } });
+
+    document.addEventListener('shc:language', () => { render(); renderReviews(); if (!moving) renderShareItems(); });
     $('booking').hidden = false;
     if (me?.role === 'patient' && !moving) loadShareItems();
     await loadSlots();

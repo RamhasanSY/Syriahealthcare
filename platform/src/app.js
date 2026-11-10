@@ -32,6 +32,7 @@ import bloodRoutes from './blood.js';
 import pharmacyDutyRoutes from './pharmacy-duty.js';
 import labPackageRoutes from './lab-packages.js';
 import medicationRoutes from './medications.js';
+import reviewRoutes from './reviews.js';
 import openapiRoutes, {collectRoutes} from './openapi.js';
 
 const UNSAFE = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
@@ -136,6 +137,7 @@ export async function buildApp({config, pool, sms, whatsapp, telegram, mail, doc
     await app.register(pharmacyDutyRoutes);
     await app.register(labPackageRoutes);
     await app.register(medicationRoutes);
+    await app.register(reviewRoutes);
     await app.register(openapiRoutes, {routes});
     await app.register(fhirRoutes, {prefix: '/fhir/r4'});
     const publicDir = fileURLToPath(new URL('../public/', import.meta.url));

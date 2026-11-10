@@ -5,8 +5,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     const STATUS = {requested: ['Waiting for the doctor to confirm', 'بانتظار تأكيد الطبيب', 'wait'], confirmed: ['Confirmed', 'مؤكد', 'ok'],
         declined: ['Declined by the doctor', 'اعتذر الطبيب', 'off'], cancelled_by_patient: ['You cancelled', 'ألغيتَ الموعد', 'off'],
         cancelled_by_doctor: ['Cancelled by the doctor', 'ألغاه الطبيب', 'off'], completed: ['Completed', 'تم', 'off'], no_show: ['Missed', 'لم يتم الحضور', 'off']};
-    let list = [], catalog = null, confirming = null;
-    const el = (tag, props = {}) => Object.assign(document.createElement(tag), props);
+    let list = [], catalog = null, confirming = null, reviewed = new Map(), reviewDays = 60, rating = null;
+    const el = (tag, props = {}, ...children) => {
+        const node = Object.assign(document.createElement(tag), props);
+        node.append(...children);
+        return node;
+    };
     const when = iso => new Date(iso).toLocaleString(Shc.lang === 'ar' ? 'ar' : 'en-GB', {weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit', timeZone: TZ});
 
     async function load() {
@@ -15,6 +19,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (res.status === 401) return window.location.assign('/login?next=/appointments');
         if (res.status === 403) return window.location.assign('/account');
         list = res.data.appointments;
+        const mine = await api('/api/reviews/mine');
+        if (mine.ok) {
+            reviewed = new Map(mine.data.reviews.map(r => [r.appointment_id, r.status]));
+            reviewDays = mine.data.days;
+        }
         render();
     }
 
@@ -34,6 +43,18 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (a.reason) li.append(el('p', {className: 'appt-reason', textContent: tr('Reason: ', 'السبب: ') + a.reason, dir: 'auto'}));
         if (a.status_note) li.append(el('p', {className: 'appt-reason', textContent: tr('Note: ', 'ملاحظة: ') + a.status_note, dir: 'auto'}));
         const upcoming = ['requested', 'confirmed'].includes(a.status) && Date.parse(a.starts_at) > Date.now();
+        // Reviews (src/reviews.js): a completed visit of the last 60 days, once.
+        if (a.status === 'completed' && reviewed.has(a.id)) {
+            li.append(el('p', {className: 'muted-small', textContent: reviewed.get(a.id) === 'approved' ? tr('Your review is published. Thank you.', 'نُشر تقييمك. شكراً لك.')
+                : reviewed.get(a.id) === 'rejected' ? tr('Your review was not published.', 'لم يُنشر تقييمك.') : tr('Your review is waiting for a check.', 'تقييمك بانتظار المراجعة.')}));
+        } else if (a.status === 'completed' && Date.parse(a.ends_at) > Date.now() - reviewDays * 86400000) {
+            if (rating?.id === a.id) li.append(reviewForm(a));
+            else {
+                const rate = el('button', {type: 'button', className: 'link-btn', textContent: tr('Review this visit', 'قيّم هذه الزيارة')});
+                rate.onclick = () => { rating = {id: a.id}; render(); };
+                li.append(rate);
+            }
+        }
         if (upcoming) {
             if (confirming === a.id) {
                 const box = el('div', {className: 'confirm-box'});
@@ -67,6 +88,40 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         }
         return li;
+    }
+
+    function reviewForm(a) {
+        const form = el('form', {className: 'confirm-box', noValidate: true});
+        const stars = el('fieldset', {className: 'plain'}, el('legend', {textContent: tr('How was the visit?', 'كيف كانت الزيارة؟')}));
+        const row = el('div', {className: 'chips'});
+        for (let n = 5; n >= 1; n--) {
+            const input = el('input', {type: 'radio', name: 'stars-' + a.id, value: String(n), id: `stars-${a.id}-${n}`});
+            row.append(el('label', {className: 'chip check-chip', htmlFor: input.id}, input, el('span', {textContent: '★'.repeat(n) + ' ' + tr(`${n} of 5`, `${n} من 5`)})));
+        }
+        stars.append(row);
+        const comment = el('textarea', {rows: 3, maxLength: 500, dir: 'auto'});
+        const commentLabel = el('label', {className: 'field'}, el('span', {textContent: tr('What should other patients know? (optional)', 'ما الذي يجب أن يعرفه المرضى الآخرون؟ (اختياري)')}), comment,
+            el('small', {textContent: tr('Do not write names, phone numbers or details about your health.', 'لا تكتب أسماء أو أرقام هواتف أو تفاصيل عن صحتك.')}));
+        const showName = el('input', {type: 'checkbox', id: 'show-' + a.id});
+        const nameLabel = el('label', {className: 'check', htmlFor: showName.id}, showName, el('span', {textContent: tr('Show my first name and initial (otherwise "Patient")', 'أظهر اسمي الأول والحرف الأول من الكنية (وإلا «مريض»)')}));
+        const send = el('button', {type: 'submit', className: 'btn', textContent: tr('Send review', 'أرسل التقييم')});
+        const cancel = el('button', {type: 'button', className: 'btn ghost', textContent: tr('Cancel', 'إلغاء')});
+        cancel.onclick = () => { rating = null; render(); };
+        form.append(stars, commentLabel, nameLabel, el('div', {className: 'actions'}, send, cancel));
+        form.addEventListener('submit', async event => {
+            event.preventDefault();
+            const value = Number(form.querySelector(`input[name="stars-${a.id}"]:checked`)?.value || 0);
+            if (!value) return showError('listError', {error: 'invalid_request', message: 'Choose 1 to 5 stars.'});
+            busy(send, true);
+            const res = await api(`/api/appointments/${a.id}/review`, {rating: value, ...(comment.value.trim() && {comment: comment.value}), show_name: showName.checked});
+            busy(send, false);
+            if (!res.ok) return showError('listError', res.data);
+            rating = null;
+            reviewed.set(a.id, 'pending');
+            render();
+        });
+        setTimeout(() => row.querySelector('input').focus());
+        return form;
     }
 
     function render() {

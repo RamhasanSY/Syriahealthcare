@@ -40,6 +40,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             li.append(el('p', {className: 'specialty', textContent: label('specialties', d.specialty)}), name,
                 el('p', {className: 'muted-small', textContent: [d.clinic_name, d.area, label('governorates', d.governorate)].filter(Boolean).join(' · '), dir: 'auto'}));
             if (d.bio) li.append(el('p', {className: 'bio', textContent: d.bio, dir: 'auto'}));
+            if (d.rating?.average !== null && d.rating?.average !== undefined) {
+                li.append(el('p', {className: 'muted-small', textContent: tr(`★ ${d.rating.average} of 5 · ${d.rating.count} reviews`, `★ ${d.rating.average} من 5 · ${d.rating.count} تقييمات`)}));
+            }
             const book = el('a', {className: 'btn', href: '/book?doctor=' + encodeURIComponent(d.id), textContent: tr('See free times', 'الأوقات المتاحة')});
             book.setAttribute('aria-label', tr('See free times for ', 'الأوقات المتاحة لدى ') + d.name);
             li.append(book);
