@@ -131,6 +131,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         $('signInFirst').hidden = Boolean(me);
         $('notPatient').hidden = !me || me.role === 'patient';
         $('bookForm').hidden = me?.role !== 'patient';
+        $('modeBox').hidden = !doctor.video || Boolean(moveId);
         renderForWhom();
         const back = `/book?doctor=${encodeURIComponent(doctorId)}` + (chosen ? `&slot=${encodeURIComponent(chosen)}` : '');
         $('signInLink').href = '/login?next=' + encodeURIComponent(back);
@@ -195,7 +196,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             return;
         }
         const shared = [...$('shareList').querySelectorAll('input:checked')].map(i => i.value);
-        const res = await api('/api/appointments', {doctor_id: doctorId, starts_at: chosen, reason: $('reason').value, ...(subject && {subject_id: subject}),
+        const mode = doctor.video ? document.querySelector('input[name="mode"]:checked')?.value || 'in_person' : 'in_person';
+        const res = await api('/api/appointments', {doctor_id: doctorId, starts_at: chosen, reason: $('reason').value, mode, ...(subject && {subject_id: subject}),
             ...(shared.length && {share_item_ids: shared})});
         busy($('bookButton'), false);
         if (!res.ok) {
@@ -208,6 +210,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         $('done').hidden = false;
         $('doneText').textContent = tr(`Your request for ${dayName(slot.date, 'long')} at ${timeOf(slot.starts_at)} with ${doctor.name} has been sent. You can follow it under "My appointments", where it shows as confirmed once the doctor accepts.`,
             `أُرسل طلبك لموعد ${dayName(slot.date, 'long')} الساعة ${timeOf(slot.starts_at)} لدى ${doctor.name}. يمكنك متابعته في «مواعيدي»، وسيظهر مؤكداً عند قبول الطبيب.`);
+        if (mode === 'video') $('doneText').textContent += tr(' It is a video call: open it from "My appointments" up to 15 minutes before.',
+            ' الموعد مكالمة فيديو: افتحها من «مواعيدي» قبل الموعد بـ15 دقيقة.');
         const child = profiles.find(p => p.id === subject);
         if (child) $('doneText').textContent += tr(` The appointment is for ${child.name}.`, ` الموعد لـ ${child.name}.`);
         if (shared.length) $('doneText').textContent += tr(` ${shared.length} entries of the health file are shared with the doctor until 30 days after the appointment.`,

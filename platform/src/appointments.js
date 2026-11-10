@@ -41,12 +41,13 @@ export default async function appointmentRoutes(app) {
 
     app.get('/api/doctors/:id', {config: {cache: 'public, max-age=60'}, schema: uuidParam}, async request => {
         const {rows: [doctor]} = await app.pg.query(
-            `SELECT ${PUBLIC_DOCTOR}, COALESCE(s.slot_minutes, 20) AS slot_minutes
+            `SELECT ${PUBLIC_DOCTOR}, COALESCE(s.slot_minutes, 20) AS slot_minutes, p.video_enabled
              FROM users u JOIN doctor_profiles p ON p.user_id = u.id LEFT JOIN doctor_schedules s ON s.doctor_id = u.id
              WHERE u.id = $1 AND ${APPROVED}`, [request.params.id]);
         if (!doctor) throw new HttpError(404, 'not_found', 'Doctor not found.');
         const rating = (await ratingSummaries(app.pg, [doctor.id])).get(doctor.id) || {count: 0, average: null};
-        return {doctor: {...doctor, rating}};
+        const {video_enabled: video, ...rest} = doctor;
+        return {doctor: {...rest, rating, video: Boolean(app.config.video?.enabled && video)}};
     });
 
     app.post('/api/appointments', {
@@ -54,6 +55,7 @@ export default async function appointmentRoutes(app) {
         config: {rateLimit: {max: 30, timeWindow: '15 minutes'}},
         schema: {body: {type: 'object', required: ['doctor_id', 'starts_at'], additionalProperties: false, properties: {
             doctor_id: {type: 'string', format: 'uuid'}, starts_at: {type: 'string', format: 'date-time'}, reason: {type: 'string', maxLength: 300},
+            mode: {enum: ['in_person', 'video']},
             subject_id: {type: 'string', format: 'uuid'},
             // Entries of the health file to share with the doctor until 30 days after the appointment (stage 2c).
             share_item_ids: {type: 'array', maxItems: 100, uniqueItems: true, items: {type: 'string', format: 'uuid'}}
@@ -64,8 +66,11 @@ export default async function appointmentRoutes(app) {
         if (Number.isNaN(start.getTime())) throw new HttpError(400, 'invalid_time', 'Choose a time from the list.');
 
         const {rows: [doctor]} = await app.pg.query(
-            `SELECT u.id FROM users u JOIN doctor_profiles p ON p.user_id = u.id WHERE u.id = $1 AND ${APPROVED}`, [doctorId]);
+            `SELECT u.id, p.video_enabled FROM users u JOIN doctor_profiles p ON p.user_id = u.id WHERE u.id = $1 AND ${APPROVED}`, [doctorId]);
         if (!doctor) throw new HttpError(404, 'not_found', 'Doctor not found.');
+        // Video consultations: only where the platform offers them and this doctor switched them on (src/video.js).
+        const mode = request.body.mode || 'in_person';
+        if (mode === 'video' && !(app.config.video?.enabled && doctor.video_enabled)) throw new HttpError(400, 'video_unavailable', 'This doctor does not offer video consultations.');
         // For whom: the own profile, or (with subject_id) a child's profile of this login (stage 2b).
         const subject = request.body.subject_id ? await patientFor(app.pg, request.user, request.body.subject_id) : await ensureSelfProfile(app.pg, request.user);
 
@@ -86,8 +91,8 @@ export default async function appointmentRoutes(app) {
         let appointment;
         try {
             ({rows: [appointment]} = await app.pg.query(
-                `INSERT INTO appointments (doctor_id, patient_id, starts_at, ends_at, reason, subject_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
-                [doctorId, patientId, slot.starts_at, slot.ends_at, request.body.reason?.trim() || null, subject.id]));
+                `INSERT INTO appointments (doctor_id, patient_id, starts_at, ends_at, reason, subject_id, mode) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+                [doctorId, patientId, slot.starts_at, slot.ends_at, request.body.reason?.trim() || null, subject.id, mode]));
         } catch (error) {
             // Someone else booked it a moment earlier, or the patient already has something at that time.
             if (error.code === '23P01' && error.constraint === 'no_double_booking_patient') throw new HttpError(409, 'patient_busy', 'You already have an appointment at this time.');
@@ -108,12 +113,12 @@ export default async function appointmentRoutes(app) {
             }
         }
         reply.code(201);
-        return {appointment: {id: appointment.id, status: appointment.status, starts_at: appointment.starts_at, ends_at: appointment.ends_at}};
+        return {appointment: {id: appointment.id, status: appointment.status, starts_at: appointment.starts_at, ends_at: appointment.ends_at, mode: appointment.mode}};
     });
 
     app.get('/api/appointments/mine', {preHandler: patientOnly}, async request => {
         const {rows} = await app.pg.query(
-            `SELECT a.id, a.status, a.starts_at, a.ends_at, a.reason, a.status_note, a.created_at, a.reschedule_count,
+            `SELECT a.id, a.status, a.starts_at, a.ends_at, a.reason, a.status_note, a.created_at, a.reschedule_count, a.mode,
                     u.id AS doctor_id, u.name AS doctor_name, p.specialty, p.clinic_name, p.clinic_address, p.clinic_phone, p.area, p.governorate
              FROM appointments a JOIN users u ON u.id = a.doctor_id JOIN doctor_profiles p ON p.user_id = a.doctor_id
              WHERE a.patient_id = $1 ORDER BY a.starts_at DESC LIMIT 100`, [request.user.id]);

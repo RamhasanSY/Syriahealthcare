@@ -34,7 +34,7 @@ export async function sendAppointmentReminders(app) {
              SELECT id FROM appointments WHERE status = 'confirmed' AND reminder_sent_at IS NULL
                 AND starts_at > now() + make_interval(hours => $1) AND starts_at <= now() + make_interval(hours => $2)
              ORDER BY starts_at LIMIT 200 FOR UPDATE SKIP LOCKED)
-         RETURNING id, patient_id, doctor_id, starts_at`, [soonest, latest]);
+         RETURNING id, patient_id, doctor_id, starts_at, mode`, [soonest, latest]);
     for (const a of rows) {
         try {
             const {rows: [info]} = await app.pg.query(
@@ -42,15 +42,16 @@ export async function sendAppointmentReminders(app) {
                  FROM users p, users d, doctor_profiles dp WHERE p.id = $1 AND d.id = $2 AND dp.user_id = $2 AND p.disabled_at IS NULL`,
                 [a.patient_id, a.doctor_id]);
             if (!info) continue;
-            const when = shortTime(a.starts_at), place = [info.clinic_name, info.clinic_address].filter(Boolean).join(', ');
+            const video = a.mode === 'video' ? `${app.config.appOrigin}/video?id=${a.id}` : null;
+            const when = shortTime(a.starts_at), place = video || [info.clinic_name, info.clinic_address].filter(Boolean).join(', ');
             await pushToUser(app, a.patient_id, {title: ['Appointment reminder', 'تذكير بموعدك'],
                 body: ['You have an appointment within 24 hours.', 'لديك موعد خلال 24 ساعة.'], url: '/appointments', tag: `appointment-${a.id}`});
             if (info.email) {
                 await enqueueEmail(app.pg, {to: info.email,
                     subject: info.language === 'en' ? `Reminder: appointment on ${when} — SyriaHC` : `تذكير: موعدك في ${when} — صحة تك`,
                     text: both(info.language,
-                        `Reminder: your appointment with ${info.doctor_name} is on ${when} (Syria time).\nAddress: ${place}\n\nCannot come? Please cancel or move it, so another patient can have the time: ${app.config.appOrigin}/appointments`,
-                        `تذكير: موعدك لدى ${info.doctor_name} في ${when} (بتوقيت سوريا).\nالعنوان: ${place}\n\nلا تستطيع الحضور؟ يرجى إلغاء الموعد أو نقله ليستفيد مريض آخر من الوقت: ${app.config.appOrigin}/appointments`)});
+                        `Reminder: your appointment with ${info.doctor_name} is on ${when} (Syria time).\n${video ? 'Video call' : 'Address'}: ${place}\n\nCannot come? Please cancel or move it, so another patient can have the time: ${app.config.appOrigin}/appointments`,
+                        `تذكير: موعدك لدى ${info.doctor_name} في ${when} (بتوقيت سوريا).\n${video ? 'مكالمة فيديو' : 'العنوان'}: ${place}\n\nلا تستطيع الحضور؟ يرجى إلغاء الموعد أو نقله ليستفيد مريض آخر من الوقت: ${app.config.appOrigin}/appointments`)});
             }
             if (info.phone && (app.sms.available !== false || whatsappReaches(app, info.phone))) {
                 await sendAppointmentUpdate(app, {log: app.log}, info.phone, {status: 'reminder', language: info.language,

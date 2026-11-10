@@ -18,7 +18,8 @@ export const config = {
     production: false, appOrigin: origin, otpSecret: 'test-secret-test-secret-test-secret', smsProvider: 'test', mailProvider: 'test',
     documentKey: 'ab'.repeat(32), documentDir,
     whatsapp: {provider: '', blockedPrefixes: DEFAULT_BLOCKED_PREFIXES, templates: TEMPLATES}, telegram: {provider: ''}, sessionDays: {patient: 30, doctor: 7, facility: 7, admin: 1}, trustProxy: false, healthFile: true,
-    push: {provider: 'test'}
+    push: {provider: 'test'},
+    video: {enabled: false, turnUrls: ['turn:turn.example.org:3478?transport=udp'], turnSecret: 'turn-test-secret', stunUrls: ['stun:turn.example.org:3478']}
 };
 
 let migrated = false;

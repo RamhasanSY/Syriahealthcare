@@ -34,6 +34,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         li.append(el('span', {className: 'pill ' + tone, textContent: tr(en, ar)}), el('h3', {textContent: when(a.starts_at)}),
             el('p', {className: 'appt-doctor', textContent: [a.doctor_name, spec].filter(Boolean).join(' · '), dir: 'auto'}),
             el('p', {className: 'muted-small', textContent: [a.clinic_name, a.clinic_address].filter(Boolean).join(' · '), dir: 'auto'}));
+        if (a.mode === 'video') {
+            li.append(el('p', {className: 'muted-small', textContent: tr('Video call', 'مكالمة فيديو')}));
+            if (a.status === 'confirmed' && Date.parse(a.ends_at) + 2 * 3600_000 > Date.now()) {
+                li.append(el('a', {className: 'btn', href: `/video?id=${encodeURIComponent(a.id)}`, textContent: tr('Join the video call', 'انضم إلى مكالمة الفيديو')}));
+            }
+        }
         if (a.clinic_phone) {
             const phone = el('a', {href: 'tel:' + a.clinic_phone, textContent: a.clinic_phone, dir: 'ltr'});
             const p = el('p', {className: 'muted-small'});

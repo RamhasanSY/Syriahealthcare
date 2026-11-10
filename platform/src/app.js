@@ -33,6 +33,7 @@ import pharmacyDutyRoutes from './pharmacy-duty.js';
 import labPackageRoutes from './lab-packages.js';
 import medicationRoutes from './medications.js';
 import reviewRoutes from './reviews.js';
+import videoRoutes from './video.js';
 import openapiRoutes, {collectRoutes} from './openapi.js';
 
 const UNSAFE = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
@@ -79,7 +80,9 @@ export async function buildApp({config, pool, sms, whatsapp, telegram, mail, doc
         reply.header('X-Content-Type-Options', 'nosniff');
         reply.header('X-Frame-Options', 'DENY');
         reply.header('Referrer-Policy', 'same-origin');
-        reply.header('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+        // Camera and microphone only on the video call page (src/video.js).
+        const camera = config.video?.enabled && String(request.url).split('?')[0] === '/video';
+        reply.header('Permissions-Policy', camera ? 'camera=(self), microphone=(self), geolocation=()' : 'camera=(), microphone=(), geolocation=()');
         // A route may set a stricter policy of its own (patients' files are sent in a sandbox, src/healthfile.js).
         if (!reply.getHeader('Content-Security-Policy')) {
             reply.header('Content-Security-Policy', "default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'");
@@ -138,6 +141,7 @@ export async function buildApp({config, pool, sms, whatsapp, telegram, mail, doc
     await app.register(labPackageRoutes);
     await app.register(medicationRoutes);
     await app.register(reviewRoutes);
+    await app.register(videoRoutes);
     await app.register(openapiRoutes, {routes});
     await app.register(fhirRoutes, {prefix: '/fhir/r4'});
     const publicDir = fileURLToPath(new URL('../public/', import.meta.url));

@@ -27,7 +27,7 @@ export const SUMMARIES = {
     'GET /api/doctors/{id}': 'One approved doctor.',
     'GET /api/doctors/{id}/slots': 'Free appointment times of an approved doctor.',
     'GET /api/facilities': 'Approved labs, imaging centres, hospitals and clinics.',
-    'POST /api/appointments': 'Patient: request an appointment.',
+    'POST /api/appointments': 'Patient: request an appointment (at the clinic, or as a video call where the doctor offers it).',
     'GET /api/appointments/mine': 'Patient: own appointments.',
     'POST /api/appointments/{id}/cancel': 'Patient: cancel an own appointment.',
     'POST /api/appointments/{id}/reschedule': 'Patient: move an own appointment to another free time of the same doctor (the doctor confirms again).',
@@ -173,7 +173,13 @@ export const SUMMARIES = {
     'POST /api/doctor/reviews/{id}/report': 'Doctor: report a review; it is hidden until an administrator checks it again.',
     'GET /api/admin/reviews': 'Administrator: reviews by status, reported ones first.',
     'POST /api/admin/reviews/{id}/approve': 'Administrator: publish a review.',
-    'POST /api/admin/reviews/{id}/reject': 'Administrator: reject a review (with a reason).'
+    'POST /api/admin/reviews/{id}/reject': 'Administrator: reject a review (with a reason).',
+    // Video consultations (src/video.js; only while VIDEO=on)
+    'GET /api/video/{id}': 'Patient or doctor: the video call of a confirmed video appointment, with the relay servers to use.',
+    'POST /api/video/{id}/signal': 'Patient or doctor: pass a call set-up message to the other side.',
+    'GET /api/video/{id}/signal': 'Patient or doctor: wait for set-up messages of the other side (up to 25 seconds).',
+    'GET /api/doctor/video': 'Doctor: whether video consultations are offered and switched on.',
+    'POST /api/doctor/video': 'Doctor: switch own video consultations on or off.'
 };
 
 const ROLE_TAGS = {patient: 'Patients', doctor: 'Doctors', facility: 'Facilities', admin: 'Administrators'};

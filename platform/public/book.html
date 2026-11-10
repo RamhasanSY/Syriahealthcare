@@ -52,6 +52,10 @@
             <p class="hint" data-en="The doctor can open the chosen entries until 30 days after the appointment. You can end this at any time in your health file." data-ar="يمكن للطبيب فتح الوثائق المختارة حتى 30 يوماً بعد الموعد. يمكنك إنهاء ذلك في أي وقت من ملفك الصحي.">يمكن للطبيب فتح الوثائق المختارة حتى 30 يوماً بعد الموعد. يمكنك إنهاء ذلك في أي وقت من ملفك الصحي.</p>
             <fieldset class="plain"><legend class="sr-only" data-en="Entries to share" data-ar="الوثائق المراد مشاركتها">الوثائق المراد مشاركتها</legend><div id="shareList"></div></fieldset>
           </details>
+          <fieldset class="for-whom" id="modeBox" hidden><legend data-en="How?" data-ar="كيف؟">كيف؟</legend>
+            <label class="check" for="modeClinic"><input type="radio" name="mode" id="modeClinic" value="in_person" checked><span data-en="At the clinic" data-ar="في العيادة">في العيادة</span></label>
+            <label class="check" for="modeVideo"><input type="radio" name="mode" id="modeVideo" value="video"><span data-en="Video call (camera and microphone on your phone or computer)" data-ar="مكالمة فيديو (بكاميرا وميكروفون هاتفك أو حاسوبك)">مكالمة فيديو (بكاميرا وميكروفون هاتفك أو حاسوبك)</span></label>
+          </fieldset>
           <label class="field"><span data-en="Reason for the visit (optional)" data-ar="سبب الزيارة (اختياري)">سبب الزيارة (اختياري)</span><textarea id="reason" maxlength="300" rows="3" dir="auto" aria-describedby="reasonHint"></textarea><small id="reasonHint" data-en="Only this doctor sees it. Do not include anything you would not want the clinic to know." data-ar="لا يراه إلا هذا الطبيب. لا تكتب ما لا تريد أن تعرفه العيادة.">لا يراه إلا هذا الطبيب. لا تكتب ما لا تريد أن تعرفه العيادة.</small></label>
           <button class="btn" type="submit" id="bookButton" disabled data-en="Request this appointment" data-ar="اطلب هذا الموعد">اطلب هذا الموعد</button>
           <p class="hint" data-en="The doctor confirms your request. You can cancel any time before the appointment." data-ar="يؤكد الطبيب طلبك. يمكنك الإلغاء في أي وقت قبل الموعد.">يؤكد الطبيب طلبك. يمكنك الإلغاء في أي وقت قبل الموعد.</p>

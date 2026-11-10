@@ -56,6 +56,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         $('dutiesLink').hidden = !(profile.ok && profile.data.profile.kind === 'pharmacy');
     }
     if (user.role === 'doctor') {
+        const video = await api('/api/doctor/video');
+        if (video.ok && video.data.available) {
+            $('videoCard').hidden = false;
+            $('videoOn').checked = video.data.enabled;
+            $('videoOn').addEventListener('change', async () => {
+                const res = await api('/api/doctor/video', {enabled: $('videoOn').checked});
+                $('videoSaved').textContent = res.ok ? tr('Saved.', 'تم الحفظ.') : tr('Not saved. Please try again.', 'لم يُحفظ. حاول مجدداً.');
+                if (!res.ok) $('videoOn').checked = !$('videoOn').checked;
+            });
+        }
         const profile = await api('/api/doctor/profile');
         if (profile.ok) doctorStatus = profile.data.profile.status;
         $('recordsLinks').hidden = doctorStatus !== 'approved';

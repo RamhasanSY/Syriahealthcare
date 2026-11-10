@@ -145,7 +145,10 @@ const Shc = (() => {
         // Reviews
         not_completed: 'يمكنك التقييم بعد أن يسجّل الطبيب الموعد منجزاً.',
         review_too_late: 'يمكن التقييم خلال 60 يوماً بعد الموعد.',
-        already_reviewed: 'قيّمت هذا الموعد مسبقاً.'
+        already_reviewed: 'قيّمت هذا الموعد مسبقاً.',
+        // Video consultations
+        video_unavailable: 'لا يقدّم هذا الطبيب استشارات بالفيديو.',
+        video_not_open: 'تُفتح المكالمة قبل الموعد بـ15 دقيقة.'
     };
 
     function applyLanguage() {

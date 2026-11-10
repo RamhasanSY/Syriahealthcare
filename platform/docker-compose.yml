@@ -62,6 +62,11 @@ services:
       PUSH_PUBLIC_KEY: ${PUSH_PUBLIC_KEY:-}
       PUSH_PRIVATE_KEY: ${PUSH_PRIVATE_KEY:-}
       PUSH_SUBJECT: ${PUSH_SUBJECT:-mailto:noreply@syriahc.com}
+      # Video consultations: "on" only after the legal check. TURN relay: see README, "Video consultations".
+      VIDEO: ${VIDEO:-off}
+      TURN_URLS: ${TURN_URLS:-}
+      TURN_SECRET: ${TURN_SECRET:-}
+      STUN_URLS: ${STUN_URLS:-}
     volumes:
       - documents:/data/documents
 

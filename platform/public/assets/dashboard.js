@@ -61,6 +61,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         head.append(el('strong', {className: 'appt-time', textContent: `${time(a.starts_at)} – ${time(a.ends_at)}`}));
         if (scope !== 'upcoming' || started) head.append(el('span', {className: 'muted-small', textContent: day(a.starts_at)}));
         if (scope === 'past') head.append(el('span', {className: 'pill ' + STATUS[a.status][2], textContent: tr(...STATUS[a.status])}));
+        if (a.mode === 'video') head.append(el('span', {className: 'pill ok', textContent: tr('Video', 'فيديو')}));
         li.append(head, el('p', {className: 'appt-doctor', textContent: a.patient_name, dir: 'auto'}));
         // Patients who signed in with email may have no mobile number, and the other way round.
         const contact = el('p', {className: 'muted-small'});
@@ -71,6 +72,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (a.reason) li.append(el('p', {className: 'appt-reason', textContent: tr('Reason: ', 'السبب: ') + a.reason, dir: 'auto'}));
         if (a.status_note && scope === 'past') li.append(el('p', {className: 'appt-reason', textContent: tr('Note: ', 'ملاحظة: ') + a.status_note, dir: 'auto'}));
         const buttons = el('div', {className: 'actions'});
+        if (a.mode === 'video' && a.status === 'confirmed' && Date.parse(a.ends_at) + 2 * 3600_000 > Date.now()) {
+            buttons.append(el('a', {className: 'btn', href: `/video?id=${encodeURIComponent(a.id)}`, textContent: tr('Start the video call', 'ابدأ مكالمة الفيديو')}));
+        }
         const add = (action, text, cls = 'btn') => {
             const b = el('button', {type: 'button', className: cls, textContent: text});
             b.setAttribute('aria-label', `${text}: ${a.patient_name}, ${day(a.starts_at)} ${time(a.starts_at)}`);

@@ -51,7 +51,7 @@ export default async function dashboardRoutes(app) {
         const order = scope === 'past' ? 'a.starts_at DESC' : 'a.starts_at';
         // Only this doctor's own patients, and only what is needed to see them.
         const {rows} = await app.pg.query(
-            `SELECT a.id, a.status, a.starts_at, a.ends_at, a.reason, a.status_note, a.created_at, u.name AS patient_name, u.phone AS patient_phone, u.email AS patient_email
+            `SELECT a.id, a.status, a.starts_at, a.ends_at, a.reason, a.status_note, a.created_at, a.mode, u.name AS patient_name, u.phone AS patient_phone, u.email AS patient_email
              FROM appointments a JOIN users u ON u.id = a.patient_id
              WHERE a.doctor_id = $1 AND ${where} ORDER BY ${order} LIMIT 300`, [request.user.id]);
         const {rows: [counts]} = await app.pg.query(

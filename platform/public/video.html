@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="ar" dir="rtl" data-title-en="Video consultation — SyriaHC" data-title-ar="استشارة بالفيديو — صحة تك">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#1a3a5c">
+<title>استشارة بالفيديو — صحة تك</title>
+<link rel="manifest" href="/manifest.webmanifest"><link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/assets/app.css">
+<script src="/assets/common.js" defer></script><script src="/assets/video.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#main" data-en="Skip to content" data-ar="انتقل إلى المحتوى">انتقل إلى المحتوى</a>
+<header class="top"><div class="top-inner"><a class="brand" href="/account"><img src="/assets/logo.svg" alt=""><span data-en="SyriaHC" data-ar="صحة تك">صحة تك</span></a><div class="top-actions"><button class="lang" id="langToggle" type="button">English</button></div></div></header>
+<main id="main" class="wrap wide" aria-busy="true">
+  <h1 id="heading" tabindex="-1" data-en="Video consultation" data-ar="استشارة بالفيديو">استشارة بالفيديو</h1>
+  <p class="lead" id="who" dir="auto"></p>
+  <div class="msg error" id="pageError" role="alert" tabindex="-1" hidden></div>
+  <p class="msg info" id="status" role="status" aria-live="polite"></p>
+  <div id="call" hidden>
+    <div class="video-stage">
+      <video id="remote" autoplay playsinline></video>
+      <video id="local" autoplay playsinline muted></video>
+    </div>
+    <div class="actions call-actions">
+      <button class="btn ghost" type="button" id="mic" aria-pressed="false" data-en="Mute microphone" data-ar="كتم الميكروفون">كتم الميكروفون</button>
+      <button class="btn ghost" type="button" id="cam" aria-pressed="false" data-en="Turn camera off" data-ar="إيقاف الكاميرا">إيقاف الكاميرا</button>
+      <button class="btn danger" type="button" id="hangup" data-en="End call" data-ar="إنهاء المكالمة">إنهاء المكالمة</button>
+    </div>
+    <p class="hint" data-en="Picture and sound go directly between the two devices and are not recorded. Headphones help against echo. In an emergency, do not wait: call 110 or go to the nearest hospital." data-ar="تنتقل الصورة والصوت مباشرة بين الجهازين ولا تُسجَّل. تساعد السماعات على منع الصدى. في حالة الطوارئ لا تنتظر: اتصل بالرقم 110 أو توجّه إلى أقرب مشفى.">تنتقل الصورة والصوت مباشرة بين الجهازين ولا تُسجَّل. تساعد السماعات على منع الصدى. في حالة الطوارئ لا تنتظر: اتصل بالرقم 110 أو توجّه إلى أقرب مشفى.</p>
+  </div>
+  <p id="back" hidden><a class="btn ghost" id="backLink" href="/appointments" data-en="Back to my appointments" data-ar="العودة إلى مواعيدي">العودة إلى مواعيدي</a></p>
+</main>
+<footer><div class="wrap"><a href="/account" data-en="← My account" data-ar="حسابي ←">حسابي ←</a></div></footer>
+</body>
+</html>

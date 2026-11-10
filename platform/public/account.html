@@ -19,6 +19,12 @@
     <div id="facilityNext" hidden><p><span class="pill wait" id="facilityStatus"></span></p><p id="facilityStatusText"></p><div class="actions"><a class="btn" href="/facility" data-en="My facility" data-ar="منشأتي">منشأتي</a><a class="btn ghost" href="/results" id="resultsLink" hidden data-en="Lab results" data-ar="نتائج التحاليل">نتائج التحاليل</a><a class="btn ghost" href="/lab-tests" id="pricesLink" hidden data-en="Price list" data-ar="قائمة الأسعار">قائمة الأسعار</a><a class="btn ghost" href="/lab-packages" id="packagesLink" hidden data-en="Packages" data-ar="الباقات">الباقات</a><a class="btn ghost" href="/home-visits" id="visitsLink" hidden data-en="Home visits" data-ar="الزيارات المنزلية">الزيارات المنزلية</a><a class="btn ghost" href="/connect" id="connectLink" hidden data-en="Connect your software" data-ar="ربط برنامجكم">ربط برنامجكم</a><a class="btn ghost" href="/blood-requests" id="bloodLink" hidden data-en="Blood donation calls" data-ar="نداءات التبرع بالدم">نداءات التبرع بالدم</a><a class="btn ghost" href="/duties" id="dutiesLink" hidden data-en="Duty times" data-ar="أوقات المناوبة">أوقات المناوبة</a></div></div>
     <div id="adminNext" hidden><div class="actions"><a class="btn" href="/admin" data-en="Review doctors" data-ar="مراجعة الأطباء">مراجعة الأطباء</a><a class="btn ghost" href="/admin#facilities" data-en="Review labs and hospitals" data-ar="مراجعة المخابر والمشافي">مراجعة المخابر والمشافي</a></div></div>
   </div>
+  <section class="card" id="videoCard" hidden aria-labelledby="videoTitle">
+    <h2 id="videoTitle" data-en="Video consultations" data-ar="الاستشارات بالفيديو">الاستشارات بالفيديو</h2>
+    <label class="check" for="videoOn"><input type="checkbox" id="videoOn"><span data-en="Patients can book my appointments as a video call" data-ar="يمكن للمرضى حجز مواعيدي كمكالمة فيديو">يمكن للمرضى حجز مواعيدي كمكالمة فيديو</span></label>
+    <p class="hint" data-en="Video calls use your normal opening hours. Do a test call before the first patient." data-ar="تستخدم مكالمات الفيديو أوقات دوامك المعتادة. أجرِ مكالمة تجريبية قبل أول مريض.">تستخدم مكالمات الفيديو أوقات دوامك المعتادة. أجرِ مكالمة تجريبية قبل أول مريض.</p>
+    <p id="videoSaved" role="status"></p>
+  </section>
   <section class="card" id="pushCard" hidden aria-labelledby="pushTitle">
     <h2 id="pushTitle" data-en="Notifications on this device" data-ar="الإشعارات على هذا الجهاز">الإشعارات على هذا الجهاز</h2>
     <p id="pushText" role="status"></p>
