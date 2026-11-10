@@ -125,6 +125,21 @@ export const facilityServices = {
     }
 };
 
+// What a lab package is for (src/lab-packages.js), to compare packages across labs.
+export const packageTopics = {
+    checkup: ['General check-up', 'فحص شامل'],
+    pregnancy: ['Pregnancy', 'الحمل'],
+    premarital: ['Before marriage', 'ما قبل الزواج'],
+    diabetes: ['Diabetes', 'السكري'],
+    heart: ['Heart and blood fats', 'القلب والشحوم'],
+    thyroid: ['Thyroid', 'الغدة الدرقية'],
+    children: ['Children', 'الأطفال'],
+    women: ["Women's health", 'صحة المرأة'],
+    men: ["Men's health", 'صحة الرجل'],
+    elderly: ['Older people', 'كبار السن'],
+    other: ['Other', 'أخرى']
+};
+
 // The 14 governorates of Syria.
 export const governorates = {
     damascus: ['Damascus', 'دمشق'],

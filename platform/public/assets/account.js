@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         $('connectLink').hidden = !(profile.ok && facilityStatus === 'approved');
         // Labs and imaging centres keep a price list (also before approval) and handle home sample collection.
         const isLab = profile.ok && ['lab', 'imaging'].includes(profile.data.profile.kind);
-        $('pricesLink').hidden = !isLab;
+        $('pricesLink').hidden = $('packagesLink').hidden = !isLab;
         $('visitsLink').hidden = !(isLab && facilityStatus === 'approved');
         // Blood banks and hospitals post blood donation calls.
         $('bloodLink').hidden = !(profile.ok && facilityStatus === 'approved' && ['blood_bank', 'hospital'].includes(profile.data.profile.kind));

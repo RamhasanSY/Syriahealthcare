@@ -6,7 +6,7 @@
 // One line per route, "METHOD /path" as registered. `upload`: the body is multipart/form-data with one file.
 export const SUMMARIES = {
     'GET /api/health': 'Health check: the server and its database answer.',
-    'GET /api/catalog': 'Fixed lists: specialties, governorates, facility kinds and services, with English and Arabic labels.',
+    'GET /api/catalog': 'Fixed lists: specialties, governorates, facility kinds and services, lab package topics, with English and Arabic labels.',
     'GET /api/openapi.json': 'This description.',
     // Sign-in
     'POST /api/auth/otp/request': 'Patient: ask for a sign-in code by SMS, WhatsApp or Telegram.',
@@ -151,7 +151,13 @@ export const SUMMARIES = {
     'GET /api/pharmacies/on-duty': 'Pharmacies on duty now (or on a day), and pharmacies open 24 hours, by governorate.',
     'GET /api/pharmacy/duties': 'Pharmacy: own upcoming duty times.',
     'POST /api/pharmacy/duties': 'Pharmacy: add a duty, once or weekly for up to 12 weeks.',
-    'POST /api/pharmacy/duties/{id}/delete': 'Pharmacy: delete a duty.'
+    'POST /api/pharmacy/duties/{id}/delete': 'Pharmacy: delete a duty.',
+    // Lab packages (src/lab-packages.js)
+    'GET /api/lab-packages': 'Packages of approved labs (several tests at one price), by governorate and topic, with the saving.',
+    'GET /api/facility/packages': 'Lab: own packages and the price list to build them from.',
+    'POST /api/facility/packages': 'Lab: create a package from tests of the own price list.',
+    'POST /api/facility/packages/{id}': 'Lab: change a package.',
+    'POST /api/facility/packages/{id}/delete': 'Lab: delete a package.'
 };
 
 const ROLE_TAGS = {patient: 'Patients', doctor: 'Doctors', facility: 'Facilities', admin: 'Administrators'};

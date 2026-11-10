@@ -128,7 +128,15 @@ const Shc = (() => {
         not_a_pharmacy: 'أوقات المناوبة للصيدليات فقط.',
         invalid_duty_time: 'يجب أن تنتهي المناوبة في وقت غير وقت بدايتها.',
         too_many_duties: 'يمكن إدخال 120 مناوبة قادمة كحد أقصى.',
-        duty_overlap: 'تتداخل هذه المناوبة مع مناوبة أدخلتموها مسبقاً.'
+        duty_overlap: 'تتداخل هذه المناوبة مع مناوبة أدخلتموها مسبقاً.',
+        // Lab packages (lab-packages.html)
+        invalid_package_name: 'أعطِ الباقة اسماً.',
+        invalid_topic: 'اختر موضوعاً من القائمة.',
+        invalid_price: 'أدخل سعر الباقة بالليرة السورية.',
+        too_few_tests: 'اختر تحليلين على الأقل من قائمة أسعاركم.',
+        invalid_tests: 'بعض التحاليل لم تعد في قائمة أسعاركم. يرجى إعادة تحميل الصفحة.',
+        package_exists: 'توجد باقة بهذا الاسم مسبقاً.',
+        too_many_packages: 'يمكن إنشاء 30 باقة كحد أقصى.'
     };
 
     function applyLanguage() {

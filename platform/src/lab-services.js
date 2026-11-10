@@ -8,6 +8,7 @@ import {audit} from './db.js';
 import {sendEmail} from './notify.js';
 import {normalizePhone} from './security.js';
 import {pushToUser} from './push.js';
+import {packagesOf} from './lab-packages.js';
 
 const LAB_KINDS = ['lab', 'imaging'];
 export const WINDOWS = {morning: ['Morning (8–11)', 'صباحاً (8–11)'], midday: ['Midday (11–14)', 'ظهراً (11–14)'],
@@ -138,7 +139,8 @@ export default async function labServiceRoutes(app) {
         if (!lab) throw new HttpError(404, 'not_found', 'Lab not found.');
         const {rows: tests} = await app.pg.query('SELECT * FROM lab_tests WHERE facility_id = $1 ORDER BY lower(name)', [lab.id]);
         const updated = tests.reduce((max, t) => (!max || t.updated_at > max ? t.updated_at : max), null);
-        return {lab: {...lab, home_collection: (lab.services || []).includes('home_collection')}, tests: tests.map(testView), prices_updated_at: updated, windows: WINDOWS};
+        return {lab: {...lab, home_collection: (lab.services || []).includes('home_collection')}, tests: tests.map(testView), prices_updated_at: updated, windows: WINDOWS,
+            packages: await packagesOf(app.pg, [lab.id])};
     });
 
     // ---- Home sample collection: patients ----
