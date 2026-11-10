@@ -85,7 +85,55 @@ document.addEventListener('DOMContentLoaded', async () => {
     $('details').hidden = false;
     $(user.role + 'Next').hidden = false;
     $('logout').hidden = false;
+    // Notifications on this device (src/push.js).
+    const iphone = /iPhone|iPad|iPod/.test(navigator.userAgent);
+    const PUSH_TEXT = {
+        on: ['Notifications are on for this device.', 'الإشعارات مفعّلة على هذا الجهاز.'],
+        off: ['Get a notification when an appointment is confirmed or something else is new.', 'احصل على إشعار عند تأكيد موعد أو عند وجود جديد.'],
+        denied: ['This browser blocks notifications from SyriaHC. Allow them in the browser settings for this site.', 'يمنع هذا المتصفح إشعارات صحة تك. اسمح بها من إعدادات المتصفح لهذا الموقع.'],
+        unsupported: iphone
+            ? ['On iPhone, first add SyriaHC to the Home Screen (Share, then "Add to Home Screen") and open it from there.', 'على iPhone أضف صحة تك أولاً إلى الشاشة الرئيسية (مشاركة ثم "إضافة إلى الشاشة الرئيسية") وافتحه من هناك.']
+            : ['This browser cannot show notifications.', 'لا يستطيع هذا المتصفح عرض الإشعارات.']
+    };
+    let pushNow = await Shc.pushState();
+    const renderPush = () => {
+        if (pushNow === 'unavailable') return;
+        $('pushCard').hidden = false;
+        $('pushText').textContent = tr(...PUSH_TEXT[pushNow]);
+        $('pushOn').hidden = pushNow !== 'off';
+        $('pushOff').hidden = $('pushTest').hidden = pushNow !== 'on';
+    };
+    document.addEventListener('shc:language', renderPush);
+    renderPush();
+    $('pushOn').addEventListener('click', async () => {
+        $('pushError').hidden = true;
+        Shc.busy($('pushOn'), true);
+        const res = await Shc.enablePush();
+        Shc.busy($('pushOn'), false);
+        if (!res.ok) {
+            if (res.data.error === 'push_denied') pushNow = 'denied';
+            renderPush();
+            return Shc.showError('pushError', res.data);
+        }
+        pushNow = 'on';
+        renderPush();
+        $('pushTest').focus();
+    });
+    $('pushTest').addEventListener('click', async () => {
+        $('pushError').hidden = true;
+        Shc.busy($('pushTest'), true);
+        const res = await api('/api/push/test', {});
+        Shc.busy($('pushTest'), false);
+        if (!res.ok) Shc.showError('pushError', res.data);
+    });
+    $('pushOff').addEventListener('click', async () => {
+        await Shc.disablePush();
+        pushNow = 'off';
+        renderPush();
+        $('pushOn').focus();
+    });
     $('logout').addEventListener('click', async () => {
+        await Shc.disablePush();  // this device stops getting this person's notifications
         await api('/api/auth/logout', {});
         await Shc.freshDevice();  // the next person on this phone must not see these patient numbers or cached pages
         window.location.assign('/');

@@ -6,6 +6,7 @@ import {governorates, specialties} from './catalog.js';
 import {audit} from './db.js';
 import {slotsFor} from './schedule.js';
 import {localDate} from './slots.js';
+import {pushToUser} from './push.js';
 
 const MAX_ACTIVE = 5;             // upcoming requested/confirmed appointments per patient
 const MAX_ACTIVE_PER_DOCTOR = 2;  // ...of which with the same doctor
@@ -90,6 +91,8 @@ export default async function appointmentRoutes(app) {
             throw error;
         }
         await audit(app.pg, {actorId: patientId, action: 'appointment.requested', targetId: appointment.id, details: {doctor_id: doctorId}, ip: request.ip});
+        await pushToUser(app, doctorId, {title: ['New appointment request', 'طلب موعد جديد'], body: ['Open your appointments to confirm or decline.', 'افتح المواعيد للتأكيد أو الاعتذار.'],
+            url: '/dashboard', tag: 'requests'});
         if (request.body.share_item_ids?.length) {
             try {
                 await shareForAppointment(app, request, {subjectId: subject.id, doctorId, appointment, ids: request.body.share_item_ids});
@@ -116,7 +119,7 @@ export default async function appointmentRoutes(app) {
         body: {type: 'object', additionalProperties: false, properties: {note: {type: 'string', maxLength: 300}}}}}, async request => {
         const {rows: [appointment]} = await app.pg.query(
             `UPDATE appointments SET status = 'cancelled_by_patient', status_note = $3, updated_at = now()
-             WHERE id = $1 AND patient_id = $2 AND status IN ${ACTIVE} AND starts_at > now() RETURNING id, status`,
+             WHERE id = $1 AND patient_id = $2 AND status IN ${ACTIVE} AND starts_at > now() RETURNING id, status, doctor_id, starts_at`,
             [request.params.id, request.user.id, request.body?.note?.trim() || null]);
         if (!appointment) {
             const {rows: [exists]} = await app.pg.query('SELECT 1 FROM appointments WHERE id = $1 AND patient_id = $2', [request.params.id, request.user.id]);
@@ -124,7 +127,9 @@ export default async function appointmentRoutes(app) {
             throw new HttpError(409, 'cannot_cancel', 'This appointment can no longer be cancelled.');
         }
         await audit(app.pg, {actorId: request.user.id, action: 'appointment.cancelled_by_patient', targetId: appointment.id, ip: request.ip});
+        await pushToUser(app, appointment.doctor_id, {title: ['Appointment cancelled by the patient', 'ألغى مريض موعده'], body: ['The time is free again.', 'أصبح الوقت متاحاً من جديد.'],
+            url: '/dashboard', tag: `appointment-${appointment.id}`});
         await app.pg.query('UPDATE access_grants SET revoked_at = COALESCE(revoked_at, now()) WHERE appointment_id = $1', [appointment.id]);
-        return {appointment};
+        return {appointment: {id: appointment.id, status: appointment.status}};
     });
 }

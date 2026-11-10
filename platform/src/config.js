@@ -44,6 +44,9 @@ export const config = {
     documentKey: required('DOCUMENT_KEY', '0'.repeat(64)),
     documentDir: env.DOCUMENT_DIR || fileURLToPath(new URL('../storage/documents/', import.meta.url)),
     sessionDays: {patient: 30, doctor: 7, facility: 7, admin: 1},
+    // Notifications on phones and computers (Web Push, src/push.js). Without keys the app does not offer them.
+    // Make a key pair once with: node -e "import('./src/push.js').then(m => console.log(m.generateVapidKeys()))"
+    push: {publicKey: env.PUSH_PUBLIC_KEY || '', privateKey: env.PUSH_PRIVATE_KEY || '', subject: env.PUSH_SUBJECT || 'mailto:noreply@syriahc.com'},
     // Health file for patients (stage 2b). Stays off until the new privacy policy is checked and published (decision 1).
     healthFile: env.HEALTH_FILE === 'on',
     trustProxy: env.TRUST_PROXY === 'true'

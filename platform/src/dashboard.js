@@ -4,6 +4,7 @@ import {HttpError, requireRole} from './auth.js';
 import {audit} from './db.js';
 import {sendAppointmentUpdate, whatsappReaches} from './messaging.js';
 import {appointmentEmail, sendEmail} from './notify.js';
+import {pushToUser} from './push.js';
 
 const TZ = 'Asia/Damascus';
 const uuidParam = {params: {type: 'object', properties: {id: {type: 'string', format: 'uuid'}}}};
@@ -85,6 +86,13 @@ export default async function dashboardRoutes(app) {
     }
 }
 
+// Push texts name neither the doctor nor the time: the lock screen may be seen by others (src/push.js).
+export const PUSH = {
+    confirmed: {title: ['Appointment confirmed', 'تم تأكيد موعدك'], body: ['Open SyriaHC to see the details.', 'افتح صحة تك لرؤية التفاصيل.']},
+    declined: {title: ['Appointment request declined', 'تم الاعتذار عن طلب الموعد'], body: ['You can choose another time.', 'يمكنك اختيار وقت آخر.']},
+    cancelled_by_doctor: {title: ['Appointment cancelled', 'تم إلغاء موعدك'], body: ['Open SyriaHC to see why.', 'افتح صحة تك لمعرفة السبب.']}
+};
+
 // The decision is already saved; a failed message is logged but does not undo it.
 // Patients with an email address get an email; patients with a mobile number also get WhatsApp or SMS.
 async function notifyPatient(app, request, appointment) {
@@ -93,6 +101,7 @@ async function notifyPatient(app, request, appointment) {
          WHERE p.id = $1 AND d.id = $2 AND dp.user_id = $2`, [appointment.patient_id, appointment.doctor_id]);
     if (!info || !MESSAGES[appointment.status]) return;
     const when = smsTime(appointment.starts_at), status = appointment.status;
+    await pushToUser(app, appointment.patient_id, {...PUSH[status], url: '/appointments', tag: `appointment-${appointment.id}`});
     if (info.email) {
         await sendEmail(app, info.email, appointmentEmail(info, status,
             {doctorName: info.doctor_name, when, address: info.clinic_address, note: appointment.status_note}, app.config.appOrigin));

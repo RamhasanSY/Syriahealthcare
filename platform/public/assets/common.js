@@ -106,7 +106,12 @@ const Shc = (() => {
         invalid_patient_name: 'أدخل اسم المريض الكامل.',
         invalid_title: 'أدخل اسم التحليل، مثلاً: تعداد دم كامل.',
         code_invalid: 'هذا الرمز غير صالح. تحقق منه أو اطلب رمزاً جديداً من المخبر.',
-        doctor_not_approved: 'يجب اعتماد ملفك قبل استخدام ملفات المرضى.'
+        doctor_not_approved: 'يجب اعتماد ملفك قبل استخدام ملفات المرضى.',
+        // Notifications (account.html)
+        push_unavailable: 'الإشعارات غير متاحة بعد.',
+        push_denied: 'رفض المتصفح الإشعارات. اسمح بها من إعدادات المتصفح لهذا الموقع ثم حاول مجدداً.',
+        push_failed: 'تعذر تفعيل الإشعارات على هذا الجهاز. حاول مجدداً لاحقاً.',
+        invalid_endpoint: 'لا يستطيع هذا المتصفح استقبال إشعارات صحة تك.'
     };
 
     function applyLanguage() {
@@ -300,11 +305,60 @@ const Shc = (() => {
             return fallback;
         }
     }
-    // A new sign-in on this device: nothing the previous person left (saved patient numbers, cached pages) stays.
+    // ---- Notifications on this device (Web Push, src/push.js) ----
+    const pushSupported = () => 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
+    const keyBytes = text => {
+        const raw = atob((text + '='.repeat((4 - text.length % 4) % 4)).replace(/-/g, '+').replace(/_/g, '/'));
+        return Uint8Array.from(raw, c => c.charCodeAt(0));
+    };
+    async function pushSubscription() {
+        if (!pushSupported()) return null;
+        const registration = await navigator.serviceWorker.ready;
+        return registration.pushManager.getSubscription();
+    }
+    // 'unsupported' (old browser, or iPhone outside the installed app), 'unavailable' (not offered yet), 'denied', 'off' or 'on'.
+    async function pushState() {
+        if (!pushSupported()) return 'unsupported';
+        const key = await api('/api/push/key');
+        if (!key.ok || !key.data.available) return 'unavailable';
+        if (Notification.permission === 'denied') return 'denied';
+        const subscription = await pushSubscription().catch(() => null);
+        if (!subscription) return 'off';
+        // Tell the server again: it may have forgotten this device, or someone else used it before.
+        await api('/api/push/subscribe', subscription.toJSON());
+        return 'on';
+    }
+    async function enablePush() {
+        const key = await api('/api/push/key');
+        if (!key.ok || !key.data.available) return {ok: false, data: {error: 'push_unavailable', message: 'Notifications are not available yet.'}};
+        if (await Notification.requestPermission() !== 'granted') {
+            return {ok: false, data: {error: 'push_denied', message: 'The browser blocked notifications. Allow them for this site in the browser settings, then try again.'}};
+        }
+        try {
+            const registration = await navigator.serviceWorker.ready;
+            const subscription = await registration.pushManager.subscribe({userVisibleOnly: true, applicationServerKey: keyBytes(key.data.public_key)});
+            return api('/api/push/subscribe', subscription.toJSON());
+        } catch (_) {
+            return {ok: false, data: {error: 'push_failed', message: 'Notifications could not be turned on for this device. Please try again later.'}};
+        }
+    }
+    // Turns notifications off for this device, on the server too (used when signing out).
+    async function disablePush() {
+        const subscription = await pushSubscription().catch(() => null);
+        if (!subscription) return;
+        await api('/api/push/unsubscribe', {endpoint: subscription.endpoint});
+        await subscription.unsubscribe().catch(() => {});
+    }
+    // A new sign-in on this device: nothing the previous person left (saved patient numbers, cached pages, their
+    // notifications) stays. Unsubscribing here makes the push service forget the device, so the server drops it too.
     async function freshDevice() {
         forgetProfiles();
         try {
             for (const key of await caches.keys()) if (key.startsWith('shc-app-')) await caches.delete(key);
+        } catch (_) {}
+        try {
+            const subscription = await pushSubscription();
+            await subscription?.unsubscribe();
         } catch (_) {}
     }
     // Reads the part after "#" of the address; a malformed "%" must not break the page.
@@ -312,5 +366,6 @@ const Shc = (() => {
         try { return decodeURIComponent(window.location.hash.slice(1)); } catch (_) { return ''; }
     }
     return {$, tr, api, showError, busy, saveProfiles, savedProfiles, forgetProfiles, valuesTable, valuesButton, localNext, freshDevice, hashValue,
+        pushState, enablePush, disablePush,
         get lang() { return lang; }};
 })();

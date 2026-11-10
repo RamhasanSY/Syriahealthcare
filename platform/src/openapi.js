@@ -126,7 +126,12 @@ export const SUMMARIES = {
     'POST /api/admin/facilities/{id}/changes/accept': 'Administrator: accept held profile changes.',
     'POST /api/admin/facilities/{id}/changes/reject': 'Administrator: reject held profile changes.',
     'POST /api/admin/users/{id}/disable': 'Administrator: switch off a staff account (signs it out everywhere).',
-    'POST /api/admin/users/{id}/enable': 'Administrator: switch a staff account on again.'
+    'POST /api/admin/users/{id}/enable': 'Administrator: switch a staff account on again.',
+    // Notifications on the phone or computer (src/push.js)
+    'GET /api/push/key': 'Whether notifications are offered, and the key a browser needs to receive them.',
+    'POST /api/push/subscribe': 'Receive notifications on this device.',
+    'POST /api/push/unsubscribe': 'Stop notifications on this device.',
+    'POST /api/push/test': 'Send a test notification to the own devices.'
 };
 
 const ROLE_TAGS = {patient: 'Patients', doctor: 'Doctors', facility: 'Facilities', admin: 'Administrators'};
