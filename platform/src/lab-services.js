@@ -49,9 +49,11 @@ export default async function labServiceRoutes(app) {
     const patientOnly = requireRole('patient');
 
     // The signed-in lab or imaging centre (any review status for editing; public only when approved).
-    async function ownLab(userId) {
+    async function ownLab(userId, {approved = false} = {}) {
         const {rows: [lab]} = await app.pg.query('SELECT user_id, kind, status, facility_name, services FROM facility_profiles WHERE user_id = $1', [userId]);
         if (!lab || !LAB_KINDS.includes(lab.kind)) throw new HttpError(403, 'not_a_lab', 'Only laboratories and imaging centres have a price list and home visits.');
+        // Patients' addresses and phones only for a lab that is approved now (not one that was suspended).
+        if (approved && lab.status !== 'approved') throw new HttpError(403, 'lab_not_approved', 'Your facility must be approved to handle home visits.');
         return lab;
     }
 
@@ -66,7 +68,7 @@ export default async function labServiceRoutes(app) {
         const name = body.name === undefined ? current.name : String(body.name).trim();
         if (!name || name.length < 2) throw new HttpError(400, 'invalid_test_name', 'Give the test a name.');
         const service = body.service === undefined ? current.service ?? null : body.service || null;
-        if (service && !facilityServices[lab.kind]?.[service]) throw new HttpError(400, 'invalid_service', 'Choose the kind of test from the list.');
+        if (service && !Object.hasOwn(facilityServices[lab.kind] || {}, service)) throw new HttpError(400, 'invalid_service', 'Choose the kind of test from the list.');
         const pick = key => body[key] === undefined ? current[key] ?? null : body[key];
         const notes = pick('notes');
         return {name, service, price_syp: pick('price_syp'), turnaround_hours: pick('turnaround_hours'), notes: notes ? String(notes).trim() || null : null};
@@ -120,7 +122,7 @@ export default async function labServiceRoutes(app) {
 
     // ---- Public lab page: details, price list, and whether it comes to the home ----
 
-    app.get('/api/labs/:id', {schema: idParam}, async request => {
+    app.get('/api/labs/:id', {config: {cache: 'public, max-age=60'}, schema: idParam}, async request => {
         const {rows: [lab]} = await app.pg.query(
             `SELECT u.id, p.kind, p.facility_name, p.governorate, p.area, p.address, p.phone, p.services, p.opening_hours
              FROM users u JOIN facility_profiles p ON p.user_id = u.id
@@ -187,7 +189,7 @@ export default async function labServiceRoutes(app) {
     app.get('/api/lab/home-visits', {preHandler: facilityOnly, schema: {querystring: {type: 'object', additionalProperties: false, properties: {
         scope: {enum: ['open', 'upcoming', 'past']}
     }}}}, async request => {
-        const lab = await ownLab(request.user.id);
+        const lab = await ownLab(request.user.id, {approved: true});
         const scope = request.query.scope || 'open';
         const where = {
             open: "v.status = 'requested' AND v.visit_date >= $2",
@@ -200,6 +202,7 @@ export default async function labServiceRoutes(app) {
             `SELECT count(*) FILTER (WHERE status = 'requested' AND visit_date >= $2)::int AS open,
                     count(*) FILTER (WHERE status = 'confirmed' AND visit_date >= $2)::int AS upcoming
              FROM home_visits WHERE facility_id = $1`, [lab.user_id, today()]);
+        await audit(app.pg, {actorId: request.user.id, action: 'home_visits.listed', targetId: lab.user_id, details: {scope, visits: rows.length}, ip: request.ip});
         return {scope, visits: rows.map(visitView), counts, windows: WINDOWS, offers_home_collection: (lab.services || []).includes('home_collection')};
     });
 
@@ -213,7 +216,7 @@ export default async function labServiceRoutes(app) {
         app.post(`/api/lab/home-visits/:id/${name}`, {preHandler: facilityOnly, schema: {...idParam, body: {type: 'object', additionalProperties: false, properties: {
             note: {type: 'string', maxLength: 300}, arrival_time: {type: 'string', pattern: '^([01][0-9]|2[0-3]):[0-5][0-9]$'}
         }}}}, async request => {
-            const lab = await ownLab(request.user.id);
+            const lab = await ownLab(request.user.id, {approved: true});
             const note = request.body?.note?.trim() || null;
             if (rule.note && (!note || note.length < 3)) throw new HttpError(400, 'note_required', 'Please write a short reason for the patient.');
             const {rows: [visit]} = await app.pg.query(

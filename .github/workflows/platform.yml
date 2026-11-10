@@ -47,7 +47,9 @@ jobs:
           java-version: '21'
       - name: HL7 FHIR validator
         run: |
-          curl -sSfL -o validator_cli.jar https://github.com/hapifhir/org.hl7.fhir.core/releases/latest/download/validator_cli.jar
+          # A fixed release with its checksum: a changed or replaced file upstream cannot run here unnoticed.
+          curl -sSfL -o validator_cli.jar https://github.com/hapifhir/org.hl7.fhir.core/releases/download/7.0.5/validator_cli.jar
+          echo "9dfe9f305b0f9389eceade2a4a1c9a2740d7b0e614066fdf07a78b571c76d92f  validator_cli.jar" | sha256sum -c -
           java -jar validator_cli.jar fhir-examples -version 4.0.1 -tx n/a
       - if: always()
         uses: actions/upload-artifact@v4

@@ -6,7 +6,13 @@
 	reverse_proxy app:3000
 	log {
 		output stdout
-		format json
+		# Searches (?q=<patient name or phone>) and codes never go into the log.
+		format filter {
+			wrap json
+			fields {
+				request>uri regexp \?.* "?(removed)"
+			}
+		}
 	}
 }
 
@@ -14,7 +20,10 @@
 (website) {
 	encode zstd gzip
 	header {
-		Strict-Transport-Security "max-age=31536000"
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		# Only the site itself (and Google Fonts for the typefaces); collected texts can never run as script.
+		Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'"
+		Cross-Origin-Opener-Policy "same-origin"
 		X-Content-Type-Options "nosniff"
 		X-Frame-Options "DENY"
 		Referrer-Policy "strict-origin-when-cross-origin"

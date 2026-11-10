@@ -40,18 +40,30 @@ function observationOf(o) {
     };
 }
 
-const attachmentFile = (attachment, binary) => {
+// Limits per Bundle: a lab sends one result or one document at a time, rarely a handful.
+export const BUNDLE_LIMITS = {entries: 100, items: 20};
+
+const attachmentFile = (attachment, binary, decoded) => {
     const data = attachment?.data || binary?.data;
     if (!data) return null;
-    return {buffer: Buffer.from(data, 'base64'), filename: attachment?.title || 'document'};
+    // A Binary used by several entries is decoded once (and a second use is refused in itemsOf).
+    const key = binary || attachment;
+    if (!decoded.has(key)) decoded.set(key, Buffer.from(data, 'base64'));
+    return {buffer: decoded.get(key), filename: attachment?.title || 'document'};
 };
 
 // Reads one transaction Bundle into items for src/ingest.js. Throws IngestError for anything missing.
 export function itemsOf(bundle) {
     if (bundle?.resourceType !== 'Bundle' || bundle.type !== 'transaction') throw new IngestError('not_transaction', 'Send a Bundle of type transaction.', 'Bundle.type');
-    const entries = bundle.entry || [];
-    const byUrl = new Map(entries.filter(e => e.fullUrl).map(e => [e.fullUrl, e.resource]));
-    const resolve = ref => ref?.reference ? byUrl.get(ref.reference) || entries.find(e => `${e.resource?.resourceType}/${e.resource?.id}` === ref.reference)?.resource : null;
+    const entries = Array.isArray(bundle.entry) ? bundle.entry : [];
+    if (entries.length > BUNDLE_LIMITS.entries) throw new IngestError('too_many_entries', `At most ${BUNDLE_LIMITS.entries} entries per Bundle.`, 'Bundle.entry');
+    const byUrl = new Map();
+    for (const e of entries) {
+        if (e?.fullUrl) byUrl.set(e.fullUrl, e.resource);
+        if (e?.resource?.resourceType && e.resource.id) byUrl.set(`${e.resource.resourceType}/${e.resource.id}`, e.resource);
+    }
+    const resolve = ref => typeof ref?.reference === 'string' ? byUrl.get(ref.reference) ?? null : null;
+    const decoded = new Map(), usedBinaries = new Set();
     const items = [];
     for (const [index, entry] of entries.entries()) {
         const r = entry.resource;
@@ -60,17 +72,22 @@ export function itemsOf(bundle) {
             const radiology = (r.category || []).some(c => c.coding?.some(x => x.code === 'RAD'));
             items.push({index, kind: 'DiagnosticReport', scope: 'system/DiagnosticReport.c', patient, title: textOf(r.code),
                 category: radiology ? 'imaging' : 'lab', externalId: r.identifier?.[0]?.value,
-                file: attachmentFile(r.presentedForm?.[0]), observations: (r.result || []).map(resolve).filter(o => o?.resourceType === 'Observation').map(observationOf)});
+                file: attachmentFile(r.presentedForm?.[0], null, decoded), observations: (r.result || []).map(resolve).filter(o => o?.resourceType === 'Observation').map(observationOf)});
         } else if (r?.resourceType === 'DocumentReference') {
             const patient = patientOf(resolve(r.subject));
             const attachment = r.content?.[0]?.attachment;
             const binary = attachment?.url ? resolve({reference: attachment.url}) : null;
+            if (binary) {
+                if (usedBinaries.has(binary)) throw new IngestError('binary_reused', 'Each Binary may belong to one DocumentReference only.', `Bundle.entry[${index}].resource.content`);
+                usedBinaries.add(binary);
+            }
             items.push({index, kind: 'DocumentReference', scope: 'system/DocumentReference.c', patient,
                 title: r.description || textOf(r.type) || attachment?.title, category: CATEGORY_BY_LOINC[loincOf(r.type)] || 'other',
-                externalId: r.masterIdentifier?.value || r.identifier?.[0]?.value, file: attachmentFile(attachment, binary), observations: []});
+                externalId: r.masterIdentifier?.value || r.identifier?.[0]?.value, file: attachmentFile(attachment, binary, decoded), observations: []});
         }
     }
     if (!items.length) throw new IngestError('nothing_to_store', 'The Bundle has no DiagnosticReport or DocumentReference.', 'Bundle.entry');
+    if (items.length > BUNDLE_LIMITS.items) throw new IngestError('too_many_items', `At most ${BUNDLE_LIMITS.items} results or documents per Bundle.`, 'Bundle.entry');
     const submission = entries.find(e => e.resource?.resourceType === 'List' && e.resource.code?.coding?.some(c => c.system === MHD_SUBMISSION && c.code === 'submissionset'));
     return {items, mhd: Boolean(submission)};
 }
@@ -86,16 +103,22 @@ export default function fhirWriteRoutes(app, {send, outcome}) {
         }
     });
 
-    app.post('/', {bodyLimit: MAX_BUNDLE_BYTES}, async (request, reply) => {
-        // Tokens only: a browser session (cookie) can never write here.
-        let client;
+    // Tokens only, and checked before the body is read: without a valid token nothing is parsed.
+    // A browser session (cookie) can never write here.
+    const tokenFirst = async (request, reply) => {
         try {
-            const scope = (request.body?.entry || []).some(e => e.resource?.resourceType === 'DocumentReference') ? 'system/DocumentReference.c' : 'system/DiagnosticReport.c';
-            client = await tokenClient(app.pg, request, scope);
+            request.apiClient = await tokenClient(app.pg, request);
         } catch (error) {
-            if (error.statusCode === 401) reply.header('WWW-Authenticate', 'Bearer error="invalid_token"');
-            if (error.statusCode === 403) reply.header('WWW-Authenticate', `Bearer error="insufficient_scope", scope="${error.scope}"`);
-            return send(reply, error.statusCode || 401, outcome(error.statusCode === 403 ? 'forbidden' : 'login', error.message, error.statusCode === 403 ? 'الصلاحية غير كافية.' : 'رمز الوصول غير صالح.'));
+            reply.header('WWW-Authenticate', 'Bearer error="invalid_token"');
+            return send(reply, error.statusCode || 401, outcome('login', error.message, 'رمز الوصول غير صالح.'));
+        }
+    };
+    app.post('/', {bodyLimit: MAX_BUNDLE_BYTES, onRequest: tokenFirst, config: {rateLimit: {max: 600, timeWindow: '15 minutes'}}}, async (request, reply) => {
+        const client = request.apiClient;
+        const scope = (request.body?.entry || []).some(e => e?.resource?.resourceType === 'DocumentReference') ? 'system/DocumentReference.c' : 'system/DiagnosticReport.c';
+        if (!client.scopes.includes(scope)) {
+            reply.header('WWW-Authenticate', `Bearer error="insufficient_scope", scope="${scope}"`);
+            return send(reply, 403, outcome('forbidden', `This needs the scope ${scope}.`, 'الصلاحية غير كافية.'));
         }
         let parsed;
         try {

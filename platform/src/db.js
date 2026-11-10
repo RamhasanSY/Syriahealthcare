@@ -4,8 +4,10 @@ import pg from 'pg';
 // midnight and could shift by a day when turned back into text on a computer outside UTC.
 pg.types.setTypeParser(pg.types.builtins.DATE, value => value);
 
+// No query may run longer than 15 seconds and no transaction may sit idle for more than 30: one slow or stuck request
+// cannot hold the small server's connections (migrations lift the limit for themselves, src/migrate.js).
 export function createPool(connectionString) {
-    return new pg.Pool({connectionString, max: 10});
+    return new pg.Pool({connectionString, max: 10, statement_timeout: 15000, idle_in_transaction_session_timeout: 30000});
 }
 
 // Runs fn inside a transaction and returns its result.

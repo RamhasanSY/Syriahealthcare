@@ -6,4 +6,9 @@ Requires=docker.service
 
 [Service]
 Type=oneshot
-ExecStart=/opt/syriahealthcare/platform/website/update-website.sh
+# A fixed copy outside the repository (platform/server/update-website.sh, installed by platform/server/harden.sh):
+# a commit cannot change what runs here as root.
+ExecStart=/usr/local/sbin/syriahc-update-website
+PrivateTmp=no
+ProtectHome=yes
+NoNewPrivileges=yes

@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     $('logout').hidden = false;
     $('logout').addEventListener('click', async () => {
         await api('/api/auth/logout', {});
-        Shc.forgetProfiles();  // the next person on this phone must not see these patient numbers
+        await Shc.freshDevice();  // the next person on this phone must not see these patient numbers or cached pages
         window.location.assign('/');
     });
 });

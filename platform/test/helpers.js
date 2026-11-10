@@ -75,13 +75,21 @@ export async function signInPatientByEmail(post, mail, email, name = 'Test Patie
     return cookieOf(await post('/api/auth/email/verify', {email, code, name, consent: true}));
 }
 
+// Marks a signed-in session as confirmed with the emailed code (what /api/auth/step-up/verify does), for tests.
+export async function confirmSession(cookie) {
+    await pool.query('UPDATE sessions SET second_factor_at = now() WHERE token_hash = $1', [sha256(cookie.split('=')[1])]);
+    return cookie;
+}
+
 // An approved doctor open every day 09:00–12:00 in 30-minute slots, bookable from now on.
-export async function approvedDoctor(post, email = 'dr@example.org', name = 'Dr. Approved') {
+// {confirmed: true}: the session already passed the emailed second factor (needed for lab results and shared files).
+export async function approvedDoctor(post, email = 'dr@example.org', name = 'Dr. Approved', {confirmed = false} = {}) {
     const cookie = await signIn(post, 'doctor', email, name);
     const hours = [0, 1, 2, 3, 4, 5, 6].map(weekday => ({weekday, starts_at: '09:00', ends_at: '12:00'}));
     await post('/api/doctor/schedule', {slot_minutes: 30, booking_window_days: 30, min_notice_hours: 0, hours}, {cookie});
     const {rows: [{id}]} = await pool.query('SELECT id FROM users WHERE email = $1', [email]);
     await pool.query(`UPDATE doctor_profiles SET status = 'approved', specialty = 'cardiology', governorate = 'damascus', area = 'Mezzeh',
         clinic_name = 'Heart Clinic', clinic_address = 'Mezzeh Highway 12', clinic_phone = '+963112345678', licence_number = 'SY-1' WHERE user_id = $1`, [id]);
+    if (confirmed) await confirmSession(cookie);
     return {cookie, id};
 }

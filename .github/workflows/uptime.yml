@@ -1,0 +1,65 @@
+name: Uptime
+
+# Every 15 minutes, from outside the server: do the three sites answer, fast enough, and are the HTTPS certificates
+# valid for at least 14 more days? If not, an issue labelled "outage" is opened (GitHub emails the repository owner);
+# when everything is fine again, the issue is closed with a note. Nothing is sent to the sites but plain GET requests.
+on:
+  schedule:
+    - cron: '7,22,37,52 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: uptime
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check the sites
+        id: check
+        run: |
+          problems=""
+          for url in https://app.syriahc.com/api/health https://app.syriahc.com/fhir/r4/metadata https://syriahc.com/ https://syriahealthcare.com/; do
+            result=$(curl -sS -o /dev/null -w '%{http_code} %{time_total}' --max-time 20 --retry 2 --retry-delay 15 --retry-all-errors "$url" 2>/dev/null || echo "000 20")
+            code=${result% *}; seconds=${result#* }
+            echo "$url -> $code in ${seconds}s"
+            if [ "$code" != "200" ]; then problems="$problems\n- $url answered $code"
+            elif awk "BEGIN{exit !($seconds > 8)}"; then problems="$problems\n- $url took ${seconds}s"; fi
+          done
+          for host in app.syriahc.com syriahc.com syriahealthcare.com; do
+            end=$(echo | openssl s_client -connect "$host:443" -servername "$host" 2>/dev/null | openssl x509 -noout -enddate 2>/dev/null | cut -d= -f2)
+            if [ -z "$end" ]; then problems="$problems\n- $host: no certificate read"; continue; fi
+            days=$(( ($(date -d "$end" +%s) - $(date +%s)) / 86400 ))
+            echo "$host certificate valid for $days more days"
+            [ "$days" -ge 14 ] || problems="$problems\n- $host certificate expires in $days days"
+          done
+          {
+            echo "problems<<EOF"
+            printf "%b\n" "$problems" | sed '/^$/d'
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Open or close the outage issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          PROBLEMS: ${{ steps.check.outputs.problems }}
+        run: |
+          open=$(gh issue list --label outage --state open --json number --jq '.[0].number')
+          now=$(date -u '+%Y-%m-%d %H:%M UTC')
+          if [ -n "$PROBLEMS" ]; then
+            if [ -z "$open" ]; then
+              gh label create outage --color B60205 --description "Opened by the uptime check" 2>/dev/null || true
+              printf 'The uptime check found problems at %s:\n\n%s\n\nThis issue closes itself when everything is fine again.\n' "$now" "$PROBLEMS" > body.md
+              gh issue create --title "Uptime: a site is down or slow ($now)" --label outage --body-file body.md
+            fi
+            # While the issue is open, nothing more is written, so a long outage sends one email, not one every 15 minutes.
+          elif [ -n "$open" ]; then
+            gh issue close "$open" --comment "Everything answers normally again ($now)."
+          fi

@@ -21,20 +21,21 @@ const uuidParam = {params: {type: 'object', properties: {id: {type: 'string', fo
 export default async function appointmentRoutes(app) {
     const patientOnly = requireRole('patient');
 
-    app.get('/api/doctors', {schema: {querystring: {type: 'object', properties: {
+    // Public directory lists may be kept for a minute (src/app.js reads config.cache).
+    app.get('/api/doctors', {config: {cache: 'public, max-age=60'}, schema: {querystring: {type: 'object', properties: {
         specialty: {type: 'string', maxLength: 40}, governorate: {type: 'string', maxLength: 40}, q: {type: 'string', maxLength: 80}
     }}}}, async request => {
         const {specialty, governorate, q} = request.query;
         const where = [APPROVED], args = [];
-        if (specialty && specialties[specialty]) where.push(`p.specialty = $${args.push(specialty)}`);
-        if (governorate && governorates[governorate]) where.push(`p.governorate = $${args.push(governorate)}`);
+        if (specialty && Object.hasOwn(specialties, specialty)) where.push(`p.specialty = $${args.push(specialty)}`);
+        if (governorate && Object.hasOwn(governorates, governorate)) where.push(`p.governorate = $${args.push(governorate)}`);
         if (q?.trim()) where.push(`(u.name ILIKE $${args.push('%' + q.trim().replace(/[%_\\]/g, '\\$&') + '%')} OR p.clinic_name ILIKE $${args.length} OR p.area ILIKE $${args.length})`);
         const {rows} = await app.pg.query(
             `SELECT ${PUBLIC_DOCTOR} FROM users u JOIN doctor_profiles p ON p.user_id = u.id WHERE ${where.join(' AND ')} ORDER BY u.name LIMIT 200`, args);
         return {doctors: rows};
     });
 
-    app.get('/api/doctors/:id', {schema: uuidParam}, async request => {
+    app.get('/api/doctors/:id', {config: {cache: 'public, max-age=60'}, schema: uuidParam}, async request => {
         const {rows: [doctor]} = await app.pg.query(
             `SELECT ${PUBLIC_DOCTOR}, COALESCE(s.slot_minutes, 20) AS slot_minutes
              FROM users u JOIN doctor_profiles p ON p.user_id = u.id LEFT JOIN doctor_schedules s ON s.doctor_id = u.id
@@ -123,6 +124,7 @@ export default async function appointmentRoutes(app) {
             throw new HttpError(409, 'cannot_cancel', 'This appointment can no longer be cancelled.');
         }
         await audit(app.pg, {actorId: request.user.id, action: 'appointment.cancelled_by_patient', targetId: appointment.id, ip: request.ip});
+        await app.pg.query('UPDATE access_grants SET revoked_at = COALESCE(revoked_at, now()) WHERE appointment_id = $1', [appointment.id]);
         return {appointment};
     });
 }

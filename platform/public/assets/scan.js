@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const {$, tr, api, showError, busy} = Shc;
     const KEY = 'shc-scan-code';
     const date = iso => new Date(iso).toLocaleDateString(Shc.lang === 'ar' ? 'ar' : 'en-GB', {day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Asia/Damascus'});
-    let code = decodeURIComponent(window.location.hash.slice(1)), found = null;
+    let code = Shc.hashValue(), found = null;
     if (code) history.replaceState(null, '', window.location.pathname);  // keep the code out of the address bar and history
     try {
         code = code || sessionStorage.getItem(KEY) || '';
@@ -46,6 +46,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         const res = await api('/api/doctor/results/lookup', {code: value});
         busy($('lookupButton'), false);
         if (res.status === 401) return toSignIn(value);
+        if (res.data?.error === 'second_factor_required') {
+            // Keep the scanned code for after the emailed confirmation code.
+            try { sessionStorage.setItem(KEY, value); } catch (_) {}
+            return window.location.assign('/confirm?next=/scan');
+        }
         if (!res.ok) return showError('scanError', res.data);
         found = {...res.data.result, code: value};
         render();
@@ -72,7 +77,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.addEventListener('shc:language', render);
     // A second QR link opened while this page is already open changes only the part after "#".
     window.addEventListener('hashchange', () => {
-        const next = decodeURIComponent(window.location.hash.slice(1));
+        const next = Shc.hashValue();
         if (!next) return;
         history.replaceState(null, '', window.location.pathname);
         $('code').value = next;

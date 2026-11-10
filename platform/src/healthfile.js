@@ -46,7 +46,8 @@ async function hasConsent(db, patientId) {
 export default async function healthFileRoutes(app) {
     // Off: the routes do not exist for anyone.
     app.addHook('onRequest', async request => {
-        if (!app.config.healthFile && request.url.startsWith('/api/file')) throw notFound();
+        // The matched route, not the raw address: "/api/%66ile" is routed to /api/file too.
+        if (!app.config.healthFile && String(request.routeOptions?.url || request.url).startsWith('/api/file')) throw notFound();
     });
     await app.register(multipart, {limits: {fileSize: MAX_DOCUMENT_BYTES, files: LIMITS.pagesPerUpload, fields: 5, fieldSize: 200}});
     const patientOnly = requireRole('patient');
@@ -280,18 +281,22 @@ export default async function healthFileRoutes(app) {
         const p = await patientFor(app.pg, request.user, request.params.id);
         if (!await hasConsent(app.pg, p.id)) throw new HttpError(403, 'file_consent_required', 'Please agree to keeping a health file first.');
         const result = await claimableResult(request.body.code);
+        // Every try is counted before the answer is compared, in one statement: parallel guesses cannot pass the limit.
+        const {rows: [counted]} = await app.pg.query(
+            'UPDATE lab_results SET claim_attempts = claim_attempts + 1 WHERE id = $1 AND claim_attempts < $2 RETURNING claim_attempts', [result.id, LIMITS.claimAttempts]);
+        if (!counted) throw new HttpError(423, 'claim_locked', 'Too many wrong tries. Ask the lab for a new slip.');
+        if (!checkMatches(result, request.body.check)) {
+            await withAudit(request, 'result.claim_failed', result.id, p.id, {attempts: counted.claim_attempts});
+            throw new HttpError(400, 'wrong_check', counted.claim_attempts >= LIMITS.claimAttempts ? 'Too many wrong tries. Ask the lab for a new slip.'
+                : 'The birth year or the last 3 digits do not match what the lab entered.');
+        }
+        // A right answer does not use up a try.
+        await app.pg.query('UPDATE lab_results SET claim_attempts = claim_attempts - 1 WHERE id = $1', [result.id]);
+        // Only someone who knows the second detail learns that the result is already in another file.
         const {rows: [taken]} = await app.pg.query('SELECT patient_id FROM clinical_documents WHERE lab_result_id = $1', [result.id]);
         if (taken) {
             if (taken.patient_id === p.id) return {item: itemView({...(await app.pg.query('SELECT * FROM health_file_items WHERE lab_result_id = $1', [result.id])).rows[0]})};
             throw new HttpError(409, 'already_claimed', 'This result is already in another health file. If it is yours, you can report it.');
-        }
-        if (result.claim_attempts >= LIMITS.claimAttempts) throw new HttpError(423, 'claim_locked', 'Too many wrong tries. Ask the lab for a new slip.');
-        if (!checkMatches(result, request.body.check)) {
-            const {rows: [{claim_attempts: attempts}]} = await app.pg.query(
-                'UPDATE lab_results SET claim_attempts = claim_attempts + 1 WHERE id = $1 RETURNING claim_attempts', [result.id]);
-            await withAudit(request, 'result.claim_failed', result.id, p.id, {attempts});
-            throw new HttpError(400, 'wrong_check', attempts >= LIMITS.claimAttempts ? 'Too many wrong tries. Ask the lab for a new slip.'
-                : 'The birth year or the last 3 digits do not match what the lab entered.');
         }
         const doc = await transaction(app.pg, async db => {
             const {rows: [d]} = await db.query(
@@ -329,9 +334,5 @@ export default async function healthFileRoutes(app) {
 // Files from patients are shown in a sandbox: no scripts, no forms, no access to the platform's pages or cookies.
 // Browsers do not display PDFs inside a sandbox, so PDFs are downloaded and open in the phone's own PDF app.
 export function sendFileSandboxed(reply, file, content) {
-    reply.header('Content-Security-Policy', "sandbox; default-src 'none'; img-src 'self' data:; style-src 'unsafe-inline'");
-    reply.header('Cross-Origin-Resource-Policy', 'same-origin');
-    const result = sendDocument(reply, file, content);
-    if (file.mime === 'application/pdf') reply.header('Content-Disposition', String(reply.getHeader('Content-Disposition')).replace(/^inline/, 'attachment'));
-    return result;
+    return sendDocument(reply, file, content);  // sandbox, PDFs as download: see src/doctors.js
 }

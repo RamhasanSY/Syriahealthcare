@@ -83,7 +83,8 @@ const doctorLabel = d => ({id: d.doctor_id ?? d.id, name: d.doctor_name ?? d.nam
 
 export default async function sharingRoutes(app) {
     app.addHook('onRequest', async request => {
-        if (!app.config.healthFile && /^\/api\/(file|doctor\/(patients|shared|share-codes))/.test(request.url)) throw notFound();
+        // The matched route, not the raw address (percent-encoded paths are routed to the same handlers).
+        if (!app.config.healthFile && /^\/api\/(file|doctor\/(patients|shared|share-codes))/.test(request.routeOptions?.url || request.url)) throw notFound();
     });
     const patientOnly = requireRole('patient');
     const doctorOnly = requireRole('doctor');
@@ -237,11 +238,11 @@ export default async function sharingRoutes(app) {
                        NULL::text AS patient_number, 'appointment' AS source, a.starts_at AS at
                 FROM appointments a JOIN users u ON u.id = a.patient_id LEFT JOIN patients s ON s.id = a.subject_id
                 WHERE a.doctor_id = $1
-                UNION ALL
+                ${secondFactor ? `UNION ALL
                 SELECT COALESCE(d.patient_id::text, 'phone:' || r.patient_phone), r.patient_name, r.patient_phone, NULL, 'scan', f.added_at
                 FROM patient_file_results f JOIN lab_results r ON r.id = f.result_id LEFT JOIN clinical_documents d ON d.lab_result_id = r.id
                 WHERE f.doctor_id = $1 AND f.revoked_at IS NULL
-                ${secondFactor ? `UNION ALL
+                UNION ALL
                 SELECT p.id::text, p.name, NULL, p.patient_number, 'share', g.created_at
                 FROM access_grants g JOIN patients p ON p.id = g.patient_id
                 WHERE g.doctor_id = $1 AND g.revoked_at IS NULL AND g.expires_at > now()` : ''}

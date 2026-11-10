@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="ar" dir="rtl" data-title-en="Confirm it's you — SyriaHC" data-title-ar="تأكيد الهوية — صحة تك">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#1a3a5c">
+<title>تأكيد الهوية — صحة تك</title>
+<link rel="manifest" href="/manifest.webmanifest"><link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/assets/app.css">
+<script src="/assets/common.js" defer></script><script src="/assets/confirm.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#main" data-en="Skip to content" data-ar="انتقل إلى المحتوى">انتقل إلى المحتوى</a>
+<header class="top"><div class="top-inner"><a class="brand" href="/account"><img src="/assets/logo.svg" alt=""><span data-en="SyriaHC" data-ar="صحة تك">صحة تك</span></a><div class="top-actions"><button class="lang" id="langToggle" type="button">English</button></div></div></header>
+<main id="main" class="wrap">
+  <h1 id="heading" tabindex="-1" data-en="Confirm it's you" data-ar="أكّد هويتك">أكّد هويتك</h1>
+  <p class="lead" data-en="Lab results and patients' health files need a second check: we send a code to your email address." data-ar="تحتاج نتائج التحاليل والملفات الصحية للمرضى إلى تحقق إضافي: نرسل رمزاً إلى بريدك الإلكتروني.">تحتاج نتائج التحاليل والملفات الصحية للمرضى إلى تحقق إضافي: نرسل رمزاً إلى بريدك الإلكتروني.</p>
+  <section class="card">
+    <div class="msg error" id="error" role="alert" tabindex="-1" hidden></div>
+    <button class="btn" type="button" id="send" data-en="Send me a code" data-ar="أرسل لي رمزاً">أرسل لي رمزاً</button>
+    <form id="codeForm" hidden novalidate>
+      <p class="hint" id="sent" role="status"></p>
+      <label class="field"><span data-en="Code from the email" data-ar="الرمز من البريد">الرمز من البريد</span><input type="text" id="code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" dir="ltr"></label>
+      <label class="check" for="remember"><input type="checkbox" id="remember"><span data-en="Remember this device for 30 days (only on your own phone or computer)" data-ar="تذكّر هذا الجهاز لمدة 30 يوماً (فقط على هاتفك أو حاسوبك الشخصي)">تذكّر هذا الجهاز لمدة 30 يوماً (فقط على هاتفك أو حاسوبك الشخصي)</span></label>
+      <div class="actions"><button class="btn" type="submit" id="confirm" data-en="Confirm" data-ar="تأكيد">تأكيد</button></div>
+    </form>
+  </section>
+</main>
+<footer><div class="wrap"><a href="/account" data-en="← My account" data-ar="حسابي ←">حسابي ←</a></div></footer>
+</body>
+</html>

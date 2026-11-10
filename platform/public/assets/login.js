@@ -151,9 +151,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         const res = await api(sent.method === 'email' ? '/api/auth/email/verify' : '/api/auth/otp/verify', body);
         busy($('verify'), false);
         if (res.ok) {
-            // Return to the page that sent the patient here (same site only).
-            const next = new URLSearchParams(window.location.search).get('next') || '';
-            return window.location.assign(/^\/(?![\/\\])/.test(next) ? next : '/account');
+            // Return to the page that sent the patient here (same site only), after clearing what a previous person left.
+            await Shc.freshDevice();
+            return window.location.assign(Shc.localNext());
         }
         if (res.data.error === 'profile_required') {
             const firstTime = !newPatient;

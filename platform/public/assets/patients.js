@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 
     // What the address asks for: a patient to open, or a QR code to redeem. Kept out of the address bar afterwards.
-    const hash = decodeURIComponent(window.location.hash.slice(1));
+    const hash = Shc.hashValue();
     let redeem = hash.startsWith('redeem=') ? hash.slice(7) : null, open = UUID.test(hash) ? hash : null;
     if (hash) history.replaceState(null, '', window.location.pathname);
 
@@ -149,23 +149,39 @@ document.addEventListener('DOMContentLoaded', async () => {
         await afterConfirm();
     });
 
-    async function afterConfirm() {
+    // A code or patient from a link is never used by itself: the doctor sees what it is and opens it with a click.
+    // (Otherwise anyone could send a doctor a link that silently adds them as a patient and tells them when it was opened.)
+    function askPending() {
+        $('pendingBox').hidden = !(redeem || open) || !secondFactor;
+        if ($('pendingBox').hidden) return;
+        $('pendingText').textContent = redeem
+            ? tr('A patient is showing you entries of their health file with a code. Open them now?', 'يعرض عليك مريض وثائق من ملفه الصحي برمز. هل تريد فتحها الآن؟')
+            : tr('Open the entries this patient shares with you?', 'هل تريد فتح الوثائق التي يشاركها هذا المريض معك؟');
+        $('pendingHeading').focus();
+    }
+    async function openPending() {
+        $('pendingBox').hidden = true;
         if (redeem) {
             const code = redeem;
             redeem = null;
             const res = await api('/api/doctor/share-codes/redeem', {code});
-            if (!res.ok) showError('pageError', res.data);
-            else open = res.data.patient_id;
+            if (!res.ok) return showError('pageError', res.data);
+            open = res.data.patient_id;
+            await load();
         }
-        await load();
         if (open) {
             const id = open;
             open = null;
             await openPatient(id);
-        } else {
-            $('searchHeading').focus();
         }
     }
+    async function afterConfirm() {
+        await load();
+        if (redeem || open) askPending();
+        else $('searchHeading').focus();
+    }
+    $('pendingYes').addEventListener('click', openPending);
+    $('pendingNo').addEventListener('click', () => { redeem = open = null; $('pendingBox').hidden = true; $('searchHeading').focus(); });
 
     let debounce = null;
     $('search').addEventListener('input', () => { clearTimeout(debounce); debounce = setTimeout(load, 300); });
@@ -174,6 +190,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.addEventListener('shc:language', render);
 
     await load();
-    if (secondFactor && (redeem || open)) await afterConfirm();
+    if (secondFactor && (redeem || open)) askPending();
     else if (!secondFactor && (redeem || open)) $('confirmHeading').focus();
 });

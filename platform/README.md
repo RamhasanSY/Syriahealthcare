@@ -194,9 +194,9 @@ Open http://127.0.0.1:3000. The demo data has three approved doctors, an approve
 3. Clone the repository to `/opt/syriahealthcare`, then in `platform/` run `cp .env.example .env` and fill in `.env` (see the comments in the file).
 4. Publish the website once and let it update itself every 10 minutes:
    ```sh
-   /opt/syriahealthcare/platform/website/update-website.sh --force
-   cp /opt/syriahealthcare/platform/website/update-website.{service,timer} /etc/systemd/system/
-   systemctl daemon-reload && systemctl enable --now update-website.timer
+   sh /opt/syriahealthcare/platform/server/harden.sh
+   # installs platform/server/update-website.sh as /usr/local/sbin/syriahc-update-website with its timer, publishes the
+   # website once, and hardens SSH, fail2ban, the firewall (UDP 443 for HTTP/3) and the backup folder
    ```
 5. Run `docker compose up -d --build`. Caddy gets the HTTPS certificates automatically.
 6. Create the first admin: `docker compose exec app node src/create-admin.js admin@company.com "Name"`.

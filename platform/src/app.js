@@ -2,6 +2,9 @@ import Fastify from 'fastify';
 import cookie from '@fastify/cookie';
 import rateLimit from '@fastify/rate-limit';
 import fastifyStatic from '@fastify/static';
+import pageRoutes, {assetCacheControl} from './pages.js';
+import {rateLimitKey} from './security.js';
+import {createMetrics} from './metrics.js';
 import {fileURLToPath} from 'node:url';
 import authRoutes, {HttpError, loadSession} from './auth.js';
 import {createSms} from './sms.js';
@@ -22,6 +25,7 @@ import sharingRoutes from './sharing.js';
 import oauthRoutes from './oauth.js';
 import hl7v2Routes from './hl7v2.js';
 import labServiceRoutes from './lab-services.js';
+import statusRoutes from './status.js';
 import openapiRoutes, {collectRoutes} from './openapi.js';
 
 const UNSAFE = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
@@ -30,7 +34,9 @@ const UNSAFE = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
 const TOKEN_ONLY = /^\/(oauth\/token|fhir\/r4\/?|hl7v2)(\?|$)/;
 
 export async function buildApp({config, pool, sms, whatsapp, telegram, mail, documents, logger = true}) {
-    const app = Fastify({logger, trustProxy: config.trustProxy, bodyLimit: 64 * 1024});
+    // Request logs show the path only: searches like ?q=<patient name or phone> never end up in a log file.
+    const quietLogger = logger === true ? {serializers: {req: request => ({method: request.method, url: String(request.url).split('?')[0], remoteAddress: request.ip})}} : logger;
+    const app = Fastify({logger: quietLogger, trustProxy: config.trustProxy, bodyLimit: 64 * 1024});
     app.decorate('config', config);
     app.decorate('pg', pool);
     app.decorate('sms', sms || createSms(config, app.log));
@@ -39,9 +45,12 @@ export async function buildApp({config, pool, sms, whatsapp, telegram, mail, doc
     app.decorate('mail', mail || createMail(config, app.log));
     app.decorate('documents', documents || createDocumentStore({dir: config.documentDir, keyHex: config.documentKey}));
     app.decorateRequest('user', null);
+    app.decorateRequest('startedAt', 0n);
+    app.decorate('metrics', createMetrics());
 
     await app.register(cookie);
-    await app.register(rateLimit, {global: false});
+    // Limits count an IPv6 /64 network as one client (src/security.js rateLimitKey), for every limited route.
+    await app.register(rateLimit, {global: false, keyGenerator: request => rateLimitKey(request.ip)});
 
     // Forms and scripts on other websites must not be able to act for a signed-in user.
     app.addHook('onRequest', async (request, reply) => {
@@ -52,6 +61,11 @@ export async function buildApp({config, pool, sms, whatsapp, telegram, mail, doc
         }
     });
     app.addHook('preHandler', loadSession);
+    app.addHook('onRequest', async request => { request.startedAt = process.hrtime.bigint(); });
+    // Response times per route for the administrators' status page (src/metrics.js).
+    app.addHook('onResponse', async (request, reply) => {
+        app.metrics.record(request.method, request.routeOptions?.url || 'unmatched', reply.statusCode, Number(process.hrtime.bigint() - request.startedAt) / 1e6);
+    });
 
     app.addHook('onSend', async (request, reply, payload) => {
         reply.header('X-Content-Type-Options', 'nosniff');
@@ -63,7 +77,15 @@ export async function buildApp({config, pool, sms, whatsapp, telegram, mail, doc
             reply.header('Content-Security-Policy', "default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'");
         }
         if (config.production) reply.header('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
-        if (request.url.startsWith('/api/')) reply.header('Cache-Control', 'no-store');
+        // Personal answers are never stored; a few public lists say themselves how long they may be kept (config.cache).
+        // Decided on the matched route ("/%61pi/me" is /api/me too); anything unmatched under /api stays unstored as well.
+        const route = request.routeOptions?.url || '';
+        if (route.startsWith('/api/') || request.url.startsWith('/api/')) reply.header('Cache-Control', request.routeOptions?.config?.cache || 'no-store');
+        if (route.startsWith('/assets/') || (route === '/*' && request.url.startsWith('/assets/'))) {
+            if (reply.statusCode === 200) reply.header('Cache-Control', assetCacheControl(request.url));
+        }
+        // How long the server worked on this answer, for the browser's network panel (no personal data).
+        if (request.startedAt) reply.header('Server-Timing', `app;dur=${(Number(process.hrtime.bigint() - request.startedAt) / 1e6).toFixed(1)}`);
         return payload;
     });
 
@@ -100,8 +122,12 @@ export async function buildApp({config, pool, sms, whatsapp, telegram, mail, doc
     await app.register(oauthRoutes);
     await app.register(hl7v2Routes);
     await app.register(labServiceRoutes);
+    await app.register(statusRoutes);
     await app.register(openapiRoutes, {routes});
     await app.register(fhirRoutes, {prefix: '/fhir/r4'});
-    await app.register(fastifyStatic, {root: fileURLToPath(new URL('../public/', import.meta.url)), extensions: ['html']});
+    const publicDir = fileURLToPath(new URL('../public/', import.meta.url));
+    await app.register(fastifyStatic, {root: publicDir, index: false});
+    // Pages from memory with versioned asset links (src/pages.js).
+    await app.register(pageRoutes, {publicDir});
     return app;
 }

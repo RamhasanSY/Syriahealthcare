@@ -5,7 +5,7 @@
 <title>المراجعة — صحة تك</title>
 <link rel="manifest" href="/manifest.webmanifest"><link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/assets/app.css">
-<script src="/assets/common.js" defer></script><script src="/assets/admin.js" defer></script><script src="/assets/connections.js" defer></script>
+<script src="/assets/common.js" defer></script><script src="/assets/admin.js" defer></script><script src="/assets/connections.js" defer></script><script src="/assets/status.js" defer></script>
 </head>
 <body>
 <a class="skip" href="#main" data-en="Skip to content" data-ar="انتقل إلى المحتوى">انتقل إلى المحتوى</a>
@@ -79,6 +79,17 @@
     </form>
     <ul class="appt-list" id="connList"></ul>
   </section>
+  <details class="card wide-card" id="statusBox">
+    <summary><h2 class="inline-h" data-en="System status" data-ar="حالة النظام">حالة النظام</h2></summary>
+    <div class="msg error" id="statusError" role="alert" tabindex="-1" hidden></div>
+    <div id="statusBody" hidden>
+      <p id="statusSummary" role="status"></p>
+      <div id="statusFacts"></div>
+      <div id="statusRoutes"></div>
+      <div id="statusTables"></div>
+      <p class="hint" id="statusTime"></p>
+    </div>
+  </details>
 </main>
 <footer><div class="wrap"><a href="/account" data-en="← My account" data-ar="حسابي ←">حسابي ←</a></div></footer>
 </body>

@@ -5,13 +5,22 @@
 import {randomBytes} from 'node:crypto';
 import {HttpError, requireRole} from './auth.js';
 import {audit} from './db.js';
-import {dummyPasswordHash, hashPassword, sha256, verifyPassword} from './security.js';
+import {createHmac, timingSafeEqual} from 'node:crypto';
+import {sha256} from './security.js';
 
 export const SCOPES = {
     'system/DiagnosticReport.c': ['Send lab and imaging results', 'إرسال نتائج التحاليل والأشعة'],
     'system/DocumentReference.c': ['Send documents such as discharge letters', 'إرسال مستندات مثل تقارير الخروج']
 };
 export const TOKEN_MINUTES = 15;
+
+// Client secrets are 256-bit random values, so a keyed SHA-256 (HMAC with the server secret) protects them fully,
+// without the memory-hungry password hash that unauthenticated callers could otherwise trigger.
+const secretHash = (key, secret) => 'hmac$' + createHmac('sha256', key).update(String(secret)).digest('hex');
+const sameSecret = (key, secret, stored) => {
+    const a = Buffer.from(secretHash(key, secret)), b = Buffer.from(String(stored || ''));
+    return a.length === b.length && timingSafeEqual(a, b);
+};
 
 const newClientId = () => 'shc_' + Array.from(randomBytes(20), b => 'abcdefghijklmnopqrstuvwxyz0123456789'[b % 36]).join('');
 const newSecret = () => randomBytes(32).toString('base64url');
@@ -38,7 +47,12 @@ function basicAuth(header) {
     const m = /^Basic\s+([A-Za-z0-9+/=]+)$/.exec(String(header || ''));
     if (!m) return null;
     const text = Buffer.from(m[1], 'base64').toString('utf8'), i = text.indexOf(':');
-    return i < 0 ? null : {id: decodeURIComponent(text.slice(0, i)), secret: decodeURIComponent(text.slice(i + 1))};
+    if (i < 0) return null;
+    try {
+        return {id: decodeURIComponent(text.slice(0, i)), secret: decodeURIComponent(text.slice(i + 1))};
+    } catch (_) {
+        return null;  // a malformed %-escape: treated as wrong credentials
+    }
 }
 
 const oauthError = (reply, status, error, description) => reply.code(status).header('Cache-Control', 'no-store').send({error, error_description: description});
@@ -57,7 +71,7 @@ export default async function oauthRoutes(app) {
         const {rows: [client]} = await app.pg.query(
             `SELECT c.* FROM api_clients c JOIN users u ON u.id = c.facility_id JOIN facility_profiles p ON p.user_id = c.facility_id
              WHERE c.client_id = $1 AND ${ACTIVE_CLIENT}`, [String(credentials.id).slice(0, 40)]);
-        const valid = await verifyPassword(String(credentials.secret).slice(0, 200), client?.secret_hash || dummyPasswordHash);
+        const valid = sameSecret(app.config.otpSecret, String(credentials.secret).slice(0, 200), client?.secret_hash);
         if (!client || !valid) return oauthError(reply, 401, 'invalid_client', 'Client authentication failed.');
         const asked = body.scope ? String(body.scope).split(/\s+/).filter(Boolean) : client.scopes;
         if (asked.some(s => !client.scopes.includes(s))) return oauthError(reply, 400, 'invalid_scope', 'A requested scope is not allowed for this client.');
@@ -95,7 +109,7 @@ export default async function oauthRoutes(app) {
         const secret = newSecret();
         const {rows: [client]} = await app.pg.query(
             `INSERT INTO api_clients (facility_id, name, client_id, secret_hash, scopes, created_by) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
-            [facility.user_id, name, newClientId(), await hashPassword(secret), request.body.scopes, request.user.id]);
+            [facility.user_id, name, newClientId(), secretHash(app.config.otpSecret, secret), request.body.scopes, request.user.id]);
         await audit(app.pg, {actorId: request.user.id, action: 'api_client.created', targetId: client.id, details: {facility_id: facility.user_id, scopes: client.scopes}, ip: request.ip});
         reply.code(201);
         return {client: view({...client, facility_name: facility.facility_name}), client_secret: secret, token_url: `${app.config.appOrigin}/oauth/token`};

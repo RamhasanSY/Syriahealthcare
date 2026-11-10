@@ -3,7 +3,8 @@ import multipart from '@fastify/multipart';
 import {HttpError, requireRole} from './auth.js';
 import {facilityKinds, facilityServices, governorates, specialties} from './catalog.js';
 import {audit, transaction} from './db.js';
-import {MAX_DOCUMENT_BYTES, sniffType} from './documents.js';
+import {MAX_DOCUMENT_BYTES} from './documents.js';
+import {cleanUpload, UploadError} from './uploads.js';
 import {changeDecisionEmail, decisionEmail, notifyAdminsOfSubmission, sendEmail} from './notify.js';
 import {acceptPending, DOCTOR_CRITICAL, rejectPending, saveChange} from './profile-changes.js';
 import {normalizePhone} from './security.js';
@@ -31,11 +32,11 @@ function cleanProfile(body) {
         out[key] = value || null;
     }
     if ('specialty' in body) {
-        if (body.specialty && !specialties[body.specialty]) throw new HttpError(400, 'invalid_specialty', 'Choose a specialty from the list.');
+        if (body.specialty && !Object.hasOwn(specialties, body.specialty)) throw new HttpError(400, 'invalid_specialty', 'Choose a specialty from the list.');
         out.specialty = body.specialty || null;
     }
     if ('governorate' in body) {
-        if (body.governorate && !governorates[body.governorate]) throw new HttpError(400, 'invalid_governorate', 'Choose a governorate from the list.');
+        if (body.governorate && !Object.hasOwn(governorates, body.governorate)) throw new HttpError(400, 'invalid_governorate', 'Choose a governorate from the list.');
         out.governorate = body.governorate || null;
     }
     if ('clinic_phone' in body) {
@@ -66,16 +67,23 @@ export async function saveUpload(app, request, kinds) {
         if (error.code === 'FST_REQ_FILE_TOO_LARGE') throw new HttpError(413, 'file_too_large', 'The file is larger than 5 MB.');
         throw error;
     });
-    const mime = sniffType(buffer);
-    if (!mime) throw new HttpError(400, 'invalid_file_type', 'Upload a PDF, JPG or PNG file.');
-    const stored = await app.documents.save(buffer);
+    // The same checks as patients' uploads: real type, photo metadata removed, PDFs with active content refused.
+    let clean;
+    try {
+        clean = cleanUpload(buffer);
+    } catch (error) {
+        if (error instanceof UploadError) throw new HttpError(400, error.code, error.message);
+        throw error;
+    }
+    const {mime} = clean;
+    const stored = await app.documents.save(clean.buffer);
     const filename = String(part.filename || 'document').replace(/[^\p{L}\p{N}._ -]/gu, '_').slice(0, 200);
     try {
         const {rows: [doc]} = await app.pg.query(
             `INSERT INTO doctor_documents (doctor_id, kind, filename, mime, size_bytes, sha256, storage_key, iv, auth_tag)
              VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *`,
-            [request.user.id, kind, filename, mime, buffer.length, stored.sha256, stored.storageKey, stored.iv, stored.authTag]);
-        await audit(app.pg, {actorId: request.user.id, action: 'document.uploaded', targetId: doc.id, details: {kind, size: buffer.length}, ip: request.ip});
+            [request.user.id, kind, filename, mime, clean.buffer.length, stored.sha256, stored.storageKey, stored.iv, stored.authTag]);
+        await audit(app.pg, {actorId: request.user.id, action: 'document.uploaded', targetId: doc.id, details: {kind, size: clean.buffer.length}, ip: request.ip});
         return documentView(doc);
     } catch (error) {
         await app.documents.remove(stored.storageKey);
@@ -84,10 +92,14 @@ export async function saveUpload(app, request, kinds) {
 }
 
 // Sends a decrypted file to the browser to open in place, never to be cached.
+// Files people uploaded are always shown in a sandbox: no scripts, no forms, no access to the platform; PDFs download.
 export function sendDocument(reply, doc, content) {
+    reply.header('Content-Security-Policy', "sandbox; default-src 'none'; img-src 'self' data:; style-src 'unsafe-inline'");
+    reply.header('Cross-Origin-Resource-Policy', 'same-origin');
     const ascii = doc.filename.replace(/[^\x20-\x7e]/g, '_').replace(/["\\]/g, '_');
     reply.header('Content-Type', doc.mime);
-    reply.header('Content-Disposition', `inline; filename="${ascii}"; filename*=UTF-8''${encodeURIComponent(doc.filename)}`);
+    const disposition = doc.mime === 'application/pdf' ? 'attachment' : 'inline';
+    reply.header('Content-Disposition', `${disposition}; filename="${ascii}"; filename*=UTF-8''${encodeURIComponent(doc.filename)}`);
     reply.header('Cache-Control', 'no-store');
     return content;
 }
@@ -105,7 +117,7 @@ export default async function doctorRoutes(app) {
     const doctorOnly = {preHandler: requireRole('doctor')};
     const adminOnly = {preHandler: requireRole('admin')};
 
-    app.get('/api/catalog', async () => ({specialties, governorates, facilityKinds, facilityServices}));
+    app.get('/api/catalog', {config: {cache: 'public, max-age=3600'}}, async () => ({specialties, governorates, facilityKinds, facilityServices}));
 
     // ---- Doctor side ----
 

@@ -2,7 +2,7 @@
 // so the app opens quickly and shows a clear notice without internet. Nothing under /api/ is ever saved:
 // appointments, profiles and licence documents always come fresh from the server and never stay on the phone.
 // The health file page is saved too, so the patient number (kept in localStorage, see common.js) shows without internet.
-const CACHE = 'shc-app-v8';
+const CACHE = 'shc-app-v9';
 const SHELL = ['/', '/offline', '/login', '/staff', '/doctors', '/account', '/file', '/assets/app.css', '/assets/common.js', '/assets/file.js', '/assets/share.js',
     '/assets/logo.svg', '/assets/favicon.svg', '/assets/icon-192.png', '/manifest.webmanifest'];
 const SLOW_MS = 6000;
@@ -22,7 +22,8 @@ const storable = response => response.ok && response.type === 'basic' && !/no-st
 async function networkFirst(event, fallback) {
     const request = event.request, cache = await caches.open(CACHE);
     const network = fetch(request).then(async response => {
-        if (storable(response)) await cache.put(request, response.clone()).catch(() => {});
+        // Stored under the path alone, so search words, doctor ids or booking times never stay on the device.
+        if (storable(response)) await cache.put(new URL(request.url).origin + new URL(request.url).pathname, response.clone()).catch(() => {});
         return response;
     });
     event.waitUntil(network.catch(() => {}));

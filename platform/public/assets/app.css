@@ -262,3 +262,7 @@ table.values thead th{color:var(--muted);font-weight:600}
 table.values td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
 table.values tr.flag-h td,table.values tr.flag-hh td,table.values tr.flag-l td,table.values tr.flag-ll td,table.values tr.flag-a td,table.values tr.flag-aa td{color:var(--danger)}
 table.values tr.flag-hh,table.values tr.flag-ll,table.values tr.flag-aa{background:#fbeae6}
+/* Admin system status */
+#statusBox summary{cursor:pointer}
+.inline-h{display:inline;margin:0}
+#statusBox .values-box{margin:14px 0}

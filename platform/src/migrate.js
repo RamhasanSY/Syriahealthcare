@@ -13,6 +13,7 @@ export async function migrate(pool) {
         if (done.has(name)) continue;
         const sql = await readFile(folder + name, 'utf8');
         await transaction(pool, async db => {
+            await db.query('SET LOCAL statement_timeout = 0');  // building an index on a big table may take longer than the app's 15 s
             await db.query(sql);
             await db.query('INSERT INTO schema_migrations (name) VALUES ($1)', [name]);
         });
