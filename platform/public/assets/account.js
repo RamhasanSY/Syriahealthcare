@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const file = await api('/api/file');
         const self = file.ok ? file.data.profiles.find(p => p.relationship === 'self') : null;
         if (file.ok) Shc.saveProfiles(file.data.profiles);
-        $('fileLink').hidden = !file.ok;
+        $('fileLink').hidden = $('medsLink').hidden = !file.ok;
         $('numberLabel').hidden = $('userNumber').hidden = !self;
         $('userNumber').textContent = self ? self.patient_number : '';
     }

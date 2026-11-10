@@ -136,7 +136,12 @@ const Shc = (() => {
         too_few_tests: 'اختر تحليلين على الأقل من قائمة أسعاركم.',
         invalid_tests: 'بعض التحاليل لم تعد في قائمة أسعاركم. يرجى إعادة تحميل الصفحة.',
         package_exists: 'توجد باقة بهذا الاسم مسبقاً.',
-        too_many_packages: 'يمكن إنشاء 30 باقة كحد أقصى.'
+        too_many_packages: 'يمكن إنشاء 30 باقة كحد أقصى.',
+        // Medicines (medications.html)
+        invalid_medicine_name: 'اكتب اسم الدواء.',
+        invalid_times: 'أضف وقتاً واحداً على الأقل.',
+        too_many_medicines: 'يمكن حفظ 20 دواءً كحد أقصى لكل ملف.',
+        invalid_dose: 'هذا ليس أحد أوقات هذا الدواء.'
     };
 
     function applyLanguage() {

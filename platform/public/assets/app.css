@@ -273,3 +273,5 @@ table.values tr.flag-hh,table.values tr.flag-ll,table.values tr.flag-aa{backgrou
 .check-chip{display:inline-flex;align-items:center;gap:8px;cursor:pointer}
 .check-chip input{width:20px;height:20px;margin:0}
 .check-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:2px 16px}
+.time-row{display:inline-flex;align-items:center;gap:4px}
+.time-row input{width:auto;min-width:120px}

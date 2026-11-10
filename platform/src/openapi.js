@@ -157,7 +157,13 @@ export const SUMMARIES = {
     'GET /api/facility/packages': 'Lab: own packages and the price list to build them from.',
     'POST /api/facility/packages': 'Lab: create a package from tests of the own price list.',
     'POST /api/facility/packages/{id}': 'Lab: change a package.',
-    'POST /api/facility/packages/{id}/delete': 'Lab: delete a package.'
+    'POST /api/facility/packages/{id}/delete': 'Lab: delete a package.',
+    // Medicine reminders (src/medications.js; part of the health file, only while HEALTH_FILE=on)
+    'GET /api/medications': "Patient: medicines of the own and children's profiles, with today's doses.",
+    'POST /api/medications': 'Patient: add a medicine with its times of day.',
+    'POST /api/medications/{id}': 'Patient: change, pause or resume a medicine.',
+    'POST /api/medications/{id}/delete': 'Patient: delete a medicine.',
+    'POST /api/medications/{id}/dose': 'Patient: tick a dose of the last 24 hours as taken (or not).'
 };
 
 const ROLE_TAGS = {patient: 'Patients', doctor: 'Doctors', facility: 'Facilities', admin: 'Administrators'};

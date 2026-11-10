@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ar" dir="rtl" data-title-en="My medicines — SyriaHC" data-title-ar="أدويتي — صحة تك">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#1a3a5c">
+<title>أدويتي — صحة تك</title>
+<link rel="manifest" href="/manifest.webmanifest"><link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/assets/app.css">
+<script src="/assets/common.js" defer></script><script src="/assets/medications.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#main" data-en="Skip to content" data-ar="انتقل إلى المحتوى">انتقل إلى المحتوى</a>
+<header class="top"><div class="top-inner"><a class="brand" href="/account"><img src="/assets/logo.svg" alt=""><span data-en="SyriaHC" data-ar="صحة تك">صحة تك</span></a><div class="top-actions"><button class="lang" id="langToggle" type="button">English</button></div></div></header>
+<main id="main" class="wrap wide" aria-busy="true">
+  <h1 data-en="My medicines" data-ar="أدويتي">أدويتي</h1>
+  <p class="lead" data-en="Enter your medicines with the times of day. At each time your phone reminds you, and you tick the dose as taken. This does not replace your doctor's or pharmacist's advice." data-ar="أدخل أدويتك مع أوقات أخذها. في كل وقت يذكّرك هاتفك، وتسجّل أخذ الجرعة. لا يغني هذا عن نصيحة طبيبك أو الصيدلي.">أدخل أدويتك مع أوقات أخذها. في كل وقت يذكّرك هاتفك، وتسجّل أخذ الجرعة. لا يغني هذا عن نصيحة طبيبك أو الصيدلي.</p>
+  <p class="msg info" id="pushHint" hidden><span data-en="Reminders arrive as notifications. Turn them on for this phone first:" data-ar="تصل التذكيرات كإشعارات. فعّلها على هذا الهاتف أولاً:">تصل التذكيرات كإشعارات. فعّلها على هذا الهاتف أولاً:</span> <a href="/account#pushCard" data-en="Notifications" data-ar="الإشعارات">الإشعارات</a></p>
+  <div class="msg error" id="pageError" role="alert" tabindex="-1" hidden></div>
+  <fieldset class="for-whom plain" id="whoBox" hidden><legend data-en="For whom?" data-ar="لمن؟">لمن؟</legend><div id="who"></div></fieldset>
+  <p class="msg info" id="noConsent" hidden><span data-en="To keep medicines, first agree to keeping a health file for this profile." data-ar="لحفظ الأدوية وافق أولاً على حفظ ملف صحي لهذا الملف.">لحفظ الأدوية وافق أولاً على حفظ ملف صحي لهذا الملف.</span> <a href="/file" data-en="Health file" data-ar="الملف الصحي">الملف الصحي</a></p>
+
+  <section id="todayBox" aria-labelledby="todayHeading">
+    <h2 id="todayHeading" tabindex="-1" data-en="Today" data-ar="اليوم">اليوم</h2>
+    <ul class="appt-list" id="today"></ul>
+  </section>
+
+  <h2 data-en="Medicines" data-ar="الأدوية">الأدوية</h2>
+  <ul class="appt-list" id="list"></ul>
+
+  <section class="card wide-card" id="formCard" hidden aria-labelledby="formTitle">
+    <h2 id="formTitle" tabindex="-1" data-en="Add a medicine" data-ar="أضف دواءً">أضف دواءً</h2>
+    <div class="msg error" id="formError" role="alert" tabindex="-1" hidden></div>
+    <form id="form" novalidate>
+      <div class="field-row two">
+        <label class="field"><span data-en="Medicine" data-ar="الدواء">الدواء</span><input type="text" id="name" maxlength="80" dir="auto" required></label>
+        <label class="field"><span data-en="Dose (optional), e.g. 1 tablet" data-ar="الجرعة (اختياري)، مثل حبة واحدة">الجرعة (اختياري)، مثل حبة واحدة</span><input type="text" id="dose" maxlength="60" dir="auto"></label>
+      </div>
+      <fieldset class="plain"><legend data-en="Times of day (Syria time)" data-ar="أوقات اليوم (بتوقيت سوريا)">أوقات اليوم (بتوقيت سوريا)</legend><div class="chips" id="times"></div>
+        <button class="link-btn" type="button" id="addTime" data-en="+ Another time" data-ar="+ وقت آخر">+ وقت آخر</button></fieldset>
+      <fieldset class="plain"><legend data-en="Days (none ticked: every day)" data-ar="الأيام (دون تحديد: كل يوم)">الأيام (دون تحديد: كل يوم)</legend><div class="chips" id="days"></div></fieldset>
+      <div class="field-row two">
+        <label class="field"><span data-en="From" data-ar="من">من</span><input type="date" id="start"></label>
+        <label class="field"><span data-en="Until (optional)" data-ar="حتى (اختياري)">حتى (اختياري)</span><input type="date" id="end"></label>
+      </div>
+      <label class="field"><span data-en="Note (optional), e.g. after meals" data-ar="ملاحظة (اختياري)، مثل بعد الطعام">ملاحظة (اختياري)، مثل بعد الطعام</span><input type="text" id="notes" maxlength="200" dir="auto"></label>
+      <label class="check" for="showName"><input type="checkbox" id="showName"><span data-en="Show the medicine's name in the notification (others may see your lock screen)" data-ar="أظهر اسم الدواء في الإشعار (قد يرى غيرك شاشة القفل)">أظهر اسم الدواء في الإشعار (قد يرى غيرك شاشة القفل)</span></label>
+      <div class="actions"><button class="btn" type="submit" id="save" data-en="Save" data-ar="حفظ">حفظ</button><button class="btn ghost" type="button" id="cancelEdit" hidden data-en="Cancel" data-ar="إلغاء">إلغاء</button></div>
+    </form>
+  </section>
+</main>
+<footer><div class="wrap"><a href="/account" data-en="← My account" data-ar="حسابي ←">حسابي ←</a><a href="/file" data-en="Health file" data-ar="الملف الصحي">الملف الصحي</a></div></footer>
+</body>
+</html>
