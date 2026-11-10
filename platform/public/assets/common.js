@@ -123,7 +123,12 @@ const Shc = (() => {
         donor_required: 'سجّل متبرعاً أولاً.',
         blood_type_mismatch: 'زمرتك الدموية لا تناسب هذا النداء.',
         too_many_responses: 'استجبت لنداءات كثيرة اليوم. حاول غداً.',
-        choose_blood_type: 'اختر زمرة دموية واحدة على الأقل.'
+        choose_blood_type: 'اختر زمرة دموية واحدة على الأقل.',
+        // Pharmacy duties (duties.html)
+        not_a_pharmacy: 'أوقات المناوبة للصيدليات فقط.',
+        invalid_duty_time: 'يجب أن تنتهي المناوبة في وقت غير وقت بدايتها.',
+        too_many_duties: 'يمكن إدخال 120 مناوبة قادمة كحد أقصى.',
+        duty_overlap: 'تتداخل هذه المناوبة مع مناوبة أدخلتموها مسبقاً.'
     };
 
     function applyLanguage() {

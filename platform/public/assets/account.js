@@ -52,6 +52,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         $('visitsLink').hidden = !(isLab && facilityStatus === 'approved');
         // Blood banks and hospitals post blood donation calls.
         $('bloodLink').hidden = !(profile.ok && facilityStatus === 'approved' && ['blood_bank', 'hospital'].includes(profile.data.profile.kind));
+        // Pharmacies enter night and holiday duties (also before approval; shown once approved).
+        $('dutiesLink').hidden = !(profile.ok && profile.data.profile.kind === 'pharmacy');
     }
     if (user.role === 'doctor') {
         const profile = await api('/api/doctor/profile');

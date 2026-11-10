@@ -146,7 +146,12 @@ export const SUMMARIES = {
     'GET /api/facility/blood-requests/{id}/responses': 'Blood bank or hospital: the donors who answered a call (recorded).',
     'GET /api/donor': 'Patient: own donor registration.',
     'POST /api/donor': 'Patient: register or update as a blood donor (blood group, governorate, mobile).',
-    'POST /api/donor/delete': 'Patient: leave the donor list (blood group, phone and answers are removed).'
+    'POST /api/donor/delete': 'Patient: leave the donor list (blood group, phone and answers are removed).',
+    // Pharmacies on duty (src/pharmacy-duty.js)
+    'GET /api/pharmacies/on-duty': 'Pharmacies on duty now (or on a day), and pharmacies open 24 hours, by governorate.',
+    'GET /api/pharmacy/duties': 'Pharmacy: own upcoming duty times.',
+    'POST /api/pharmacy/duties': 'Pharmacy: add a duty, once or weekly for up to 12 weeks.',
+    'POST /api/pharmacy/duties/{id}/delete': 'Pharmacy: delete a duty.'
 };
 
 const ROLE_TAGS = {patient: 'Patients', doctor: 'Doctors', facility: 'Facilities', admin: 'Administrators'};
