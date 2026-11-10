@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-09T14:28:56+00:00",
+  "updated": "2026-11-10T01:35:14+00:00",
   "source": "OpenStreetMap contributors (ODbL)",
   "items": [
     {
@@ -15442,8 +15442,8 @@
       "name": "صيدلية غسان",
       "city": "Rif Dimashq",
       "city_ar": "ريف دمشق",
-      "lat": 33.46155,
-      "lon": 36.23443,
+      "lat": 33.46168,
+      "lon": 36.23457,
       "osm": true,
       "source_url": "https://www.openstreetmap.org/node/13962643561"
     },
