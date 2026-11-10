@@ -46,9 +46,44 @@ All of this is built and tested but **switched off** until the new privacy polic
 - **Price list:** each lab or imaging centre keeps its tests with price (SYP), time to result and a note (`/lab-tests`). Public once the lab is approved, on `/lab?id=…` and linked from the lab's card on syriahc.com.
 - **Sample collection at home:** for labs that list "Home sample collection", patients ask for a day and time of day on the lab page; the lab confirms with an arrival time, declines, cancels or marks it done (`/home-visits`). The patient follows it under My appointments and gets emails.
 
+### More services for patients, doctors, labs, pharmacies and blood banks
+
+Built after looking at Doctolib, Practo, Altibbi, Okadoc, Tabib SY and LomedX. Each has its own module, migration and tests.
+
+| Service | Who | Where | Module |
+|---|---|---|---|
+| **Notifications** on phone or computer: appointment and home visit decisions, new requests, reminders. Messages never name a doctor, lab, result or medicine. | everyone | switch on `/account` | `src/push.js` |
+| **Appointment comfort:** reminder 24 to 2 hours before (notification, email, SMS where possible), calendar file, moving an appointment (3 times at most, the doctor confirms again), waiting list per doctor (told when a time becomes free, at most every 6 hours) | patients, doctors | `/appointments`, `/book` | `src/appointment-comfort.js` |
+| **Blood donation calls:** blood banks and hospitals post what they need; donors register and are told when their group is needed in their governorate (once a day at most, not within 8 weeks after a donation); "I can donate" shares name and phone with that facility only | blood banks, hospitals, patients | `/blood`, `/blood-requests` | `src/blood.js` |
+| **Pharmacies on duty:** night and holiday duties (once or weekly), list of who is on duty now or on a day, plus pharmacies open 24 hours | pharmacies, everyone | `/on-duty`, `/duties` | `src/pharmacy-duty.js` |
+| **Lab packages:** tests from the price list at one price; the saving is worked out; compared across labs | labs, everyone | `/packages`, `/lab-packages`, lab page | `src/lab-packages.js` |
+| **Medicine reminders:** medicines with times of day for own and children's profiles; reminded once per dose, ticked as taken | patients | `/medications` | `src/medications.js` |
+| **Reviews:** one per completed appointment within 60 days, checked by an admin, the doctor can answer or report; average from 3 reviews on | patients, doctors, admins | `/appointments`, doctor page, `/my-reviews`, `/admin` | `src/reviews.js` |
+| **Video consultations:** browser to browser, never recorded; the server only passes the set-up messages, from 15 minutes before until 2 hours after a confirmed video appointment | doctors, patients | `/video` | `src/video.js` |
+
+**Switched off until the privacy policy (`HEALTH_FILE=off`):** the donor register (the blood group is health data) and medicine reminders (part of the health file). The blood donation calls themselves are always shown.
+**Switched off until the legal check of remote consultations (`VIDEO=off`):** video consultations.
+
+#### Notifications (Web Push)
+
+1. Make a key pair once on the server and put it in `.env` (`PUSH_PUBLIC_KEY`, `PUSH_PRIVATE_KEY`). Never change it afterwards: every device would have to switch notifications on again.
+   `docker compose run --rm --no-deps -T app node -e "import('./src/push.js').then(m => console.log(m.generateVapidKeys()))"`
+2. `docker compose up -d app`. The switch then shows on `/account`.
+
+Without keys the app simply does not offer notifications. On iPhone they work only in the installed app (Share, then "Add to Home Screen"). The encryption (RFC 8291) and signature (RFC 8292) use `node:crypto` only; the server sends only to the browsers' push services (Google, Mozilla, Apple, Microsoft).
+
+#### Video consultations: TURN relay
+
+Many phones, especially on mobile networks, cannot connect directly. A TURN relay on our own server carries the call for them (encrypted; it cannot see or hear the call).
+
+1. `apt install coturn`, then in `/etc/turnserver.conf`: `use-auth-secret`, `static-auth-secret=<a long random secret>`, `realm=syriahc.com`, `listening-port=3478`, `min-port=49160`, `max-port=49200`, `no-cli`, `fingerprint`, `no-multicast-peers`, `denied-peer-ip=10.0.0.0-10.255.255.255`, `denied-peer-ip=172.16.0.0-172.31.255.255`, `denied-peer-ip=192.168.0.0-192.168.255.255`, `denied-peer-ip=127.0.0.0-127.255.255.255`.
+2. `ufw allow 3478` and `ufw allow 49160:49200/udp`; `systemctl enable --now coturn`.
+3. In `.env`: `VIDEO=on`, `TURN_URLS=turn:app.syriahc.com:3478?transport=udp,turn:app.syriahc.com:3478?transport=tcp`, `TURN_SECRET=<the same secret>`, `STUN_URLS=stun:app.syriahc.com:3478`; then `docker compose up -d app`.
+4. Each doctor switches video on under My account. Do a test call between two phones on different networks first.
+
 ### Background jobs (`src/jobs.js`)
 
-Every 5 minutes queued emails are sent; every hour expired sessions, codes and reset links are removed (sent emails after 30 days); every hour the disk is checked, and when less than 2 GB or 10 % is free all active admins get one email per day. Container logs are capped at 3 × 10 MB per service (`docker-compose.yml`).
+Every minute due medicine reminders are sent; every 5 minutes queued emails; every 10 minutes appointment reminders; every hour expired sessions, codes, reset links and waiting list entries are removed (sent emails after 30 days, reminded medicine doses after 90 days); every hour the disk is checked, and when less than 2 GB or 10 % is free all active admins get one email per day. Container logs are capped at 3 × 10 MB per service (`docker-compose.yml`).
 
 ### Labs, imaging centres, hospitals and clinics
 

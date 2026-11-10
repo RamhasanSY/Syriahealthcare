@@ -2,8 +2,10 @@
 // the health file's bin, and warn the administrators by email when the disk is nearly full. Each job is a plain function, so tests can run it directly.
 import {statfs} from 'node:fs/promises';
 import {enqueueEmail, deliverDue} from './outbox.js';
+import {sendAppointmentReminders} from './appointment-comfort.js';
+import {sendMedicationReminders} from './medications.js';
 
-export const EVERY = {outbox: 5 * 60_000, cleanup: 60 * 60_000, disk: 60 * 60_000};
+export const EVERY = {outbox: 5 * 60_000, cleanup: 60 * 60_000, disk: 60 * 60_000, reminders: 10 * 60_000, medicines: 60_000};
 
 // A warning when less than this is free, whichever is reached first.
 export const DISK_LIMITS = {minFreeBytes: 2 * 1024 ** 3, minFreeShare: 0.10};
@@ -20,7 +22,9 @@ const CLEANUP = [
     ['trusted_devices', 'DELETE FROM trusted_devices WHERE expires_at < now()'],
     ['api_tokens', 'DELETE FROM api_tokens WHERE expires_at < now()'],
     ['share_codes', "DELETE FROM share_codes WHERE expires_at < now() - interval '1 day' AND used_at IS NULL"],
-    ['email_outbox', "DELETE FROM email_outbox WHERE (sent_at < now() - interval '30 days') OR (failed_at < now() - interval '30 days')"]
+    ['email_outbox', "DELETE FROM email_outbox WHERE (sent_at < now() - interval '30 days') OR (failed_at < now() - interval '30 days')"],
+    ['waitlist_entries', 'DELETE FROM waitlist_entries WHERE expires_at < now()'],
+    ['medication_doses', "DELETE FROM medication_doses WHERE scheduled_for < now() - interval '90 days'"]
 ];
 
 export async function cleanup(pool) {
@@ -78,13 +82,16 @@ export async function checkDisk({pool, dir, log, state, stat, now = Date.now()})
 }
 
 // Starts the timers. They never keep the process alive on their own (unref), and a failing job only logs.
-export function startJobs({pool, mail, log, dir, documents}) {
+// `app` (optional) runs the jobs that send notifications: appointment and medicine reminders.
+export function startJobs({pool, mail, log, dir, documents, app}) {
     const state = {};
     const run = (name, job) => () => job().catch(error => log.error({err: error}, `Job ${name} failed`));
     const timers = [
         setInterval(run('outbox', () => deliverDue({pool, mail, log})), EVERY.outbox),
         setInterval(run('cleanup', () => cleanup(pool).then(() => purgeBin({pool, documents}))), EVERY.cleanup),
-        setInterval(run('disk', () => checkDisk({pool, dir, log, state})), EVERY.disk)
+        setInterval(run('disk', () => checkDisk({pool, dir, log, state})), EVERY.disk),
+        ...(app ? [setInterval(run('reminders', () => sendAppointmentReminders(app)), EVERY.reminders),
+            setInterval(run('medicines', () => sendMedicationReminders(app)), EVERY.medicines)] : [])
     ];
     timers.forEach(t => t.unref());
     return () => timers.forEach(clearInterval);

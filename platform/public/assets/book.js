@@ -3,6 +3,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const {$, tr, api, showError, busy} = Shc;
     const params = new URLSearchParams(window.location.search);
     const doctorId = params.get('doctor') || '';
+    // "Move to another time" from My appointments: the same page picks the new time (src/appointment-comfort.js).
+    const moveId = params.get('move') || '';
     const TZ = 'Asia/Damascus';
     let doctor, me = null, catalog, slots = [], from = null, days = 14, day = null, chosen = params.get('slot');
     const el = (tag, props = {}) => Object.assign(document.createElement(tag), props);
@@ -129,6 +131,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         $('signInFirst').hidden = Boolean(me);
         $('notPatient').hidden = !me || me.role === 'patient';
         $('bookForm').hidden = me?.role !== 'patient';
+        $('modeBox').hidden = !doctor.video || Boolean(moveId);
         renderForWhom();
         const back = `/book?doctor=${encodeURIComponent(doctorId)}` + (chosen ? `&slot=${encodeURIComponent(chosen)}` : '');
         $('signInLink').href = '/login?next=' + encodeURIComponent(back);
@@ -148,12 +151,53 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     $('moreDays').addEventListener('click', () => loadSlots(new Date(Date.parse(from + 'T00:00:00Z') + days * 86400000).toISOString().slice(0, 10)));
 
+    // Texts that change in "move" mode keep both languages on the element, so switching the language keeps them.
+    const relabel = (node, en, ar) => { node.dataset.en = en; node.dataset.ar = ar; node.textContent = tr(en, ar); };
+    const moving = Boolean(moveId) && me?.role === 'patient';
+    if (moving) {
+        relabel($('confirmHeading'), '2. Confirm the new time', '2. تأكيد الوقت الجديد');
+        relabel($('bookButton'), 'Move my appointment to this time', 'انقل موعدي إلى هذا الوقت');
+        relabel($('doneHeading'), 'Appointment moved', 'تم نقل الموعد');
+        $('reason').closest('.field').hidden = true;
+        $('shareOnBook').remove();
+    }
+
+    // Waiting list: told by notification and email when a time with this doctor becomes free.
+    $('waitBox').hidden = !(me?.role === 'patient' && !moving);
+    $('waitButton').addEventListener('click', async () => {
+        $('waitError').hidden = true;
+        busy($('waitButton'), true);
+        const res = await api('/api/waitlist', {doctor_id: doctorId});
+        busy($('waitButton'), false);
+        if (!res.ok) return showError('waitError', res.data);
+        $('waitButton').hidden = true;
+        relabel($('waitDone'), 'You are on the waiting list for 30 days. You can remove it under My appointments.',
+            'أنت على قائمة الانتظار لمدة 30 يوماً. يمكنك إزالتها من «مواعيدي».');
+    });
+
     $('bookForm').addEventListener('submit', async event => {
         event.preventDefault();
         $('bookError').hidden = true;
         busy($('bookButton'), true);
+        if (moving) {
+            const moved = await api(`/api/appointments/${encodeURIComponent(moveId)}/reschedule`, {starts_at: chosen});
+            busy($('bookButton'), false);
+            if (!moved.ok) {
+                showError('bookError', moved.data);
+                if (moved.data.error === 'slot_taken') await loadSlots(from);
+                return;
+            }
+            const slot = slots.find(s => s.starts_at === chosen);
+            $('booking').hidden = true;
+            $('done').hidden = false;
+            $('doneText').textContent = tr(`Your appointment with ${doctor.name} is now on ${dayName(slot.date, 'long')} at ${timeOf(slot.starts_at)}. The doctor confirms the new time; until then it shows as waiting.`,
+                `أصبح موعدك لدى ${doctor.name} ${dayName(slot.date, 'long')} الساعة ${timeOf(slot.starts_at)}. يؤكد الطبيب الوقت الجديد، وحتى ذلك يظهر الموعد بانتظار التأكيد.`);
+            $('done').focus();
+            return;
+        }
         const shared = [...$('shareList').querySelectorAll('input:checked')].map(i => i.value);
-        const res = await api('/api/appointments', {doctor_id: doctorId, starts_at: chosen, reason: $('reason').value, ...(subject && {subject_id: subject}),
+        const mode = doctor.video ? document.querySelector('input[name="mode"]:checked')?.value || 'in_person' : 'in_person';
+        const res = await api('/api/appointments', {doctor_id: doctorId, starts_at: chosen, reason: $('reason').value, mode, ...(subject && {subject_id: subject}),
             ...(shared.length && {share_item_ids: shared})});
         busy($('bookButton'), false);
         if (!res.ok) {
@@ -166,6 +210,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         $('done').hidden = false;
         $('doneText').textContent = tr(`Your request for ${dayName(slot.date, 'long')} at ${timeOf(slot.starts_at)} with ${doctor.name} has been sent. You can follow it under "My appointments", where it shows as confirmed once the doctor accepts.`,
             `أُرسل طلبك لموعد ${dayName(slot.date, 'long')} الساعة ${timeOf(slot.starts_at)} لدى ${doctor.name}. يمكنك متابعته في «مواعيدي»، وسيظهر مؤكداً عند قبول الطبيب.`);
+        if (mode === 'video') $('doneText').textContent += tr(' It is a video call: open it from "My appointments" up to 15 minutes before.',
+            ' الموعد مكالمة فيديو: افتحها من «مواعيدي» قبل الموعد بـ15 دقيقة.');
         const child = profiles.find(p => p.id === subject);
         if (child) $('doneText').textContent += tr(` The appointment is for ${child.name}.`, ` الموعد لـ ${child.name}.`);
         if (shared.length) $('doneText').textContent += tr(` ${shared.length} entries of the health file are shared with the doctor until 30 days after the appointment.`,
@@ -173,8 +219,29 @@ document.addEventListener('DOMContentLoaded', async () => {
         $('done').focus();
     });
 
-    document.addEventListener('shc:language', () => { render(); renderShareItems(); });
+    // Reviews (src/reviews.js): the average from 3 reviews on, and the latest reviews with the doctor's answers.
+    let reviews = null;
+    function renderReviews() {
+        if (!reviews || !reviews.reviews.length) return;
+        $('reviewsBox').hidden = false;
+        const s = reviews.summary;
+        $('reviewsSummary').textContent = s.average !== null ? tr(`${s.average} of 5 from ${s.count} reviews`, `${s.average} من 5 من ${s.count} تقييمات`) : tr(`${s.count} reviews`, `${s.count} تقييمات`);
+        const date = iso => new Date(iso).toLocaleDateString(Shc.lang === 'ar' ? 'ar' : 'en-GB', {month: 'long', year: 'numeric', timeZone: TZ});
+        $('reviewsList').replaceChildren(...reviews.reviews.slice(0, 10).map(r => {
+            const stars = el('p', {className: 'stars', textContent: '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating)});
+            stars.setAttribute('role', 'img');
+            stars.setAttribute('aria-label', tr(`${r.rating} of 5 stars`, `${r.rating} من 5 نجوم`));
+            const li = el('li', {className: 'appt'});
+            li.append(stars, el('p', {className: 'muted-small', textContent: `${r.author || tr('Patient', 'مريض')} · ${date(r.created_at)}`}));
+            if (r.comment) li.append(el('p', {dir: 'auto', textContent: r.comment}));
+            if (r.reply) li.append(el('p', {className: 'appt-reason', dir: 'auto', textContent: tr('Answer of the doctor: ', 'رد الطبيب: ') + r.reply}));
+            return li;
+        }));
+    }
+    api(`/api/doctors/${encodeURIComponent(doctorId)}/reviews`).then(res => { if (res.ok) { reviews = res.data; renderReviews(); } });
+
+    document.addEventListener('shc:language', () => { render(); renderReviews(); if (!moving) renderShareItems(); });
     $('booking').hidden = false;
-    if (me?.role === 'patient') loadShareItems();
+    if (me?.role === 'patient' && !moving) loadShareItems();
     await loadSlots();
 });

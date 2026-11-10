@@ -29,6 +29,12 @@
         <div class="day-strip" id="days" role="radiogroup" aria-labelledby="pickHeading"></div>
         <div class="chips times" id="times" role="radiogroup" aria-live="polite"></div>
         <button class="link-btn" type="button" id="moreDays" data-en="Show later days" data-ar="أيام لاحقة">أيام لاحقة</button>
+        <div class="wait-box" id="waitBox" hidden>
+          <p class="hint" data-en="Need an earlier time? We tell you as soon as one becomes free." data-ar="تحتاج وقتاً أبكر؟ نخبرك فور توفر وقت.">تحتاج وقتاً أبكر؟ نخبرك فور توفر وقت.</p>
+          <button class="btn ghost" type="button" id="waitButton" data-en="Tell me when a time becomes free" data-ar="أخبرني عند توفر وقت">أخبرني عند توفر وقت</button>
+          <p class="hint" id="waitDone" role="status"></p>
+          <div class="msg error" id="waitError" role="alert" tabindex="-1" hidden></div>
+        </div>
       </section>
 
       <section class="card" aria-labelledby="confirmHeading">
@@ -46,6 +52,10 @@
             <p class="hint" data-en="The doctor can open the chosen entries until 30 days after the appointment. You can end this at any time in your health file." data-ar="يمكن للطبيب فتح الوثائق المختارة حتى 30 يوماً بعد الموعد. يمكنك إنهاء ذلك في أي وقت من ملفك الصحي.">يمكن للطبيب فتح الوثائق المختارة حتى 30 يوماً بعد الموعد. يمكنك إنهاء ذلك في أي وقت من ملفك الصحي.</p>
             <fieldset class="plain"><legend class="sr-only" data-en="Entries to share" data-ar="الوثائق المراد مشاركتها">الوثائق المراد مشاركتها</legend><div id="shareList"></div></fieldset>
           </details>
+          <fieldset class="for-whom" id="modeBox" hidden><legend data-en="How?" data-ar="كيف؟">كيف؟</legend>
+            <label class="check" for="modeClinic"><input type="radio" name="mode" id="modeClinic" value="in_person" checked><span data-en="At the clinic" data-ar="في العيادة">في العيادة</span></label>
+            <label class="check" for="modeVideo"><input type="radio" name="mode" id="modeVideo" value="video"><span data-en="Video call (camera and microphone on your phone or computer)" data-ar="مكالمة فيديو (بكاميرا وميكروفون هاتفك أو حاسوبك)">مكالمة فيديو (بكاميرا وميكروفون هاتفك أو حاسوبك)</span></label>
+          </fieldset>
           <label class="field"><span data-en="Reason for the visit (optional)" data-ar="سبب الزيارة (اختياري)">سبب الزيارة (اختياري)</span><textarea id="reason" maxlength="300" rows="3" dir="auto" aria-describedby="reasonHint"></textarea><small id="reasonHint" data-en="Only this doctor sees it. Do not include anything you would not want the clinic to know." data-ar="لا يراه إلا هذا الطبيب. لا تكتب ما لا تريد أن تعرفه العيادة.">لا يراه إلا هذا الطبيب. لا تكتب ما لا تريد أن تعرفه العيادة.</small></label>
           <button class="btn" type="submit" id="bookButton" disabled data-en="Request this appointment" data-ar="اطلب هذا الموعد">اطلب هذا الموعد</button>
           <p class="hint" data-en="The doctor confirms your request. You can cancel any time before the appointment." data-ar="يؤكد الطبيب طلبك. يمكنك الإلغاء في أي وقت قبل الموعد.">يؤكد الطبيب طلبك. يمكنك الإلغاء في أي وقت قبل الموعد.</p>
@@ -54,8 +64,15 @@
     </div>
   </div>
 
+  <section class="card wide-card" id="reviewsBox" hidden aria-labelledby="reviewsHeading">
+    <h2 id="reviewsHeading" data-en="Reviews" data-ar="التقييمات">التقييمات</h2>
+    <p id="reviewsSummary"></p>
+    <ul class="appt-list" id="reviewsList"></ul>
+    <p class="hint" data-en="Only patients whose appointment took place can review. Our team checks every review before it is shown." data-ar="لا يقيّم إلا المرضى الذين تمّ موعدهم. يراجع فريقنا كل تقييم قبل عرضه.">لا يقيّم إلا المرضى الذين تمّ موعدهم. يراجع فريقنا كل تقييم قبل عرضه.</p>
+  </section>
+
   <div class="card success" id="done" hidden tabindex="-1">
-    <h1 data-en="Request sent" data-ar="تم إرسال الطلب">تم إرسال الطلب</h1>
+    <h1 id="doneHeading" data-en="Request sent" data-ar="تم إرسال الطلب">تم إرسال الطلب</h1>
     <p id="doneText"></p>
     <p class="msg info" data-en="In an emergency do not wait for an appointment: go to the nearest hospital." data-ar="في حالات الطوارئ لا تنتظر موعداً: توجّه إلى أقرب مشفى.">في حالات الطوارئ لا تنتظر موعداً: توجّه إلى أقرب مشفى.</p>
     <div class="actions"><a class="btn" href="/appointments" data-en="My appointments" data-ar="مواعيدي">مواعيدي</a><a class="btn ghost" href="/doctors" data-en="Find another doctor" data-ar="ابحث عن طبيب آخر">ابحث عن طبيب آخر</a></div>
