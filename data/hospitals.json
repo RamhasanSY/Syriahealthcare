@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-10T01:34:26+00:00",
+  "updated": "2026-11-10T14:56:52+00:00",
   "source": "OpenStreetMap contributors (ODbL)",
   "items": [
     {
@@ -4291,17 +4291,6 @@
       "emergency": false,
       "osm": true,
       "source_url": "https://www.openstreetmap.org/way/227121416"
-    },
-    {
-      "name": "Harasta national Hospital",
-      "name_ar": "مشفى حرستا الوطني",
-      "city": "Rif Dimashq",
-      "city_ar": "ريف دمشق",
-      "address": "",
-      "phone": "",
-      "emergency": false,
-      "osm": true,
-      "source_url": "https://www.openstreetmap.org/way/370150348"
     },
     {
       "name": "Ibn Sina Hospital",
