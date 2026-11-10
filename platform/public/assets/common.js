@@ -115,7 +115,15 @@ const Shc = (() => {
         // Appointments: moving and waiting list
         cannot_reschedule: 'لم يعد بالإمكان نقل هذا الموعد.',
         too_many_reschedules: 'يمكن نقل الموعد 3 مرات فقط. ألغِه واحجز موعداً جديداً.',
-        too_many_waitlist: 'يمكنك الانتظار لدى 3 أطباء كحد أقصى في الوقت نفسه.'
+        too_many_waitlist: 'يمكنك الانتظار لدى 3 أطباء كحد أقصى في الوقت نفسه.',
+        // Blood donation (blood.html, blood-requests.html)
+        not_a_blood_bank: 'نداءات التبرع لبنوك الدم والمشافي فقط.',
+        facility_not_approved: 'يجب اعتماد منشأتكم أولاً.',
+        too_many_requests: 'يمكن فتح 10 نداءات كحد أقصى. أغلقوا نداءً أولاً.',
+        donor_required: 'سجّل متبرعاً أولاً.',
+        blood_type_mismatch: 'زمرتك الدموية لا تناسب هذا النداء.',
+        too_many_responses: 'استجبت لنداءات كثيرة اليوم. حاول غداً.',
+        choose_blood_type: 'اختر زمرة دموية واحدة على الأقل.'
     };
 
     function applyLanguage() {

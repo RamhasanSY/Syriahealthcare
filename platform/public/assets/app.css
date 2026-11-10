@@ -268,3 +268,7 @@ table.values tr.flag-hh,table.values tr.flag-ll,table.values tr.flag-aa{backgrou
 #statusBox .values-box{margin:14px 0}
 .appt-links{display:flex;flex-wrap:wrap;gap:4px 18px}
 .wait-box{margin-top:12px;border-top:1px solid var(--rule);padding-top:12px}
+.card.wide-card{max-width:none}
+.blood-types .chip{margin-inline-start:6px}
+.check-chip{display:inline-flex;align-items:center;gap:8px;cursor:pointer}
+.check-chip input{width:20px;height:20px;margin:0}

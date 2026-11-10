@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="ar" dir="rtl" data-title-en="Blood donation calls — SyriaHC" data-title-ar="نداءات التبرع بالدم — صحة تك">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#1a3a5c">
+<title>نداءات التبرع بالدم — صحة تك</title>
+<meta name="description" content="Blood banks and hospitals in Syria that need blood donors now.">
+<link rel="manifest" href="/manifest.webmanifest"><link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/assets/app.css">
+<script src="/assets/common.js" defer></script><script src="/assets/blood.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#main" data-en="Skip to content" data-ar="انتقل إلى المحتوى">انتقل إلى المحتوى</a>
+<header class="top"><div class="top-inner"><a class="brand" href="/account"><img src="/assets/logo.svg" alt=""><span data-en="SyriaHC" data-ar="صحة تك">صحة تك</span></a><div class="top-actions"><button class="lang" id="langToggle" type="button">English</button></div></div></header>
+<main id="main" class="wrap wide" aria-busy="true">
+  <h1 data-en="Blood donation calls" data-ar="نداءات التبرع بالدم">نداءات التبرع بالدم</h1>
+  <p class="lead" data-en="Blood banks and hospitals post here when they need blood. Please call them before you go: they check whether you can donate." data-ar="تنشر بنوك الدم والمشافي هنا عندما تحتاج إلى دم. يرجى الاتصال بهم قبل الذهاب، فهم يتحققون من إمكانية تبرعك.">تنشر بنوك الدم والمشافي هنا عندما تحتاج إلى دم. يرجى الاتصال بهم قبل الذهاب، فهم يتحققون من إمكانية تبرعك.</p>
+
+  <section class="card wide-card" id="donorCard" hidden aria-labelledby="donorTitle">
+    <h2 id="donorTitle" tabindex="-1" data-en="Be told when your blood group is needed" data-ar="اعرف عندما تكون زمرتك الدموية مطلوبة">اعرف عندما تكون زمرتك الدموية مطلوبة</h2>
+    <p id="donorState" role="status"></p>
+    <div class="msg error" id="donorError" role="alert" tabindex="-1" hidden></div>
+    <form id="donorForm" novalidate>
+      <div class="field-row two">
+        <label class="field"><span data-en="Blood group" data-ar="الزمرة الدموية">الزمرة الدموية</span><select id="bloodType" required dir="ltr"></select></label>
+        <label class="field"><span data-en="Governorate" data-ar="المحافظة">المحافظة</span><select id="donorGov" required></select></label>
+      </div>
+      <div class="field-row two">
+        <label class="field"><span data-en="Mobile number" data-ar="رقم الجوال">رقم الجوال</span><input type="tel" id="donorPhone" autocomplete="tel" dir="ltr" maxlength="30" required></label>
+        <label class="field"><span data-en="Last donation (optional)" data-ar="آخر تبرع (اختياري)">آخر تبرع (اختياري)</span><input type="date" id="lastDonation"></label>
+      </div>
+      <label class="check" for="notify"><input type="checkbox" id="notify" checked><span data-en="Tell me about calls in my governorate (at most once a day, and not within 8 weeks after a donation)" data-ar="أخبرني بالنداءات في محافظتي (مرة في اليوم على الأكثر، وليس خلال 8 أسابيع بعد التبرع)">أخبرني بالنداءات في محافظتي (مرة في اليوم على الأكثر، وليس خلال 8 أسابيع بعد التبرع)</span></label>
+      <label class="check" for="donorConsent" id="consentRow"><input type="checkbox" id="donorConsent"><span data-en="I agree that SyriaHC keeps my blood group, governorate and mobile number to tell me about calls. When I answer a call, only that facility sees my name, number and blood group." data-ar="أوافق على أن تحفظ صحة تك زمرتي الدموية ومحافظتي ورقم جوالي لإبلاغي بالنداءات. عندما أستجيب لنداء، يرى اسمي ورقمي وزمرتي تلك المنشأة فقط.">أوافق على أن تحفظ صحة تك زمرتي الدموية ومحافظتي ورقم جوالي لإبلاغي بالنداءات. عندما أستجيب لنداء، يرى اسمي ورقمي وزمرتي تلك المنشأة فقط.</span></label>
+      <div class="actions"><button class="btn" type="submit" id="donorSave" data-en="Save" data-ar="حفظ">حفظ</button><button class="btn ghost" type="button" id="donorDelete" hidden data-en="Leave the donor list" data-ar="الخروج من قائمة المتبرعين">الخروج من قائمة المتبرعين</button></div>
+    </form>
+  </section>
+  <p class="msg info" id="signInHint" hidden><a href="/login?next=/blood" data-en="Sign in" data-ar="سجّل الدخول">سجّل الدخول</a> <span data-en="to register as a donor and answer calls." data-ar="لتسجّل متبرعاً وتستجيب للنداءات.">لتسجّل متبرعاً وتستجيب للنداءات.</span></p>
+
+  <h2 data-en="Open calls" data-ar="النداءات المفتوحة">النداءات المفتوحة</h2>
+  <div class="search-row">
+    <label class="field"><span data-en="Governorate" data-ar="المحافظة">المحافظة</span><select id="filterGov"></select></label>
+    <label class="field"><span data-en="I can give (my blood group)" data-ar="أستطيع التبرع (زمرتي)">أستطيع التبرع (زمرتي)</span><select id="filterType" dir="ltr"></select></label>
+  </div>
+  <p class="results-count" id="count" role="status"></p>
+  <div class="msg error" id="listError" role="alert" tabindex="-1" hidden></div>
+  <ul class="appt-list" id="list"></ul>
+</main>
+<footer><div class="wrap"><a href="/account" data-en="← My account" data-ar="حسابي ←">حسابي ←</a><a href="/privacy" data-en="Privacy policy" data-ar="سياسة الخصوصية">سياسة الخصوصية</a></div></footer>
+</body>
+</html>

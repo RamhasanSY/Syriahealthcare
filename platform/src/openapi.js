@@ -136,7 +136,17 @@ export const SUMMARIES = {
     'GET /api/push/key': 'Whether notifications are offered, and the key a browser needs to receive them.',
     'POST /api/push/subscribe': 'Receive notifications on this device.',
     'POST /api/push/unsubscribe': 'Stop notifications on this device.',
-    'POST /api/push/test': 'Send a test notification to the own devices.'
+    'POST /api/push/test': 'Send a test notification to the own devices.',
+    // Blood donation calls (src/blood.js; the donor register only while HEALTH_FILE=on)
+    'GET /api/blood-requests': 'Open blood donation calls, by governorate and by the blood group that can help.',
+    'POST /api/blood-requests/{id}/respond': 'Donor: "I can donate" (name, phone and blood group go to this facility).',
+    'GET /api/facility/blood-requests': 'Blood bank or hospital: own donation calls with how many donors were told and answered.',
+    'POST /api/facility/blood-requests': 'Blood bank or hospital: publish a donation call; matching donors are told.',
+    'POST /api/facility/blood-requests/{id}/close': 'Blood bank or hospital: close a donation call.',
+    'GET /api/facility/blood-requests/{id}/responses': 'Blood bank or hospital: the donors who answered a call (recorded).',
+    'GET /api/donor': 'Patient: own donor registration.',
+    'POST /api/donor': 'Patient: register or update as a blood donor (blood group, governorate, mobile).',
+    'POST /api/donor/delete': 'Patient: leave the donor list (blood group, phone and answers are removed).'
 };
 
 const ROLE_TAGS = {patient: 'Patients', doctor: 'Doctors', facility: 'Facilities', admin: 'Administrators'};

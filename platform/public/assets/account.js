@@ -50,6 +50,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         const isLab = profile.ok && ['lab', 'imaging'].includes(profile.data.profile.kind);
         $('pricesLink').hidden = !isLab;
         $('visitsLink').hidden = !(isLab && facilityStatus === 'approved');
+        // Blood banks and hospitals post blood donation calls.
+        $('bloodLink').hidden = !(profile.ok && facilityStatus === 'approved' && ['blood_bank', 'hospital'].includes(profile.data.profile.kind));
     }
     if (user.role === 'doctor') {
         const profile = await api('/api/doctor/profile');
