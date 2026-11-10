@@ -32,9 +32,11 @@ if ! command -v fail2ban-client >/dev/null 2>&1; then
 fi
 cat > /etc/fail2ban/jail.d/sshd.local <<'EOF'
 # SyriaHC (platform/server/harden.sh): block an address for an hour after 5 failed SSH logins within 10 minutes.
+# Ubuntu 24.04 runs sshd as ssh.service (fail2ban 1.0.2 looks for sshd.service by default and would see nothing).
 [sshd]
 enabled = true
 backend = systemd
+journalmatch = _SYSTEMD_UNIT=ssh.service + _COMM=sshd
 maxretry = 5
 findtime = 10m
 bantime = 1h
