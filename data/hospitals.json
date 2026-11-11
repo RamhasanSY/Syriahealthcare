@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-10T23:25:16+00:00",
+  "updated": "2026-11-11T14:26:39+00:00",
   "source": "OpenStreetMap contributors (ODbL)",
   "items": [
     {
@@ -650,6 +650,17 @@
       "emergency": false,
       "osm": true,
       "source_url": "https://www.openstreetmap.org/way/204090618"
+    },
+    {
+      "name": "Modern Consulting Hospital",
+      "name_ar": "مستشفى الاستشاري الحديث",
+      "city": "Aleppo",
+      "city_ar": "حلب",
+      "address": "",
+      "phone": "",
+      "emergency": false,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/14366379101"
     },
     {
       "name": "MRFS",
