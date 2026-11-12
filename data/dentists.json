@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-12T00:47:32+00:00",
+  "updated": "2026-11-12T15:19:03+00:00",
   "source": "OpenStreetMap contributors (ODbL)",
   "items": [
     {
@@ -13,6 +13,19 @@
       "lon": 41.22629,
       "osm": true,
       "source_url": "https://www.openstreetmap.org/node/5465197322"
+    },
+    {
+      "name": "Dr.deljiyan othman",
+      "name_ar": "الدكتور دلجيان عثمان",
+      "city": "Al-Hasakah",
+      "city_ar": "الحسكة",
+      "address": "شارع المصارف",
+      "phone": "+963985343525",
+      "hours": "Fr-We 00:00-24:00",
+      "lat": 37.03776,
+      "lon": 41.22522,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/14370471901"
     },
     {
       "name": "Marwan Ablahd",
