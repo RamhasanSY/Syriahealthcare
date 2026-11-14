@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-14T13:34:35+00:00",
+  "updated": "2026-11-14T22:28:20+00:00",
   "source": "OpenStreetMap contributors (ODbL)",
   "items": [
     {
@@ -2091,6 +2091,17 @@
       "emergency": true,
       "osm": true,
       "source_url": "https://www.openstreetmap.org/node/10023960839"
+    },
+    {
+      "name": "عيادة الدكتور خلدون",
+      "name_ar": "عيادة الدكتور خلدون",
+      "city": "Damascus",
+      "city_ar": "دمشق",
+      "address": "بلدية الميدان",
+      "phone": "",
+      "emergency": false,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/14378915433"
     },
     {
       "name": "لابل",
