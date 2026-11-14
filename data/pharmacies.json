@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-13T23:37:22+00:00",
+  "updated": "2026-11-14T13:35:31+00:00",
   "source": "OpenStreetMap contributors (ODbL)",
   "items": [
     {
@@ -7526,6 +7526,15 @@
       "lon": 36.2879,
       "osm": true,
       "source_url": "https://www.openstreetmap.org/node/10008586670"
+    },
+    {
+      "name": "صيدلية الكندي",
+      "city": "Damascus",
+      "city_ar": "دمشق",
+      "lat": 33.5161,
+      "lon": 36.29333,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/1819486249"
     },
     {
       "name": "صيدلية الماء المعين",
