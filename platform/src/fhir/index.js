@@ -77,8 +77,11 @@ export default async function fhirRoutes(app) {
     app.setErrorHandler((error, request, reply) => {
         if ((error.statusCode || 500) >= 500) request.log.error({err: error}, 'FHIR request failed');
         else request.log.info({code: error.code, status: error.statusCode}, 'FHIR request refused');
-        send(reply, error.statusCode && error.statusCode < 500 ? error.statusCode : 500,
-            outcome('exception', 'The server could not process this request.', 'تعذر على الخادم معالجة هذا الطلب.'));
+        // A refused request says why (not JSON, not UTF-8, too large), so the sender's developers can fix it.
+        if (error.statusCode && error.statusCode < 500) {
+            return send(reply, error.statusCode, outcome(error.statusCode === 413 ? 'too-costly' : 'invalid', error.message, 'تعذر قبول هذا الطلب.'));
+        }
+        send(reply, 500, outcome('exception', 'The server could not process this request.', 'تعذر على الخادم معالجة هذا الطلب.'));
     });
 
     app.get('/metadata', async (request, reply) => send(reply, 200, capabilityStatement(base, {health: app.config.healthFile})));

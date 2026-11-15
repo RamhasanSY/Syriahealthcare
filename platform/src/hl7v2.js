@@ -10,6 +10,30 @@ import {tokenClient} from './oauth.js';
 export const MAX_MESSAGE_BYTES = 8 * 1024 * 1024;
 const ER7 = 'x-application/hl7-v2+er7';
 
+// ---- Character set ----
+
+// MSH-18 (HL7 table 0211) → decoder. Empty means UTF-8 (ASCII is a part of it). WINDOWS-1256 is not in the table,
+// but older Arabic Windows software writes it, so it is understood too.
+const CHARSETS = {'': 'utf-8', 'ASCII': 'utf-8', 'UNICODE UTF-8': 'utf-8', 'UTF-8': 'utf-8', '8859/1': 'iso-8859-1',
+    '8859/6': 'iso-8859-6', 'WINDOWS-1256': 'windows-1256', 'CP1256': 'windows-1256'};
+const CHARSET_HELP = 'Send UTF-8, or name the character set in MSH-18 (8859/6 or WINDOWS-1256 for Arabic).';
+
+// The raw body into text. A message that is not what it says is refused, so a name is never stored garbled.
+export function decodeMessage(body) {
+    if (typeof body === 'string') return body;
+    const start = body[0] === 0xEF && body[1] === 0xBB && body[2] === 0xBF ? 3 : 0;
+    // The MSH segment is plain ASCII, so MSH-18 can be read before the rest is decoded.
+    const msh = body.subarray(start, start + 2000).toString('latin1').split(/\r|\n/)[0];
+    const declared = msh.startsWith('MSH') ? String(msh.split(msh[3])[17] ?? '').split(msh[5] || '~')[0].trim().toUpperCase() : '';
+    const label = CHARSETS[declared];
+    if (!label) throw new IngestError('charset', `The character set "${declared}" in MSH-18 is not supported. ${CHARSET_HELP}`, 'MSH-18');
+    try {
+        return new TextDecoder(label, {fatal: true}).decode(body.subarray(start));
+    } catch (_) {
+        throw new IngestError('charset', `The message is not valid ${label === 'utf-8' ? 'UTF-8' : declared}. ${CHARSET_HELP}`, 'MSH-18');
+    }
+}
+
 // ---- Parsing ----
 
 export const MAX_SEGMENTS = 2000;
@@ -119,11 +143,21 @@ export function ack(message, code, text, {error} = {}) {
 }
 
 const HL7_ERROR = {no_msh: '100^Segment sequence error^HL70357', no_pid: '100^Segment sequence error^HL70357', no_obr: '100^Segment sequence error^HL70357',
-    no_txa: '100^Segment sequence error^HL70357', unsupported_message: '200^Unsupported message type^HL70357'};
+    no_txa: '100^Segment sequence error^HL70357', unsupported_message: '200^Unsupported message type^HL70357', charset: '103^Table value not found^HL70357'};
+
+// For the ACK of a message that could not be decoded: its MSH read as plain bytes, or nothing.
+function rawMessage(body) {
+    try {
+        return parseMessage(Buffer.isBuffer(body) ? body.toString('latin1') : body);
+    } catch (_) {
+        return null;
+    }
+}
 
 export default async function hl7v2Routes(app) {
+    // Raw bytes: the character set is decided from MSH-18 (decodeMessage), not guessed.
     for (const type of [ER7, 'application/hl7-v2', 'text/plain']) {
-        app.addContentTypeParser(type, {parseAs: 'string', bodyLimit: MAX_MESSAGE_BYTES}, (request, body, done) => done(null, body));
+        app.addContentTypeParser(type, {parseAs: 'buffer', bodyLimit: MAX_MESSAGE_BYTES}, (request, body, done) => done(null, body));
     }
 
     // The access token is checked before the message is even read: without a valid one, nothing is parsed.
@@ -139,10 +173,11 @@ export default async function hl7v2Routes(app) {
         reply.type(ER7).header('Cache-Control', 'no-store');
         let message = null;
         try {
-            message = parseMessage(request.body);
+            message = parseMessage(decodeMessage(request.body));
         } catch (error) {
             if (!(error instanceof IngestError)) throw error;
-            return ack(null, 'AE', error.message, {error: {...error, message: error.message, hl7: HL7_ERROR[error.code]}});
+            const raw = error.code === 'charset' ? rawMessage(request.body) : null;
+            return ack(raw, 'AE', error.message, {error: {...error, message: error.message, hl7: HL7_ERROR[error.code]}});
         }
         let item;
         try {

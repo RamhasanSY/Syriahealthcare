@@ -100,6 +100,38 @@ describe('OAuth 2.0 client credentials', () => {
         assert.equal((await tokenRequest(c.client.client_id, c.client_secret)).statusCode, 401);
     });
 
+    test('an approved facility asks for a connection; admins get an email; creating the connection closes the request', async () => {
+        const pending = cookieOf(await post('/api/auth/facility/register', {name: 'Omar Ali', email: 'new-lab@example.org', password: 'facility password 123', consent: true, kind: 'lab'}));
+        assert.equal((await post('/api/facility/api-client-requests', {software: 'LabSoft 5'}, {cookie: pending})).json().error, 'facility_not_approved');
+        assert.equal((await get('/api/facility/api-clients', pending)).json().approved, false);
+
+        const lab = await facility();
+        const admin = await signIn(post, 'admin', 'admin@example.org');
+        assert.equal((await post('/api/facility/api-client-requests', {software: ' '}, {cookie: lab.cookie})).json().error, 'invalid_software');
+        const asked = await post('/api/facility/api-client-requests', {software: 'LabSoft 5', contact: 'Sami, 0944 000 111'}, {cookie: lab.cookie});
+        assert.equal(asked.statusCode, 201, asked.body);
+        assert.equal((await post('/api/facility/api-client-requests', {software: 'Other'}, {cookie: lab.cookie})).json().error, 'already_requested');
+        const email = mail.sent.find(m => m.to === 'admin@example.org');
+        assert.match(email.subject, /Al Shifa Laboratory/);
+        assert.match(email.text, /LabSoft 5[\s\S]*Sami, 0944 000 111/);
+        const mine = (await get('/api/facility/api-clients', lab.cookie)).json();
+        assert.deepEqual([mine.approved, mine.kind, mine.request.software, mine.health_file], [true, 'lab', 'LabSoft 5', config.healthFile]);
+
+        const list = (await get('/api/admin/api-clients', admin)).json();
+        assert.deepEqual(list.requests.map(r => [r.facility_name, r.software, r.kind]), [['Al Shifa Laboratory', 'LabSoft 5', 'lab']]);
+        assert.equal((await post('/api/admin/api-clients', {facility_id: lab.id, name: 'LabSoft 5', scopes: ['system/DiagnosticReport.c']}, {cookie: admin})).statusCode, 201);
+        assert.equal((await get('/api/admin/api-clients', admin)).json().requests.length, 0, 'answered by the new connection');
+        assert.equal((await get('/api/facility/api-clients', lab.cookie)).json().request, null);
+
+        // Asked again (e.g. for a second program) and closed without a connection: only admins can close.
+        await post('/api/facility/api-client-requests', {software: 'Imaging viewer'}, {cookie: lab.cookie});
+        const [open] = (await get('/api/admin/api-clients', admin)).json().requests;
+        assert.equal((await post(`/api/admin/api-client-requests/${open.id}/close`, {}, {cookie: lab.cookie})).statusCode, 403);
+        assert.equal((await post(`/api/admin/api-client-requests/${open.id}/close`, {}, {cookie: admin})).statusCode, 200);
+        assert.equal((await post(`/api/admin/api-client-requests/${open.id}/close`, {}, {cookie: admin})).statusCode, 404);
+        assert.equal((await get('/api/facility/api-clients', lab.cookie)).json().request, null);
+    });
+
     test('only administrators create clients, and only labs and imaging centres may send results', async () => {
         const lab = await facility();
         const hospital = await facility('hospital', 'hospital@example.org', 'City Hospital');
@@ -173,6 +205,38 @@ describe('FHIR transaction from lab software', () => {
         const huge = await app.inject({method: 'POST', url: '/fhir/r4', payload: '{"x":"' + 'a'.repeat(8 * 1024 * 1024 + 10) + '"}',
             headers: {'content-type': 'application/fhir+json', authorization: `Bearer ${accessToken}`}});
         assert.equal(huge.statusCode, 413);
+    });
+
+    test('a Bundle is all or nothing: one faulty result stores none, and the resend gets its slip code', async () => {
+        const lab = await facility();
+        const accessToken = await token(await client(lab.id));
+        const faulty = {fullUrl: 'urn:uuid:44444444-4444-4444-8444-444444444444', resource: {resourceType: 'DiagnosticReport', status: 'final',
+            identifier: [{value: 'LAB-2026-0002'}], code: {text: 'Glucose'}, subject: {reference: 'urn:uuid:11111111-1111-4111-8111-111111111111'}},
+            request: {method: 'POST', url: 'DiagnosticReport'}};
+        const refused = await sendBundle(reportBundle({extraEntries: [faulty]}), accessToken);
+        assert.equal(refused.statusCode, 400);
+        assert.deepEqual(refused.json().issue[0].expression, ['Bundle.entry[3].resource.presentedForm']);
+        assert.equal((await pool.query('SELECT count(*)::int AS n FROM lab_results')).rows[0].n, 0, 'nothing was stored');
+        const again = (await sendBundle(reportBundle(), accessToken)).json().entry[2].response;
+        assert.equal(again.status, '201 Created');
+        assert.match(again.outcome.issue[0].diagnostics, /[2-9A-HJ-NP-Z]{4}-[2-9A-HJ-NP-Z]{4}-[2-9A-HJ-NP-Z]{4}/, 'the slip code is not lost');
+    });
+
+    test('FHIR JSON must be UTF-8: other bytes are refused with a reason, a BOM is fine', async () => {
+        const lab = await facility();
+        const accessToken = await token(await client(lab.id));
+        const raw = payload => app.inject({method: 'POST', url: '/fhir/r4', payload,
+            headers: {'content-type': 'application/fhir+json; charset=utf-8', authorization: `Bearer ${accessToken}`}});
+        const json = JSON.stringify(reportBundle({labNumber: 'LAB-ARABIC'})).replace('"Haddad"', '"__NAME__"');
+        // "لينا" in Windows-1256 inside an otherwise ASCII body: not UTF-8.
+        const cp1256 = Buffer.concat(json.split('__NAME__').flatMap((part, i) => i ? [Buffer.from([0xE1, 0xED, 0xE4, 0xC7]), Buffer.from(part)] : [Buffer.from(part)]));
+        const refused = await raw(cp1256);
+        assert.equal(refused.statusCode, 400);
+        assert.match(refused.json().issue[0].diagnostics, /not valid UTF-8/);
+        const withBom = await raw(Buffer.concat([Buffer.from([0xEF, 0xBB, 0xBF]), Buffer.from(json.replace('__NAME__', 'حداد'))]));
+        assert.equal(withBom.statusCode, 200, withBom.body);
+        const {rows: [stored]} = await pool.query('SELECT patient_name FROM lab_results');
+        assert.equal(stored.patient_name, 'Lina حداد');
     });
 
     test('IHE MHD ITI-65: a discharge letter from a hospital goes into the file', async () => {
@@ -268,6 +332,28 @@ describe('HL7 v2 over HTTPS', () => {
         const docs = await token(await client(lab.id, ['system/DiagnosticReport.c']));
         const mdm = oru().replace('ORU^R01^ORU_R01', 'MDM^T02^MDM_T02') + '\rTXA|1|18842-5^Discharge letter|AP|||||||||DOC-1';
         assert.equal((await sendV2(mdm, docs)).statusCode, 403, 'documents need their own scope');
+    });
+
+    test('character sets: UTF-8 by default, Arabic Windows-1256 and ISO-8859-6 when MSH-18 says so, never stored garbled', async () => {
+        const lab = await facility();
+        const accessToken = await token(await client(lab.id));
+        // PID-5 given name "لينا" as raw bytes in the given character set; MSH-18 as given.
+        const message = (labNumber, charset, nameBytes) => {
+            const [head, tail] = oru({labNumber, control: labNumber}).replace('|P|2.5.1', `|P|2.5.1||||||${charset}`).split('Haddad^Lina');
+            return Buffer.concat([Buffer.from(head + 'Haddad^'), Buffer.from(nameBytes), Buffer.from(tail)]);
+        };
+        const cp1256 = [0xE1, 0xED, 0xE4, 0xC7], iso = [0xE4, 0xEA, 0xE6, 0xC7];
+        assert.equal(msa(await sendV2(message('W1', 'WINDOWS-1256', cp1256), accessToken))[1], 'AA');
+        assert.equal(msa(await sendV2(message('I1', '8859/6', iso), accessToken))[1], 'AA');
+        assert.equal(msa(await sendV2(message('U1', 'UNICODE UTF-8', Buffer.from('لينا')), accessToken))[1], 'AA');
+        const {rows} = await pool.query('SELECT external_id, patient_name FROM lab_results ORDER BY external_id');
+        assert.deepEqual(rows.map(r => [r.external_id, r.patient_name]), [['I1', 'لينا Haddad'], ['U1', 'لينا Haddad'], ['W1', 'لينا Haddad']]);
+        // Windows-1256 bytes without MSH-18: refused with the reason, and the ACK still names the message.
+        const [, code, control, text] = msa(await sendV2(message('X1', '', cp1256), accessToken));
+        assert.deepEqual([code, control], ['AE', 'X1']);
+        assert.match(text, /not valid UTF-8.*MSH-18/);
+        assert.equal(msa(await sendV2(message('X2', 'ISO IR87', cp1256), accessToken))[1], 'AE', 'an unknown character set');
+        assert.equal((await pool.query('SELECT count(*)::int AS n FROM lab_results')).rows[0].n, 3);
     });
 
     test('with the health file off, results are kept as slip results and nothing is delivered', async () => {

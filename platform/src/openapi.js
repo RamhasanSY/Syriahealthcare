@@ -98,7 +98,9 @@ export const SUMMARIES = {
     'GET /api/admin/api-clients': 'Administrator: software connections (OAuth clients) of facilities.',
     'POST /api/admin/api-clients': 'Administrator: create a connection for an approved facility; the secret is shown only in this answer.',
     'POST /api/admin/api-clients/{id}/revoke': 'Administrator: end a connection at once.',
-    'GET /api/facility/api-clients': 'Facility: own software connections (never secrets) and the addresses to send to.',
+    'GET /api/facility/api-clients': 'Facility: own software connections (never secrets), an open request, and the addresses to send to.',
+    'POST /api/facility/api-client-requests': 'Facility (approved): ask for a software connection; every administrator gets an email.',
+    'POST /api/admin/api-client-requests/{id}/close': 'Administrator: close a connection request without creating a connection.',
     // Lab services: price list and home sample collection
     'GET /api/facility/tests': 'Lab: own price list.',
     'POST /api/facility/tests': 'Lab: add a test with price, time to result and a note.',

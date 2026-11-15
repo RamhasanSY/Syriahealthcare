@@ -5,6 +5,7 @@
 import {randomBytes} from 'node:crypto';
 import {HttpError, requireRole} from './auth.js';
 import {audit} from './db.js';
+import {notifyAdminsOfConnectionRequest} from './notify.js';
 import {createHmac, timingSafeEqual} from 'node:crypto';
 import {sha256} from './security.js';
 
@@ -90,7 +91,12 @@ export default async function oauthRoutes(app) {
     app.get('/api/admin/api-clients', adminOnly, async () => {
         const {rows} = await app.pg.query(
             `SELECT c.*, p.facility_name FROM api_clients c JOIN facility_profiles p ON p.user_id = c.facility_id ORDER BY c.created_at DESC`);
-        return {clients: rows.map(view), scopes: SCOPES};
+        // Open requests from facilities, oldest first; only those that are still approved and active can get a connection.
+        const {rows: requests} = await app.pg.query(
+            `SELECT r.id, r.facility_id, r.software, r.contact, r.created_at, p.facility_name, p.kind, u.name AS account_name, u.email
+             FROM api_client_requests r JOIN facility_profiles p ON p.user_id = r.facility_id JOIN users u ON u.id = r.facility_id
+             WHERE r.closed_at IS NULL AND p.status = 'approved' AND u.disabled_at IS NULL ORDER BY r.created_at`);
+        return {clients: rows.map(view), scopes: SCOPES, requests};
     });
 
     // The secret is in this answer only; afterwards nobody can read it, not even administrators.
@@ -110,6 +116,9 @@ export default async function oauthRoutes(app) {
         const {rows: [client]} = await app.pg.query(
             `INSERT INTO api_clients (facility_id, name, client_id, secret_hash, scopes, created_by) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
             [facility.user_id, name, newClientId(), secretHash(app.config.otpSecret, secret), request.body.scopes, request.user.id]);
+        // The facility's open request is answered by this connection.
+        await app.pg.query('UPDATE api_client_requests SET closed_at = now(), closed_by = $2 WHERE facility_id = $1 AND closed_at IS NULL',
+            [facility.user_id, request.user.id]);
         await audit(app.pg, {actorId: request.user.id, action: 'api_client.created', targetId: client.id, details: {facility_id: facility.user_id, scopes: client.scopes}, ip: request.ip});
         reply.code(201);
         return {client: view({...client, facility_name: facility.facility_name}), client_secret: secret, token_url: `${app.config.appOrigin}/oauth/token`};
@@ -123,11 +132,45 @@ export default async function oauthRoutes(app) {
         return {revoked: true};
     });
 
-    // A facility sees its own connections (never secrets) on the "Connect your software" page.
-    app.get('/api/facility/api-clients', {preHandler: requireRole('facility')}, async request => {
+    // Closing a request without a connection (for example a duplicate, or after a phone call). The facility may ask again.
+    app.post('/api/admin/api-client-requests/:id/close', {...adminOnly, schema: {params: {type: 'object', properties: {id: {type: 'string', format: 'uuid'}}}}}, async request => {
+        const {rows: [closed]} = await app.pg.query(
+            'UPDATE api_client_requests SET closed_at = now(), closed_by = $2 WHERE id = $1 AND closed_at IS NULL RETURNING id, facility_id',
+            [request.params.id, request.user.id]);
+        if (!closed) throw new HttpError(404, 'not_found', 'Open request not found.');
+        await audit(app.pg, {actorId: request.user.id, action: 'api_client.request_closed', targetId: closed.facility_id, ip: request.ip});
+        return {closed: true};
+    });
+
+    // A facility sees its own connections (never secrets) and its open request on the "Connect your software" page.
+    const facilityOnly = {preHandler: requireRole('facility')};
+    const requestView = r => r && {software: r.software, contact: r.contact, created_at: r.created_at};
+    app.get('/api/facility/api-clients', facilityOnly, async request => {
         const {rows} = await app.pg.query('SELECT c.*, NULL AS facility_name FROM api_clients c WHERE c.facility_id = $1 ORDER BY c.created_at DESC', [request.user.id]);
+        const {rows: [open]} = await app.pg.query('SELECT * FROM api_client_requests WHERE facility_id = $1 AND closed_at IS NULL', [request.user.id]);
+        const {rows: [profile]} = await app.pg.query('SELECT status, kind FROM facility_profiles WHERE user_id = $1', [request.user.id]);
         return {clients: rows.map(view), scopes: SCOPES, token_url: `${app.config.appOrigin}/oauth/token`,
-            fhir_base: `${app.config.appOrigin}/fhir/r4`, hl7v2_url: `${app.config.appOrigin}/hl7v2`};
+            fhir_base: `${app.config.appOrigin}/fhir/r4`, hl7v2_url: `${app.config.appOrigin}/hl7v2`,
+            approved: profile?.status === 'approved', kind: profile?.kind || null, request: requestView(open) || null,
+            // While patients have no health files, every result is answered with a slip code.
+            health_file: app.config.healthFile};
+    });
+
+    app.post('/api/facility/api-client-requests', {...facilityOnly, config: {rateLimit: {max: 10, timeWindow: '1 hour'}},
+        schema: {body: {type: 'object', required: ['software'], additionalProperties: false, properties: {
+            software: {type: 'string', maxLength: 120}, contact: {type: 'string', maxLength: 300}}}}}, async (request, reply) => {
+        const software = request.body.software.trim(), contact = String(request.body.contact || '').trim() || null;
+        if (software.length < 2) throw new HttpError(400, 'invalid_software', 'Write the name of your software.');
+        const {rows: [profile]} = await app.pg.query('SELECT status, facility_name FROM facility_profiles WHERE user_id = $1', [request.user.id]);
+        if (profile?.status !== 'approved') throw new HttpError(403, 'facility_not_approved', 'Your facility must be approved before it can connect software.');
+        const {rows: [created]} = await app.pg.query(
+            `INSERT INTO api_client_requests (facility_id, software, contact) VALUES ($1, $2, $3)
+             ON CONFLICT (facility_id) WHERE closed_at IS NULL DO NOTHING RETURNING *`, [request.user.id, software, contact]);
+        if (!created) throw new HttpError(409, 'already_requested', 'You have already asked for a connection. We will contact you.');
+        await audit(app.pg, {actorId: request.user.id, action: 'api_client.requested', targetId: request.user.id, details: {software}, ip: request.ip});
+        await notifyAdminsOfConnectionRequest(app, request.user, profile.facility_name, software, contact);
+        reply.code(201);
+        return {request: requestView(created)};
     });
 }
 

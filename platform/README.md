@@ -36,7 +36,7 @@ All of this is built and tested but **switched off** until the new privacy polic
 
 - **Patients** (`/file`) get a SyriaHC patient number (`SHC-XXXX-XXXX-X`), a timeline of their entries, children's profiles, uploads of photos and PDFs (several pages; location data removed, active PDFs refused, encrypted at rest), a bin with 30 days to restore, and can take a lab result into their file with the slip code plus their birth year or the last 3 digits of their mobile number.
 - **Sharing**: patients share single entries with a doctor (1, 30 or 90 days; when booking until 30 days after the appointment; or a QR code for 15 minutes) and see who opened what. Doctors confirm with an emailed code first and find everyone in "My patients".
-- **Software**: an admin creates a connection for an approved lab or clinic (`/admin`, the secret is shown once). The software gets a token at `/oauth/token` and sends results as FHIR (`POST /fhir/r4`, transaction Bundle or IHE MHD ITI-65) or HL7 v2 (`POST /hl7v2`, ORU^R01 or MDM^T02). A result reaches the patient's file only when the SyriaHC number and birth year match; otherwise the lab gets a slip code to print.
+- **Software** (works with `HEALTH_FILE=off` too): an approved lab or clinic asks for a connection on `/connect` (every admin gets an email), and an admin creates it in `/admin` → "Software connections" (the request is filled in with one click; the secret is shown once — hand it over in person or by phone). The software gets a token at `/oauth/token` and sends results as FHIR (`POST /fhir/r4`, transaction Bundle or IHE MHD ITI-65) or HL7 v2 (`POST /hl7v2`, ORU^R01 or MDM^T02). A result reaches the patient's file only when the health file is on and the SyriaHC number and birth year match; otherwise — and always while `HEALTH_FILE=off` — the lab gets a slip code to print, which the patient's doctor scans. A Bundle with several results is all or nothing. Text must be UTF-8; HL7 v2 may name `8859/6` or `WINDOWS-1256` in MSH-18 instead, anything else is refused rather than stored garbled.
 - Two profiles of the same person: `npm run merge-patients -- SHC-AAAA-BBBB-C SHC-DDDD-EEEE-F` (the first goes into the second).
 
 ### Lab services
@@ -182,6 +182,7 @@ Emails (Arabic and English, the account's language first, plain text only):
 |---|---|
 | A doctor or facility creates an account | them: welcome and next steps |
 | A profile is sent for review | every admin, with a link to `/admin` |
+| A facility asks for a software connection | every admin, with the software's name and a link to `/admin` |
 | Approved, changes needed, suspended | the doctor or facility, with the admin's note |
 | Forgot password, password changed | the account holder |
 
