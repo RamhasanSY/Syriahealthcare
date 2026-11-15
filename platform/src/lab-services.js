@@ -7,6 +7,8 @@ import {facilityServices} from './catalog.js';
 import {audit} from './db.js';
 import {sendEmail} from './notify.js';
 import {normalizePhone} from './security.js';
+import {pushToUser} from './push.js';
+import {packagesOf} from './lab-packages.js';
 
 const LAB_KINDS = ['lab', 'imaging'];
 export const WINDOWS = {morning: ['Morning (8–11)', 'صباحاً (8–11)'], midday: ['Midday (11–14)', 'ظهراً (11–14)'],
@@ -24,6 +26,13 @@ const testView = t => ({id: t.id, name: t.name, service: t.service, price_syp: t
 const visitView = v => ({id: v.id, facility_id: v.facility_id, lab_name: v.lab_name, lab_phone: v.lab_phone, visit_date: v.visit_date,
     time_window: v.time_window, address: v.address, phone: v.phone, tests: v.tests, status: v.status, arrival_time: v.arrival_time,
     lab_note: v.lab_note, patient_name: v.patient_name, subject_name: v.subject_name, created_at: v.created_at});
+
+// Push texts without the lab's name (src/push.js).
+const VISIT_PUSH = {
+    confirmed: {title: ['Home visit confirmed', 'تم تأكيد الزيارة المنزلية'], body: ['Open SyriaHC to see the arrival time.', 'افتح صحة تك لمعرفة موعد الوصول.']},
+    declined: {title: ['Home visit declined', 'تم الاعتذار عن الزيارة المنزلية'], body: ['Open SyriaHC to see why.', 'افتح صحة تك لمعرفة السبب.']},
+    cancelled_by_lab: {title: ['Home visit cancelled', 'تم إلغاء الزيارة المنزلية'], body: ['Open SyriaHC to see why.', 'افتح صحة تك لمعرفة السبب.']}
+};
 
 const VISIT_SQL = `SELECT v.*, p.facility_name AS lab_name, p.phone AS lab_phone, u.name AS patient_name, s.name AS subject_name
     FROM home_visits v JOIN facility_profiles p ON p.user_id = v.facility_id JOIN users u ON u.id = v.patient_id
@@ -130,7 +139,8 @@ export default async function labServiceRoutes(app) {
         if (!lab) throw new HttpError(404, 'not_found', 'Lab not found.');
         const {rows: tests} = await app.pg.query('SELECT * FROM lab_tests WHERE facility_id = $1 ORDER BY lower(name)', [lab.id]);
         const updated = tests.reduce((max, t) => (!max || t.updated_at > max ? t.updated_at : max), null);
-        return {lab: {...lab, home_collection: (lab.services || []).includes('home_collection')}, tests: tests.map(testView), prices_updated_at: updated, windows: WINDOWS};
+        return {lab: {...lab, home_collection: (lab.services || []).includes('home_collection')}, tests: tests.map(testView), prices_updated_at: updated, windows: WINDOWS,
+            packages: await packagesOf(app.pg, [lab.id])};
     });
 
     // ---- Home sample collection: patients ----
@@ -165,6 +175,8 @@ export default async function labServiceRoutes(app) {
             text: `A patient asks for home sample collection on ${day} (${WINDOWS[visit.time_window][0]}). Open ${app.config.appOrigin}/home-visits to confirm or decline.\n\n` +
                 `طلب مريض سحب العينات من المنزل في ${day} (${WINDOWS[visit.time_window][1]}). افتح ${app.config.appOrigin}/home-visits للتأكيد أو الاعتذار.`
         });
+        await pushToUser(app, lab.user_id, {title: ['New home visit request', 'طلب زيارة منزلية جديد'], body: ['Open home visits to confirm or decline.', 'افتح الزيارات المنزلية للتأكيد أو الاعتذار.'],
+            url: '/home-visits', tag: 'home-visits'});
         reply.code(201);
         return {visit: visitView({...visit, lab_name: lab.facility_name})};
     });
@@ -228,6 +240,7 @@ export default async function labServiceRoutes(app) {
             if (['confirmed', 'declined', 'cancelled_by_lab'].includes(rule.to)) {
                 const {rows: [patient]} = await app.pg.query('SELECT email, language FROM users WHERE id = $1', [visit.patient_id]);
                 if (patient?.email) await sendEmail(app, patient.email, visitEmail(patient, {...visit, lab_name: lab.facility_name}, rule.to));
+                await pushToUser(app, visit.patient_id, {...VISIT_PUSH[rule.to], url: '/appointments', tag: `visit-${visit.id}`});
             }
             return {visit: {id: visit.id, status: visit.status, arrival_time: visit.arrival_time, lab_note: visit.lab_note}};
         });

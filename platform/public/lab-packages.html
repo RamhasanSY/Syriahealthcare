@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="ar" dir="rtl" data-title-en="Packages — SyriaHC" data-title-ar="الباقات — صحة تك">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#1a3a5c">
+<title>الباقات — صحة تك</title>
+<link rel="manifest" href="/manifest.webmanifest"><link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/assets/app.css">
+<script src="/assets/common.js" defer></script><script src="/assets/lab-packages.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#main" data-en="Skip to content" data-ar="انتقل إلى المحتوى">انتقل إلى المحتوى</a>
+<header class="top"><div class="top-inner"><a class="brand" href="/account"><img src="/assets/logo.svg" alt=""><span data-en="SyriaHC" data-ar="صحة تك">صحة تك</span></a><div class="top-actions"><button class="lang" id="langToggle" type="button">English</button></div></div></header>
+<main id="main" class="wrap wide" aria-busy="true">
+  <h1 data-en="Packages" data-ar="الباقات">الباقات</h1>
+  <p class="lead" data-en="Bundle tests from your price list at one price, for example a general check-up. Patients compare packages on app.syriahc.com/packages. The saving against the single prices is shown automatically." data-ar="اجمعوا تحاليل من قائمة أسعاركم بسعر واحد، مثل فحص شامل. يقارن المرضى الباقات على app.syriahc.com/packages. يظهر التوفير مقارنة بالأسعار المنفردة تلقائياً.">اجمعوا تحاليل من قائمة أسعاركم بسعر واحد، مثل فحص شامل. يقارن المرضى الباقات على app.syriahc.com/packages. يظهر التوفير مقارنة بالأسعار المنفردة تلقائياً.</p>
+  <div class="msg error" id="pageError" role="alert" tabindex="-1" hidden></div>
+  <div class="msg info" id="noTests" hidden><span data-en="Add tests to your price list first." data-ar="أضيفوا تحاليل إلى قائمة الأسعار أولاً.">أضيفوا تحاليل إلى قائمة الأسعار أولاً.</span> <a href="/lab-tests" data-en="Price list" data-ar="قائمة الأسعار">قائمة الأسعار</a></div>
+  <section class="card wide-card" id="formCard" hidden aria-labelledby="formTitle">
+    <h2 id="formTitle" tabindex="-1" data-en="New package" data-ar="باقة جديدة">باقة جديدة</h2>
+    <div class="msg error" id="formError" role="alert" tabindex="-1" hidden></div>
+    <form id="form" novalidate>
+      <div class="field-row">
+        <label class="field"><span data-en="Name" data-ar="الاسم">الاسم</span><input type="text" id="name" maxlength="120" dir="auto" required></label>
+        <label class="field"><span data-en="Topic" data-ar="الموضوع">الموضوع</span><select id="topic"></select></label>
+        <label class="field"><span data-en="Package price (SYP)" data-ar="سعر الباقة (ل.س)">سعر الباقة (ل.س)</span><input type="number" id="price" min="0" inputmode="numeric" required dir="ltr"></label>
+      </div>
+      <label class="field"><span data-en="Description (optional)" data-ar="الوصف (اختياري)">الوصف (اختياري)</span><input type="text" id="description" maxlength="300" dir="auto"></label>
+      <fieldset class="plain"><legend data-en="Tests in the package" data-ar="التحاليل في الباقة">التحاليل في الباقة</legend><p class="hint" id="sum" role="status"></p><div class="check-list" id="tests"></div></fieldset>
+      <label class="check" for="active"><input type="checkbox" id="active" checked><span data-en="Show to patients" data-ar="إظهار للمرضى">إظهار للمرضى</span></label>
+      <div class="actions"><button class="btn" type="submit" id="save" data-en="Save package" data-ar="حفظ الباقة">حفظ الباقة</button><button class="btn ghost" type="button" id="cancelEdit" hidden data-en="Cancel" data-ar="إلغاء">إلغاء</button></div>
+    </form>
+  </section>
+  <p class="results-count" id="announce" role="status" tabindex="-1"></p>
+  <ul class="appt-list" id="list"></ul>
+</main>
+<footer><div class="wrap"><a href="/account" data-en="← My account" data-ar="حسابي ←">حسابي ←</a><a href="/lab-tests" data-en="Price list" data-ar="قائمة الأسعار">قائمة الأسعار</a></div></footer>
+</body>
+</html>

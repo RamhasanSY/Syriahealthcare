@@ -6,6 +6,9 @@ import {governorates, specialties} from './catalog.js';
 import {audit} from './db.js';
 import {slotsFor} from './schedule.js';
 import {localDate} from './slots.js';
+import {pushToUser} from './push.js';
+import {notifyWaitlist} from './appointment-comfort.js';
+import {ratingSummaries} from './reviews.js';
 
 const MAX_ACTIVE = 5;             // upcoming requested/confirmed appointments per patient
 const MAX_ACTIVE_PER_DOCTOR = 2;  // ...of which with the same doctor
@@ -32,16 +35,19 @@ export default async function appointmentRoutes(app) {
         if (q?.trim()) where.push(`(u.name ILIKE $${args.push('%' + q.trim().replace(/[%_\\]/g, '\\$&') + '%')} OR p.clinic_name ILIKE $${args.length} OR p.area ILIKE $${args.length})`);
         const {rows} = await app.pg.query(
             `SELECT ${PUBLIC_DOCTOR} FROM users u JOIN doctor_profiles p ON p.user_id = u.id WHERE ${where.join(' AND ')} ORDER BY u.name LIMIT 200`, args);
-        return {doctors: rows};
+        const ratings = await ratingSummaries(app.pg, rows.map(d => d.id));
+        return {doctors: rows.map(d => ({...d, rating: ratings.get(d.id) || {count: 0, average: null}}))};
     });
 
     app.get('/api/doctors/:id', {config: {cache: 'public, max-age=60'}, schema: uuidParam}, async request => {
         const {rows: [doctor]} = await app.pg.query(
-            `SELECT ${PUBLIC_DOCTOR}, COALESCE(s.slot_minutes, 20) AS slot_minutes
+            `SELECT ${PUBLIC_DOCTOR}, COALESCE(s.slot_minutes, 20) AS slot_minutes, p.video_enabled
              FROM users u JOIN doctor_profiles p ON p.user_id = u.id LEFT JOIN doctor_schedules s ON s.doctor_id = u.id
              WHERE u.id = $1 AND ${APPROVED}`, [request.params.id]);
         if (!doctor) throw new HttpError(404, 'not_found', 'Doctor not found.');
-        return {doctor};
+        const rating = (await ratingSummaries(app.pg, [doctor.id])).get(doctor.id) || {count: 0, average: null};
+        const {video_enabled: video, ...rest} = doctor;
+        return {doctor: {...rest, rating, video: Boolean(app.config.video?.enabled && video)}};
     });
 
     app.post('/api/appointments', {
@@ -49,6 +55,7 @@ export default async function appointmentRoutes(app) {
         config: {rateLimit: {max: 30, timeWindow: '15 minutes'}},
         schema: {body: {type: 'object', required: ['doctor_id', 'starts_at'], additionalProperties: false, properties: {
             doctor_id: {type: 'string', format: 'uuid'}, starts_at: {type: 'string', format: 'date-time'}, reason: {type: 'string', maxLength: 300},
+            mode: {enum: ['in_person', 'video']},
             subject_id: {type: 'string', format: 'uuid'},
             // Entries of the health file to share with the doctor until 30 days after the appointment (stage 2c).
             share_item_ids: {type: 'array', maxItems: 100, uniqueItems: true, items: {type: 'string', format: 'uuid'}}
@@ -59,8 +66,11 @@ export default async function appointmentRoutes(app) {
         if (Number.isNaN(start.getTime())) throw new HttpError(400, 'invalid_time', 'Choose a time from the list.');
 
         const {rows: [doctor]} = await app.pg.query(
-            `SELECT u.id FROM users u JOIN doctor_profiles p ON p.user_id = u.id WHERE u.id = $1 AND ${APPROVED}`, [doctorId]);
+            `SELECT u.id, p.video_enabled FROM users u JOIN doctor_profiles p ON p.user_id = u.id WHERE u.id = $1 AND ${APPROVED}`, [doctorId]);
         if (!doctor) throw new HttpError(404, 'not_found', 'Doctor not found.');
+        // Video consultations: only where the platform offers them and this doctor switched them on (src/video.js).
+        const mode = request.body.mode || 'in_person';
+        if (mode === 'video' && !(app.config.video?.enabled && doctor.video_enabled)) throw new HttpError(400, 'video_unavailable', 'This doctor does not offer video consultations.');
         // For whom: the own profile, or (with subject_id) a child's profile of this login (stage 2b).
         const subject = request.body.subject_id ? await patientFor(app.pg, request.user, request.body.subject_id) : await ensureSelfProfile(app.pg, request.user);
 
@@ -81,8 +91,8 @@ export default async function appointmentRoutes(app) {
         let appointment;
         try {
             ({rows: [appointment]} = await app.pg.query(
-                `INSERT INTO appointments (doctor_id, patient_id, starts_at, ends_at, reason, subject_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
-                [doctorId, patientId, slot.starts_at, slot.ends_at, request.body.reason?.trim() || null, subject.id]));
+                `INSERT INTO appointments (doctor_id, patient_id, starts_at, ends_at, reason, subject_id, mode) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+                [doctorId, patientId, slot.starts_at, slot.ends_at, request.body.reason?.trim() || null, subject.id, mode]));
         } catch (error) {
             // Someone else booked it a moment earlier, or the patient already has something at that time.
             if (error.code === '23P01' && error.constraint === 'no_double_booking_patient') throw new HttpError(409, 'patient_busy', 'You already have an appointment at this time.');
@@ -90,6 +100,9 @@ export default async function appointmentRoutes(app) {
             throw error;
         }
         await audit(app.pg, {actorId: patientId, action: 'appointment.requested', targetId: appointment.id, details: {doctor_id: doctorId}, ip: request.ip});
+        await app.pg.query('DELETE FROM waitlist_entries WHERE patient_id = $1 AND doctor_id = $2', [patientId, doctorId]);
+        await pushToUser(app, doctorId, {title: ['New appointment request', 'طلب موعد جديد'], body: ['Open your appointments to confirm or decline.', 'افتح المواعيد للتأكيد أو الاعتذار.'],
+            url: '/dashboard', tag: 'requests'});
         if (request.body.share_item_ids?.length) {
             try {
                 await shareForAppointment(app, request, {subjectId: subject.id, doctorId, appointment, ids: request.body.share_item_ids});
@@ -100,12 +113,12 @@ export default async function appointmentRoutes(app) {
             }
         }
         reply.code(201);
-        return {appointment: {id: appointment.id, status: appointment.status, starts_at: appointment.starts_at, ends_at: appointment.ends_at}};
+        return {appointment: {id: appointment.id, status: appointment.status, starts_at: appointment.starts_at, ends_at: appointment.ends_at, mode: appointment.mode}};
     });
 
     app.get('/api/appointments/mine', {preHandler: patientOnly}, async request => {
         const {rows} = await app.pg.query(
-            `SELECT a.id, a.status, a.starts_at, a.ends_at, a.reason, a.status_note, a.created_at,
+            `SELECT a.id, a.status, a.starts_at, a.ends_at, a.reason, a.status_note, a.created_at, a.reschedule_count, a.mode,
                     u.id AS doctor_id, u.name AS doctor_name, p.specialty, p.clinic_name, p.clinic_address, p.clinic_phone, p.area, p.governorate
              FROM appointments a JOIN users u ON u.id = a.doctor_id JOIN doctor_profiles p ON p.user_id = a.doctor_id
              WHERE a.patient_id = $1 ORDER BY a.starts_at DESC LIMIT 100`, [request.user.id]);
@@ -116,7 +129,7 @@ export default async function appointmentRoutes(app) {
         body: {type: 'object', additionalProperties: false, properties: {note: {type: 'string', maxLength: 300}}}}}, async request => {
         const {rows: [appointment]} = await app.pg.query(
             `UPDATE appointments SET status = 'cancelled_by_patient', status_note = $3, updated_at = now()
-             WHERE id = $1 AND patient_id = $2 AND status IN ${ACTIVE} AND starts_at > now() RETURNING id, status`,
+             WHERE id = $1 AND patient_id = $2 AND status IN ${ACTIVE} AND starts_at > now() RETURNING id, status, doctor_id, starts_at`,
             [request.params.id, request.user.id, request.body?.note?.trim() || null]);
         if (!appointment) {
             const {rows: [exists]} = await app.pg.query('SELECT 1 FROM appointments WHERE id = $1 AND patient_id = $2', [request.params.id, request.user.id]);
@@ -124,7 +137,10 @@ export default async function appointmentRoutes(app) {
             throw new HttpError(409, 'cannot_cancel', 'This appointment can no longer be cancelled.');
         }
         await audit(app.pg, {actorId: request.user.id, action: 'appointment.cancelled_by_patient', targetId: appointment.id, ip: request.ip});
+        await pushToUser(app, appointment.doctor_id, {title: ['Appointment cancelled by the patient', 'ألغى مريض موعده'], body: ['The time is free again.', 'أصبح الوقت متاحاً من جديد.'],
+            url: '/dashboard', tag: `appointment-${appointment.id}`});
         await app.pg.query('UPDATE access_grants SET revoked_at = COALESCE(revoked_at, now()) WHERE appointment_id = $1', [appointment.id]);
-        return {appointment};
+        await notifyWaitlist(app, appointment.doctor_id, appointment.starts_at);
+        return {appointment: {id: appointment.id, status: appointment.status}};
     });
 }

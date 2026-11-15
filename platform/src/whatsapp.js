@@ -9,7 +9,7 @@ export const DEFAULT_BLOCKED_PREFIXES = ['+963', '+53', '+98', '+850'];
 
 // Template names in WhatsApp Manager, by message (appointment messages by the appointment's new status).
 export const TEMPLATES = {code: 'shc_login_code', confirmed: 'shc_appointment_confirmed', declined: 'shc_appointment_declined',
-    cancelled_by_doctor: 'shc_appointment_cancelled'};
+    cancelled_by_doctor: 'shc_appointment_cancelled', reminder: 'shc_appointment_reminder'};
 
 // Template values may not contain line breaks, tabs or more than four spaces in a row.
 const clean = value => String(value ?? '').replace(/\s+/g, ' ').trim().slice(0, 300) || '-';

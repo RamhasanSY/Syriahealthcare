@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
             [tr('Running for', 'يعمل منذ'), days(s.uptime_s)], [tr('Memory', 'الذاكرة'), `${s.rss_mb} MB`],
             [tr('Delay p50 / p99', 'التأخير p50 / p99'), `${ms(s.event_loop_ms.p50)} / ${ms(s.event_loop_ms.p99)}`],
             [tr('Requests / errors', 'الطلبات / الأخطاء'), `${data.requests.requests} / ${data.requests.server_errors}`],
-            [tr('Database', 'قاعدة البيانات'), `${d.size_mb} MB · ${d.connections} ${tr('connections', 'اتصالات')} · ${Math.round(d.cache_hit_ratio * 1000) / 10}% ${tr('from memory', 'من الذاكرة')}`],
+            [tr('Database', 'قاعدة البيانات'), `${d.size_mb ?? '—'} MB · ${d.connections ?? '—'} ${tr('connections', 'اتصالات')} · ${d.cache_hit_ratio === null ? '—' : Math.round(d.cache_hit_ratio * 1000) / 10}% ${tr('from memory', 'من الذاكرة')}`],
             [tr('Email queue', 'طابور البريد'), `${data.email.waiting} ${tr('waiting', 'بالانتظار')} · ${data.email.failed_week} ${tr('failed (7 days)', 'فشلت (7 أيام)')}`],
             [tr('Disk', 'القرص'), data.disk ? `${data.disk.free_gb} / ${data.disk.total_gb} GB ${tr('free', 'متاح')}` : '—']
         ]));

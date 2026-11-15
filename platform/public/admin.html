@@ -5,7 +5,7 @@
 <title>المراجعة — صحة تك</title>
 <link rel="manifest" href="/manifest.webmanifest"><link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/assets/app.css">
-<script src="/assets/common.js" defer></script><script src="/assets/admin.js" defer></script><script src="/assets/connections.js" defer></script><script src="/assets/status.js" defer></script>
+<script src="/assets/common.js" defer></script><script src="/assets/admin.js" defer></script><script src="/assets/connections.js" defer></script><script src="/assets/status.js" defer></script><script src="/assets/admin-reviews.js" defer></script>
 </head>
 <body>
 <a class="skip" href="#main" data-en="Skip to content" data-ar="انتقل إلى المحتوى">انتقل إلى المحتوى</a>
@@ -79,6 +79,13 @@
     </form>
     <ul class="appt-list" id="connList"></ul>
   </section>
+  <details class="card wide-card" id="reviewsBox">
+    <summary><h2 class="inline-h" data-en="Reviews to check" data-ar="تقييمات للمراجعة">تقييمات للمراجعة</h2></summary>
+    <p class="hint" data-en="Publish reviews that describe the visit. Reject insults, false facts, advertising and personal data (also of other people)." data-ar="انشر التقييمات التي تصف الزيارة. ارفض الإهانات والمعلومات الخاطئة والإعلانات والبيانات الشخصية (ولو لأشخاص آخرين).">انشر التقييمات التي تصف الزيارة. ارفض الإهانات والمعلومات الخاطئة والإعلانات والبيانات الشخصية (ولو لأشخاص آخرين).</p>
+    <div class="msg error" id="reviewsError" role="alert" tabindex="-1" hidden></div>
+    <p class="results-count" id="reviewsCount" role="status" tabindex="-1"></p>
+    <ul class="appt-list" id="reviewsList"></ul>
+  </details>
   <details class="card wide-card" id="statusBox">
     <summary><h2 class="inline-h" data-en="System status" data-ar="حالة النظام">حالة النظام</h2></summary>
     <div class="msg error" id="statusError" role="alert" tabindex="-1" hidden></div>

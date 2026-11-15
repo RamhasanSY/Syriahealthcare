@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const file = await api('/api/file');
         const self = file.ok ? file.data.profiles.find(p => p.relationship === 'self') : null;
         if (file.ok) Shc.saveProfiles(file.data.profiles);
-        $('fileLink').hidden = !file.ok;
+        $('fileLink').hidden = $('medsLink').hidden = !file.ok;
         $('numberLabel').hidden = $('userNumber').hidden = !self;
         $('userNumber').textContent = self ? self.patient_number : '';
     }
@@ -48,10 +48,24 @@ document.addEventListener('DOMContentLoaded', async () => {
         $('connectLink').hidden = !(profile.ok && facilityStatus === 'approved');
         // Labs and imaging centres keep a price list (also before approval) and handle home sample collection.
         const isLab = profile.ok && ['lab', 'imaging'].includes(profile.data.profile.kind);
-        $('pricesLink').hidden = !isLab;
+        $('pricesLink').hidden = $('packagesLink').hidden = !isLab;
         $('visitsLink').hidden = !(isLab && facilityStatus === 'approved');
+        // Blood banks and hospitals post blood donation calls.
+        $('bloodLink').hidden = !(profile.ok && facilityStatus === 'approved' && ['blood_bank', 'hospital'].includes(profile.data.profile.kind));
+        // Pharmacies enter night and holiday duties (also before approval; shown once approved).
+        $('dutiesLink').hidden = !(profile.ok && profile.data.profile.kind === 'pharmacy');
     }
     if (user.role === 'doctor') {
+        const video = await api('/api/doctor/video');
+        if (video.ok && video.data.available) {
+            $('videoCard').hidden = false;
+            $('videoOn').checked = video.data.enabled;
+            $('videoOn').addEventListener('change', async () => {
+                const res = await api('/api/doctor/video', {enabled: $('videoOn').checked});
+                $('videoSaved').textContent = res.ok ? tr('Saved.', 'تم الحفظ.') : tr('Not saved. Please try again.', 'لم يُحفظ. حاول مجدداً.');
+                if (!res.ok) $('videoOn').checked = !$('videoOn').checked;
+            });
+        }
         const profile = await api('/api/doctor/profile');
         if (profile.ok) doctorStatus = profile.data.profile.status;
         $('recordsLinks').hidden = doctorStatus !== 'approved';
@@ -85,7 +99,55 @@ document.addEventListener('DOMContentLoaded', async () => {
     $('details').hidden = false;
     $(user.role + 'Next').hidden = false;
     $('logout').hidden = false;
+    // Notifications on this device (src/push.js).
+    const iphone = /iPhone|iPad|iPod/.test(navigator.userAgent);
+    const PUSH_TEXT = {
+        on: ['Notifications are on for this device.', 'الإشعارات مفعّلة على هذا الجهاز.'],
+        off: ['Get a notification when an appointment is confirmed or something else is new.', 'احصل على إشعار عند تأكيد موعد أو عند وجود جديد.'],
+        denied: ['This browser blocks notifications from SyriaHC. Allow them in the browser settings for this site.', 'يمنع هذا المتصفح إشعارات صحة تك. اسمح بها من إعدادات المتصفح لهذا الموقع.'],
+        unsupported: iphone
+            ? ['On iPhone, first add SyriaHC to the Home Screen (Share, then "Add to Home Screen") and open it from there.', 'على iPhone أضف صحة تك أولاً إلى الشاشة الرئيسية (مشاركة ثم "إضافة إلى الشاشة الرئيسية") وافتحه من هناك.']
+            : ['This browser cannot show notifications.', 'لا يستطيع هذا المتصفح عرض الإشعارات.']
+    };
+    let pushNow = await Shc.pushState();
+    const renderPush = () => {
+        if (pushNow === 'unavailable') return;
+        $('pushCard').hidden = false;
+        $('pushText').textContent = tr(...PUSH_TEXT[pushNow]);
+        $('pushOn').hidden = pushNow !== 'off';
+        $('pushOff').hidden = $('pushTest').hidden = pushNow !== 'on';
+    };
+    document.addEventListener('shc:language', renderPush);
+    renderPush();
+    $('pushOn').addEventListener('click', async () => {
+        $('pushError').hidden = true;
+        Shc.busy($('pushOn'), true);
+        const res = await Shc.enablePush();
+        Shc.busy($('pushOn'), false);
+        if (!res.ok) {
+            if (res.data.error === 'push_denied') pushNow = 'denied';
+            renderPush();
+            return Shc.showError('pushError', res.data);
+        }
+        pushNow = 'on';
+        renderPush();
+        $('pushTest').focus();
+    });
+    $('pushTest').addEventListener('click', async () => {
+        $('pushError').hidden = true;
+        Shc.busy($('pushTest'), true);
+        const res = await api('/api/push/test', {});
+        Shc.busy($('pushTest'), false);
+        if (!res.ok) Shc.showError('pushError', res.data);
+    });
+    $('pushOff').addEventListener('click', async () => {
+        await Shc.disablePush();
+        pushNow = 'off';
+        renderPush();
+        $('pushOn').focus();
+    });
     $('logout').addEventListener('click', async () => {
+        await Shc.disablePush();  // this device stops getting this person's notifications
         await api('/api/auth/logout', {});
         await Shc.freshDevice();  // the next person on this phone must not see these patient numbers or cached pages
         window.location.assign('/');

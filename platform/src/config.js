@@ -11,6 +11,8 @@ function required(name, fallback) {
     return value;
 }
 
+const list = value => String(value || '').split(',').map(s => s.trim()).filter(Boolean);
+
 export const config = {
     production,
     port: Number(env.PORT || 3000),
@@ -44,6 +46,12 @@ export const config = {
     documentKey: required('DOCUMENT_KEY', '0'.repeat(64)),
     documentDir: env.DOCUMENT_DIR || fileURLToPath(new URL('../storage/documents/', import.meta.url)),
     sessionDays: {patient: 30, doctor: 7, facility: 7, admin: 1},
+    // Notifications on phones and computers (Web Push, src/push.js). Without keys the app does not offer them.
+    // Make a key pair once with: node -e "import('./src/push.js').then(m => console.log(m.generateVapidKeys()))"
+    push: {publicKey: env.PUSH_PUBLIC_KEY || '', privateKey: env.PUSH_PRIVATE_KEY || '', subject: env.PUSH_SUBJECT || 'mailto:noreply@syriahc.com'},
+    // Video consultations (src/video.js): off until VIDEO=on, after the legal check of remote consultations.
+    // TURN_URLS / TURN_SECRET: our own relay (coturn with use-auth-secret) for phones that cannot connect directly.
+    video: {enabled: env.VIDEO === 'on', turnUrls: list(env.TURN_URLS), turnSecret: env.TURN_SECRET || '', stunUrls: list(env.STUN_URLS)},
     // Health file for patients (stage 2b). Stays off until the new privacy policy is checked and published (decision 1).
     healthFile: env.HEALTH_FILE === 'on',
     trustProxy: env.TRUST_PROXY === 'true'

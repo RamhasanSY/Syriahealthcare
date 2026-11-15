@@ -41,8 +41,32 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (lab.phone) Object.assign($('labPhone'), {href: 'tel:' + lab.phone, textContent: lab.phone});
         $('labHours').hidden = !lab.opening_hours;
         $('labHours').textContent = lab.opening_hours || '';
+        renderPackages();
         renderPrices();
         renderHome();
+    }
+
+    // Packages (src/lab-packages.js): one price for several tests; with home collection they can be asked for at home.
+    function renderPackages() {
+        const list = data.packages || [];
+        $('packagesBox').hidden = !list.length;
+        $('packagesList').replaceChildren(...list.map(k => {
+            const li = el('li', {className: 'appt'});
+            li.append(el('span', {className: 'pill ok', textContent: price(k.price_syp)}), el('h3', {textContent: k.name, dir: 'auto'}));
+            if (k.saving_syp) li.append(el('p', {className: 'muted-small', textContent: tr(`Single prices together ${price(k.single_total_syp)}: you save ${price(k.saving_syp)}`,
+                `مجموع الأسعار المنفردة ${price(k.single_total_syp)}: توفير ${price(k.saving_syp)}`)}));
+            if (k.description) li.append(el('p', {textContent: k.description, dir: 'auto'}));
+            li.append(el('p', {className: 'muted-small', dir: 'auto', textContent: k.tests.map(t => t.name).join('، ')}));
+            if (data.lab.home_collection && me?.role === 'patient') {
+                const ask = el('button', {type: 'button', className: 'link-btn', textContent: tr('Ask for this package at home', 'اطلب هذه الباقة في المنزل')});
+                ask.onclick = () => {
+                    $('visitTests').value = `${k.name}: ${k.tests.map(t => t.name).join('، ')}`.slice(0, 300);
+                    $('homeHeading').focus();
+                };
+                li.append(ask);
+            }
+            return li;
+        }));
     }
 
     function renderPrices() {

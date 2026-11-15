@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="ar" dir="rtl" data-title-en="Our blood donation calls — SyriaHC" data-title-ar="نداءات التبرع لدينا — صحة تك">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#1a3a5c">
+<title>نداءات التبرع لدينا — صحة تك</title>
+<link rel="manifest" href="/manifest.webmanifest"><link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/assets/app.css">
+<script src="/assets/common.js" defer></script><script src="/assets/blood-requests.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#main" data-en="Skip to content" data-ar="انتقل إلى المحتوى">انتقل إلى المحتوى</a>
+<header class="top"><div class="top-inner"><a class="brand" href="/account"><img src="/assets/logo.svg" alt=""><span data-en="SyriaHC" data-ar="صحة تك">صحة تك</span></a><div class="top-actions"><button class="lang" id="langToggle" type="button">English</button></div></div></header>
+<main id="main" class="wrap wide" aria-busy="true">
+  <h1 data-en="Blood donation calls" data-ar="نداءات التبرع بالدم">نداءات التبرع بالدم</h1>
+  <p class="lead" data-en="Your call appears on app.syriahc.com/blood. Registered donors with a matching blood group in your governorate are told at once. Donors who answer appear below with name and number." data-ar="يظهر نداؤكم على app.syriahc.com/blood. يُبلَّغ فوراً المتبرعون المسجلون في محافظتكم ممن تناسب زمرتهم. يظهر من يستجيب أدناه مع الاسم والرقم.">يظهر نداؤكم على app.syriahc.com/blood. يُبلَّغ فوراً المتبرعون المسجلون في محافظتكم ممن تناسب زمرتهم. يظهر من يستجيب أدناه مع الاسم والرقم.</p>
+  <div class="msg error" id="pageError" role="alert" tabindex="-1" hidden></div>
+  <section class="card wide-card" id="newCard" hidden aria-labelledby="newTitle">
+    <h2 id="newTitle" data-en="New call" data-ar="نداء جديد">نداء جديد</h2>
+    <div class="msg error" id="formError" role="alert" tabindex="-1" hidden></div>
+    <form id="newForm" novalidate>
+      <fieldset class="plain"><legend data-en="Blood groups needed" data-ar="الزمر المطلوبة">الزمر المطلوبة</legend><div class="chips" id="typeBoxes"></div></fieldset>
+      <div class="field-row">
+        <label class="field"><span data-en="Needed by" data-ar="مطلوب قبل">مطلوب قبل</span><input type="date" id="neededBy" required></label>
+        <label class="field"><span data-en="Units (optional)" data-ar="عدد الوحدات (اختياري)">عدد الوحدات (اختياري)</span><input type="number" id="units" min="1" max="100" inputmode="numeric"></label>
+        <label class="field"><span data-en="Urgency" data-ar="الأولوية">الأولوية</span><select id="urgency"><option value="normal" data-en="Normal" data-ar="عادي">عادي</option><option value="urgent" data-en="Urgent" data-ar="عاجل">عاجل</option></select></label>
+      </div>
+      <label class="field"><span data-en="Phone for donors" data-ar="هاتف للمتبرعين">هاتف للمتبرعين</span><input type="tel" id="phone" dir="ltr" maxlength="30"><small data-en="Empty: the phone of your facility profile." data-ar="فارغ: هاتف ملف المنشأة.">فارغ: هاتف ملف المنشأة.</small></label>
+      <label class="field"><span data-en="Note (optional)" data-ar="ملاحظة (اختياري)">ملاحظة (اختياري)</span><textarea id="note" maxlength="300" rows="2" dir="auto" placeholder=""></textarea><small data-en="For example opening hours of the donation room. Never a patient's name." data-ar="مثل أوقات دوام غرفة التبرع. لا تكتبوا اسم أي مريض.">مثل أوقات دوام غرفة التبرع. لا تكتبوا اسم أي مريض.</small></label>
+      <button class="btn" type="submit" id="publish" data-en="Publish the call" data-ar="نشر النداء">نشر النداء</button>
+    </form>
+  </section>
+  <p class="results-count" id="announce" role="status" tabindex="-1"></p>
+  <ul class="appt-list" id="list"></ul>
+</main>
+<footer><div class="wrap"><a href="/account" data-en="← My account" data-ar="حسابي ←">حسابي ←</a><a href="/blood" data-en="Public list" data-ar="القائمة العامة">القائمة العامة</a></div></footer>
+</body>
+</html>

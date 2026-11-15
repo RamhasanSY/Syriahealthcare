@@ -1,7 +1,7 @@
 // Doctor profiles and documents (doctor side), and the review workflow (admin side).
 import multipart from '@fastify/multipart';
 import {HttpError, requireRole} from './auth.js';
-import {facilityKinds, facilityServices, governorates, specialties} from './catalog.js';
+import {facilityKinds, facilityServices, governorates, specialties, packageTopics} from './catalog.js';
 import {audit, transaction} from './db.js';
 import {MAX_DOCUMENT_BYTES} from './documents.js';
 import {cleanUpload, UploadError} from './uploads.js';
@@ -117,7 +117,7 @@ export default async function doctorRoutes(app) {
     const doctorOnly = {preHandler: requireRole('doctor')};
     const adminOnly = {preHandler: requireRole('admin')};
 
-    app.get('/api/catalog', {config: {cache: 'public, max-age=3600'}}, async () => ({specialties, governorates, facilityKinds, facilityServices}));
+    app.get('/api/catalog', {config: {cache: 'public, max-age=3600'}}, async () => ({specialties, governorates, facilityKinds, facilityServices, packageTopics}));
 
     // ---- Doctor side ----
 

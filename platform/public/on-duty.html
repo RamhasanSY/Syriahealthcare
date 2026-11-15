@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="ar" dir="rtl" data-title-en="Pharmacies on duty — SyriaHC" data-title-ar="الصيدليات المناوبة — صحة تك">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#1a3a5c">
+<title>الصيدليات المناوبة — صحة تك</title>
+<meta name="description" content="Pharmacies in Syria that are on night or holiday duty, and pharmacies open 24 hours.">
+<link rel="manifest" href="/manifest.webmanifest"><link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/assets/app.css">
+<script src="/assets/common.js" defer></script><script src="/assets/on-duty.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#main" data-en="Skip to content" data-ar="انتقل إلى المحتوى">انتقل إلى المحتوى</a>
+<header class="top"><div class="top-inner"><a class="brand" href="/account"><img src="/assets/logo.svg" alt=""><span data-en="SyriaHC" data-ar="صحة تك">صحة تك</span></a><div class="top-actions"><button class="lang" id="langToggle" type="button">English</button></div></div></header>
+<main id="main" class="wrap wide" aria-busy="true">
+  <h1 data-en="Pharmacies on duty" data-ar="الصيدليات المناوبة">الصيدليات المناوبة</h1>
+  <p class="lead" data-en="Pharmacies enter their night and holiday duties here themselves. Please call before you go." data-ar="تُدخل الصيدليات مناوباتها الليلية وفي العطل هنا بنفسها. يرجى الاتصال قبل الذهاب.">تُدخل الصيدليات مناوباتها الليلية وفي العطل هنا بنفسها. يرجى الاتصال قبل الذهاب.</p>
+  <div class="search-row">
+    <label class="field"><span data-en="Governorate" data-ar="المحافظة">المحافظة</span><select id="gov"></select></label>
+    <label class="field"><span data-en="When" data-ar="متى">متى</span><select id="when"></select></label>
+  </div>
+  <div class="msg error" id="listError" role="alert" tabindex="-1" hidden></div>
+  <p class="results-count" id="count" role="status"></p>
+  <h2 id="dutyHeading" data-en="On duty" data-ar="مناوبة">مناوبة</h2>
+  <ul class="appt-list" id="duty"></ul>
+  <section id="laterBox" hidden aria-labelledby="laterHeading"><h2 id="laterHeading" data-en="Later today and tonight" data-ar="لاحقاً اليوم وهذه الليلة">لاحقاً اليوم وهذه الليلة</h2><ul class="appt-list" id="later"></ul></section>
+  <section id="allDayBox" hidden aria-labelledby="allDayHeading"><h2 id="allDayHeading" data-en="Open 24 hours" data-ar="مفتوحة على مدار الساعة">مفتوحة على مدار الساعة</h2><ul class="appt-list" id="allDay"></ul></section>
+</main>
+<footer><div class="wrap"><a href="/account" data-en="← My account" data-ar="حسابي ←">حسابي ←</a><a href="https://syriahc.com/pharmacies.html" data-en="All pharmacies" data-ar="كل الصيدليات">كل الصيدليات</a></div></footer>
+</body>
+</html>

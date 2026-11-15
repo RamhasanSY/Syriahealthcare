@@ -6,7 +6,7 @@
 // One line per route, "METHOD /path" as registered. `upload`: the body is multipart/form-data with one file.
 export const SUMMARIES = {
     'GET /api/health': 'Health check: the server and its database answer.',
-    'GET /api/catalog': 'Fixed lists: specialties, governorates, facility kinds and services, with English and Arabic labels.',
+    'GET /api/catalog': 'Fixed lists: specialties, governorates, facility kinds and services, lab package topics, with English and Arabic labels.',
     'GET /api/openapi.json': 'This description.',
     // Sign-in
     'POST /api/auth/otp/request': 'Patient: ask for a sign-in code by SMS, WhatsApp or Telegram.',
@@ -27,9 +27,14 @@ export const SUMMARIES = {
     'GET /api/doctors/{id}': 'One approved doctor.',
     'GET /api/doctors/{id}/slots': 'Free appointment times of an approved doctor.',
     'GET /api/facilities': 'Approved labs, imaging centres, hospitals and clinics.',
-    'POST /api/appointments': 'Patient: request an appointment.',
+    'POST /api/appointments': 'Patient: request an appointment (at the clinic, or as a video call where the doctor offers it).',
     'GET /api/appointments/mine': 'Patient: own appointments.',
     'POST /api/appointments/{id}/cancel': 'Patient: cancel an own appointment.',
+    'POST /api/appointments/{id}/reschedule': 'Patient: move an own appointment to another free time of the same doctor (the doctor confirms again).',
+    'GET /api/appointments/{id}/calendar.ics': 'Patient or doctor: the appointment as a calendar file.',
+    'POST /api/waitlist': 'Patient: be told when a time with this doctor becomes free (30 days).',
+    'GET /api/waitlist/mine': 'Patient: the doctors on the own waiting list.',
+    'POST /api/waitlist/{id}/leave': 'Patient: leave a waiting list.',
     // Doctors
     'GET /api/doctor/profile': 'Doctor: own profile and review status.',
     'POST /api/doctor/profile': 'Doctor: update the profile (identifying fields wait for review once approved).',
@@ -126,7 +131,55 @@ export const SUMMARIES = {
     'POST /api/admin/facilities/{id}/changes/accept': 'Administrator: accept held profile changes.',
     'POST /api/admin/facilities/{id}/changes/reject': 'Administrator: reject held profile changes.',
     'POST /api/admin/users/{id}/disable': 'Administrator: switch off a staff account (signs it out everywhere).',
-    'POST /api/admin/users/{id}/enable': 'Administrator: switch a staff account on again.'
+    'POST /api/admin/users/{id}/enable': 'Administrator: switch a staff account on again.',
+    // Notifications on the phone or computer (src/push.js)
+    'GET /api/push/key': 'Whether notifications are offered, and the key a browser needs to receive them.',
+    'POST /api/push/subscribe': 'Receive notifications on this device.',
+    'POST /api/push/unsubscribe': 'Stop notifications on this device.',
+    'POST /api/push/test': 'Send a test notification to the own devices.',
+    // Blood donation calls (src/blood.js; the donor register only while HEALTH_FILE=on)
+    'GET /api/blood-requests': 'Open blood donation calls, by governorate and by the blood group that can help.',
+    'POST /api/blood-requests/{id}/respond': 'Donor: "I can donate" (name, phone and blood group go to this facility).',
+    'GET /api/facility/blood-requests': 'Blood bank or hospital: own donation calls with how many donors were told and answered.',
+    'POST /api/facility/blood-requests': 'Blood bank or hospital: publish a donation call; matching donors are told.',
+    'POST /api/facility/blood-requests/{id}/close': 'Blood bank or hospital: close a donation call.',
+    'GET /api/facility/blood-requests/{id}/responses': 'Blood bank or hospital: the donors who answered a call (recorded).',
+    'GET /api/donor': 'Patient: own donor registration.',
+    'POST /api/donor': 'Patient: register or update as a blood donor (blood group, governorate, mobile).',
+    'POST /api/donor/delete': 'Patient: leave the donor list (blood group, phone and answers are removed).',
+    // Pharmacies on duty (src/pharmacy-duty.js)
+    'GET /api/pharmacies/on-duty': 'Pharmacies on duty now (or on a day), and pharmacies open 24 hours, by governorate.',
+    'GET /api/pharmacy/duties': 'Pharmacy: own upcoming duty times.',
+    'POST /api/pharmacy/duties': 'Pharmacy: add a duty, once or weekly for up to 12 weeks.',
+    'POST /api/pharmacy/duties/{id}/delete': 'Pharmacy: delete a duty.',
+    // Lab packages (src/lab-packages.js)
+    'GET /api/lab-packages': 'Packages of approved labs (several tests at one price), by governorate and topic, with the saving.',
+    'GET /api/facility/packages': 'Lab: own packages and the price list to build them from.',
+    'POST /api/facility/packages': 'Lab: create a package from tests of the own price list.',
+    'POST /api/facility/packages/{id}': 'Lab: change a package.',
+    'POST /api/facility/packages/{id}/delete': 'Lab: delete a package.',
+    // Medicine reminders (src/medications.js; part of the health file, only while HEALTH_FILE=on)
+    'GET /api/medications': "Patient: medicines of the own and children's profiles, with today's doses.",
+    'POST /api/medications': 'Patient: add a medicine with its times of day.',
+    'POST /api/medications/{id}': 'Patient: change, pause or resume a medicine.',
+    'POST /api/medications/{id}/delete': 'Patient: delete a medicine.',
+    'POST /api/medications/{id}/dose': 'Patient: tick a dose of the last 24 hours as taken (or not).',
+    // Reviews of doctors (src/reviews.js)
+    'GET /api/reviews/mine': 'Patient: which own appointments were reviewed, and their status.',
+    'POST /api/appointments/{id}/review': 'Patient: review a completed appointment (within 60 days; checked before it is public).',
+    'GET /api/doctors/{id}/reviews': 'Approved reviews of a doctor with the doctor\'s answers; the average from 3 reviews on.',
+    'GET /api/doctor/reviews': 'Doctor: own approved reviews.',
+    'POST /api/doctor/reviews/{id}/reply': 'Doctor: answer a review publicly (empty text removes the answer).',
+    'POST /api/doctor/reviews/{id}/report': 'Doctor: report a review; it is hidden until an administrator checks it again.',
+    'GET /api/admin/reviews': 'Administrator: reviews by status, reported ones first.',
+    'POST /api/admin/reviews/{id}/approve': 'Administrator: publish a review.',
+    'POST /api/admin/reviews/{id}/reject': 'Administrator: reject a review (with a reason).',
+    // Video consultations (src/video.js; only while VIDEO=on)
+    'GET /api/video/{id}': 'Patient or doctor: the video call of a confirmed video appointment, with the relay servers to use.',
+    'POST /api/video/{id}/signal': 'Patient or doctor: pass a call set-up message to the other side.',
+    'GET /api/video/{id}/signal': 'Patient or doctor: wait for set-up messages of the other side (up to 25 seconds).',
+    'GET /api/doctor/video': 'Doctor: whether video consultations are offered and switched on.',
+    'POST /api/doctor/video': 'Doctor: switch own video consultations on or off.'
 };
 
 const ROLE_TAGS = {patient: 'Patients', doctor: 'Doctors', facility: 'Facilities', admin: 'Administrators'};

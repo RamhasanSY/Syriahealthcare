@@ -58,6 +58,15 @@ services:
       MAIL_FROM: ${MAIL_FROM:?Set MAIL_FROM in .env}
       # Health file for patients: "on" only after the new privacy policy is published (docs/STUFE-2.md, decision 1).
       HEALTH_FILE: ${HEALTH_FILE:-off}
+      # Notifications on phones and computers (Web Push). Empty = not offered. See README, "Notifications".
+      PUSH_PUBLIC_KEY: ${PUSH_PUBLIC_KEY:-}
+      PUSH_PRIVATE_KEY: ${PUSH_PRIVATE_KEY:-}
+      PUSH_SUBJECT: ${PUSH_SUBJECT:-mailto:noreply@syriahc.com}
+      # Video consultations: "on" only after the legal check. TURN relay: see README, "Video consultations".
+      VIDEO: ${VIDEO:-off}
+      TURN_URLS: ${TURN_URLS:-}
+      TURN_SECRET: ${TURN_SECRET:-}
+      STUN_URLS: ${STUN_URLS:-}
     volumes:
       - documents:/data/documents
 
