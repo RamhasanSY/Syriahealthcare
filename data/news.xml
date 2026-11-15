@@ -5,6 +5,13 @@
     <link>https://syriahealthcare.com/news.html</link>
     <description>Original healthcare headlines about Syria, with links to their publishers.</description>
     <item>
+      <title>Syria launches vaccination campaign to stop polio outbreak in Deir ez-Zor</title>
+      <link>https://www.emro.who.int/syria/news/syria-launches-vaccination-campaign-to-stop-polio-outbreak-in-deir-ez-zor.html</link>
+      <description>Source: WHO — Syria office</description>
+      <pubDate>Sun, 15 Nov 2026 00:00:00 GMT</pubDate>
+      <guid isPermaLink="true">https://www.emro.who.int/syria/news/syria-launches-vaccination-campaign-to-stop-polio-outbreak-in-deir-ez-zor.html</guid>
+    </item>
+    <item>
       <title>حملة للتبرع بالدم في بلدة مديرا بريف دمشق لرفد بنوك الدم بالوحدات</title>
       <link>https://sana.sy/governorates/reef-dimashak/2635303</link>
       <description>Source: Syrian Arab News Agency (SANA) — Health</description>
@@ -68,13 +75,6 @@
       <guid isPermaLink="true">https://sana.sy/governorates/alqunaytrah/2633325</guid>
     </item>
     <item>
-      <title>معرض طبي بدمشق يستعرض أحدث تجهيزات رعاية حديثي الولادة والخدّج</title>
-      <link>https://sana.sy/health/2632360</link>
-      <description>Source: Syrian Arab News Agency (SANA) — Health</description>
-      <pubDate>Wed, 11 Nov 2026 00:00:00 GMT</pubDate>
-      <guid isPermaLink="true">https://sana.sy/health/2632360</guid>
-    </item>
-    <item>
       <title>افتتاح غرفة عمليات عينية في مستشفى الرقة الوطني</title>
       <link>https://moh.gov.sy/news/%D8%A7%D9%81%D8%AA%D8%AA%D8%A7%D8%AD-%D8%BA%D8%B1%D9%81%D8%A9-%D8%B9%D9%85%D9%84%D9%8A%D8%A7%D8%AA-%D8%B9%D9%8A%D9%86%D9%8A%D8%A9-%D9%81%D9%8A-%D9%85%D8%B3%D8%AA%D8%B4%D9%81%D9%89-%D8%A7%D9%84%D8%B1%D9%82%D8%A9-%D8%A7%D9%84%D9%88%D8%B7%D9%86%D9%8A</link>
       <description>Source: Syrian Ministry of Health</description>
@@ -82,11 +82,18 @@
       <guid isPermaLink="true">https://moh.gov.sy/news/%D8%A7%D9%81%D8%AA%D8%AA%D8%A7%D8%AD-%D8%BA%D8%B1%D9%81%D8%A9-%D8%B9%D9%85%D9%84%D9%8A%D8%A7%D8%AA-%D8%B9%D9%8A%D9%86%D9%8A%D8%A9-%D9%81%D9%8A-%D9%85%D8%B3%D8%AA%D8%B4%D9%81%D9%89-%D8%A7%D9%84%D8%B1%D9%82%D8%A9-%D8%A7%D9%84%D9%88%D8%B7%D9%86%D9%8A</guid>
     </item>
     <item>
-      <title>Syrian Arab Republic launches coordinated public health response following poliovirus detection in Deir Ezzor</title>
-      <link>https://www.emro.who.int/syria/news/syrian-arab-republic-launches-coordinated-public-health-response-following-poliovirus-detection-in-deir-ezzor.html</link>
-      <description>Source: WHO — Syria office</description>
+      <title>معرض طبي بدمشق يستعرض أحدث تجهيزات رعاية حديثي الولادة والخدّج</title>
+      <link>https://sana.sy/health/2632360</link>
+      <description>Source: Syrian Arab News Agency (SANA) — Health</description>
+      <pubDate>Wed, 11 Nov 2026 00:00:00 GMT</pubDate>
+      <guid isPermaLink="true">https://sana.sy/health/2632360</guid>
+    </item>
+    <item>
+      <title>مشروع جراحة قلب الأطفال في حلب</title>
+      <link>https://moh.gov.sy/news/%D9%85%D8%B4%D8%B1%D9%88%D8%B9-%D8%AC%D8%B1%D8%A7%D8%AD%D8%A9-%D9%82%D9%84%D8%A8-%D8%A7%D9%84%D8%A3%D8%B7%D9%81%D8%A7%D9%84-%D9%81%D9%8A-%D8%AD%D9%84%D8%A8</link>
+      <description>Source: Syrian Ministry of Health</description>
       <pubDate>Tue, 10 Nov 2026 00:00:00 GMT</pubDate>
-      <guid isPermaLink="true">https://www.emro.who.int/syria/news/syrian-arab-republic-launches-coordinated-public-health-response-following-poliovirus-detection-in-deir-ezzor.html</guid>
+      <guid isPermaLink="true">https://moh.gov.sy/news/%D9%85%D8%B4%D8%B1%D9%88%D8%B9-%D8%AC%D8%B1%D8%A7%D8%AD%D8%A9-%D9%82%D9%84%D8%A8-%D8%A7%D9%84%D8%A3%D8%B7%D9%81%D8%A7%D9%84-%D9%81%D9%8A-%D8%AD%D9%84%D8%A8</guid>
     </item>
     <item>
       <title>مشفى العيون بحمص يضع جهازي “فاكو” و”ياغ ليزر” بالخدمة لتقديم جراحات ‏مجانية متطورة</title>
@@ -117,11 +124,18 @@
       <guid isPermaLink="true">https://sana.sy/governorates/2631227</guid>
     </item>
     <item>
-      <title>مشروع جراحة قلب الأطفال في حلب</title>
-      <link>https://moh.gov.sy/news/%D9%85%D8%B4%D8%B1%D9%88%D8%B9-%D8%AC%D8%B1%D8%A7%D8%AD%D8%A9-%D9%82%D9%84%D8%A8-%D8%A7%D9%84%D8%A3%D8%B7%D9%81%D8%A7%D9%84-%D9%81%D9%8A-%D8%AD%D9%84%D8%A8</link>
-      <description>Source: Syrian Ministry of Health</description>
+      <title>Syrian Arab Republic launches coordinated public health response following poliovirus detection in Deir Ezzor</title>
+      <link>https://www.emro.who.int/syria/news/syrian-arab-republic-launches-coordinated-public-health-response-following-poliovirus-detection-in-deir-ezzor.html</link>
+      <description>Source: WHO — Syria office</description>
       <pubDate>Tue, 10 Nov 2026 00:00:00 GMT</pubDate>
-      <guid isPermaLink="true">https://moh.gov.sy/news/%D9%85%D8%B4%D8%B1%D9%88%D8%B9-%D8%AC%D8%B1%D8%A7%D8%AD%D8%A9-%D9%82%D9%84%D8%A8-%D8%A7%D9%84%D8%A3%D8%B7%D9%81%D8%A7%D9%84-%D9%81%D9%8A-%D8%AD%D9%84%D8%A8</guid>
+      <guid isPermaLink="true">https://www.emro.who.int/syria/news/syrian-arab-republic-launches-coordinated-public-health-response-following-poliovirus-detection-in-deir-ezzor.html</guid>
+    </item>
+    <item>
+      <title>وزارة الصحة تشارك في المؤتمر التأسيسي لرابطة الأطباء السوريين في تركيا لتعزيز التعاون الطبي ونقل الخبرات</title>
+      <link>https://moh.gov.sy/news/%D9%88%D8%B2%D8%A7%D8%B1%D8%A9-%D8%A7%D9%84%D8%B5%D8%AD%D8%A9-%D8%AA%D8%B4%D8%A7%D8%B1%D9%83-%D9%81%D9%8A-%D8%A7%D9%84%D9%85%D8%A4%D8%AA%D9%85%D8%B1-%D8%A7%D9%84%D8%AA%D8%A3%D8%B3%D9%8A%D8%B3%D9%8A-%D9%84%D8%B1%D8%A7%D8%A8%D8%B7%D8%A9-%D8%A7%D9%84%D8%A3%D8%B7%D8%A8%D8%A7%D8%A1-%D8%A7%D9%84%D8%B3%D9%88%D8%B1%D9%8A%D9%8A%D9%86-%D9%81%D9%8A-%D8%AA%D8%B1%D9%83%D9%8A%D8%A7-%D9%84%D8%AA%D8%B9%D8%B2%D9%8A%D8%B2-%D8%A7%D9%84%D8%AA%D8%B9%D8%A7%D9%88%D9%86-%D8%A7%D9%84%D8%B7%D8%A8%D9%8A-%D9%88%D9%86%D9%82%D9%84-%D8%A7%D9%84%D8%AE</link>
+      <description>Source: Syrian Ministry of Health</description>
+      <pubDate>Mon, 09 Nov 2026 00:00:00 GMT</pubDate>
+      <guid isPermaLink="true">https://moh.gov.sy/news/%D9%88%D8%B2%D8%A7%D8%B1%D8%A9-%D8%A7%D9%84%D8%B5%D8%AD%D8%A9-%D8%AA%D8%B4%D8%A7%D8%B1%D9%83-%D9%81%D9%8A-%D8%A7%D9%84%D9%85%D8%A4%D8%AA%D9%85%D8%B1-%D8%A7%D9%84%D8%AA%D8%A3%D8%B3%D9%8A%D8%B3%D9%8A-%D9%84%D8%B1%D8%A7%D8%A8%D8%B7%D8%A9-%D8%A7%D9%84%D8%A3%D8%B7%D8%A8%D8%A7%D8%A1-%D8%A7%D9%84%D8%B3%D9%88%D8%B1%D9%8A%D9%8A%D9%86-%D9%81%D9%8A-%D8%AA%D8%B1%D9%83%D9%8A%D8%A7-%D9%84%D8%AA%D8%B9%D8%B2%D9%8A%D8%B2-%D8%A7%D9%84%D8%AA%D8%B9%D8%A7%D9%88%D9%86-%D8%A7%D9%84%D8%B7%D8%A8%D9%8A-%D9%88%D9%86%D9%82%D9%84-%D8%A7%D9%84%D8%AE</guid>
     </item>
     <item>
       <title>صحة دير الزور تبحث مع المنظمات الشريكة تعزيز جهود مكافحة شلل الأطفال</title>
@@ -138,11 +152,11 @@
       <guid isPermaLink="true">https://sana.sy/health/2630779</guid>
     </item>
     <item>
-      <title>وزارة الصحة تشارك في المؤتمر التأسيسي لرابطة الأطباء السوريين في تركيا لتعزيز التعاون الطبي ونقل الخبرات</title>
-      <link>https://moh.gov.sy/news/%D9%88%D8%B2%D8%A7%D8%B1%D8%A9-%D8%A7%D9%84%D8%B5%D8%AD%D8%A9-%D8%AA%D8%B4%D8%A7%D8%B1%D9%83-%D9%81%D9%8A-%D8%A7%D9%84%D9%85%D8%A4%D8%AA%D9%85%D8%B1-%D8%A7%D9%84%D8%AA%D8%A3%D8%B3%D9%8A%D8%B3%D9%8A-%D9%84%D8%B1%D8%A7%D8%A8%D8%B7%D8%A9-%D8%A7%D9%84%D8%A3%D8%B7%D8%A8%D8%A7%D8%A1-%D8%A7%D9%84%D8%B3%D9%88%D8%B1%D9%8A%D9%8A%D9%86-%D9%81%D9%8A-%D8%AA%D8%B1%D9%83%D9%8A%D8%A7-%D9%84%D8%AA%D8%B9%D8%B2%D9%8A%D8%B2-%D8%A7%D9%84%D8%AA%D8%B9%D8%A7%D9%88%D9%86-%D8%A7%D9%84%D8%B7%D8%A8%D9%8A-%D9%88%D9%86%D9%82%D9%84-%D8%A7%D9%84%D8%AE</link>
+      <title>الصحة تستعرض إجراءات الاستجابة لحالات شلل الأطفال وتعزز حملات التلقيح في دير الزور</title>
+      <link>https://moh.gov.sy/news/%D8%A7%D9%84%D8%B5%D8%AD%D8%A9-%D8%AA%D8%B3%D8%AA%D8%B9%D8%B1%D8%B6-%D8%A5%D8%AC%D8%B1%D8%A7%D8%A1%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D8%AC%D8%A7%D8%A8%D8%A9-%D9%84%D8%AD%D8%A7%D9%84%D8%A7%D8%AA-%D8%B4%D9%84%D9%84-%D8%A7%D9%84%D8%A3%D8%B7%D9%81%D8%A7%D9%84-%D9%88%D8%AA%D8%B9%D8%B2%D8%B2-%D8%AD%D9%85%D9%84%D8%A7%D8%AA-%D8%A7%D9%84%D8%AA%D9%84%D9%82%D9%8A%D8%AD-%D9%81%D9%8A-%D8%AF%D9%8A%D8%B1-%D8%A7%D9%84%D8%B2%D9%88%D8%B1</link>
       <description>Source: Syrian Ministry of Health</description>
-      <pubDate>Mon, 09 Nov 2026 00:00:00 GMT</pubDate>
-      <guid isPermaLink="true">https://moh.gov.sy/news/%D9%88%D8%B2%D8%A7%D8%B1%D8%A9-%D8%A7%D9%84%D8%B5%D8%AD%D8%A9-%D8%AA%D8%B4%D8%A7%D8%B1%D9%83-%D9%81%D9%8A-%D8%A7%D9%84%D9%85%D8%A4%D8%AA%D9%85%D8%B1-%D8%A7%D9%84%D8%AA%D8%A3%D8%B3%D9%8A%D8%B3%D9%8A-%D9%84%D8%B1%D8%A7%D8%A8%D8%B7%D8%A9-%D8%A7%D9%84%D8%A3%D8%B7%D8%A8%D8%A7%D8%A1-%D8%A7%D9%84%D8%B3%D9%88%D8%B1%D9%8A%D9%8A%D9%86-%D9%81%D9%8A-%D8%AA%D8%B1%D9%83%D9%8A%D8%A7-%D9%84%D8%AA%D8%B9%D8%B2%D9%8A%D8%B2-%D8%A7%D9%84%D8%AA%D8%B9%D8%A7%D9%88%D9%86-%D8%A7%D9%84%D8%B7%D8%A8%D9%8A-%D9%88%D9%86%D9%82%D9%84-%D8%A7%D9%84%D8%AE</guid>
+      <pubDate>Sun, 08 Nov 2026 00:00:00 GMT</pubDate>
+      <guid isPermaLink="true">https://moh.gov.sy/news/%D8%A7%D9%84%D8%B5%D8%AD%D8%A9-%D8%AA%D8%B3%D8%AA%D8%B9%D8%B1%D8%B6-%D8%A5%D8%AC%D8%B1%D8%A7%D8%A1%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D8%AC%D8%A7%D8%A8%D8%A9-%D9%84%D8%AD%D8%A7%D9%84%D8%A7%D8%AA-%D8%B4%D9%84%D9%84-%D8%A7%D9%84%D8%A3%D8%B7%D9%81%D8%A7%D9%84-%D9%88%D8%AA%D8%B9%D8%B2%D8%B2-%D8%AD%D9%85%D9%84%D8%A7%D8%AA-%D8%A7%D9%84%D8%AA%D9%84%D9%82%D9%8A%D8%AD-%D9%81%D9%8A-%D8%AF%D9%8A%D8%B1-%D8%A7%D9%84%D8%B2%D9%88%D8%B1</guid>
     </item>
     <item>
       <title>الصحة تعلن تسجيل إصابتين بشلل الأطفال في دير الزور وتؤكد اتخاذ الإجراءات اللازمة</title>
@@ -159,13 +173,6 @@
       <guid isPermaLink="true">https://sana.sy/syria-and-the-world/2629114</guid>
     </item>
     <item>
-      <title>الصحة تستعرض إجراءات الاستجابة لحالات شلل الأطفال وتعزز حملات التلقيح في دير الزور</title>
-      <link>https://moh.gov.sy/news/%D8%A7%D9%84%D8%B5%D8%AD%D8%A9-%D8%AA%D8%B3%D8%AA%D8%B9%D8%B1%D8%B6-%D8%A5%D8%AC%D8%B1%D8%A7%D8%A1%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D8%AC%D8%A7%D8%A8%D8%A9-%D9%84%D8%AD%D8%A7%D9%84%D8%A7%D8%AA-%D8%B4%D9%84%D9%84-%D8%A7%D9%84%D8%A3%D8%B7%D9%81%D8%A7%D9%84-%D9%88%D8%AA%D8%B9%D8%B2%D8%B2-%D8%AD%D9%85%D9%84%D8%A7%D8%AA-%D8%A7%D9%84%D8%AA%D9%84%D9%82%D9%8A%D8%AD-%D9%81%D9%8A-%D8%AF%D9%8A%D8%B1-%D8%A7%D9%84%D8%B2%D9%88%D8%B1</link>
-      <description>Source: Syrian Ministry of Health</description>
-      <pubDate>Sun, 08 Nov 2026 00:00:00 GMT</pubDate>
-      <guid isPermaLink="true">https://moh.gov.sy/news/%D8%A7%D9%84%D8%B5%D8%AD%D8%A9-%D8%AA%D8%B3%D8%AA%D8%B9%D8%B1%D8%B6-%D8%A5%D8%AC%D8%B1%D8%A7%D8%A1%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D8%AC%D8%A7%D8%A8%D8%A9-%D9%84%D8%AD%D8%A7%D9%84%D8%A7%D8%AA-%D8%B4%D9%84%D9%84-%D8%A7%D9%84%D8%A3%D8%B7%D9%81%D8%A7%D9%84-%D9%88%D8%AA%D8%B9%D8%B2%D8%B2-%D8%AD%D9%85%D9%84%D8%A7%D8%AA-%D8%A7%D9%84%D8%AA%D9%84%D9%82%D9%8A%D8%AD-%D9%81%D9%8A-%D8%AF%D9%8A%D8%B1-%D8%A7%D9%84%D8%B2%D9%88%D8%B1</guid>
-    </item>
-    <item>
       <title>المؤتمر التأسيسي لرابطة الأطباء السوريين في تركيا يبحث توحيد جهود الكفاءات الطبية</title>
       <link>https://sana.sy/health/2628906</link>
       <description>Source: Syrian Arab News Agency (SANA) — Health</description>
@@ -178,6 +185,13 @@
       <description>Source: Syrian Arab News Agency (SANA) — Health</description>
       <pubDate>Sat, 07 Nov 2026 00:00:00 GMT</pubDate>
       <guid isPermaLink="true">https://sana.sy/health/2628586</guid>
+    </item>
+    <item>
+      <title>حملة البصر للعيون في الرقة</title>
+      <link>https://moh.gov.sy/news/%D8%AD%D9%85%D9%84%D8%A9-%D8%A7%D9%84%D8%A8%D8%B5%D8%B1-%D9%84%D9%84%D8%B9%D9%8A%D9%88%D9%86-%D9%81%D9%8A-%D8%A7%D9%84%D8%B1%D9%82%D8%A9</link>
+      <description>Source: Syrian Ministry of Health</description>
+      <pubDate>Fri, 06 Nov 2026 00:00:00 GMT</pubDate>
+      <guid isPermaLink="true">https://moh.gov.sy/news/%D8%AD%D9%85%D9%84%D8%A9-%D8%A7%D9%84%D8%A8%D8%B5%D8%B1-%D9%84%D9%84%D8%B9%D9%8A%D9%88%D9%86-%D9%81%D9%8A-%D8%A7%D9%84%D8%B1%D9%82%D8%A9</guid>
     </item>
     <item>
       <title>ماراثون «اطمئنانك حياة» في سلمية للتوعية بالكشف المبكر عن سرطان الثدي</title>
@@ -208,13 +222,6 @@
       <guid isPermaLink="true">https://sana.sy/education/2627679</guid>
     </item>
     <item>
-      <title>حملة البصر للعيون في الرقة</title>
-      <link>https://moh.gov.sy/news/%D8%AD%D9%85%D9%84%D8%A9-%D8%A7%D9%84%D8%A8%D8%B5%D8%B1-%D9%84%D9%84%D8%B9%D9%8A%D9%88%D9%86-%D9%81%D9%8A-%D8%A7%D9%84%D8%B1%D9%82%D8%A9</link>
-      <description>Source: Syrian Ministry of Health</description>
-      <pubDate>Fri, 06 Nov 2026 00:00:00 GMT</pubDate>
-      <guid isPermaLink="true">https://moh.gov.sy/news/%D8%AD%D9%85%D9%84%D8%A9-%D8%A7%D9%84%D8%A8%D8%B5%D8%B1-%D9%84%D9%84%D8%B9%D9%8A%D9%88%D9%86-%D9%81%D9%8A-%D8%A7%D9%84%D8%B1%D9%82%D8%A9</guid>
-    </item>
-    <item>
       <title>‏4 معايير تحدد أسعار التحاليل في المخابر الطبية الخاصة ‏</title>
       <link>https://sana.sy/reports/2626951</link>
       <description>Source: Syrian Arab News Agency (SANA) — Health</description>
@@ -236,13 +243,6 @@
       <guid isPermaLink="true">https://sana.sy/governorates/2626778</guid>
     </item>
     <item>
-      <title>إغلاق 11 صيدلية في الرقة لمخالفات مهنية وتنظيمية خلال الأشهر الثلاثة ‏الماضية ‏</title>
-      <link>https://sana.sy/health/2626026</link>
-      <description>Source: Syrian Arab News Agency (SANA) — Health</description>
-      <pubDate>Wed, 04 Nov 2026 00:00:00 GMT</pubDate>
-      <guid isPermaLink="true">https://sana.sy/health/2626026</guid>
-    </item>
-    <item>
       <title>وزير الصحة ومحافظ حلب يبحثان أولويات تطوير وتأهيل القطاع الصحي</title>
       <link>https://moh.gov.sy/news/%D9%88%D8%B2%D9%8A%D8%B1-%D8%A7%D9%84%D8%B5%D8%AD%D8%A9-%D9%88%D9%85%D8%AD%D8%A7%D9%81%D8%B8-%D8%AD%D9%84%D8%A8-%D9%8A%D8%A8%D8%AD%D8%AB%D8%A7%D9%86-%D8%A3%D9%88%D9%84%D9%88%D9%8A%D8%A7%D8%AA-%D8%AA%D8%B7%D9%88%D9%8A%D8%B1-%D9%88%D8%AA%D8%A3%D9%87%D9%8A%D9%84-%D8%A7%D9%84%D9%82%D8%B7%D8%A7%D8%B9-%D8%A7%D9%84%D8%B5%D8%AD%D9%8A</link>
       <description>Source: Syrian Ministry of Health</description>
@@ -250,11 +250,25 @@
       <guid isPermaLink="true">https://moh.gov.sy/news/%D9%88%D8%B2%D9%8A%D8%B1-%D8%A7%D9%84%D8%B5%D8%AD%D8%A9-%D9%88%D9%85%D8%AD%D8%A7%D9%81%D8%B8-%D8%AD%D9%84%D8%A8-%D9%8A%D8%A8%D8%AD%D8%AB%D8%A7%D9%86-%D8%A3%D9%88%D9%84%D9%88%D9%8A%D8%A7%D8%AA-%D8%AA%D8%B7%D9%88%D9%8A%D8%B1-%D9%88%D8%AA%D8%A3%D9%87%D9%8A%D9%84-%D8%A7%D9%84%D9%82%D8%B7%D8%A7%D8%B9-%D8%A7%D9%84%D8%B5%D8%AD%D9%8A</guid>
     </item>
     <item>
+      <title>إغلاق 11 صيدلية في الرقة لمخالفات مهنية وتنظيمية خلال الأشهر الثلاثة ‏الماضية ‏</title>
+      <link>https://sana.sy/health/2626026</link>
+      <description>Source: Syrian Arab News Agency (SANA) — Health</description>
+      <pubDate>Wed, 04 Nov 2026 00:00:00 GMT</pubDate>
+      <guid isPermaLink="true">https://sana.sy/health/2626026</guid>
+    </item>
+    <item>
       <title>مستشفى العيون الجراحي بدمشق</title>
       <link>https://moh.gov.sy/news/%D9%85%D8%B3%D8%AA%D8%B4%D9%81%D9%89-%D8%A7%D9%84%D8%B9%D9%8A%D9%88%D9%86-%D8%A7%D9%84%D8%AC%D8%B1%D8%A7%D8%AD%D9%8A-%D8%A8%D8%AF%D9%85%D8%B4%D9%82</link>
       <description>Source: Syrian Ministry of Health</description>
       <pubDate>Wed, 04 Nov 2026 00:00:00 GMT</pubDate>
       <guid isPermaLink="true">https://moh.gov.sy/news/%D9%85%D8%B3%D8%AA%D8%B4%D9%81%D9%89-%D8%A7%D9%84%D8%B9%D9%8A%D9%88%D9%86-%D8%A7%D9%84%D8%AC%D8%B1%D8%A7%D8%AD%D9%8A-%D8%A8%D8%AF%D9%85%D8%B4%D9%82</guid>
+    </item>
+    <item>
+      <title>وزارة الصحة تُطلق ورشة تطوير نظم المعلومات الصحية في سورية</title>
+      <link>https://moh.gov.sy/news/%D9%88%D8%B2%D8%A7%D8%B1%D8%A9-%D8%A7%D9%84%D8%B5%D8%AD%D8%A9-%D8%AA%D9%8F%D8%B7%D9%84%D9%82-%D9%88%D8%B1%D8%B4%D8%A9-%D8%AA%D8%B7%D9%88%D9%8A%D8%B1-%D9%86%D8%B8%D9%85-%D8%A7%D9%84%D9%85%D8%B9%D9%84%D9%88%D9%85%D8%A7%D8%AA-%D8%A7%D9%84%D8%B5%D8%AD%D9%8A%D8%A9-%D9%81%D9%8A-%D8%B3%D9%88%D8%B1%D9%8A%D8%A9</link>
+      <description>Source: Syrian Ministry of Health</description>
+      <pubDate>Tue, 03 Nov 2026 00:00:00 GMT</pubDate>
+      <guid isPermaLink="true">https://moh.gov.sy/news/%D9%88%D8%B2%D8%A7%D8%B1%D8%A9-%D8%A7%D9%84%D8%B5%D8%AD%D8%A9-%D8%AA%D9%8F%D8%B7%D9%84%D9%82-%D9%88%D8%B1%D8%B4%D8%A9-%D8%AA%D8%B7%D9%88%D9%8A%D8%B1-%D9%86%D8%B8%D9%85-%D8%A7%D9%84%D9%85%D8%B9%D9%84%D9%88%D9%85%D8%A7%D8%AA-%D8%A7%D9%84%D8%B5%D8%AD%D9%8A%D8%A9-%D9%81%D9%8A-%D8%B3%D9%88%D8%B1%D9%8A%D8%A9</guid>
     </item>
     <item>
       <title>الصحة تنظم ورشة عمل لتطوير نظم المعلومات الصحية وتعميم نظام ‏DHIS2‌‏ على ‏المحافظات</title>
@@ -276,13 +290,6 @@
       <description>Source: Syrian Arab News Agency (SANA) — Health</description>
       <pubDate>Tue, 03 Nov 2026 00:00:00 GMT</pubDate>
       <guid isPermaLink="true">https://sana.sy/health/2624909</guid>
-    </item>
-    <item>
-      <title>وزارة الصحة تُطلق ورشة تطوير نظم المعلومات الصحية في سورية</title>
-      <link>https://moh.gov.sy/news/%D9%88%D8%B2%D8%A7%D8%B1%D8%A9-%D8%A7%D9%84%D8%B5%D8%AD%D8%A9-%D8%AA%D9%8F%D8%B7%D9%84%D9%82-%D9%88%D8%B1%D8%B4%D8%A9-%D8%AA%D8%B7%D9%88%D9%8A%D8%B1-%D9%86%D8%B8%D9%85-%D8%A7%D9%84%D9%85%D8%B9%D9%84%D9%88%D9%85%D8%A7%D8%AA-%D8%A7%D9%84%D8%B5%D8%AD%D9%8A%D8%A9-%D9%81%D9%8A-%D8%B3%D9%88%D8%B1%D9%8A%D8%A9</link>
-      <description>Source: Syrian Ministry of Health</description>
-      <pubDate>Tue, 03 Nov 2026 00:00:00 GMT</pubDate>
-      <guid isPermaLink="true">https://moh.gov.sy/news/%D9%88%D8%B2%D8%A7%D8%B1%D8%A9-%D8%A7%D9%84%D8%B5%D8%AD%D8%A9-%D8%AA%D9%8F%D8%B7%D9%84%D9%82-%D9%88%D8%B1%D8%B4%D8%A9-%D8%AA%D8%B7%D9%88%D9%8A%D8%B1-%D9%86%D8%B8%D9%85-%D8%A7%D9%84%D9%85%D8%B9%D9%84%D9%88%D9%85%D8%A7%D8%AA-%D8%A7%D9%84%D8%B5%D8%AD%D9%8A%D8%A9-%D9%81%D9%8A-%D8%B3%D9%88%D8%B1%D9%8A%D8%A9</guid>
     </item>
     <item>
       <title>مشفى النور في دير الزور يستعيد نشاطه الطبي بعد إعادة تأهيله</title>
@@ -416,13 +423,6 @@
       <description>Source: Syrian Arab Red Crescent</description>
       <pubDate>Thu, 29 Oct 2026 00:00:00 GMT</pubDate>
       <guid isPermaLink="true">https://sarc.sy/59378-2</guid>
-    </item>
-    <item>
-      <title>حماة.. اختتام فعاليات الشهر الوردي للتوعية بأهمية الكشف المبكر عن سرطان الثدي</title>
-      <link>https://sana.sy/health/2620981</link>
-      <description>Source: Syrian Arab News Agency (SANA) — Health</description>
-      <pubDate>Thu, 29 Oct 2026 00:00:00 GMT</pubDate>
-      <guid isPermaLink="true">https://sana.sy/health/2620981</guid>
     </item>
   </channel>
 </rss>

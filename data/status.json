@@ -1,29 +1,29 @@
 {
-  "checked_at": "2026-11-14T22:27:43+00:00",
+  "checked_at": "2026-11-15T13:57:53+00:00",
   "sources": [
     {
       "id": "drc-jobs",
       "kind": "jobs",
       "state": "ok",
-      "checked_at": "2026-11-14T22:26:29+00:00",
-      "fetched": 79,
-      "accepted": 7,
-      "latest_published": "2026-11-11"
+      "checked_at": "2026-11-15T13:57:33+00:00",
+      "fetched": 81,
+      "accepted": 8,
+      "latest_published": "2026-11-15"
     },
     {
       "id": "ida-jobs",
       "kind": "jobs",
       "state": "ok",
-      "checked_at": "2026-11-14T22:26:44+00:00",
+      "checked_at": "2026-11-15T13:57:53+00:00",
       "fetched": 10,
-      "accepted": 0,
-      "latest_published": null
+      "accepted": 1,
+      "latest_published": "2026-11-15"
     },
     {
       "id": "ida-news",
       "kind": "news",
       "state": "ok",
-      "checked_at": "2026-11-14T22:26:28+00:00",
+      "checked_at": "2026-11-15T13:57:31+00:00",
       "fetched": 10,
       "accepted": 0,
       "latest_published": null
@@ -32,7 +32,7 @@
       "id": "nrc-jobs",
       "kind": "jobs",
       "state": "ok",
-      "checked_at": "2026-11-14T22:26:28+00:00",
+      "checked_at": "2026-11-15T13:57:33+00:00",
       "fetched": 12,
       "accepted": 2,
       "latest_published": "2026-11-03"
@@ -41,7 +41,7 @@
       "id": "reliefweb-jobs",
       "kind": "jobs",
       "state": "error",
-      "checked_at": "2026-11-14T22:26:32+00:00",
+      "checked_at": "2026-11-15T13:57:36+00:00",
       "error": "Empty response (HTTP 202)",
       "accepted": 0
     },
@@ -49,7 +49,7 @@
       "id": "sams-jobs",
       "kind": "jobs",
       "state": "ok",
-      "checked_at": "2026-11-14T22:26:27+00:00",
+      "checked_at": "2026-11-15T13:57:32+00:00",
       "fetched": 551,
       "accepted": 1,
       "latest_published": "2026-11-04"
@@ -58,25 +58,25 @@
       "id": "sams-news",
       "kind": "news",
       "state": "ok",
-      "checked_at": "2026-11-14T22:26:25+00:00",
+      "checked_at": "2026-11-15T13:57:29+00:00",
       "fetched": 10,
-      "accepted": 6,
+      "accepted": 5,
       "latest_published": "2026-10-30"
     },
     {
       "id": "sana-health",
       "kind": "news",
       "state": "ok",
-      "checked_at": "2026-11-14T22:26:27+00:00",
+      "checked_at": "2026-11-15T13:57:32+00:00",
       "fetched": 150,
-      "accepted": 78,
+      "accepted": 77,
       "latest_published": "2026-11-14"
     },
     {
       "id": "sarc-news",
       "kind": "news",
       "state": "ok",
-      "checked_at": "2026-11-14T22:26:26+00:00",
+      "checked_at": "2026-11-15T13:57:31+00:00",
       "fetched": 10,
       "accepted": 1,
       "latest_published": "2026-10-29"
@@ -84,16 +84,17 @@
     {
       "id": "sy-moh-news",
       "kind": "news",
-      "state": "error",
-      "checked_at": "2026-11-14T22:27:43+00:00",
-      "error": "<urlopen error timed out>",
-      "accepted": 0
+      "state": "ok",
+      "checked_at": "2026-11-15T13:57:30+00:00",
+      "fetched": 12,
+      "accepted": 7,
+      "latest_published": "2026-11-11"
     },
     {
       "id": "un-health",
       "kind": "news",
       "state": "ok",
-      "checked_at": "2026-11-14T22:26:27+00:00",
+      "checked_at": "2026-11-15T13:57:31+00:00",
       "fetched": 30,
       "accepted": 0,
       "latest_published": null
@@ -102,7 +103,7 @@
       "id": "uossm-news",
       "kind": "news",
       "state": "error",
-      "checked_at": "2026-11-14T22:26:31+00:00",
+      "checked_at": "2026-11-15T13:57:36+00:00",
       "error": "HTTP Error 500: Internal Server Error",
       "accepted": 0
     },
@@ -110,7 +111,7 @@
       "id": "who-news",
       "kind": "news",
       "state": "ok",
-      "checked_at": "2026-11-14T22:26:27+00:00",
+      "checked_at": "2026-11-15T13:57:31+00:00",
       "fetched": 83,
       "accepted": 0,
       "latest_published": null
@@ -119,10 +120,10 @@
       "id": "who-syria-news",
       "kind": "news",
       "state": "ok",
-      "checked_at": "2026-11-14T22:26:26+00:00",
+      "checked_at": "2026-11-15T13:57:32+00:00",
       "fetched": 10,
-      "accepted": 3,
-      "latest_published": "2026-11-10"
+      "accepted": 4,
+      "latest_published": "2026-11-15"
     }
   ],
   "version": 2
