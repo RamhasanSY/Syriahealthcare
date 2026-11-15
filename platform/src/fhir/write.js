@@ -7,10 +7,11 @@
 // The answer is a transaction-response: per entry "201 Created" or "200 OK" (sent before), and an OperationOutcome
 // saying only whether the result went straight into the patient's file, or which slip code to print.
 import {cleanPatientNumber} from '../patient-number.js';
-import {CATEGORY_BY_LOINC, ingest, IngestError} from '../ingest.js';
+import {CATEGORY_BY_LOINC, IngestError, prepare, store} from '../ingest.js';
 import {tokenClient} from '../oauth.js';
 
 export const MAX_BUNDLE_BYTES = 8 * 1024 * 1024;
+const UTF8 = new TextDecoder('utf-8', {fatal: true});
 const MHD_SUBMISSION = 'https://profiles.ihe.net/ITI/MHD/CodeSystem/MHDlistTypes';
 
 const textOf = concept => concept?.text || concept?.coding?.find(c => c.display)?.display || concept?.coding?.[0]?.code || '';
@@ -94,10 +95,17 @@ export function itemsOf(bundle) {
 
 export default function fhirWriteRoutes(app, {send, outcome}) {
     // Inside /fhir/r4 only: JSON bodies up to 8 MB (the rest of the platform keeps its small limit).
+    // FHIR JSON is always UTF-8. Anything else is refused, so a name is never stored garbled (a BOM is allowed).
     app.removeContentTypeParser('application/json');
-    app.addContentTypeParser(['application/fhir+json', 'application/json'], {parseAs: 'string', bodyLimit: MAX_BUNDLE_BYTES}, (request, body, done) => {
+    app.addContentTypeParser(['application/fhir+json', 'application/json'], {parseAs: 'buffer', bodyLimit: MAX_BUNDLE_BYTES}, (request, body, done) => {
+        let text;
         try {
-            done(null, JSON.parse(body));
+            text = UTF8.decode(body);
+        } catch (_) {
+            return done(Object.assign(new Error('The body is not valid UTF-8. FHIR JSON must be sent as UTF-8.'), {statusCode: 400}));
+        }
+        try {
+            done(null, JSON.parse(text));
         } catch (_) {
             done(Object.assign(new Error('The body is not valid JSON.'), {statusCode: 400}));
         }
@@ -132,15 +140,20 @@ export default function fhirWriteRoutes(app, {send, outcome}) {
             if (error instanceof IngestError) return send(reply, 400, invalid(error));
             throw error;
         }
-        const responses = new Map();
+        // Every entry is checked before the first one is stored: a transaction is all or nothing.
+        const ready = [];
         for (const item of parsed.items) {
             try {
-                const result = await ingest(app, client, {...item, source: 'fhir'}, {ip: request.ip});
-                responses.set(item.index, {status: result.created ? '201 Created' : '200 OK', location: `${item.kind}/${result.id}`, outcome: deliveryOutcome(result)});
+                ready.push({item, prepared: prepare({...item, source: 'fhir'})});
             } catch (error) {
                 if (error instanceof IngestError) return send(reply, 400, invalid(error, `Bundle.entry[${item.index}].resource.${error.field || ''}`));
                 throw error;
             }
+        }
+        const responses = new Map();
+        for (const {item, prepared} of ready) {
+            const result = await store(app, client, prepared, {ip: request.ip});
+            responses.set(item.index, {status: result.created ? '201 Created' : '200 OK', location: `${item.kind}/${result.id}`, outcome: deliveryOutcome(result)});
         }
         return send(reply, 200, {
             resourceType: 'Bundle', type: 'transaction-response',

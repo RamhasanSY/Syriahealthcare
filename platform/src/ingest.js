@@ -27,7 +27,13 @@ export const CATEGORY_BY_LOINC = {'11502-2': 'lab', '18748-4': 'imaging', '11488
     '34105-7': 'discharge', '11369-6': 'vaccination'};
 
 // item: {patient: {name, phone, number, birthYear}, title, category, externalId, file: {buffer, mime?, filename}, observations, source}
-export async function ingest(app, client, item, {ip = null} = {}) {
+export async function ingest(app, client, item, options) {
+    return store(app, client, prepare(item), options);
+}
+
+// Checks one item completely, file included, without storing anything. A FHIR Bundle prepares every entry first,
+// so one faulty entry stores nothing at all: a transaction is all or nothing, and no slip code is ever lost.
+export function prepare(item) {
     const name = String(item.patient?.name || '').trim();
     if (name.length < 2 || name.length > 120) throw new IngestError('patient_name', 'The patient\'s name is missing.', 'Patient.name');
     const phone = normalizePhone(String(item.patient?.phone || ''));
@@ -38,13 +44,6 @@ export async function ingest(app, client, item, {ip = null} = {}) {
     if (!externalId) throw new IngestError('identifier', 'The sender\'s own number for this result is missing (needed to avoid duplicates).', 'identifier');
     if (!item.file?.buffer?.length) throw new IngestError('no_file', 'The result file (PDF, JPEG or PNG) is missing.', 'presentedForm');
     if (item.file.buffer.length > MAX_DOCUMENT_BYTES) throw new IngestError('file_too_large', 'The file is larger than 5 MB.', 'presentedForm');
-
-    // A repeated send: answer with what happened the first time.
-    const {rows: [existing]} = await app.pg.query(
-        `SELECT r.id, EXISTS (SELECT 1 FROM clinical_documents d WHERE d.lab_result_id = r.id) AS delivered
-         FROM lab_results r WHERE r.facility_id = $1 AND r.external_id = $2`, [client.facility_id, externalId]);
-    if (existing) return {id: existing.id, created: false, delivered: existing.delivered, code: null};
-
     let clean;
     try {
         clean = cleanUpload(item.file.buffer);
@@ -53,8 +52,19 @@ export async function ingest(app, client, item, {ip = null} = {}) {
         throw error;
     }
     const birthYear = Number(item.patient?.birthYear) || null;
-    const stored = await app.documents.save(clean.buffer), code = newResultCode();
     const filename = String(item.file.filename || `${externalId}`).replace(/[^\p{L}\p{N}._ -]/gu, '_').slice(0, 200) || 'result';
+    return {item, name, phone, title, externalId, clean, birthYear, filename};
+}
+
+// Stores a prepared item. A repeated send (same sender number) answers with what happened the first time.
+export async function store(app, client, prepared, {ip = null} = {}) {
+    const {item, name, phone, title, externalId, clean, birthYear, filename} = prepared;
+    const {rows: [existing]} = await app.pg.query(
+        `SELECT r.id, EXISTS (SELECT 1 FROM clinical_documents d WHERE d.lab_result_id = r.id) AS delivered
+         FROM lab_results r WHERE r.facility_id = $1 AND r.external_id = $2`, [client.facility_id, externalId]);
+    if (existing) return {id: existing.id, created: false, delivered: existing.delivered, code: null};
+
+    const stored = await app.documents.save(clean.buffer), code = newResultCode();
     try {
         const {rows: [result]} = await app.pg.query(
             `INSERT INTO lab_results (facility_id, patient_name, patient_phone, title, code_hash, code_expires_at, filename, mime, size_bytes, sha256,
@@ -68,7 +78,7 @@ export async function ingest(app, client, item, {ip = null} = {}) {
         if (!result) {
             // Sent twice at the same moment: the other request stored it.
             await app.documents.remove(stored.storageKey);
-            return ingest(app, client, item, {ip});
+            return store(app, client, prepared, {ip});
         }
         const delivered = await deliver(app, result, item.patient);
         await audit(app.pg, {actorId: client.facility_id, action: 'result.uploaded', targetId: result.id,

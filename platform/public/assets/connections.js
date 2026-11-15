@@ -30,6 +30,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             label.append(box, el('span', {}, tr(...labels), ' ', el('code', {textContent: scope, dir: 'ltr'})));
             return label;
         }));
+        renderRequests();
         $('connList').replaceChildren(...(data.clients.length ? data.clients.map(c => {
             const li = el('li', {className: 'appt'});
             const head = el('div', {className: 'appt-head'}, el('h3', {}, el('bdi', {textContent: c.name})),
@@ -54,6 +55,42 @@ document.addEventListener('DOMContentLoaded', async () => {
             return li;
         }) : [el('li', {className: 'empty-row', textContent: tr('No software is connected yet.', 'لم يُربط أي برنامج بعد.')})]));
         renderCreated();
+    }
+
+    // Requests that facilities sent from "Connect your software". Creating a connection for the facility closes its request.
+    function renderRequests() {
+        const requests = data.requests || [];
+        $('connRequestsHeading').hidden = $('connRequests').hidden = !requests.length;
+        $('connRequests').replaceChildren(...requests.map(r => {
+            const name = r.facility_name || r.account_name;
+            const facts = [tr('Software', 'البرنامج') + ': ', el('bdi', {textContent: r.software})];
+            if (r.contact) facts.push(' · ' + tr('Contact at the provider', 'التواصل لدى المزود') + ': ', el('bdi', {textContent: r.contact}));
+            facts.push(` · ${tr('asked', 'طُلب')} ${day(r.created_at)} · `, el('bdi', {textContent: r.account_name}), ' ', el('span', {dir: 'ltr', textContent: `<${r.email}>`}));
+            const prepare = el('button', {type: 'button', className: 'btn', textContent: tr('Prepare this connection', 'جهّز هذا الربط')});
+            prepare.setAttribute('aria-label', `${tr('Prepare this connection', 'جهّز هذا الربط')}: ${name}`);
+            prepare.addEventListener('click', () => {
+                $('connFacility').value = r.facility_id;
+                $('connName').value = r.software;
+                // Labs and imaging centres send results; hospitals, clinics and others send documents.
+                const scope = ['lab', 'imaging'].includes(r.kind) ? 'system/DiagnosticReport.c' : 'system/DocumentReference.c';
+                $('connScopes').querySelectorAll('input').forEach(box => { box.checked = box.value === scope; });
+                $('connName').focus();
+            });
+            const close = el('button', {type: 'button', className: 'btn ghost', textContent: tr('Close without a connection', 'أغلق دون ربط')});
+            close.setAttribute('aria-label', `${tr('Close without a connection', 'أغلق دون ربط')}: ${name}`);
+            close.addEventListener('click', async () => {
+                if (!window.confirm(tr(`Close the request from "${name}"? They can ask again later.`, `إغلاق طلب «${name}»؟ يمكنهم الطلب مرة أخرى لاحقاً.`))) return;
+                busy(close, true);
+                const res = await api(`/api/admin/api-client-requests/${r.id}/close`, {});
+                busy(close, false);
+                if (!res.ok) return showError('connError', res.data);
+                await load();
+                $('connHeading').focus();
+            });
+            return el('li', {className: 'appt'},
+                el('div', {className: 'appt-head'}, el('h3', {}, el('bdi', {textContent: name})), el('span', {className: 'pill wait', textContent: tr('Waiting', 'بانتظار')})),
+                el('p', {className: 'muted-small'}, ...facts), el('div', {className: 'actions'}, prepare, close));
+        }));
     }
 
     function renderCreated() {

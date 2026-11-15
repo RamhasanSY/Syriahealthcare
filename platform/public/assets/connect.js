@@ -22,7 +22,7 @@ Content-Type: application/fhir+json
 {"resourceType": "Bundle", "type": "transaction", "entry": [
   {"fullUrl": "urn:uuid:…patient", "resource": {"resourceType": "Patient",
     "identifier": [{"system": "https://syriahc.com/fhir/sid/patient-number", "value": "SHC-XXXX-XXXX-X"}],
-    "name": [{"text": "…"}], "telecom": [{"system": "phone", "value": "0912 345 678"}], "birthDate": "1990-04-02"},
+    "name": [{"text": "Lina Haddad"}], "telecom": [{"system": "phone", "value": "0912 345 678"}], "birthDate": "1990-04-02"},
    "request": {"method": "POST", "url": "Patient"}},
   {"resource": {"resourceType": "DiagnosticReport", "status": "final",
     "identifier": [{"system": "urn:your-lab", "value": "YOUR-LAB-NUMBER"}],
@@ -42,26 +42,66 @@ OBR|1||YOUR-LAB-NUMBER|CBC^Complete blood count
 OBX|1|NM|718-7^Hemoglobin^LN||13.2|g/dL^g/dL^UCUM|12-16|N|||F
 OBX|2|ED|PDF^Report^L||^application^pdf^Base64^JVBERi0…||||||F
 
-→ MSA|AA|MSG0001|Delivered to the patient's SyriaHC health file.`;
+→ MSA|AA|MSG0001|Not delivered to a health file. Print this code for the patient: ABCD-EFGH-JKLM
+  (or, when it went into the patient's file: Delivered to the patient's SyriaHC health file.)`;
     }
+
+    const day = iso => new Date(iso).toLocaleDateString(Shc.lang === 'ar' ? 'ar' : 'en-GB', {day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Asia/Damascus'});
 
     function renderMine() {
         $('mine').hidden = !mine;
+        // Who may ask: not signed in as a facility → sign in; not approved → profile first; an open request → its date.
+        $('askSignIn').hidden = Boolean(mine);
+        $('askNotApproved').hidden = !mine || mine.approved;
+        $('askOpen').hidden = !mine?.request;
+        $('askForm').hidden = !mine?.approved || Boolean(mine.request);
+        if (mine?.request) {
+            $('askOpen').textContent = tr(`You asked for a connection for "${mine.request.software}" on ${day(mine.request.created_at)}. We will contact you.`,
+                `طلبتم ربط «${mine.request.software}» بتاريخ ${day(mine.request.created_at)}. سنتواصل معكم.`);
+        }
+        $('healthNow').hidden = !mine;
+        if (mine) {
+            $('healthNow').textContent = mine.health_file
+                ? tr('On SyriaHC now: health files for patients are switched on.', 'في صحة تك الآن: الملفات الصحية للمرضى مفعّلة.')
+                : tr('On SyriaHC now: health files for patients are not switched on yet, so every result is answered with a slip code to print.',
+                    'في صحة تك الآن: الملفات الصحية للمرضى غير مفعّلة بعد، لذلك يكون الرد على كل نتيجة رمز ورقة للطباعة.');
+        }
         if (!mine) return;
         $('mineList').replaceChildren(...(mine.clients.length ? mine.clients.map(c => el('li', {className: 'appt'},
             el('h3', {}, el('bdi', {textContent: c.name})),
             el('p', {className: 'muted-small'}, el('code', {textContent: c.client_id, dir: 'ltr'}), ` · ${c.scopes.join(', ')} · `,
                 c.revoked_at ? tr('ended', 'منتهٍ') : tr('active', 'فعّال')))) : [el('li', {className: 'empty-row',
-            textContent: tr('No connection yet. Write to us to get one.', 'لا يوجد ربط بعد. راسلونا للحصول عليه.')})]));
+            textContent: tr('No connection yet.', 'لا يوجد ربط بعد.')})]));
     }
 
-    examples();
-    const res = await api('/api/facility/api-clients');
-    if (res.ok) {
-        mine = res.data;
-        urls = {token_url: res.data.token_url, fhir_base: res.data.fhir_base, hl7v2_url: res.data.hl7v2_url};
-        examples();
+    async function load() {
+        const res = await api('/api/facility/api-clients');
+        if (res.ok) {
+            mine = res.data;
+            urls = {token_url: res.data.token_url, fhir_base: res.data.fhir_base, hl7v2_url: res.data.hl7v2_url};
+            examples();
+        }
+        renderMine();
     }
-    renderMine();
+
+    $('askForm').addEventListener('submit', async event => {
+        event.preventDefault();
+        $('askError').hidden = true;
+        const software = $('askSoftware').value.trim();
+        if (software.length < 2) {
+            Shc.showError('askError', {error: 'invalid_software', message: 'Write the name of your software.'});
+            return $('askSoftware').focus();
+        }
+        Shc.busy($('askSend'), true);
+        const res = await api('/api/facility/api-client-requests', {software, contact: $('askContact').value.trim()});
+        Shc.busy($('askSend'), false);
+        if (!res.ok) return Shc.showError('askError', res.data);
+        $('askForm').reset();
+        await load();
+        $('askOpen').focus();
+    });
+
+    examples();
+    await load();
     document.addEventListener('shc:language', renderMine);
 });

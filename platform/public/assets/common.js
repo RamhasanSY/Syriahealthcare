@@ -119,6 +119,9 @@ const Shc = (() => {
         // Blood donation (blood.html, blood-requests.html)
         not_a_blood_bank: 'نداءات التبرع لبنوك الدم والمشافي فقط.',
         facility_not_approved: 'يجب اعتماد منشأتكم أولاً.',
+        // Software connections (connect.html)
+        invalid_software: 'اكتبوا اسم برنامجكم.',
+        already_requested: 'طلبتم ربطاً من قبل. سنتواصل معكم.',
         too_many_requests: 'يمكن فتح 10 نداءات كحد أقصى. أغلقوا نداءً أولاً.',
         donor_required: 'سجّل متبرعاً أولاً.',
         blood_type_mismatch: 'زمرتك الدموية لا تناسب هذا النداء.',

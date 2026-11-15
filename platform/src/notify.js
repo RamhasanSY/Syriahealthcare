@@ -156,6 +156,19 @@ export function changeDecisionEmail(user, accepted, fields, note, origin) {
     };
 }
 
+// Tells every admin that a facility asks for a software connection.
+export async function notifyAdminsOfConnectionRequest(app, user, facilityName, software, contact) {
+    const {rows: admins} = await app.pg.query("SELECT email FROM users WHERE role = 'admin' AND disabled_at IS NULL AND email IS NOT NULL");
+    const message = {
+        subject: `Software connection requested / طلب ربط برنامج: ${facilityName}`,
+        text: `${facilityName} asks for a software connection.\nSoftware: ${software}\n${contact ? `Contact at the software provider: ${contact}\n` : ''}` +
+            `Account: ${user.name} <${user.email}>\n\n${app.config.appOrigin}/admin` + RULE +
+            `${facilityName} تطلب ربط برنامج.\nالبرنامج: ${software}\n${contact ? `التواصل مع مزود البرنامج: ${contact}\n` : ''}` +
+            `الحساب: ${user.name} <${user.email}>\n\n${app.config.appOrigin}/admin`
+    };
+    for (const admin of admins) await sendEmail(app, admin.email, message);
+}
+
 // Tells every admin that a profile is waiting for review.
 export async function notifyAdminsOfSubmission(app, user, kind, displayName) {
     const {rows: admins} = await app.pg.query("SELECT email FROM users WHERE role = 'admin' AND disabled_at IS NULL AND email IS NOT NULL");
