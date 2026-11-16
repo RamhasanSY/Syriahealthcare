@@ -230,7 +230,7 @@ export default async function sharingRoutes(app) {
         if (q) {
             const like = '%' + q.replace(/[%_\\]/g, '\\$&') + '%', phone = normalizePhone(q), digits = q.replace(/\D/g, '');
             args.push(like, phone || (digits.length >= 4 ? '%' + digits : '__none__'), q.toUpperCase().replace(/[^0-9A-Z]/g, ''));
-            filter = `WHERE name ILIKE $2 OR phone LIKE $3 OR replace(patient_number, '-', '') LIKE '%' || NULLIF($4, '') || '%'`;
+            filter = `WHERE shc_fold(name) LIKE shc_fold($2) OR phone LIKE $3 OR replace(patient_number, '-', '') LIKE '%' || NULLIF($4, '') || '%'`;
         }
         const {rows} = await app.pg.query(
             `WITH sources AS (

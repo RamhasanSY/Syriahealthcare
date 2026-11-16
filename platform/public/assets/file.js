@@ -192,6 +192,29 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (focused) $(focused)?.focus();
     }
 
+    // "Download the whole file": the profile as a FHIR Bundle (GET /fhir/r4/Patient/:id/$everything, recorded in the
+    // access log), saved as a .json file named after the patient number.
+    $('downloadFile').addEventListener('click', async () => {
+        const p = profile();
+        busy($('downloadFile'), true);
+        $('downloadStatus').textContent = '';
+        try {
+            const res = await fetch(`/fhir/r4/Patient/${encodeURIComponent(p.id)}/$everything`, {credentials: 'same-origin', headers: {Accept: 'application/fhir+json'}});
+            if (!res.ok) throw new Error(String(res.status));
+            const url = URL.createObjectURL(new Blob([await res.text()], {type: 'application/fhir+json'}));
+            const link = el('a', {href: url, download: `syriahc-${p.patient_number}.json`});
+            document.body.append(link);
+            link.click();
+            link.remove();
+            setTimeout(() => URL.revokeObjectURL(url), 10000);
+            $('downloadStatus').textContent = tr('Downloaded', 'تم التنزيل');
+        } catch (_) {
+            $('downloadStatus').textContent = tr('The download did not work. Please try again.', 'لم ينجح التنزيل. حاول مرة أخرى.');
+        } finally {
+            busy($('downloadFile'), false);
+        }
+    });
+
     function renderProfile() {
         const p = profile();
         $('patientNumber').textContent = p.patient_number;

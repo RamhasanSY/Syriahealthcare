@@ -107,7 +107,7 @@ export default async function resultRoutes(app) {
         const where = ['r.facility_id = $1'], args = [request.user.id];
         const q = (request.query.q || '').trim();
         if (q) {
-            const parts = [`r.patient_name ILIKE $${args.push('%' + q.replace(/[%_\\]/g, '\\$&') + '%')}`, `r.title ILIKE $${args.length}`];
+            const parts = [`shc_fold(r.patient_name) LIKE shc_fold($${args.push('%' + q.replace(/[%_\\]/g, '\\$&') + '%')})`, `shc_fold(r.title) LIKE shc_fold($${args.length})`];
             const phone = normalizePhone(q), digits = q.replace(/\D/g, '');
             if (phone) parts.push(`r.patient_phone = $${args.push(phone)}`);
             else if (digits.length >= 4 && digits.length === q.replace(/[\s\-().+]/g, '').length) parts.push(`r.patient_phone LIKE $${args.push('%' + digits)}`);

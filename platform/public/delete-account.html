@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="ar" dir="rtl" data-title-en="Delete your account — SyriaHC" data-title-ar="حذف الحساب — صحة تك">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#1a3a5c">
+<title>حذف الحساب — صحة تك</title>
+<link rel="manifest" href="/manifest.webmanifest"><link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/assets/app.css">
+<script src="/assets/common.js" defer></script><script src="/assets/delete-account.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#main" data-en="Skip to content" data-ar="انتقل إلى المحتوى">انتقل إلى المحتوى</a>
+<header class="top"><div class="top-inner"><a class="brand" href="/"><img src="/assets/logo.svg" alt=""><span data-en="SyriaHC" data-ar="صحة تك">صحة تك</span></a><div class="top-actions"><button class="lang" id="langToggle" type="button">English</button></div></div></header>
+<main id="main" class="wrap legal" aria-busy="true">
+  <h1 data-en="Delete your SyriaHC account" data-ar="حذف حسابك في صحة تك">حذف حسابك في صحة تك</h1>
+  <p data-en="You can delete your account on this page, or in the app under My account." data-ar="يمكنك حذف حسابك من هذه الصفحة، أو من التطبيق في صفحة حسابي.">يمكنك حذف حسابك من هذه الصفحة، أو من التطبيق في صفحة حسابي.</p>
+
+  <section class="card" id="deleteCard" hidden aria-labelledby="deleteTitle">
+    <h2 id="deleteTitle" data-en="Your account" data-ar="حسابك">حسابك</h2>
+    <p id="who" dir="auto"></p>
+    <div class="msg error" id="deleteError" role="alert" tabindex="-1" hidden></div>
+    <label class="check" for="understand"><input type="checkbox" id="understand"><span id="understandText"></span></label>
+    <div class="actions"><button class="btn danger" type="button" id="deleteButton"></button></div>
+    <p hidden id="signInAgain"><button class="link-btn" type="button" id="signInAgainButton" data-en="Sign in again" data-ar="سجّل الدخول من جديد">سجّل الدخول من جديد</button></p>
+  </section>
+  <section class="card" id="doneCard" hidden tabindex="-1" aria-labelledby="doneTitle">
+    <h2 id="doneTitle"></h2>
+    <p id="doneText"></p>
+  </section>
+  <section class="card" id="adminCard" hidden>
+    <p data-en="Administrator accounts are switched off and removed by another administrator." data-ar="يوقف حسابات المديرين ويحذفها مدير آخر.">يوقف حسابات المديرين ويحذفها مدير آخر.</p>
+  </section>
+  <section class="card" id="signInCard" hidden aria-labelledby="signInTitle">
+    <h2 id="signInTitle" data-en="Sign in first" data-ar="سجّل الدخول أولاً">سجّل الدخول أولاً</h2>
+    <p data-en="To make sure it is you, sign in with the account you want to delete." data-ar="للتأكد من أنك صاحب الحساب، سجّل الدخول بالحساب الذي تريد حذفه.">للتأكد من أنك صاحب الحساب، سجّل الدخول بالحساب الذي تريد حذفه.</p>
+    <div class="actions"><a class="btn" href="/login?next=/delete-account" data-en="Sign in as a patient" data-ar="الدخول كمريض">الدخول كمريض</a><a class="btn ghost" href="/staff?next=/delete-account" data-en="Sign in as a doctor or facility" data-ar="الدخول كطبيب أو منشأة">الدخول كطبيب أو منشأة</a></div>
+  </section>
+
+  <h2 data-en="What is deleted" data-ar="ما الذي يُحذف">ما الذي يُحذف</h2>
+  <ul>
+    <li data-en="Patients: the account is deleted at once, with your appointments, reviews, home visit requests, blood donor entry, notifications and your health file, including uploaded files and your children's profiles. A child's profile stays if another parent also has it." data-ar="المرضى: يُحذف الحساب فوراً مع مواعيدك وتقييماتك وطلبات الزيارة المنزلية وتسجيلك كمتبرع بالدم والإشعارات وملفك الصحي، بما فيه الملفات المرفوعة وملفات أطفالك. يبقى ملف الطفل إن كان لدى أحد الوالدين الآخر أيضاً.">المرضى: يُحذف الحساب فوراً مع مواعيدك وتقييماتك وطلبات الزيارة المنزلية وتسجيلك كمتبرع بالدم والإشعارات وملفك الصحي، بما فيه الملفات المرفوعة وملفات أطفالك. يبقى ملف الطفل إن كان لدى أحد الوالدين الآخر أيضاً.</li>
+    <li data-en="Upcoming appointments are cancelled, and the doctor is told that the time is free." data-ar="تُلغى المواعيد القادمة، ويُبلَّغ الطبيب بأن الوقت أصبح متاحاً.">تُلغى المواعيد القادمة، ويُبلَّغ الطبيب بأن الوقت أصبح متاحاً.</li>
+    <li data-en="Doctors, labs and other facilities: the account is switched off at once and no longer listed. It is deleted for good once we have checked what must be kept by law, such as results issued to patients and licence documents." data-ar="الأطباء والمخابر والمنشآت الأخرى: يُوقف الحساب فوراً ولا يعود ظاهراً في الدليل. ويُحذف نهائياً بعد أن نتحقق مما يجب الاحتفاظ به قانونياً، مثل النتائج الصادرة للمرضى ووثائق الترخيص.">الأطباء والمخابر والمنشآت الأخرى: يُوقف الحساب فوراً ولا يعود ظاهراً في الدليل. ويُحذف نهائياً بعد أن نتحقق مما يجب الاحتفاظ به قانونياً، مثل النتائج الصادرة للمرضى ووثائق الترخيص.</li>
+  </ul>
+  <h2 data-en="What is kept" data-ar="ما الذي يبقى">ما الذي يبقى</h2>
+  <ul>
+    <li data-en="Lab results stay with the lab that issued them. Only your link to them is deleted." data-ar="تبقى نتائج التحاليل لدى المخبر الذي أصدرها. يُحذف فقط ربطها بحسابك.">تبقى نتائج التحاليل لدى المخبر الذي أصدرها. يُحذف فقط ربطها بحسابك.</li>
+    <li data-en="The security log keeps an entry that the account was deleted, without your name or contact details." data-ar="يحتفظ سجل الأمان بقيد يفيد بحذف الحساب، دون اسمك أو بيانات التواصل معك.">يحتفظ سجل الأمان بقيد يفيد بحذف الحساب، دون اسمك أو بيانات التواصل معك.</li>
+    <li data-en="Backups are overwritten within 14 days." data-ar="تُستبدل النسخ الاحتياطية خلال 14 يوماً.">تُستبدل النسخ الاحتياطية خلال 14 يوماً.</li>
+  </ul>
+  <h2 data-en="Without the app" data-ar="من دون التطبيق">من دون التطبيق</h2>
+  <p data-en="If you cannot sign in, write to [contact email] from the email address or with the mobile number of your account. We delete it within 30 days." data-ar="إن لم تستطع تسجيل الدخول، راسلنا على [بريد التواصل] من البريد الإلكتروني لحسابك أو مع ذكر رقم الجوال المسجّل. نحذف الحساب خلال 30 يوماً.">إن لم تستطع تسجيل الدخول، راسلنا على [بريد التواصل] من البريد الإلكتروني لحسابك أو مع ذكر رقم الجوال المسجّل. نحذف الحساب خلال 30 يوماً.</p>
+</main>
+<footer><div class="wrap"><a href="/account" data-en="← My account" data-ar="حسابي ←">حسابي ←</a><a href="/privacy" data-en="Privacy policy" data-ar="سياسة الخصوصية">سياسة الخصوصية</a><a href="/imprint" data-en="Operator" data-ar="الجهة المشغّلة">الجهة المشغّلة</a></div></footer>
+</body>
+</html>

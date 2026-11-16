@@ -99,6 +99,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     $('details').hidden = false;
     $(user.role + 'Next').hidden = false;
     $('logout').hidden = false;
+    // Deleting the own account (src/account-deletion.js); administrators are removed by another administrator.
+    $('deleteAccountCard').hidden = user.role === 'admin';
     // Notifications on this device (src/push.js).
     const iphone = /iPhone|iPad|iPod/.test(navigator.userAgent);
     const PUSH_TEXT = {

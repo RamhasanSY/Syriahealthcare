@@ -62,7 +62,7 @@ Built after looking at Doctolib, Practo, Altibbi, Okadoc, Tabib SY and LomedX. E
 | **Video consultations:** browser to browser, never recorded; the server only passes the set-up messages, from 15 minutes before until 2 hours after a confirmed video appointment | doctors, patients | `/video` | `src/video.js` |
 
 **Switched off until the privacy policy (`HEALTH_FILE=off`):** the donor register (the blood group is health data) and medicine reminders (part of the health file). The blood donation calls themselves are always shown.
-**Switched off until the legal check of remote consultations (`VIDEO=off`):** video consultations.
+**Not planned (decision of 16 November 2026, `VIDEO=off`):** video consultations. The code stays, but the service is not offered.
 
 #### Notifications (Web Push)
 
@@ -80,6 +80,14 @@ Many phones, especially on mobile networks, cannot connect directly. A TURN rela
 2. `ufw allow 3478` and `ufw allow 49160:49200/udp`; `systemctl enable --now coturn`.
 3. In `.env`: `VIDEO=on`, `TURN_URLS=turn:app.syriahc.com:3478?transport=udp,turn:app.syriahc.com:3478?transport=tcp`, `TURN_SECRET=<the same secret>`, `STUN_URLS=stun:app.syriahc.com:3478`; then `docker compose up -d app`.
 4. Each doctor switches video on under My account. Do a test call between two phones on different networks first.
+
+### Deleting an account, operator page, search
+
+- **Delete the own account** (`/delete-account`, linked from My account; also the web link for Google Play). It needs a sign-in from the last 15 minutes. Patients are deleted at once, with appointments, reviews, home visit requests, donor entry, notifications and the health file including its encrypted files; a child's profile stays if another parent also has it, and doctors of upcoming appointments are told the time is free. Lab results stay with the lab. Doctors and facilities are switched off and unlisted at once, and every admin gets an email; remove them for good on the server after checking what must be kept:
+  `docker compose exec app node src/delete-account.js doctor@example.org` (labs with issued results need `--with-results`; an account that did not ask needs `--force`).
+- **Operator page** `/imprint`: SyriaHC, Raqqa, Syria, the "does not replace a doctor" notice and emergency advice. The same notice is on the home page, the doctor search and the health file. Fields in [brackets] still need the operator's details.
+- **Download the health file:** a button in the health file saves a profile as a FHIR Bundle (`Patient/$everything`).
+- **Search forgives Arabic spelling** (migration 031, `shc_fold`): أ/إ/آ/ا, ة/ه, ى/ي, ؤ/و, ئ/ي and short vowels count as the same, in the doctor search, the lab's result search and "My patients".
 
 ### Background jobs (`src/jobs.js`)
 

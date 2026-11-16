@@ -20,6 +20,7 @@ import resultRoutes from './results.js';
 import {createDocumentStore} from './documents.js';
 import fhirRoutes from './fhir/index.js';
 import accountRoutes from './accounts.js';
+import accountDeletionRoutes from './account-deletion.js';
 import healthFileRoutes from './healthfile.js';
 import sharingRoutes from './sharing.js';
 import oauthRoutes from './oauth.js';
@@ -128,6 +129,7 @@ export async function buildApp({config, pool, sms, whatsapp, telegram, mail, doc
     await app.register(facilityRoutes);
     await app.register(resultRoutes);
     await app.register(accountRoutes);
+    await app.register(accountDeletionRoutes);
     await app.register(healthFileRoutes);
     await app.register(sharingRoutes);
     await app.register(oauthRoutes);
