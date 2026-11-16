@@ -49,6 +49,15 @@
       <label class="check"><input type="checkbox" id="regConsent"><span><span data-en="I agree to the" data-ar="أوافق على">أوافق على</span> <a href="/privacy" target="_blank" data-en="terms and privacy policy" data-ar="الشروط وسياسة الخصوصية">الشروط وسياسة الخصوصية</a>.</span></label>
       <button class="btn" type="submit" id="registerButton" data-en="Create account" data-ar="إنشاء الحساب">إنشاء الحساب</button>
     </form>
+    <form id="signupCodeForm" novalidate hidden aria-labelledby="signupCodeHeading">
+      <h2 id="signupCodeHeading" data-en="Confirm your email" data-ar="أكّد بريدك الإلكتروني">أكّد بريدك الإلكتروني</h2>
+      <p class="hint" id="signupCodeHint" role="status"></p>
+      <div class="msg error" id="signupCodeError" role="alert" tabindex="-1" hidden></div>
+      <label class="field"><span data-en="6-digit code" data-ar="الرمز المكوّن من 6 أرقام">الرمز المكوّن من 6 أرقام</span><input type="text" id="signupCode" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" dir="ltr" required></label>
+      <button class="btn" type="submit" id="signupCodeButton" data-en="Create account" data-ar="إنشاء الحساب">إنشاء الحساب</button>
+      <p class="hint" data-en="No email after a few minutes? Look in the spam folder, or go back and check the address." data-ar="لم يصلك البريد بعد بضع دقائق؟ ابحث في مجلد الرسائل غير المرغوب فيها، أو ارجع وتحقق من العنوان.">لم يصلك البريد بعد بضع دقائق؟ ابحث في مجلد الرسائل غير المرغوب فيها، أو ارجع وتحقق من العنوان.</p>
+      <p class="forgot-link"><button class="link-btn" type="button" id="signupBack" data-en="Back to the form" data-ar="العودة إلى النموذج">العودة إلى النموذج</button></p>
+    </form>
   </div>
 </main>
 <footer><div class="wrap"><a href="/login" data-en="Patient? Sign in with your phone" data-ar="مريض؟ سجّل الدخول برقم جوالك">مريض؟ سجّل الدخول برقم جوالك</a><a href="/privacy" data-en="Privacy policy" data-ar="سياسة الخصوصية">سياسة الخصوصية</a></div></footer>

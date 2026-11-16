@@ -1,7 +1,7 @@
 import {after, beforeEach, describe, test} from 'node:test';
 import assert from 'node:assert/strict';
 import {createECDH, randomBytes} from 'node:crypto';
-import {cookieOf, pool, setup, signInPatientByEmail, teardown} from './helpers.js';
+import {cookieOf, pool, setup, signInPatientByEmail, teardown, registerStaff} from './helpers.js';
 
 let app, post, mail, push;
 beforeEach(async () => {
@@ -14,7 +14,7 @@ const get = (url, cookie) => app.inject({url, headers: cookie ? {cookie} : {}});
 const day = n => new Date(Date.now() + n * 86400000).toLocaleDateString('en-CA', {timeZone: 'Asia/Damascus'});
 
 async function facility({kind = 'blood_bank', email = 'bank@example.org', name = 'Damascus Blood Bank', status = 'approved', governorate = 'damascus'} = {}) {
-    const cookie = cookieOf(await post('/api/auth/facility/register', {name: 'Rana Saleh', email, password: 'facility password 123', consent: true, kind}));
+    const cookie = cookieOf(await registerStaff(post, 'facility', {name: 'Rana Saleh', email, password: 'facility password 123', consent: true, kind}));
     const {rows: [f]} = await pool.query(`UPDATE facility_profiles p SET status = $2, facility_name = $3, governorate = $4, area = 'Mezzeh',
         address = 'Mezzeh Highway 1', phone = '+963112223344' FROM users u WHERE u.id = p.user_id AND u.email = $1 RETURNING p.user_id`, [email, status, name, governorate]);
     return {cookie, id: f.user_id};

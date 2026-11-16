@@ -1,6 +1,6 @@
 import {after, beforeEach, describe, test} from 'node:test';
 import assert from 'node:assert/strict';
-import {approvedDoctor, cookieOf, origin, pool, setup, signIn, teardown} from './helpers.js';
+import {approvedDoctor, cookieOf, origin, pool, setup, signIn, teardown, registerStaff} from './helpers.js';
 import {cleanResultCode, newResultCode} from '../src/results.js';
 
 let app, post;
@@ -14,7 +14,7 @@ const PDF = Buffer.from('%PDF-1.4\n1 0 obj<<>>endobj\ntrailer<<>>\n%%EOF\n');
 const patient = {patient_name: 'Ahmad Khaled', patient_phone: '0912 345 678', title: 'Complete blood count'};
 
 async function lab(kind = 'lab', email = 'lab@example.org', status = 'approved') {
-    const cookie = cookieOf(await post('/api/auth/facility/register', {name: 'Rana Saleh', email, password: 'facility password 123', consent: true, kind}));
+    const cookie = cookieOf(await registerStaff(post, 'facility', {name: 'Rana Saleh', email, password: 'facility password 123', consent: true, kind}));
     await pool.query(`UPDATE facility_profiles p SET status = $2, facility_name = 'Al Shifa Laboratory' FROM users u
         WHERE u.id = p.user_id AND u.email = $1`, [email, status]);
     return cookie;

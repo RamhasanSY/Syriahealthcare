@@ -2,7 +2,7 @@ import {after, beforeEach, describe, test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readdir, readFile} from 'node:fs/promises';
 import path from 'node:path';
-import {config, origin, pool, setup, signIn, teardown} from './helpers.js';
+import {config, origin, pool, setup, signIn, teardown, reviewed} from './helpers.js';
 import {pngWithText} from './fixtures.js';
 
 let app, mail, post;
@@ -132,10 +132,28 @@ describe('admin review', () => {
         assert.equal(file.statusCode, 200);
         assert.equal(file.headers['content-type'], 'application/pdf');
         assert.deepEqual(file.rawPayload, PDF, 'decrypts to the original file');
-        const ok = await post(`/api/admin/doctors/${id}/approve`, {}, {cookie: admin});
+        const ok = await post(`/api/admin/doctors/${id}/approve`, reviewed, {cookie: admin});
         assert.equal(ok.json().profile.status, 'approved');
         const {rows} = await pool.query('SELECT action FROM audit_log ORDER BY id');
         assert.ok(rows.some(r => r.action === 'document.viewed') && rows.some(r => r.action === 'doctor.approved'));
+    });
+
+    test('approving needs every check of the review checklist, and the ticks go into the history', async () => {
+        const {id} = await submittedDoctor();
+        const admin = await signIn(post, 'admin', 'admin@example.org');
+        assert.equal((await post(`/api/admin/doctors/${id}/approve`, {}, {cookie: admin})).json().error, 'checks_required');
+        const some = await post(`/api/admin/doctors/${id}/approve`, {checks: ['document', 'licence_number']}, {cookie: admin});
+        assert.equal(some.statusCode, 400);
+        assert.equal(some.json().error, 'checks_required', 'a missing check stops the approval');
+        assert.equal((await app.inject({url: `/api/admin/doctors/${id}`, headers: {cookie: admin}})).json().profile.status, 'pending');
+        assert.equal((await post(`/api/admin/doctors/${id}/approve`, {...reviewed, note: 'Called the clinic.'}, {cookie: admin})).json().profile.status, 'approved');
+        const {history} = (await app.inject({url: `/api/admin/doctors/${id}`, headers: {cookie: admin}})).json();
+        const approved = history.find(h => h.action === 'doctor.approved');
+        assert.deepEqual(approved.details, {note: 'Called the clinic.', checks: ['document', 'licence_number', 'phone']});
+        const checks = (await app.inject({url: `/api/admin/doctors/${id}`, headers: {cookie: admin}})).json().review_checks;
+        assert.deepEqual(Object.keys(checks), ['document', 'licence_number', 'phone'], 'the admin page gets the checks with the profile');
+        assert.ok(Object.values(checks).every(([en, ar]) => en && ar), 'every check has English and Arabic text');
+        assert.ok(!('reviewChecks' in (await app.inject({url: '/api/catalog'})).json()), 'not in the public, cached catalog');
     });
 
     test('rejection needs a reason, which the doctor sees; they can fix and resubmit', async () => {
@@ -163,7 +181,7 @@ describe('admin review', () => {
         assert.match(rejected.text, /The licence photo is unreadable\./);
         assert.match(rejected.text, /\/doctor/);
         assert.equal((await post('/api/doctor/submit', {}, {cookie})).statusCode, 200);
-        await post(`/api/admin/doctors/${id}/approve`, {}, {cookie: admin});
+        await post(`/api/admin/doctors/${id}/approve`, reviewed, {cookie: admin});
         assert.match(mail.sent.at(-1).subject, /اعتماد|approved/);
         assert.ok(mail.sent.every(m => !/SY-12345/.test(m.text)), 'licence numbers are never emailed');
     });
@@ -171,7 +189,7 @@ describe('admin review', () => {
     test('editing the address of an approved profile waits for the administrator and keeps the doctor listed', async () => {
         const {cookie, id} = await submittedDoctor();
         const admin = await signIn(post, 'admin', 'admin@example.org');
-        await post(`/api/admin/doctors/${id}/approve`, {}, {cookie: admin});
+        await post(`/api/admin/doctors/${id}/approve`, reviewed, {cookie: admin});
         assert.equal((await upload(cookie, 'other', PDF)).statusCode, 403, 'documents are locked after approval');
         const changed = await post('/api/doctor/profile', {clinic_address: 'New address 5'}, {cookie});
         assert.equal(changed.json().profile.status, 'approved', 'still approved');
@@ -184,10 +202,10 @@ describe('admin review', () => {
     test('suspended doctors cannot edit; admins can reinstate', async () => {
         const {cookie, id} = await submittedDoctor();
         const admin = await signIn(post, 'admin', 'admin@example.org');
-        await post(`/api/admin/doctors/${id}/approve`, {}, {cookie: admin});
+        await post(`/api/admin/doctors/${id}/approve`, reviewed, {cookie: admin});
         assert.equal((await post(`/api/admin/doctors/${id}/suspend`, {note: 'Complaint under review.'}, {cookie: admin})).json().profile.status, 'suspended');
         assert.equal((await post('/api/doctor/profile', {bio: 'x'}, {cookie})).statusCode, 403);
-        assert.equal((await post(`/api/admin/doctors/${id}/approve`, {}, {cookie: admin})).json().profile.status, 'approved');
+        assert.equal((await post(`/api/admin/doctors/${id}/approve`, reviewed, {cookie: admin})).json().profile.status, 'approved');
         assert.equal((await post(`/api/admin/doctors/${id}/reject`, {note: 'too late'}, {cookie: admin})).statusCode, 409, 'only pending profiles can be rejected');
     });
 

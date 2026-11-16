@@ -49,6 +49,11 @@
           <button class="btn danger" type="button" id="rejectChanges" data-en="Reject changes" data-ar="رفض التعديلات">رفض التعديلات</button>
         </div>
       </section>
+      <fieldset class="plain" id="reviewChecks" hidden>
+        <legend data-en="Before approving, check:" data-ar="قبل الاعتماد، تحقّق من:">قبل الاعتماد، تحقّق من:</legend>
+        <div id="reviewCheckList"></div>
+        <p class="hint" data-en="If in doubt, ask the doctors' syndicate or the health directorate before approving. Your ticks are kept in the history." data-ar="عند الشك، اسأل نقابة الأطباء أو مديرية الصحة قبل الاعتماد. تُحفظ علاماتك في السجل.">عند الشك، اسأل نقابة الأطباء أو مديرية الصحة قبل الاعتماد. تُحفظ علاماتك في السجل.</p>
+      </fieldset>
       <label class="field"><span data-en="Note to the applicant (required to reject, suspend, reject changes or switch off the account)" data-ar="ملاحظة لصاحب الطلب (إلزامية عند الرفض أو الإيقاف أو رفض التعديلات أو إيقاف الحساب)">ملاحظة لصاحب الطلب (إلزامية عند الرفض أو الإيقاف أو رفض التعديلات أو إيقاف الحساب)</span><textarea id="note" maxlength="1000" rows="3" dir="auto"></textarea></label>
       <div class="actions">
         <button class="btn" type="button" id="approve" data-en="Approve" data-ar="اعتماد">اعتماد</button>

@@ -2,7 +2,7 @@ import {after, beforeEach, describe, test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readdir, readFile} from 'node:fs/promises';
 import path from 'node:path';
-import {approvedDoctor, config, cookieOf, origin, pool, setup, signIn, signInPatientByEmail, teardown} from './helpers.js';
+import {approvedDoctor, config, cookieOf, origin, pool, setup, signIn, signInPatientByEmail, teardown, registerStaff} from './helpers.js';
 import {jpegWithExif, multipart, PDF, PDF_SCRIPT} from './fixtures.js';
 import {purgeBin} from '../src/jobs.js';
 import {LIMITS} from '../src/healthfile.js';
@@ -33,7 +33,7 @@ async function patientWithConsent(email = 'lina@example.org', name = 'Lina Hadda
 }
 
 async function approvedLab(email = 'lab@example.org') {
-    const cookie = cookieOf(await post('/api/auth/facility/register', {name: 'Rana Saleh', email, password: 'facility password 123', consent: true, kind: 'lab'}));
+    const cookie = cookieOf(await registerStaff(post, 'facility', {name: 'Rana Saleh', email, password: 'facility password 123', consent: true, kind: 'lab'}));
     await pool.query(`UPDATE facility_profiles p SET status = 'approved', facility_name = 'Al Shifa Laboratory' FROM users u WHERE u.id = p.user_id AND u.email = $1`, [email]);
     return cookie;
 }

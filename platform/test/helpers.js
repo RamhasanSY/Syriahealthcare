@@ -9,9 +9,12 @@ import {createMail} from '../src/mail.js';
 import {createSms} from '../src/sms.js';
 import {createTelegramGateway} from '../src/telegram.js';
 import {createWhatsApp, DEFAULT_BLOCKED_PREFIXES, TEMPLATES} from '../src/whatsapp.js';
+import {reviewChecks} from '../src/review-checks.js';
 import {hashPassword, newToken, sha256} from '../src/security.js';
 
 export const origin = 'http://127.0.0.1:3000';
+// The body of an approval with every check of the admin review checklist ticked.
+export const reviewed = {checks: Object.keys(reviewChecks)};
 export const pool = createPool(process.env.TEST_DATABASE_URL || 'postgres://postgres@127.0.0.1:54329/shc_test');
 const documentDir = await mkdtemp(path.join(tmpdir(), 'shc-docs-'));
 export const config = {
@@ -22,7 +25,7 @@ export const config = {
     video: {enabled: false, turnUrls: ['turn:turn.example.org:3478?transport=udp'], turnSecret: 'turn-test-secret', stunUrls: ['stun:turn.example.org:3478']}
 };
 
-let migrated = false;
+let migrated = false, outbox = null;
 // With {whatsapp: true} or {telegram: true}, patients are reached on those channels (captured in `whatsapp.sent`, `telegram.sent`).
 export async function setup({whatsapp: withWhatsApp = false, telegram: withTelegram = false} = {}) {
     if (!migrated) {
@@ -30,8 +33,9 @@ export async function setup({whatsapp: withWhatsApp = false, telegram: withTeleg
         await migrate(pool);
         migrated = true;
     }
-    await pool.query('TRUNCATE users, otp_codes, sessions, login_failures, audit_log, patients RESTART IDENTITY CASCADE');
+    await pool.query('TRUNCATE users, otp_codes, staff_signups, sessions, login_failures, audit_log, patients RESTART IDENTITY CASCADE');
     const sms = createSms(config), mail = createMail(config);
+    outbox = mail;
     const whatsapp = withWhatsApp ? createWhatsApp({whatsapp: {provider: 'test'}}) : null;
     const telegram = withTelegram ? createTelegramGateway({telegram: {provider: 'test'}}) : null;
     const app = await buildApp({config, pool, sms, whatsapp, telegram, mail, logger: false});
@@ -60,7 +64,18 @@ export async function signIn(post, role, email, name = 'Test User') {
         await pool.query("INSERT INTO sessions (token_hash, user_id, expires_at) VALUES ($1, $2, now() + interval '1 day')", [sha256(token), admin.id]);
         return `shc_session=${token}`;
     }
-    return cookieOf(await post('/api/auth/doctor/register', {name, email, password: 'doctor password 123', consent: true}));
+    return cookieOf(await registerStaff(post, 'doctor', {name, email, password: 'doctor password 123', consent: true}));
+}
+
+// Signs up a doctor or facility through both steps: the form, then the code from the email. Returns the answer to the
+// code (201 with the session cookie), or the answer to the form when no code came (an error, or an address that
+// already has an account, whose owner gets a different email).
+export async function registerStaff(post, role, body, headers = {}) {
+    const form = await post(`/api/auth/${role}/register`, body, headers);
+    if (form.statusCode !== 202) return form;
+    const email = form.json().email;
+    const code = outbox.sent.filter(m => m.to === email).at(-1)?.subject.match(/\d{6}/)?.[0];
+    return code ? post('/api/auth/register/verify', {email, code}, headers) : form;
 }
 
 // Signs in a patient through the real SMS-code flow and returns the session cookie.

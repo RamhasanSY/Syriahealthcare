@@ -1,6 +1,6 @@
 import {after, beforeEach, describe, test} from 'node:test';
 import assert from 'node:assert/strict';
-import {cookieOf, origin, pool, setup, signIn, teardown} from './helpers.js';
+import {cookieOf, origin, pool, setup, signIn, teardown, reviewed, registerStaff} from './helpers.js';
 
 let app, mail, post;
 beforeEach(async () => {
@@ -17,7 +17,7 @@ const complete = {
 };
 
 const register = (kind, email = 'lab@example.org', extra = {}) =>
-    post('/api/auth/facility/register', {name: 'Rana Saleh', email, password: 'facility password 123', consent: true, kind, ...extra});
+    registerStaff(post, 'facility', {name: 'Rana Saleh', email, password: 'facility password 123', consent: true, kind, ...extra});
 
 function upload(cookie, kind, content = PDF) {
     const boundary = '----shctest' + Math.random().toString(16).slice(2);
@@ -55,12 +55,14 @@ describe('facility accounts', () => {
         assert.equal(audit.n, 6);
     });
 
-    test('registration needs a known kind and a free email', async () => {
+    test('registration needs a known kind; a taken email gets no second account', async () => {
         assert.equal((await register('veterinary')).statusCode, 400);
         assert.equal((await register('lab')).statusCode, 201);
-        assert.equal((await register('hospital')).json().error, 'email_taken');
+        assert.equal((await register('hospital')).statusCode, 202, 'the same answer as for a free address');
         await signIn(post, 'doctor', 'dr@example.org');
-        assert.equal((await register('lab', 'dr@example.org')).json().error, 'email_taken');
+        assert.equal((await register('lab', 'dr@example.org')).statusCode, 202);
+        const {rows} = await pool.query('SELECT role, count(*)::int AS n FROM users GROUP BY role ORDER BY role');
+        assert.deepEqual(rows, [{role: 'doctor', n: 1}, {role: 'facility', n: 1}]);
     });
 
     test('facilities and doctors cannot use each other\'s pages', async () => {
@@ -131,7 +133,8 @@ describe('facility review and public list', () => {
         const doc = await app.inject({url: `/api/admin/documents/${detail.json().documents[0].id}`, headers: {cookie: admin}});
         assert.equal(doc.statusCode, 200, 'admins can open facility licences');
 
-        assert.equal((await post(`/api/admin/facilities/${lab.id}/approve`, {}, {cookie: admin})).json().profile.status, 'approved');
+        assert.equal((await post(`/api/admin/facilities/${lab.id}/approve`, {}, {cookie: admin})).json().error, 'checks_required', 'facilities need the review checklist too');
+        assert.equal((await post(`/api/admin/facilities/${lab.id}/approve`, reviewed, {cookie: admin})).json().profile.status, 'approved');
         const [facility] = (await app.inject({url: '/api/facilities'})).json().facilities;
         assert.equal(facility.facility_name, 'Al Shifa Laboratory');
         assert.deepEqual(facility.services, ['blood_count', 'hormones']);
@@ -144,7 +147,7 @@ describe('facility review and public list', () => {
     test('an approved pharmacy is listed under its own kind', async () => {
         const pharmacy = await submittedFacility('pharmacy', 'ph@example.org', {...complete, facility_name: 'Al Shifa Pharmacy', services: ['night_duty']});
         const admin = await signIn(post, 'admin', 'admin@example.org');
-        assert.equal((await post(`/api/admin/facilities/${pharmacy.id}/approve`, {}, {cookie: admin})).json().profile.status, 'approved');
+        assert.equal((await post(`/api/admin/facilities/${pharmacy.id}/approve`, reviewed, {cookie: admin})).json().profile.status, 'approved');
         const [listed] = (await app.inject({url: '/api/facilities?kind=pharmacy'})).json().facilities;
         assert.deepEqual([listed.kind, listed.facility_name, listed.services], ['pharmacy', 'Al Shifa Pharmacy', ['night_duty']]);
         assert.equal((await app.inject({url: '/api/facilities?kind=hospital'})).json().facilities.length, 0);
@@ -157,7 +160,7 @@ describe('facility review and public list', () => {
         const toAdmin = mail.sent.find(m => m.to === 'admin@example.org');
         assert.match(toAdmin.subject, /Medical laboratory/);
         assert.match(toAdmin.text, /Al Shifa Laboratory/);
-        await post(`/api/admin/facilities/${lab.id}/approve`, {}, {cookie: admin});
+        await post(`/api/admin/facilities/${lab.id}/approve`, reviewed, {cookie: admin});
         const approved = mail.sent.at(-1);
         assert.equal(approved.to, 'lab@example.org');
         assert.match(approved.text, /syriahc\.com/);
@@ -169,7 +172,7 @@ describe('facility review and public list', () => {
         const lab = await submittedFacility();
         const admin = await signIn(post, 'admin', 'admin@example.org');
         assert.equal((await post(`/api/admin/facilities/${lab.id}/reject`, {}, {cookie: admin})).json().error, 'note_required');
-        await post(`/api/admin/facilities/${lab.id}/approve`, {}, {cookie: admin});
+        await post(`/api/admin/facilities/${lab.id}/approve`, reviewed, {cookie: admin});
         const edited = await post('/api/facility/profile', {opening_hours: 'Every day 08:00–22:00'}, {cookie: lab.cookie});
         assert.equal(edited.json().profile.status, 'approved');
         assert.equal(edited.json().profile.opening_hours, 'Every day 08:00–22:00');
@@ -185,7 +188,7 @@ describe('facility review and public list', () => {
     test('a disabled account disappears from the public list', async () => {
         const lab = await submittedFacility();
         const admin = await signIn(post, 'admin', 'admin@example.org');
-        await post(`/api/admin/facilities/${lab.id}/approve`, {}, {cookie: admin});
+        await post(`/api/admin/facilities/${lab.id}/approve`, reviewed, {cookie: admin});
         await pool.query('UPDATE users SET disabled_at = now() WHERE id = $1', [lab.id]);
         assert.equal((await app.inject({url: '/api/facilities'})).json().facilities.length, 0);
     });

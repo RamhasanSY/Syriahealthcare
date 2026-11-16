@@ -1,5 +1,39 @@
 # Plan: Plattform online bringen (Ärzte, Labore, Krankenhäuser, Patienten)
 
+## Stand 16.11.2026: was fertig ist und was offen ist
+
+Die Plattform läuft seit dem 07.11. auf app.syriahc.com, die Website auf syriahc.com. Alle Funktionen aus `docs/STUFE-2.md` und die acht neuen Dienste (PR #34, #35) sind gebaut, getestet und auf dem Server. Was noch fehlt, hängt fast nur an Entscheidungen und Konten, die nur du anlegen kannst.
+
+| Teil | Stand | Wer |
+|---|---|---|
+| A. Betreiber und Serverstandort | Server läuft. **Offen:** Name, Adresse und Kontakt des Betreibers für `/privacy` | du |
+| B. Datenschutzerklärung | **Neu geschrieben (16.11.)** mit dem echten Datenfluss aller Dienste, weiter als Entwurf. **Offen:** Felder in [Klammern] füllen, rechtliche Prüfung | du + Berater |
+| C. Server | ✅ erledigt | – |
+| D. Domain | ✅ erledigt | – |
+| E. Passwort vergessen, E-Mails | ✅ erledigt (Absender noreply@syriahc.com) | – |
+| F. Website mit Plattform verbunden | ✅ erledigt (`PLATFORM_URL` gesetzt) | – |
+| G. Prüfablauf | **Gebaut (16.11.):** Freigeben geht erst nach drei Häkchen (Lizenz lesbar und gültig, Lizenznummer stimmt, Rückruf erfolgt); die Häkchen stehen im Verlauf. Vier-Augen-Prinzip nicht gebaut, weil es nur einen Admin gibt | – |
+| H. Test mit echten Praxen und Laboren | **Offen.** Ein Labor ist freigegeben (مخبر آلاء) | du |
+| I. SMS, WhatsApp, Telegram | Code fertig. **Offen:** Konten bei einem SMS-Anbieter oder dem Telegram Gateway. Meta liefert WhatsApp nicht nach Syrien. Bis dahin melden sich Patienten per E-Mail-Code an | du |
+| J. Zweiter Faktor | ✅ Admins (Code per E-Mail), Ärzte vor geteilten Gesundheitsdaten | – |
+| K. Betrieb | Nächtliche Sicherung und Uptime-Prüfung laufen. **Offen:** Kopie der Sicherung außerhalb des Servers (Speicher bestellen), Wiederherstellung einmal üben | du + Claude |
+| L. Lovable-Dateien | **Offen:** behalten, löschen oder per `.gitignore` ausschließen | du |
+| Neu: Anmeldung von Ärzten und Einrichtungen | **Gebaut (16.11.):** Die E-Mail wird mit einem Code bestätigt, bevor das Konto entsteht. Die Seite verrät nicht mehr, ob eine E-Mail schon ein Konto hat | – |
+
+**Schalter, die auf deine Entscheidung warten** (in `platform/.env` auf dem Server):
+
+| Schalter | Schaltet frei | Voraussetzung |
+|---|---|---|
+| `HEALTH_FILE=on` | Gesundheitsakte, Teilen mit Ärzten, Spenderregister, Medikamenten-Erinnerungen | geprüfte Datenschutzerklärung (B) |
+| `VIDEO=on` | Video-Sprechstunden | rechtliche Prüfung der Fernbehandlung, coturn auf dem Server |
+| `PUSH_PUBLIC_KEY`, `PUSH_PRIVATE_KEY` | Benachrichtigungen auf Handy und Computer | nur einmal Schlüssel erzeugen; Claude kann das mit deinem OK per SSH |
+
+**Hinweis Website:** syriahc.com lädt die Schriften von Google Fonts. Dabei geht die IP-Adresse jedes Besuchers an Google. Für einen Betreiber in der EU gilt das als Datenschutz-Risiko. Die Schriften lassen sich auf dem eigenen Server ablegen.
+
+---
+
+## Ursprünglicher Plan
+
 Stand: 22.10.2026. Fertig und in `main`: Anmeldung, Profile, Lizenz-Upload und Prüfung für Ärzte und Einrichtungen, Sprechzeiten, Terminbuchung, Arzt-Dashboard und die Übernahme auf syriahc.com. Die Plattform läuft aber noch nirgends öffentlich.
 
 Jeder Teil unten sagt: **was** zu tun ist, **wie**, **wer** es macht (du oder Claude) und **was vorher erledigt sein muss**.

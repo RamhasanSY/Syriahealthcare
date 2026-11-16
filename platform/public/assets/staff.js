@@ -98,7 +98,39 @@ document.addEventListener('DOMContentLoaded', () => {
         };
         const res = type === 'doctor' ? await api('/api/auth/doctor/register', body) : await api('/api/auth/facility/register', {...body, kind: type});
         busy($('registerButton'), false);
-        if (res.ok) return window.location.assign('/account');
-        showError('registerError', res.data);
+        if (!res.ok) return showError('registerError', res.data);
+        // Step 2: the code from the email creates the account (src/auth.js). The form keeps its values for going back.
+        signupEmail = res.data.email;
+        $('registerForm').hidden = true;
+        document.querySelector('.tabs')?.setAttribute('hidden', '');
+        $('signupCodeForm').hidden = false;
+        $('signupCodeError').hidden = true;
+        $('signupCodeHint').textContent = tr(`We sent a 6-digit code to ${signupEmail}. Enter it within ${res.data.expires_in_minutes} minutes to create your account.`,
+            `أرسلنا رمزاً من 6 أرقام إلى ⁦${signupEmail}⁩. أدخله خلال ${res.data.expires_in_minutes} دقيقة لإنشاء حسابك.`);
+        $('signupCode').value = '';
+        $('signupCode').focus();
+    });
+
+    let signupEmail = null;
+    const backToForm = () => {
+        $('signupCodeForm').hidden = true;
+        document.querySelector('.tabs')?.removeAttribute('hidden');
+        select(1);
+        $('regEmail').focus();
+    };
+    $('signupBack').addEventListener('click', backToForm);
+    $('signupCodeForm').addEventListener('submit', async event => {
+        event.preventDefault();
+        $('signupCodeError').hidden = true;
+        busy($('signupCodeButton'), true);
+        const res = await api('/api/auth/register/verify', {email: signupEmail, code: $('signupCode').value.replace(/\D/g, '')});
+        busy($('signupCodeButton'), false);
+        if (res.ok) return goOn();
+        // An expired or used-up code cannot be retried: back to the form, which sends a new one.
+        if (['code_expired', 'too_many_attempts', 'use_sign_in'].includes(res.data.error)) {
+            backToForm();
+            return showError('registerError', res.data);
+        }
+        showError('signupCodeError', res.data);
     });
 });

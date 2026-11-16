@@ -17,6 +17,7 @@ const CLEANUP = [
     ['sessions', 'DELETE FROM sessions WHERE expires_at < now()'],
     ['otp_codes', "DELETE FROM otp_codes WHERE created_at < now() - interval '1 day'"],
     ['staff_login_codes', "DELETE FROM staff_login_codes WHERE created_at < now() - interval '1 day'"],
+    ['staff_signups', "DELETE FROM staff_signups WHERE created_at < now() - interval '1 day'"],
     ['login_failures', "DELETE FROM login_failures WHERE created_at < now() - interval '1 day'"],
     ['password_resets', "DELETE FROM password_resets WHERE created_at < now() - interval '1 day'"],
     ['trusted_devices', 'DELETE FROM trusted_devices WHERE expires_at < now()'],

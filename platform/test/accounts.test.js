@@ -1,6 +1,6 @@
 import {after, beforeEach, describe, test} from 'node:test';
 import assert from 'node:assert/strict';
-import {approvedDoctor, cookieOf, pool, setup, signIn, signInPatientByEmail, teardown} from './helpers.js';
+import {approvedDoctor, cookieOf, pool, setup, signIn, signInPatientByEmail, teardown, registerStaff} from './helpers.js';
 
 let app, post, mail;
 beforeEach(async () => {
@@ -42,7 +42,7 @@ describe('administrators switch staff accounts off and on', () => {
     });
 
     test('works for facilities too', async () => {
-        const cookie = cookieOf(await post('/api/auth/facility/register', {name: 'Rana Saleh', email: 'lab@example.org', password: 'facility password 123', consent: true, kind: 'lab'}));
+        const cookie = cookieOf(await registerStaff(post, 'facility', {name: 'Rana Saleh', email: 'lab@example.org', password: 'facility password 123', consent: true, kind: 'lab'}));
         const admin = await signIn(post, 'admin', 'admin@example.org');
         const id = await userId('lab@example.org');
         assert.equal((await post(`/api/admin/users/${id}/disable`, {note: 'Closed down'}, {cookie: admin})).statusCode, 200);

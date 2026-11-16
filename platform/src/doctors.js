@@ -7,6 +7,7 @@ import {MAX_DOCUMENT_BYTES} from './documents.js';
 import {cleanUpload, UploadError} from './uploads.js';
 import {changeDecisionEmail, decisionEmail, notifyAdminsOfSubmission, sendEmail} from './notify.js';
 import {acceptPending, DOCTOR_CRITICAL, rejectPending, saveChange} from './profile-changes.js';
+import {checkedReview, checksSchema, reviewChecks} from './review-checks.js';
 import {normalizePhone} from './security.js';
 
 const MAX_DOCUMENTS = 6;
@@ -235,7 +236,8 @@ export default async function doctorRoutes(app) {
         // Held changes next to the current values, so the administrator can compare them.
         const pending = profile.pending_changes ? Object.fromEntries(Object.entries(profile.pending_changes)
             .map(([key, value]) => [key, {current: profile[key] ?? null, proposed: value}])) : null;
-        return {doctor: user, profile: profileView(profile), pending, documents: (await listDocuments(app.pg, user.id)).map(documentView), history};
+        return {doctor: user, profile: profileView(profile), pending, documents: (await listDocuments(app.pg, user.id)).map(documentView), history,
+            review_checks: reviewChecks};
     });
 
     // Opens a document for review. Every view is recorded.
@@ -251,13 +253,15 @@ export default async function doctorRoutes(app) {
         const note = String(request.body?.note || '').trim();
         if (needsNote && note.length < 3) throw new HttpError(400, 'note_required', 'Please write a short reason for the doctor.');
         if (note.length > 1000) throw new HttpError(400, 'too_long', 'The note is too long.');
+        // Approving (also after a suspension) needs every check of the review checklist (src/review-checks.js).
+        const checks = to === 'approved' ? checkedReview(request.body?.checks) : null;
         const profile = await transaction(app.pg, async db => {
             const current = await loadProfile(db, request.params.id, true);
             if (!from.includes(current.status)) throw new HttpError(409, 'wrong_status', `This doctor is ${current.status}; you cannot ${action} now.`);
             const {rows: [updated]} = await db.query(
                 `UPDATE doctor_profiles SET status = $2, reviewed_at = now(), reviewed_by = $3, review_note = $4, updated_at = now()
                  WHERE user_id = $1 RETURNING *`, [request.params.id, to, request.user.id, note || null]);
-            await audit(db, {actorId: request.user.id, action: `doctor.${to}`, targetId: request.params.id, details: note ? {note} : {}, ip: request.ip});
+            await audit(db, {actorId: request.user.id, action: `doctor.${to}`, targetId: request.params.id, details: {...(note ? {note} : {}), ...(checks ? {checks} : {})}, ip: request.ip});
             return updated;
         });
         const {rows: [user]} = await app.pg.query('SELECT name, email, language FROM users WHERE id = $1', [request.params.id]);
@@ -266,7 +270,7 @@ export default async function doctorRoutes(app) {
     };
     const decisionSchema = {...adminOnly, schema: {
         params: {type: 'object', properties: {id: {type: 'string', format: 'uuid'}}},
-        body: {type: 'object', properties: {note: {type: 'string', maxLength: 1000}}}
+        body: {type: 'object', properties: {note: {type: 'string', maxLength: 1000}, checks: checksSchema}}
     }};
     app.post('/api/admin/doctors/:id/approve', decisionSchema, decide('approve', ['pending', 'suspended'], 'approved', false));
     app.post('/api/admin/doctors/:id/reject', decisionSchema, decide('reject', ['pending'], 'rejected', true));

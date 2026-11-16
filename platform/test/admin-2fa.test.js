@@ -1,6 +1,6 @@
 import {after, beforeEach, describe, test} from 'node:test';
 import assert from 'node:assert/strict';
-import {cookieOf, pool, setup, teardown} from './helpers.js';
+import {cookieOf, pool, setup, teardown, registerStaff} from './helpers.js';
 import {buildApp} from '../src/app.js';
 import {createSms} from '../src/sms.js';
 import {hashPassword} from '../src/security.js';
@@ -90,7 +90,7 @@ describe('admin sign-in with a second factor', () => {
     });
 
     test('doctors and facilities still sign in with the password alone', async () => {
-        await post('/api/auth/doctor/register', {name: 'Dr. Sami', email: 'sami@example.org', password: 'doctor password 123', consent: true});
+        await registerStaff(post, 'doctor', {name: 'Dr. Sami', email: 'sami@example.org', password: 'doctor password 123', consent: true});
         const res = await post('/api/auth/login', {email: 'sami@example.org', password: 'doctor password 123'});
         assert.equal(res.statusCode, 200);
         assert.ok(cookieOf(res));

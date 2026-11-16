@@ -1,7 +1,7 @@
 // One test per finding of the security review of 9 November 2026, so none of them can come back unnoticed.
 import {after, beforeEach, describe, test} from 'node:test';
 import assert from 'node:assert/strict';
-import {approvedDoctor, config, confirmSession, cookieOf, origin, pool, setup, signIn, signInPatientByEmail, teardown} from './helpers.js';
+import {approvedDoctor, config, confirmSession, cookieOf, origin, pool, setup, signIn, signInPatientByEmail, teardown, registerStaff} from './helpers.js';
 import {multipart, PDF} from './fixtures.js';
 import {addDays, localDate} from '../src/slots.js';
 
@@ -15,7 +15,7 @@ after(() => teardown(app));
 const get = (url, cookie) => app.inject({url, headers: cookie ? {cookie} : {}});
 
 async function lab(email = 'lab@example.org', {status = 'approved', services = ['blood_count', 'home_collection']} = {}) {
-    const cookie = cookieOf(await post('/api/auth/facility/register', {name: 'Rana Saleh', email, password: 'facility password 123', consent: true, kind: 'lab'}));
+    const cookie = cookieOf(await registerStaff(post, 'facility', {name: 'Rana Saleh', email, password: 'facility password 123', consent: true, kind: 'lab'}));
     const {rows: [f]} = await pool.query(`UPDATE facility_profiles p SET status = $2, facility_name = 'Al Shifa Laboratory', services = $3
         FROM users u WHERE u.id = p.user_id AND u.email = $1 RETURNING p.user_id`, [email, status, services]);
     return {cookie, id: f.user_id};

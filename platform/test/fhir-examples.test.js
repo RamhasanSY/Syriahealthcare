@@ -4,7 +4,7 @@ import {after, before, describe, test} from 'node:test';
 import assert from 'node:assert/strict';
 import {mkdir, writeFile} from 'node:fs/promises';
 import path from 'node:path';
-import {approvedDoctor, cookieOf, origin, pool, setup, signIn, signInPatientByEmail, teardown} from './helpers.js';
+import {approvedDoctor, cookieOf, origin, pool, setup, signIn, signInPatientByEmail, teardown, registerStaff} from './helpers.js';
 import {jpegWithExif, multipart, PDF} from './fixtures.js';
 import {auditEvent} from '../src/fhir/audit.js';
 import {codeSystems, namingSystems, valueSets} from '../src/fhir/terminology.js';
@@ -18,7 +18,7 @@ before(async () => {
     ({app, post, mail} = await setup());
     doctor = await approvedDoctor(post, 'dr@example.org', 'Dr. Approved');
     for (const [kind, email, services] of [['lab', 'lab@example.org', ['blood_count', 'pcr']], ['hospital', 'hospital@example.org', ['emergency_care', 'surgery']]]) {
-        await post('/api/auth/facility/register', {name: 'Rana Saleh', email, password: 'facility password 123', consent: true, kind});
+        await registerStaff(post, 'facility', {name: 'Rana Saleh', email, password: 'facility password 123', consent: true, kind});
         const {rows: [f]} = await pool.query(`UPDATE facility_profiles p SET status = 'approved', facility_name = $2, governorate = 'aleppo',
             area = 'Al Aziziyah', address = 'Main street 4', phone = '+963211234567', services = $3, opening_hours = 'Sat-Thu 08:00-20:00',
             emergency = $4 FROM users u WHERE u.id = p.user_id AND u.email = $1 RETURNING p.user_id`,
@@ -79,7 +79,7 @@ describe('FHIR examples for the HL7 validator', () => {
             [{filename: 'page1.jpg', type: 'image/jpeg', content: jpegWithExif()}, {filename: 'page2.pdf', type: 'application/pdf', content: PDF}]);
         const photo = (await app.inject({method: 'POST', url: `/api/file/profiles/${self.id}/documents`, payload: upload.body,
             headers: {origin, cookie, 'content-type': upload.contentType}})).json().item;
-        const lab = cookieOf(await post('/api/auth/facility/register', {name: 'Rana Saleh', email: 'lab2@example.org', password: 'facility password 123', consent: true, kind: 'lab'}));
+        const lab = cookieOf(await registerStaff(post, 'facility', {name: 'Rana Saleh', email: 'lab2@example.org', password: 'facility password 123', consent: true, kind: 'lab'}));
         await pool.query("UPDATE facility_profiles p SET status = 'approved', facility_name = 'Al Amal Laboratory' FROM users u WHERE u.id = p.user_id AND u.email = 'lab2@example.org'");
         const form = multipart({patient_name: 'Lina Haddad', patient_phone: '0912 345 678', title: 'Complete blood count', birth_year: '1990'},
             [{name: 'file', filename: 'cbc.pdf', type: 'application/pdf', content: PDF}]);

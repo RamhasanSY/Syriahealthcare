@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const res = await api('/api/doctor/schedule');
     $('main').setAttribute('aria-busy', 'false');
-    if (!res.ok) return window.location.assign(res.status === 401 ? '/staff' : '/account');
+    if (!res.ok) return window.location.assign(res.status === 401 ? '/staff?next=/schedule' : '/account');
     data = res.data;
     const el = (tag, props = {}) => Object.assign(document.createElement(tag), props);
     const error = (id, d) => showError(id, Shc.lang === 'ar' && PROBLEMS_AR[d.error] ? {...d, message: PROBLEMS_AR[d.error], error: 'x'} : d);

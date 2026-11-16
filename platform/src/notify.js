@@ -51,6 +51,51 @@ ${origin}/staff
 If this was not you, ignore this email.`)
 });
 
+// Doctors and facilities: the code that confirms the address before the account exists (src/auth.js, register).
+// The code is in the subject too, so it shows in the phone's notification.
+export const signupCodeEmail = (language, name, code, minutes) => ({
+    subject: language === 'en' ? `Your SyriaHC account code: ${code}` : `رمز إنشاء حسابك في صحة تك: ${code}`,
+    text: both(language,
+        `مرحباً ${name}،
+
+لإكمال إنشاء حسابك في صحة تك أدخل هذا الرمز: ${code}
+
+الرمز صالح لمدة ${minutes} دقيقة. لا تعطِ هذا الرمز لأي شخص.
+إن لم تنشئ حساباً في صحة تك فتجاهل هذه الرسالة: لا يُنشأ أي حساب من دون الرمز.`,
+        `Hello ${name},
+
+To finish creating your SyriaHC account, enter this code: ${code}
+
+The code is valid for ${minutes} minutes. Never give it to anyone.
+If you did not create an account at SyriaHC, ignore this email: no account is created without the code.`)
+});
+
+// Someone filled in the doctor or facility form with an address that already has an account. No code is sent and
+// nothing changes; the screen looked the same as for any address, so only the owner of the mailbox learns this.
+export function accountExistsEmail(account, origin) {
+    const patient = account.role === 'patient';
+    return {
+        subject: account.language === 'en' ? 'You already have a SyriaHC account' : 'لديك حساب في صحة تك بالفعل',
+        text: both(account.language,
+            `مرحباً ${account.name}،
+
+حاول أحدهم (ربما أنت) إنشاء حساب طبيب أو منشأة جديد بهذا البريد. لهذا البريد حساب في صحة تك بالفعل، لذلك لم يُنشأ حساب جديد.
+
+${patient ? `حسابك حساب مريض، ويُدخَل إليه برمز يصل إلى بريدك:\n${origin}/login\n\nلكل بريد حساب واحد فقط. لتسجيل عيادة أو منشأة استخدم بريداً آخر.`
+        : `سجّل الدخول ببريدك وكلمة المرور:\n${origin}/staff\n\nإن نسيت كلمة المرور:\n${origin}/forgot`}
+
+إن لم تكن أنت فتجاهل هذه الرسالة، فحسابك لم يتغير.`,
+            `Hello ${account.name},
+
+Someone (perhaps you) tried to create a new doctor or facility account with this email address. It already has a SyriaHC account, so no new account was created.
+
+${patient ? `Yours is a patient account, which you open with a code sent to your email:\n${origin}/login\n\nEach email address can belong to one account only. To register a practice or facility, use another address.`
+        : `Sign in with your email and password:\n${origin}/staff\n\nIf you forgot your password:\n${origin}/forgot`}
+
+If this was not you, ignore this email; your account has not changed.`)
+    };
+}
+
 export const resetEmail = (user, link, minutes) => ({
     subject: user.language === 'en' ? 'Reset your SyriaHC password' : 'إعادة تعيين كلمة المرور — صحة تك',
     text: both(user.language,

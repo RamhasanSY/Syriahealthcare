@@ -1,7 +1,7 @@
 // "Forgot password" for doctors, facilities and admins.
 import {after, beforeEach, describe, test} from 'node:test';
 import assert from 'node:assert/strict';
-import {cookieOf, pool, setup, signIn, teardown} from './helpers.js';
+import {cookieOf, pool, setup, signIn, teardown, registerStaff} from './helpers.js';
 
 let app, mail, post, sms;
 beforeEach(async () => {
@@ -129,9 +129,9 @@ describe('reset password', () => {
 
 describe('emails', () => {
     test('new doctors and facilities get a welcome email in their language first', async () => {
-        await post('/api/auth/doctor/register', {name: 'Dr. Sami', email: 'sami@example.org', password: 'doctor password 123', consent: true, language: 'en'});
-        await post('/api/auth/facility/register', {name: 'Rana', email: 'lab@example.org', password: 'facility password 123', consent: true, kind: 'lab'});
-        const [doctor, lab] = mail.sent;
+        await registerStaff(post, 'doctor', {name: 'Dr. Sami', email: 'sami@example.org', password: 'doctor password 123', consent: true, language: 'en'});
+        await registerStaff(post, 'facility', {name: 'Rana', email: 'lab@example.org', password: 'facility password 123', consent: true, kind: 'lab'});
+        const [doctor, lab] = mail.sent.filter(m => !/\d{6}/.test(m.subject));  // without the sign-up codes
         assert.equal(doctor.to, 'sami@example.org');
         assert.match(doctor.subject, /^Welcome/);
         assert.ok(doctor.text.indexOf('Hello') < doctor.text.indexOf('مرحباً'));
@@ -141,9 +141,11 @@ describe('emails', () => {
     });
 
     test('a failed email is logged but never undoes the action', async () => {
+        await post('/api/auth/doctor/register', {name: 'Dr. Sami', email: 'sami@example.org', password: 'doctor password 123', consent: true});
+        const code = mail.sent.at(-1).subject.match(/\d{6}/)[0];
         app.mail.send = async () => { throw new Error('SMTP down'); };
-        const res = await post('/api/auth/doctor/register', {name: 'Dr. Sami', email: 'sami@example.org', password: 'doctor password 123', consent: true});
-        assert.equal(res.statusCode, 201);
+        const res = await post('/api/auth/register/verify', {email: 'sami@example.org', code});
+        assert.equal(res.statusCode, 201, 'the account is created although the welcome email failed');
         assert.equal((await forgot('sami@example.org')).statusCode, 202);
     });
 });

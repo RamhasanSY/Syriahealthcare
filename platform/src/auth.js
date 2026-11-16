@@ -2,7 +2,7 @@ import {ensureSelfProfile} from './access.js';
 import {facilityKinds} from './catalog.js';
 import {audit, transaction} from './db.js';
 import {phoneSignInAvailable, sendCode} from './messaging.js';
-import {emailCodeEmail, passwordChangedEmail, resetEmail, sendEmail, staffAddressEmail, staffCodeEmail, confirmCodeEmail, welcomeEmail} from './notify.js';
+import {accountExistsEmail, emailCodeEmail, passwordChangedEmail, resetEmail, sendEmail, signupCodeEmail, staffAddressEmail, staffCodeEmail, confirmCodeEmail, welcomeEmail} from './notify.js';
 import {dummyPasswordHash, hashPassword, newOtp, newToken, normalizeEmail, normalizePhone, otpHash, passwordProblem, rateLimitKey, sameHash, sha256, verifyPassword} from './security.js';
 
 // In production "__Host-shc_session": browsers accept it only from this exact host over HTTPS, so no other site on
@@ -16,6 +16,9 @@ const LOGIN_MAX_FAILURES = 5, LOGIN_WINDOW_MINUTES = 15;
 const RESET_MINUTES = 30, RESET_PER_HOUR = 3;
 // Administrators: second factor by email code after the password (10 minutes, 5 tries per code, 5 codes per 15 minutes).
 const STAFF_CODE_MINUTES = 10, STAFF_CODE_ATTEMPTS = 5, STAFF_CODES_PER_WINDOW = 5;
+// Doctors and facilities confirm their email before the account exists: a code valid for 30 minutes, 3 forms per
+// address per 15 minutes and 10 per day, 5 tries in all.
+const SIGNUP_CODE_MINUTES = 30, SIGNUPS_PER_DAY = 10;
 export const SECOND_FACTOR_ROLES = new Set(['admin']);
 // Doctors confirm with an emailed code before opening shared health files (stage 2c); a device can be remembered.
 export const DEVICE_COOKIE = 'shc_device';
@@ -271,8 +274,10 @@ export default async function authRoutes(app) {
         return {user: publicUser(user)};
     });
 
-    // Doctors and facilities (labs, imaging centres, hospitals, clinics) create their own accounts.
-    // Approval is required before they appear publicly.
+    // Doctors and facilities (labs, imaging centres, hospitals, clinics) create their own accounts in two steps: the
+    // form, then the 6-digit code that went to the address. The answer to the form is the same whether or not the
+    // address already has an account (its owner gets an email saying so instead of a code), so nobody learns who is
+    // registered, and every account starts with a confirmed address. Approval is still needed before they are listed.
     const registerSchema = extra => ({
         config: ipLimit(20),
         schema: {body: {type: 'object', required: ['name', 'email', 'password', 'consent', ...Object.keys(extra)], properties: {
@@ -281,35 +286,90 @@ export default async function authRoutes(app) {
         }}}
     });
 
-    async function register(request, reply, role, createProfile) {
-        const email = normalizeEmail(request.body.email), name = request.body.name.trim();
+    async function register(request, reply, role, kind = null) {
+        const email = normalizeEmail(request.body.email), name = request.body.name.trim(), language = request.body.language || 'ar';
         if (!email) throw new HttpError(400, 'invalid_email', 'Enter a valid email address.');
         if (name.length < 2) throw new HttpError(400, 'invalid_name', 'Enter your full name.');
         const problem = passwordProblem(request.body.password);
         if (problem) throw new HttpError(400, 'weak_password', problem);
         if (request.body.consent !== true) throw new HttpError(400, 'consent_required', 'Please accept the terms and privacy policy.');
-        const hash = await hashPassword(request.body.password);
+        // Hashed before the address is looked up, so both answers take the same time.
+        const hash = await hashPassword(request.body.password), code = newOtp();
+        const {account, signup} = await transaction(app.pg, async db => {
+            const {rows: [lock]} = await db.query('SELECT pg_try_advisory_xact_lock(hashtext($1)) AS ok', ['signup:' + email]);
+            if (!lock.ok) throw new HttpError(429, 'too_many_codes', 'Too many codes requested. Please wait 15 minutes and try again.');
+            const {rows: [counts]} = await db.query(
+                `SELECT count(*) FILTER (WHERE created_at > now() - make_interval(mins => $2))::int AS recent, count(*)::int AS today
+                 FROM staff_signups WHERE email = $1 AND created_at > now() - interval '1 day'`, [email, OTP_WINDOW_MINUTES]);
+            if (counts.today >= SIGNUPS_PER_DAY) throw new HttpError(429, 'too_many_codes_today', 'Too many codes requested today. Please try again tomorrow.');
+            if (counts.recent >= OTP_PER_PHONE) throw new HttpError(429, 'too_many_codes', 'Too many codes requested. Please wait 15 minutes and try again.');
+            const {rows: [account]} = await db.query('SELECT id, role, name, language FROM users WHERE email = $1', [email]);
+            // An existing address gets a row too (for the same limits), whose hash is of a value that is never sent.
+            const {rows: [signup]} = await db.query(
+                `INSERT INTO staff_signups (email, role, kind, name, password_hash, language, code_hash, expires_at, ip)
+                 VALUES ($1, $2, $3, $4, $5, $6, $7, now() + make_interval(mins => $8), $9) RETURNING id`,
+                [email, role, kind, name, account ? null : hash, language,
+                    otpHash(app.config.otpSecret, 'signup:' + email, account ? newToken() : code), SIGNUP_CODE_MINUTES, request.ip]);
+            return {account, signup};
+        });
+        try {
+            // Sent directly rather than through sendEmail(), which only logs failures: the person must know when no code is coming.
+            await app.mail.send({to: email, ...(account ? accountExistsEmail(account, app.config.appOrigin)
+                : signupCodeEmail(language, name, code, SIGNUP_CODE_MINUTES))});
+        } catch (error) {
+            request.log.error({err: error}, 'Sign-up email failed');
+            await app.pg.query('UPDATE staff_signups SET consumed_at = now() WHERE id = $1', [signup.id]);
+            throw new HttpError(502, 'mail_failed', 'We could not send the email. Please check the address and try again in a minute.');
+        }
+        reply.code(202);
+        return {confirm: true, email, expires_in_minutes: SIGNUP_CODE_MINUTES};
+    }
+
+    app.post('/api/auth/doctor/register', registerSchema({}), (request, reply) => register(request, reply, 'doctor'));
+    // The account holder is the facility's contact person; the facility's own name is part of its profile.
+    app.post('/api/auth/facility/register', registerSchema({kind: {enum: Object.keys(facilityKinds)}}), (request, reply) =>
+        register(request, reply, 'facility', request.body.kind));
+
+    // Step 2: the code from the email creates the account, with the details of the form that code belongs to.
+    app.post('/api/auth/register/verify', {
+        config: ipLimit(60),
+        schema: {body: {type: 'object', required: ['email', 'code'], properties: {
+            email: {type: 'string', maxLength: 254}, code: {type: 'string', pattern: '^[0-9]{6}$'}
+        }}}
+    }, async (request, reply) => {
+        const email = normalizeEmail(request.body.email);
+        if (!email) throw new HttpError(400, 'invalid_email', 'Enter a valid email address.');
+        // Every attempt counts at once against all open forms of the address (outside any transaction), so sending the
+        // form again gives no extra guesses.
+        const {rows: open} = await app.pg.query(
+            'UPDATE staff_signups SET attempts = attempts + 1 WHERE email = $1 AND consumed_at IS NULL AND expires_at > now() RETURNING *', [email]);
+        if (!open.length) throw new HttpError(400, 'code_expired', 'This code has expired. Please send the form again.');
+        if (open.some(row => row.attempts > OTP_MAX_ATTEMPTS)) {
+            await app.pg.query('UPDATE staff_signups SET consumed_at = now() WHERE email = $1 AND consumed_at IS NULL', [email]);
+            throw new HttpError(429, 'too_many_attempts', 'Too many wrong codes. Please send the form again.');
+        }
+        const hash = otpHash(app.config.otpSecret, 'signup:' + email, request.body.code);
+        const match = open.find(row => sameHash(row.code_hash, hash));
+        if (!match?.password_hash) throw new HttpError(400, 'wrong_code', 'That code is not correct.');
         const user = await transaction(app.pg, async db => {
+            const used = await db.query('UPDATE staff_signups SET consumed_at = now() WHERE id = $1 AND consumed_at IS NULL', [match.id]);
+            if (!used.rowCount) throw new HttpError(400, 'code_expired', 'This code has already been used. Please sign in.');
+            await db.query('UPDATE staff_signups SET consumed_at = now() WHERE email = $1 AND consumed_at IS NULL', [email]);
+            // Consent was given on the form, when the code was asked for.
             const {rows: [created]} = await db.query(
-                `INSERT INTO users (role, name, email, password_hash, language, consented_at) VALUES ($1, $2, $3, $4, $5, now())
-                 ON CONFLICT (email) DO NOTHING RETURNING *`, [role, name, email, hash, request.body.language || 'ar']);
-            if (!created) throw new HttpError(409, 'email_taken', 'An account with this email already exists. Please sign in.');
-            await createProfile(db, created.id);
-            await audit(db, {actorId: created.id, action: `${role}.registered`, targetId: created.id, ip: request.ip});
+                `INSERT INTO users (role, name, email, password_hash, language, consented_at, email_verified_at) VALUES ($1, $2, $3, $4, $5, $6, now())
+                 ON CONFLICT (email) DO NOTHING RETURNING *`, [match.role, match.name, email, match.password_hash, match.language, match.created_at]);
+            if (!created) throw new HttpError(409, 'use_sign_in', 'An account with this email was created in the meantime. Please sign in.');
+            if (match.role === 'doctor') await db.query('INSERT INTO doctor_profiles (user_id) VALUES ($1)', [created.id]);
+            else await db.query('INSERT INTO facility_profiles (user_id, kind) VALUES ($1, $2)', [created.id, match.kind]);
+            await audit(db, {actorId: created.id, action: `${match.role}.registered`, targetId: created.id, details: {email_confirmed: true}, ip: request.ip});
             return created;
         });
         await startSession(app, request, reply, user);
         await sendEmail(app, user.email, welcomeEmail(user, app.config.appOrigin));
         reply.code(201);
         return {user: publicUser(user)};
-    }
-
-    app.post('/api/auth/doctor/register', registerSchema({}), (request, reply) =>
-        register(request, reply, 'doctor', (db, id) => db.query('INSERT INTO doctor_profiles (user_id) VALUES ($1)', [id])));
-
-    // The account holder is the facility's contact person; the facility's own name is part of its profile.
-    app.post('/api/auth/facility/register', registerSchema({kind: {enum: Object.keys(facilityKinds)}}), (request, reply) =>
-        register(request, reply, 'facility', (db, id) => db.query('INSERT INTO facility_profiles (user_id, kind) VALUES ($1, $2)', [id, request.body.kind])));
+    });
 
     // Doctors, facilities and admins: email and password.
     app.post('/api/auth/login', {
