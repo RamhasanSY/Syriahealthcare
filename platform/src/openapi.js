@@ -22,6 +22,7 @@ export const SUMMARIES = {
     'POST /api/auth/password/forgot': 'Ask for a password reset link by email.',
     'POST /api/auth/password/reset': 'Set a new password with the link from the email.',
     'POST /api/auth/logout': 'Sign out.',
+    'POST /api/account/delete': 'Delete the own account (needs a sign-in from the last 15 minutes). Patients are deleted at once; doctors and facilities are switched off and removed by an administrator.',
     'GET /api/me': 'The signed-in account.',
     // Public directory and booking
     'GET /api/doctors': 'Approved doctors, filterable by specialty, governorate and name.',

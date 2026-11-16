@@ -22,7 +22,7 @@
 	header {
 		Strict-Transport-Security "max-age=31536000; includeSubDomains"
 		# Only the site itself (and Google Fonts for the typefaces); collected texts can never run as script.
-		Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'"
+		Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src 'self'; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'"
 		Cross-Origin-Opener-Policy "same-origin"
 		X-Content-Type-Options "nosniff"
 		X-Frame-Options "DENY"

@@ -32,7 +32,8 @@ export default async function appointmentRoutes(app) {
         const where = [APPROVED], args = [];
         if (specialty && Object.hasOwn(specialties, specialty)) where.push(`p.specialty = $${args.push(specialty)}`);
         if (governorate && Object.hasOwn(governorates, governorate)) where.push(`p.governorate = $${args.push(governorate)}`);
-        if (q?.trim()) where.push(`(u.name ILIKE $${args.push('%' + q.trim().replace(/[%_\\]/g, '\\$&') + '%')} OR p.clinic_name ILIKE $${args.length} OR p.area ILIKE $${args.length})`);
+        // Arabic spelling variants match: shc_fold (migration 031) treats أ/إ/ا, ة/ه and ى/ي alike.
+        if (q?.trim()) where.push(`(shc_fold(u.name) LIKE shc_fold($${args.push('%' + q.trim().replace(/[%_\\]/g, '\\$&') + '%')}) OR shc_fold(p.clinic_name) LIKE shc_fold($${args.length}) OR shc_fold(p.area) LIKE shc_fold($${args.length}))`);
         const {rows} = await app.pg.query(
             `SELECT ${PUBLIC_DOCTOR} FROM users u JOIN doctor_profiles p ON p.user_id = u.id WHERE ${where.join(' AND ')} ORDER BY u.name LIMIT 200`, args);
         const ratings = await ratingSummaries(app.pg, rows.map(d => d.id));

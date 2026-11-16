@@ -52,6 +52,8 @@
           <h2 id="numberHeading" class="number-label" data-en="SyriaHC patient number" data-ar="رقم المريض في صحة تك">رقم المريض في صحة تك</h2>
           <p class="patient-number" id="patientNumber" dir="ltr"></p>
           <div class="actions"><button class="btn ghost" type="button" id="copyNumber" data-en="Copy number" data-ar="انسخ الرقم">انسخ الرقم</button><span class="saved" id="copyStatus" role="status"></span></div>
+          <div class="actions"><button class="btn ghost" type="button" id="downloadFile" data-en="Download the whole file" data-ar="نزّل الملف كاملاً">نزّل الملف كاملاً</button><span class="saved" id="downloadStatus" role="status"></span></div>
+          <p class="hint" data-en="A file in the international HL7 FHIR format that other health apps and systems can read." data-ar="ملف بالصيغة الدولية HL7 FHIR يمكن لتطبيقات وأنظمة صحية أخرى قراءته.">ملف بالصيغة الدولية HL7 FHIR يمكن لتطبيقات وأنظمة صحية أخرى قراءته.</p>
           <dl class="dl"><dt data-en="Name" data-ar="الاسم">الاسم</dt><dd id="profileName"></dd><dt data-en="Birth date" data-ar="تاريخ الميلاد">تاريخ الميلاد</dt><dd id="profileBirth"></dd></dl>
           <p class="hint" data-en="The number stays the same for life. It is saved on this device, so you can show it even without internet." data-ar="يبقى الرقم نفسه مدى الحياة. وهو محفوظ على هذا الجهاز، فيمكنك إظهاره حتى دون إنترنت.">يبقى الرقم نفسه مدى الحياة. وهو محفوظ على هذا الجهاز، فيمكنك إظهاره حتى دون إنترنت.</p>
           <button class="link-btn" type="button" id="editToggle" aria-expanded="false" aria-controls="editForm" data-en="Edit profile" data-ar="تعديل البيانات">تعديل البيانات</button>
@@ -195,7 +197,8 @@
       </section>
     </div>
   </div>
+  <p class="hint medical-note" data-en="SyriaHC helps you find care and keep your records. It does not replace a doctor's advice. In an emergency, call the emergency services or go to the nearest hospital." data-ar="تساعدك صحة تك على إيجاد الرعاية وحفظ سجلاتك، ولا تغني عن نصيحة الطبيب. في حالة الطوارئ اتصل بالإسعاف أو توجّه إلى أقرب مشفى.">تساعدك صحة تك على إيجاد الرعاية وحفظ سجلاتك، ولا تغني عن نصيحة الطبيب. في حالة الطوارئ اتصل بالإسعاف أو توجّه إلى أقرب مشفى.</p>
 </main>
-<footer><div class="wrap"><a href="/account" data-en="← My account" data-ar="حسابي ←">حسابي ←</a><a href="/privacy" data-en="Privacy policy" data-ar="سياسة الخصوصية">سياسة الخصوصية</a></div></footer>
+<footer><div class="wrap"><a href="/account" data-en="← My account" data-ar="حسابي ←">حسابي ←</a><a href="/privacy" data-en="Privacy policy" data-ar="سياسة الخصوصية">سياسة الخصوصية</a><a href="/imprint" data-en="Operator" data-ar="الجهة المشغّلة">الجهة المشغّلة</a></div></footer>
 </body>
 </html>
