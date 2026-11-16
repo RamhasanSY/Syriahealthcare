@@ -2,7 +2,7 @@
 
 ## Stand 16.11.2026 (abends): was fertig ist und was offen ist
 
-Die Plattform läuft seit dem 07.11. auf app.syriahc.com, die Website auf syriahc.com. Alle Funktionen aus `docs/STUFE-2.md`, die acht neuen Dienste (PR #34, #35) und PR #36 (Prüf-Checkliste, Anmeldung mit E-Mail-Code, neuer Datenschutz-Entwurf) sind gebaut, getestet und auf dem Server. Was noch fehlt, hängt fast nur an Angaben und Konten, die nur du liefern kannst.
+Die Plattform läuft seit dem 07.11. auf app.syriahc.com, die Website auf syriahc.com. Alle Funktionen aus `docs/STUFE-2.md`, die acht neuen Dienste (PR #34, #35) PR #36 (Prüf-Checkliste, Anmeldung mit E-Mail-Code, neuer Datenschutz-Entwurf) und PR #38 (Konto löschen, Betreiberseite, eigene Schriften, arabische Suche) sind gebaut, getestet und auf dem Server. Benachrichtigungen sind seit dem 16.11. eingeschaltet. Was noch fehlt, hängt fast nur an Angaben und Konten, die nur du liefern kannst.
 
 | Teil | Stand | Wer |
 |---|---|---|
@@ -19,11 +19,12 @@ Die Plattform läuft seit dem 07.11. auf app.syriahc.com, die Website auf syriah
 | K. Betrieb | Nächtliche Sicherung und Uptime-Prüfung laufen. **Offen:** Kopie der Sicherung außerhalb des Servers (Speicher bestellen), Wiederherstellung einmal üben | du + Claude |
 | L. Lovable-Dateien | ✅ **Gelöscht (16.11.)** aus dem lokalen Ordner; sie waren nie im Repository | – |
 | Neu: Anmeldung von Ärzten und Einrichtungen | ✅ **Live (16.11.):** Die E-Mail wird mit einem Code bestätigt, bevor das Konto entsteht. Die Seite verrät nicht mehr, ob eine E-Mail schon ein Konto hat | – |
-| Neu: Konto selbst löschen | **Gebaut (16.11.):** in „Mein Konto" und auf `/delete-account` (Pflicht für Google Play). Patienten sofort; Ärzte und Einrichtungen werden abgeschaltet, endgültig mit `npm run delete-account` | – |
-| Neu: Betreiberseite, Hinweis „ersetzt keinen Arztbesuch" | **Gebaut (16.11.):** `/imprint`, Hinweis auf Startseite, Arztsuche und Gesundheitsakte | – |
-| Neu: Schriften ohne Google | **Gebaut (16.11.):** syriahc.com und syriahealthcare.com laden ihre Schriften vom eigenen Server | – |
-| Neu: Arabische Suche | **Gebaut (16.11.):** „احمد" findet „أحمد", ebenso ة/ه, ى/ي und Vokalzeichen | – |
-| Neu: Gesundheitsakte herunterladen | **Gebaut (16.11.):** Knopf in der Akte, FHIR-Datei | – |
+| Neu: Konto selbst löschen | ✅ **Live (16.11.):** in „Mein Konto" und auf `/delete-account` (Pflicht für Google Play). Patienten sofort; Ärzte und Einrichtungen werden abgeschaltet, endgültig mit `npm run delete-account` | – |
+| Neu: Betreiberseite, Hinweis „ersetzt keinen Arztbesuch" | ✅ **Live (16.11.):** `/imprint`, Hinweis auf Startseite, Arztsuche und Gesundheitsakte | – |
+| Neu: Schriften ohne Google | ✅ **Live (16.11.):** syriahc.com und syriahealthcare.com laden ihre Schriften vom eigenen Server | – |
+| Neu: Arabische Suche | ✅ **Live (16.11.):** „احمد" findet „أحمد", ebenso ة/ه, ى/ي und Vokalzeichen | – |
+| Neu: Gesundheitsakte herunterladen | ✅ **Live (16.11.):** Knopf in der Akte, FHIR-Datei; sichtbar, sobald `HEALTH_FILE=on` ist | – |
+| Neu: Benachrichtigungen (Push) | ✅ **Live (16.11.):** Schlüssel auf dem Server erzeugt, der Schalter steht in „Mein Konto". Die Schlüssel nie ändern, sonst muss jedes Gerät Benachrichtigungen neu einschalten | – |
 | Video-Sprechstunde | **Nicht geplant (Entscheidung 16.11.).** `VIDEO` bleibt aus; der Teil wurde aus dem Datenschutz-Entwurf genommen | – |
 
 **Schalter, die auf deine Entscheidung warten** (in `platform/.env` auf dem Server):
@@ -31,7 +32,6 @@ Die Plattform läuft seit dem 07.11. auf app.syriahc.com, die Website auf syriah
 | Schalter | Schaltet frei | Voraussetzung |
 |---|---|---|
 | `HEALTH_FILE=on` | Gesundheitsakte, Teilen mit Ärzten, Spenderregister, Medikamenten-Erinnerungen | geprüfte Datenschutzerklärung (B) |
-| `PUSH_PUBLIC_KEY`, `PUSH_PRIVATE_KEY` | Benachrichtigungen auf Handy und Computer | nur einmal Schlüssel erzeugen; braucht dein ausdrückliches OK für die Änderung an `.env` auf dem Server |
 
 **Google Play:** braucht ein Google-Konto als Organisation (D-U-N-S-Nummer der Firma), danach baut Claude die App-Hülle. Siehe `docs/STUFE-3.md`, Teil 3i.
 
