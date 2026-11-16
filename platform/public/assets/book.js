@@ -12,7 +12,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     const dayName = (date, style = 'short') => new Date(date + 'T12:00:00Z').toLocaleDateString(locale(), {weekday: style, day: 'numeric', month: style === 'short' ? 'short' : 'long', timeZone: 'UTC'});
     const timeOf = iso => new Date(iso).toLocaleTimeString(locale(), {hour: '2-digit', minute: '2-digit', timeZone: TZ});
 
-    const [d, m, c] = await Promise.all([api('/api/doctors/' + encodeURIComponent(doctorId)), api('/api/me'), api('/api/catalog')]);
+    // A link without a doctor (or a cut-off one) shows "not found" rather than a form error.
+    const noDoctor = {ok: false, status: 404, data: {error: 'not_found'}};
+    const [d, m, c] = await Promise.all([doctorId ? api('/api/doctors/' + encodeURIComponent(doctorId)) : noDoctor, api('/api/me'), api('/api/catalog')]);
     $('main').setAttribute('aria-busy', 'false');
     if (!d.ok) {
         $('notFound').hidden = false;

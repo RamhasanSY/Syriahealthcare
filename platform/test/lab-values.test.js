@@ -1,6 +1,6 @@
 import {after, beforeEach, describe, test} from 'node:test';
 import assert from 'node:assert/strict';
-import {approvedDoctor, cookieOf, pool, setup, signIn, signInPatientByEmail, teardown} from './helpers.js';
+import {approvedDoctor, cookieOf, pool, setup, signIn, signInPatientByEmail, teardown, registerStaff} from './helpers.js';
 import {PDF} from './fixtures.js';
 import {flagOf, observationResources, valueRows} from '../src/lab-values.js';
 
@@ -44,7 +44,7 @@ describe('flags from the reference range', () => {
 });
 
 async function lab() {
-    const cookie = cookieOf(await post('/api/auth/facility/register', {name: 'Rana Saleh', email: 'lab@example.org', password: 'facility password 123', consent: true, kind: 'lab'}));
+    const cookie = cookieOf(await registerStaff(post, 'facility', {name: 'Rana Saleh', email: 'lab@example.org', password: 'facility password 123', consent: true, kind: 'lab'}));
     const {rows: [f]} = await pool.query(`UPDATE facility_profiles p SET status = 'approved', facility_name = 'Al Shifa Laboratory' FROM users u
         WHERE u.id = p.user_id AND u.email = 'lab@example.org' RETURNING p.user_id`);
     const admin = await signIn(post, 'admin', 'admin@example.org');

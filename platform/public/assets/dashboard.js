@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     async function load(focusList = false) {
         const res = await api('/api/doctor/appointments?scope=' + scope);
         $('main').setAttribute('aria-busy', 'false');
-        if (res.status === 401) return window.location.assign('/staff');
+        if (res.status === 401) return window.location.assign('/staff?next=/dashboard');
         if (res.status === 403) return window.location.assign('/account');
         const before = data?.counts.requests;
         data = res.data;

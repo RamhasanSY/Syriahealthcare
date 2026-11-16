@@ -1,6 +1,6 @@
 import {after, beforeEach, describe, test} from 'node:test';
 import assert from 'node:assert/strict';
-import {approvedDoctor, cookieOf, pool, setup, signIn, teardown} from './helpers.js';
+import {approvedDoctor, cookieOf, pool, setup, signIn, teardown, registerStaff} from './helpers.js';
 import {HEALTH_RESOURCES, RESOURCES} from '../src/fhir/registry.js';
 import {addDays, localDate} from '../src/slots.js';
 
@@ -16,7 +16,7 @@ const tomorrow = () => addDays(localDate(Date.now(), 'Asia/Damascus'), 1);
 const SPECIALTY_SYSTEM = 'https://syriahc.com/fhir/CodeSystem/specialty';
 
 async function approvedLab(email = 'lab@example.org', services = ['blood_count', 'pcr']) {
-    const cookie = cookieOf(await post('/api/auth/facility/register', {name: 'Rana Saleh', email, password: 'facility password 123', consent: true, kind: 'lab'}));
+    const cookie = cookieOf(await registerStaff(post, 'facility', {name: 'Rana Saleh', email, password: 'facility password 123', consent: true, kind: 'lab'}));
     await pool.query(`UPDATE facility_profiles p SET status = 'approved', facility_name = 'Al Shifa Laboratory', governorate = 'aleppo',
         area = 'Al Aziziyah', address = 'Main street 4', phone = '+963211234567', services = $2
         FROM users u WHERE u.id = p.user_id AND u.email = $1`, [email, services]);
@@ -155,7 +155,7 @@ describe('facilities', () => {
 
     test('pharmacies and blood banks are published with their kind', async () => {
         for (const [kind, email, name] of [['pharmacy', 'ph@example.org', 'Al Shifa Pharmacy'], ['blood_bank', 'bb@example.org', 'Aleppo Blood Bank']]) {
-            await post('/api/auth/facility/register', {name: 'Rana Saleh', email, password: 'facility password 123', consent: true, kind});
+            await registerStaff(post, 'facility', {name: 'Rana Saleh', email, password: 'facility password 123', consent: true, kind});
             await pool.query(`UPDATE facility_profiles p SET status = 'approved', facility_name = $2, governorate = 'aleppo'
                 FROM users u WHERE u.id = p.user_id AND u.email = $1`, [email, name]);
         }
@@ -171,7 +171,7 @@ describe('facilities', () => {
     });
 
     test('an unapproved facility is not published', async () => {
-        const cookie = cookieOf(await post('/api/auth/facility/register', {name: 'Waiting Lab', email: 'wait@example.org', password: 'facility password 123', consent: true, kind: 'lab'}));
+        const cookie = cookieOf(await registerStaff(post, 'facility', {name: 'Waiting Lab', email: 'wait@example.org', password: 'facility password 123', consent: true, kind: 'lab'}));
         assert.ok(cookie);
         assert.equal((await get('/fhir/r4/Organization?type=lab')).json().total, 0);
     });

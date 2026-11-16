@@ -1,6 +1,6 @@
 import {after, beforeEach, describe, test} from 'node:test';
 import assert from 'node:assert/strict';
-import {approvedDoctor, config, cookieOf, origin, pool, setup, signIn, signInPatientByEmail, teardown} from './helpers.js';
+import {approvedDoctor, config, cookieOf, origin, pool, setup, signIn, signInPatientByEmail, teardown, registerStaff} from './helpers.js';
 import {multipart, PDF} from './fixtures.js';
 import {addDays, localDate} from '../src/slots.js';
 
@@ -112,7 +112,7 @@ describe('sharing single entries', () => {
         const {cookie, profile, items} = await patientWithEntries();
         await post(`/api/file/profiles/${profile.id}/shares`, {doctor_id: doctor.id, item_ids: [items[0].id]}, {cookie});
         assert.equal((await get(`/api/doctor/shared/${items[0].id}/pages/1`, other.cookie)).statusCode, 404);
-        const lab = cookieOf(await post('/api/auth/facility/register', {name: 'Rana Saleh', email: 'lab@example.org', password: 'facility password 123', consent: true, kind: 'lab'}));
+        const lab = cookieOf(await registerStaff(post, 'facility', {name: 'Rana Saleh', email: 'lab@example.org', password: 'facility password 123', consent: true, kind: 'lab'}));
         const admin = await signIn(post, 'admin', 'admin@example.org');
         for (const c of [lab, admin]) {
             assert.equal((await get(`/api/doctor/shared/${items[0].id}/pages/1`, c)).statusCode, 403);
@@ -205,7 +205,7 @@ describe('My patients (doctors)', () => {
     test('a patient can take a scanned lab slip back from a doctor', async () => {
         const doctor = await approvedDoctor(post);
         await confirmDoctor(doctor.cookie);
-        const lab = cookieOf(await post('/api/auth/facility/register', {name: 'Rana Saleh', email: 'lab@example.org', password: 'facility password 123', consent: true, kind: 'lab'}));
+        const lab = cookieOf(await registerStaff(post, 'facility', {name: 'Rana Saleh', email: 'lab@example.org', password: 'facility password 123', consent: true, kind: 'lab'}));
         await pool.query("UPDATE facility_profiles SET status = 'approved', facility_name = 'Al Shifa Laboratory'");
         const form = multipart({patient_name: 'Lina Haddad', patient_phone: '0912 345 678', title: 'Complete blood count', birth_year: '1990'},
             [{name: 'file', filename: 'cbc.pdf', type: 'application/pdf', content: PDF}]);

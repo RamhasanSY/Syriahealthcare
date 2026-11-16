@@ -1,6 +1,6 @@
 import {after, beforeEach, describe, test} from 'node:test';
 import assert from 'node:assert/strict';
-import {cookieOf, pool, setup, signInPatientByEmail, teardown} from './helpers.js';
+import {cookieOf, pool, setup, signInPatientByEmail, teardown, registerStaff} from './helpers.js';
 
 let app, post, mail;
 beforeEach(async () => {
@@ -12,7 +12,7 @@ after(() => teardown(app));
 const get = (url, cookie) => app.inject({url, headers: cookie ? {cookie} : {}});
 
 async function lab({email = 'lab@example.org', name = 'Al Shifa Laboratory', status = 'approved', governorate = 'damascus', kind = 'lab'} = {}) {
-    const cookie = cookieOf(await post('/api/auth/facility/register', {name: 'Rana Saleh', email, password: 'facility password 123', consent: true, kind}));
+    const cookie = cookieOf(await registerStaff(post, 'facility', {name: 'Rana Saleh', email, password: 'facility password 123', consent: true, kind}));
     const {rows: [f]} = await pool.query(`UPDATE facility_profiles p SET status = $2, facility_name = $3, governorate = $4, services = '{home_collection}'
         FROM users u WHERE u.id = p.user_id AND u.email = $1 RETURNING p.user_id`, [email, status, name, governorate]);
     const tests = {};
@@ -77,7 +77,7 @@ describe('lab packages', () => {
         assert.equal((await add({name: 'Pair', price_syp: 2, test_ids: [shifa.tests.CBC, shifa.tests.TSH]})).json().error, 'package_exists');
         assert.equal((await post(`/api/facility/packages/${ok.id}`, {price_syp: 5}, {cookie: other.cookie})).statusCode, 404);
         assert.equal((await post(`/api/facility/packages/${ok.id}/delete`, {}, {cookie: other.cookie})).statusCode, 404);
-        const hospital = cookieOf(await post('/api/auth/facility/register', {name: 'Hana Haddad', email: 'h@example.org', password: 'facility password 123', consent: true, kind: 'hospital'}));
+        const hospital = cookieOf(await registerStaff(post, 'facility', {name: 'Hana Haddad', email: 'h@example.org', password: 'facility password 123', consent: true, kind: 'hospital'}));
         assert.equal((await get('/api/facility/packages', hospital)).json().error, 'not_a_lab');
         const patient = await signInPatientByEmail(post, mail, 'lina@example.org');
         assert.equal((await get('/api/facility/packages', patient)).statusCode, 403);

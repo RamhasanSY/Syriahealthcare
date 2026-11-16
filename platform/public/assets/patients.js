@@ -88,7 +88,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             return render();
         }
         if (!res.ok) return showError('pageError', res.data.error === 'not_found'
-            ? {error: 'not_found', message: tr('This patient does not share anything with you (any more).', 'لا يشارك هذا المريض معك أي شيء (بعد الآن).')} : res.data);
+            ? {error: 'not_found', en: 'This patient does not share anything with you (any more).', ar: 'لا يشارك هذا المريض معك أي شيء (بعد الآن).'} : res.data);
         opened = res.data;
         renderOpened();
         $('openedHeading').focus();

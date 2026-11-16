@@ -9,9 +9,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     const say = (en, ar) => { $('status').dataset.en = en; $('status').dataset.ar = ar; $('status').textContent = tr(en, ar); };
     const send = (type, data = null) => api(`/api/video/${encodeURIComponent(id)}/signal`, {type, data});
 
+    const notFound = {error: 'not_found', en: 'This video appointment was not found. Open it from your appointments.', ar: 'لم يُعثر على موعد الفيديو هذا. افتحه من مواعيدك.'};
+
     async function loadInfo() {
+        if (!id) return $('main').setAttribute('aria-busy', 'false'), showError('pageError', notFound), null;
         const res = await api(`/api/video/${encodeURIComponent(id)}`);
         $('main').setAttribute('aria-busy', 'false');
+        if (res.status === 400 || res.status === 404) return showError('pageError', notFound), null;
         if (res.status === 401) return window.location.assign('/login?next=' + encodeURIComponent('/video?id=' + id)), null;
         if (res.data.error === 'second_factor_required') return window.location.assign('/confirm?next=' + encodeURIComponent('/video?id=' + id)), null;
         if (!res.ok) return showError('pageError', res.data), null;

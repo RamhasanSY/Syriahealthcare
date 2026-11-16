@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const [me, cat] = await Promise.all([api('/api/doctor/profile'), api('/api/catalog')]);
     $('main').setAttribute('aria-busy', 'false');
-    if (!me.ok) return window.location.assign(me.status === 401 ? '/staff' : '/account');
+    if (!me.ok) return window.location.assign(me.status === 401 ? '/staff?next=/doctor' : '/account');
     state = me.data;
     catalog = cat.data;
 

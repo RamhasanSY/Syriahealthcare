@@ -1,6 +1,6 @@
 import {after, beforeEach, describe, test} from 'node:test';
 import assert from 'node:assert/strict';
-import {approvedDoctor, config, cookieOf, origin, pool, setup, teardown, signInPatientByEmail} from './helpers.js';
+import {approvedDoctor, config, cookieOf, origin, pool, setup, teardown, signInPatientByEmail, registerStaff} from './helpers.js';
 import {jpegWithExif, multipart, PDF} from './fixtures.js';
 import {addDays, localDate} from '../src/slots.js';
 
@@ -23,7 +23,7 @@ async function fullFile() {
     const photo = (await app.inject({method: 'POST', url: `/api/file/profiles/${self.id}/documents`, payload: upload.body,
         headers: {origin, cookie, 'content-type': upload.contentType}})).json().item;
 
-    const lab = cookieOf(await post('/api/auth/facility/register', {name: 'Rana Saleh', email: 'lab@example.org', password: 'facility password 123', consent: true, kind: 'lab'}));
+    const lab = cookieOf(await registerStaff(post, 'facility', {name: 'Rana Saleh', email: 'lab@example.org', password: 'facility password 123', consent: true, kind: 'lab'}));
     await pool.query("UPDATE facility_profiles SET status = 'approved', facility_name = 'Al Shifa Laboratory'");
     const form = multipart({patient_name: 'Lina Haddad', patient_phone: '0912 345 678', title: 'Complete blood count', birth_year: '1990'},
         [{name: 'file', filename: 'cbc.pdf', type: 'application/pdf', content: PDF}]);

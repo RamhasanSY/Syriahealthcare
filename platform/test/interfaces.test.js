@@ -1,6 +1,6 @@
 import {after, beforeEach, describe, test} from 'node:test';
 import assert from 'node:assert/strict';
-import {config, confirmSession, cookieOf, pool, setup, signIn, signInPatientByEmail, teardown} from './helpers.js';
+import {config, confirmSession, cookieOf, pool, setup, signIn, signInPatientByEmail, teardown, registerStaff} from './helpers.js';
 import {PDF} from './fixtures.js';
 import {parseMessage} from '../src/hl7v2.js';
 
@@ -15,7 +15,7 @@ const get = (url, cookie) => app.inject({url, headers: cookie ? {cookie} : {}});
 const PDF64 = PDF.toString('base64');
 
 async function facility(kind = 'lab', email = 'lab@example.org', name = 'Al Shifa Laboratory') {
-    const cookie = cookieOf(await post('/api/auth/facility/register', {name: 'Rana Saleh', email, password: 'facility password 123', consent: true, kind}));
+    const cookie = cookieOf(await registerStaff(post, 'facility', {name: 'Rana Saleh', email, password: 'facility password 123', consent: true, kind}));
     const {rows: [f]} = await pool.query(`UPDATE facility_profiles p SET status = 'approved', facility_name = $2 FROM users u
         WHERE u.id = p.user_id AND u.email = $1 RETURNING p.user_id`, [email, name]);
     return {cookie, id: f.user_id};
@@ -101,7 +101,7 @@ describe('OAuth 2.0 client credentials', () => {
     });
 
     test('an approved facility asks for a connection; admins get an email; creating the connection closes the request', async () => {
-        const pending = cookieOf(await post('/api/auth/facility/register', {name: 'Omar Ali', email: 'new-lab@example.org', password: 'facility password 123', consent: true, kind: 'lab'}));
+        const pending = cookieOf(await registerStaff(post, 'facility', {name: 'Omar Ali', email: 'new-lab@example.org', password: 'facility password 123', consent: true, kind: 'lab'}));
         assert.equal((await post('/api/facility/api-client-requests', {software: 'LabSoft 5'}, {cookie: pending})).json().error, 'facility_not_approved');
         assert.equal((await get('/api/facility/api-clients', pending)).json().approved, false);
 

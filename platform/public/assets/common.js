@@ -20,6 +20,7 @@ const Shc = (() => {
         try_later: 'طلبات دخول كثيرة الآن. حاول مجدداً بعد بضع دقائق.',
         phone_signin_unavailable: 'الدخول برقم الجوال غير متاح بعد. يرجى الدخول بالبريد الإلكتروني.',
         use_password: 'هذا البريد مرتبط بحساب طبيب أو منشأة. سجّل الدخول بكلمة المرور.',
+        use_sign_in: 'أُنشئ حساب بهذا البريد في هذه الأثناء. يرجى تسجيل الدخول.',
         use_email: 'هذا الرقم مرتبط بحساب طبيب أو منشأة أو موظف. سجّل الدخول بالبريد الإلكتروني.',
         disabled: 'تم إيقاف هذا الحساب. يرجى التواصل مع الدعم.',
         invalid_email: 'أدخل بريداً إلكترونياً صحيحاً.',
@@ -89,6 +90,7 @@ const Shc = (() => {
         facility_licence_required: 'يرجى رفع ترخيص المنشأة أولاً.',
         invalid_service: 'اختر الخدمات من القائمة.',
         note_required: 'يرجى كتابة سبب مختصر.',
+        checks_required: 'ضع علامة على كل بنود التحقق قبل الاعتماد.',
         wrong_status: 'لا يمكن تنفيذ هذا الإجراء في حالة الملف الحالية.',
         not_found: 'غير موجود.',
         invalid_time: 'اختر وقتاً من القائمة.',
@@ -184,7 +186,9 @@ const Shc = (() => {
         return {ok: response.ok, status: response.status, data};
     }
 
-    const errorText = data => lang === 'ar' && arabic[data.error] ? arabic[data.error] : data.message || tr('Something went wrong.', 'حدث خطأ.');
+    // A page can pass its own wording in both languages ({en, ar}); it follows a later language switch too.
+    const errorText = data => data.en ? tr(data.en, data.ar || data.en)
+        : lang === 'ar' && arabic[data.error] ? arabic[data.error] : data.message || tr('Something went wrong.', 'حدث خطأ.');
 
     function showError(id, data) {
         const box = $(id);

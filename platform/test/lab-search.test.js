@@ -1,6 +1,6 @@
 import {after, beforeEach, describe, test} from 'node:test';
 import assert from 'node:assert/strict';
-import {cookieOf, pool, setup, teardown} from './helpers.js';
+import {cookieOf, pool, setup, teardown, registerStaff} from './helpers.js';
 
 let app, post;
 beforeEach(async () => {
@@ -10,7 +10,7 @@ beforeEach(async () => {
 after(() => teardown(app));
 
 async function lab(email = 'lab@example.org') {
-    const cookie = cookieOf(await post('/api/auth/facility/register', {name: 'Rana Saleh', email, password: 'facility password 123', consent: true, kind: 'lab'}));
+    const cookie = cookieOf(await registerStaff(post, 'facility', {name: 'Rana Saleh', email, password: 'facility password 123', consent: true, kind: 'lab'}));
     const {rows: [{id}]} = await pool.query(`UPDATE facility_profiles p SET status = 'approved', facility_name = 'Al Shifa Laboratory'
         FROM users u WHERE u.id = p.user_id AND u.email = $1 RETURNING p.user_id AS id`, [email]);
     return {cookie, id};

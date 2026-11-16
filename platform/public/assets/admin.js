@@ -45,6 +45,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const KINDS = {licence: ['Licence', 'الترخيص'], syndicate: ['Syndicate card', 'بطاقة النقابة'], other: ['Other document', 'وثيقة أخرى']};
     let group = window.location.hash === '#facilities' ? 'facilities' : 'doctors';
     let status = 'pending', list = null, current = null, catalog = null;
+    // Review checklist (src/review-checks.js): ticks belong to the profile on screen and survive a language switch.
+    let ticked = new Set(), tickedFor = null;
     const G = () => GROUPS[group];
 
     const cat = await api('/api/catalog');
@@ -55,7 +57,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     async function loadList() {
         const res = await api(`${G().api}?status=${status}`);
-        if (res.status === 401) return window.location.assign('/staff');
+        if (res.status === 401) return window.location.assign('/staff?next=/admin');
         if (res.status === 403) return window.location.assign('/account');
         list = res.data;
         renderList();
@@ -158,6 +160,22 @@ document.addEventListener('DOMContentLoaded', async () => {
             return row;
         }));
         $('approve').hidden = !['pending', 'suspended'].includes(profile.status);
+        const shownId = current[G().one].id;
+        if (tickedFor !== shownId) [ticked, tickedFor] = [new Set(), shownId];
+        $('reviewChecks').hidden = $('approve').hidden;
+        $('reviewCheckList').replaceChildren(...Object.entries(current.review_checks || {}).map(([key, text]) => {
+            const row = el('label', '', 'check'), box = el('input');
+            box.type = 'checkbox';
+            box.id = 'check-' + key;
+            box.checked = ticked.has(key);
+            box.addEventListener('change', () => {
+                box.checked ? ticked.add(key) : ticked.delete(key);
+                $('decisionError').hidden = true;
+            });
+            row.htmlFor = box.id;
+            row.append(box, el('span', tr(...text)));
+            return row;
+        }));
         $('reject').hidden = profile.status !== 'pending';
         $('suspend').hidden = profile.status !== 'approved';
         const account = current[G().one];
@@ -167,6 +185,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         $('history').replaceChildren(...history.map(h => {
             const li = el('li');
             li.append(el('time', when(h.created_at)), el('span', ' ' + (ACTIONS[h.action] ? tr(...ACTIONS[h.action]) : h.action) + (h.actor_name ? ' · ' + h.actor_name : '')));
+            if (h.details?.checks) li.append(el('span', tr(' · every check ticked', ' · كل بنود التحقق مؤشَّرة'), 'muted-small'));
             if (h.details?.note) li.append(el('q', h.details.note));
             return li;
         }));
@@ -175,13 +194,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     // action: approve, reject, suspend, or changes/accept, changes/reject (button ids acceptChanges, rejectChanges).
     async function decide(action, buttonId = action) {
         $('decisionError').hidden = true;
+        const keys = Object.keys(current.review_checks || {});
+        const unticked = keys.find(key => !ticked.has(key));
+        if (action === 'approve' && unticked) {
+            showError('decisionError', {error: 'checks_required', en: 'Tick every check before approving.', ar: 'ضع علامة على كل بنود التحقق قبل الاعتماد.'});
+            return $('check-' + unticked).focus();
+        }
         const button = $(buttonId);
         busy(button, true);
         const id = current[G().one].id;
-        const res = await api(`${G().api}/${id}/${action}`, {note: $('note').value});
+        const res = await api(`${G().api}/${id}/${action}`, {note: $('note').value, ...(action === 'approve' ? {checks: keys} : {})});
         busy(button, false);
         if (!res.ok) return showError('decisionError', res.data);
         $('note').value = '';
+        if (action === 'approve') ticked = new Set();
         await openDoctor(id);
         const refreshed = await api(`${G().api}?status=${status}`);
         if (refreshed.ok) {

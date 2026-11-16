@@ -9,8 +9,8 @@ Accounts and (in later steps) appointment booking for patients and doctors. It r
 | Who | How they sign in | Rules |
 |---|---|---|
 | Patient | Mobile number and a 6-digit code by WhatsApp, Telegram or SMS | Max 3 codes per number per 15 min; a code is valid for 5 minutes, works once, and allows 5 tries. New patients give their name and accept the privacy policy. |
-| Doctor | Email and password (at least 10 characters), self-registration | Fills in a profile and uploads a licence; must be approved by an admin before patients can see them. |
-| Lab, imaging centre, hospital or clinic | Email and password, self-registration (same sign-in page as doctors) | Fills in the facility's details and uploads its operating licence; must be approved by an admin before it is listed on syriahc.com. |
+| Doctor | Email and password (at least 10 characters), self-registration confirmed with a 6-digit code from the email | Fills in a profile and uploads a licence; must be approved by an admin before patients can see them. |
+| Lab, imaging centre, hospital or clinic | Email and password, self-registration with the emailed code (same sign-in page as doctors) | Fills in the facility's details and uploads its operating licence; must be approved by an admin before it is listed on syriahc.com. |
 | Admin | Email and password, created on the server only | `npm run create-admin -- you@company.com "Your Name"` |
 
 ### Doctor verification (step 2)
@@ -18,7 +18,7 @@ Accounts and (in later steps) appointment booking for patients and doctors. It r
 1. **Doctor** (`/doctor`) fills in specialty, governorate, area, clinic name, address and phone, licence number and an optional short introduction.
 2. **Doctor** uploads their licence to practise (required) and optionally a syndicate card: PDF, JPG or PNG, up to 5 MB and at most 6 files. The file's real content is checked, not its name. Files are encrypted with AES-256-GCM before they touch the disk.
 3. **Doctor** sends the profile for review. This only works when every required field is filled and a licence is uploaded.
-4. **Admin** (`/admin`) sees doctors by status, opens the documents (every opening is logged), and either approves the doctor or asks for changes with a note the doctor sees.
+4. **Admin** (`/admin`) sees doctors by status, opens the documents (every opening is logged), and either approves the doctor or asks for changes with a note the doctor sees. Approving needs every check of the review checklist ticked (`src/review-checks.js`): the licence document is readable, in the right name and not expired; the licence number matches it; and the admin called the phone in the profile. The server refuses an approval without them, and the history records the ticks.
 5. A doctor who changes an approved profile stays listed. Name, specialty, governorate, area, address and licence number wait in "Changes to review" until an admin accepts them; other details apply at once. Documents are locked after approval.
 6. **Admin** can suspend an approved doctor with a reason, and reinstate them later. A suspended doctor keeps the profile page but no longer sees patients or appointments. Every step appears in the doctor's history.
 7. **Admin** can switch off a whole account (doctor, facility or another admin, never their own) with a reason, and switch it on again. A switched-off account is signed out at once, cannot sign in and disappears from the directory. The person gets an email.
@@ -90,7 +90,7 @@ Every minute due medicine reminders are sent; every 5 minutes queued emails; eve
 1. **Facility** registers at `/staff` and chooses its type (laboratory, imaging centre, hospital, or medical centre/clinic). The account holder is the contact person; the facility's name goes in its profile. `/staff#register-lab` and `/staff#register-hospital` open the form with the type already chosen.
 2. **Facility** (`/facility`) fills in its name, governorate, area, address, phone and licence number, and optionally its services (a fixed list per type, e.g. hormones or PCR for labs, CT or MRI for imaging), an emergency department (hospitals and clinics), opening hours and a short description.
 3. **Facility** uploads its operating licence (required) and sends the profile for review. Documents follow the same rules as doctors' documents: PDF, JPG or PNG up to 5 MB, encrypted at rest, locked after approval.
-4. **Admin** (`/admin`, tab "Labs, hospitals and clinics") approves, asks for changes or suspends, with the same notes and history as for doctors.
+4. **Admin** (`/admin`, tab "Labs, hospitals and clinics") approves (with the same review checklist), asks for changes or suspends, with the same notes and history as for doctors.
 5. Changing an approved profile sends it back for review. `GET /api/facilities` lists approved facilities with public details only: never the contact person, email, licence number or documents.
 6. The website's collector copies them to syriahc.com: labs and imaging centres to the Labs page, hospitals and clinics to the Hospitals page, each marked "Verified licence".
 
@@ -196,8 +196,9 @@ Five wrong passwords lock an account for 15 minutes. Sessions last 30 days for p
 - Requests from other websites are rejected (Origin check); strict security headers (CSP, no framing, HSTS in production).
 - Limits per phone, per account and per network address. Address limits are generous because Syrian mobile carriers share addresses between many customers.
 - Unknown emails get the same answer and the same delay as wrong passwords.
+- Signing up as a doctor or facility gives the same answer whether or not the email already has an account. A new address gets a 6-digit code (30 minutes, 5 tries) and the account exists only after it; an address with an account gets an email telling its owner to sign in instead. So nobody learns who is registered, and every new staff account has a confirmed email.
 - An audit log records registrations and admin actions.
-- No medical data is stored.
+- Medical data is stored only where a service needs it: lab results that labs upload (encrypted, opened only by doctors who scan the slip) and, once `HEALTH_FILE=on`, the patient's health file. Admins have no route to clinical contents.
 - Installable as an app (`public/manifest.webmanifest`, `public/sw.js`). The service worker saves only page frames, styles, scripts and icons; nothing under `/api/` is ever stored on the phone, so appointments, profiles and licences are always fresh and leave no copy on a shared device. Without internet, the app shows an offline notice.
 
 ## Run it on this computer

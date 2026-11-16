@@ -18,9 +18,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     let data = null, catalog = null, me = null, profiles = [], chosen = new Set(), subject = null;
 
-    const [res, cat, who] = await Promise.all([api('/api/labs/' + encodeURIComponent(id)), api('/api/catalog'), api('/api/me')]);
+    const noLab = {ok: false, status: 404, data: {error: 'not_found'}};
+    const [res, cat, who] = await Promise.all([id ? api('/api/labs/' + encodeURIComponent(id)) : noLab, api('/api/catalog'), api('/api/me')]);
     $('main').setAttribute('aria-busy', 'false');
-    if (!res.ok) return showError('pageError', res.data.error === 'not_found' ? {error: 'not_found', message: tr('This lab was not found.', 'لم يُعثر على هذا المخبر.')} : res.data);
+    // A missing, cut-off or mistyped id in a shared link means the same to a visitor: no such lab.
+    const missing = res.status === 404 || res.status === 400;
+    if (!res.ok) return showError('pageError', missing ? {error: 'not_found', en: 'This lab was not found.', ar: 'لم يُعثر على هذا المخبر.'} : res.data);
     data = res.data;
     catalog = cat.ok ? cat.data : null;
     me = who.ok ? who.data.user : null;
