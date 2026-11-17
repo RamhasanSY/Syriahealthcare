@@ -2,7 +2,7 @@
 // Only approved, active profiles with public fields. Nothing here identifies a patient: patient search is never offered.
 import {facilityKinds, facilityServices, specialties} from '../catalog.js';
 import {slotsFor} from '../schedule.js';
-import {addDays, localDate} from '../slots.js';
+import {addDays, isCalendarDate, localDate} from '../slots.js';
 import {
     endpoint, facilityLocation, healthcareService, organization, parseSlotId, practiceLocation, practitioner, practitionerRole, schedule, slot
 } from './map.js';
@@ -13,7 +13,6 @@ import fhirWriteRoutes from './write.js';
 
 const FHIR_JSON = 'application/fhir+json; charset=utf-8';
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
-const DATE = /^\d{4}-\d{2}-\d{2}$/;
 const MAX_COUNT = 50;
 
 const like = value => '%' + value.replace(/[%_\\]/g, '\\$&') + '%';
@@ -138,6 +137,8 @@ export default async function fhirRoutes(app) {
         }
         const practitionerRef = request.query.practitioner && tokenOrRef(first(request.query.practitioner), 'Practitioner');
         const locationRef = request.query.location && tokenOrRef(first(request.query.location), 'Location');
+        // A reference that is no id of ours finds nothing (and must not reach the uuid comparison in SQL).
+        if ([practitionerRef, locationRef].some(ref => ref && !UUID.test(ref))) return send(reply, 200, searchset(base, 'PractitionerRole', []));
         if (practitionerRef) where.push(`u.id = $${args.push(practitionerRef)}`);
         if (locationRef) where.push(`u.id = $${args.push(locationRef)}`);
         const rows = await loadDoctors(app.pg, {where, args, limit: count(request.query)});
@@ -264,7 +265,7 @@ function dateRange(values) {
     let from = today, to = addDays(today, 6);
     for (const value of list) {
         const match = /^(ge|le)?(\d{4}-\d{2}-\d{2})$/.exec(value);
-        if (!match || !DATE.test(match[2])) continue;
+        if (!match || !isCalendarDate(match[2])) continue;
         if (match[1] === 'le') to = match[2];
         else from = match[2] >= today ? match[2] : today;
     }

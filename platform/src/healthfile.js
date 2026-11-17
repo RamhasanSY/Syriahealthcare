@@ -5,7 +5,7 @@
 import multipart from '@fastify/multipart';
 import {HttpError, requireRole} from './auth.js';
 import {documentCategories} from './catalog.js';
-import {audit, transaction} from './db.js';
+import {audit, transaction, tryLock} from './db.js';
 import {createPatient, ensureSelfProfile, notFound, ownProfiles, patientFor} from './access.js';
 import {sendDocument} from './doctors.js';
 import {MAX_DOCUMENT_BYTES} from './documents.js';
@@ -87,6 +87,7 @@ export default async function healthFileRoutes(app) {
         }
         await ensureSelfProfile(app.pg, request.user);
         const child = await transaction(app.pg, async db => {
+            if (!await tryLock(db, 'children:' + request.user.id)) throw new HttpError(429, 'busy', 'Another request is still running. Please try again.');
             const {rows: [{n}]} = await db.query("SELECT count(*)::int AS n FROM patient_access WHERE user_id = $1 AND relationship = 'child'", [request.user.id]);
             if (n >= LIMITS.children) throw new HttpError(409, 'too_many_children', `At most ${LIMITS.children} children's profiles.`);
             const p = await createPatient(db, {name, birthDate, sex: request.body.sex || null});
@@ -149,11 +150,33 @@ export default async function healthFileRoutes(app) {
         return {profile: profileView({...p, consent: await hasConsent(app.pg, p.id)}), items: rows.map(itemView)};
     });
 
+    async function usageOf(db, patientId) {
+        const {rows: [usage]} = await db.query(
+            `SELECT (SELECT count(*)::int FROM clinical_documents WHERE patient_id = $1 AND deleted_at IS NULL) AS documents,
+                    (SELECT COALESCE(sum(f.size_bytes), 0)::bigint FROM clinical_document_files f JOIN clinical_documents d ON d.id = f.document_id
+                      WHERE d.patient_id = $1) AS bytes,
+                    (SELECT count(*)::int FROM clinical_document_files f JOIN clinical_documents d ON d.id = f.document_id
+                      WHERE d.patient_id = $1 AND f.created_at > now() - interval '1 day') AS pages_today`, [patientId]);
+        return usage;
+    }
+    // With 0 bytes and 0 pages: is the profile already full?
+    function checkQuota(usage, bytes, pages) {
+        if (usage.documents >= LIMITS.documentsPerProfile) throw new HttpError(409, 'too_many_documents', `At most ${LIMITS.documentsPerProfile} entries per profile.`);
+        if (Number(usage.bytes) + bytes > LIMITS.bytesPerProfile || Number(usage.bytes) >= LIMITS.bytesPerProfile) {
+            throw new HttpError(409, 'storage_full', 'This profile has no space left (200 MB). Delete older entries first.');
+        }
+        if (usage.pages_today + pages > LIMITS.pagesPerDay || usage.pages_today >= LIMITS.pagesPerDay) {
+            throw new HttpError(429, 'too_many_pages_today', `At most ${LIMITS.pagesPerDay} pages a day. Please continue tomorrow.`);
+        }
+    }
+
     // Upload: fields category, title, document_date, then one file per page (PDF, JPEG or PNG, up to 5 MB each).
     app.post('/api/file/profiles/:id/documents', {preHandler: patientOnly, schema: idParam, config: {rateLimit: {max: 30, timeWindow: '15 minutes'}}},
         async (request, reply) => {
             const p = await patientFor(app.pg, request.user, request.params.id);
             if (!await hasConsent(app.pg, p.id)) throw new HttpError(403, 'file_consent_required', 'Please agree to keeping a health file first.');
+            // A full profile is refused before any page is read and checked.
+            checkQuota(await usageOf(app.pg, p.id), 0, 0);
             const pages = [];
             let fields = {};
             try {
@@ -177,20 +200,15 @@ export default async function healthFileRoutes(app) {
             if (documentDate && (!validDate(documentDate) || documentDate > today())) throw new HttpError(400, 'invalid_date', 'Enter a valid date.');
 
             const bytes = pages.reduce((sum, page) => sum + page.buffer.length, 0);
-            const {rows: [usage]} = await app.pg.query(
-                `SELECT (SELECT count(*)::int FROM clinical_documents WHERE patient_id = $1 AND deleted_at IS NULL) AS documents,
-                        (SELECT COALESCE(sum(f.size_bytes), 0)::bigint FROM clinical_document_files f JOIN clinical_documents d ON d.id = f.document_id
-                          WHERE d.patient_id = $1) AS bytes,
-                        (SELECT count(*)::int FROM clinical_document_files f JOIN clinical_documents d ON d.id = f.document_id
-                          WHERE d.patient_id = $1 AND f.created_at > now() - interval '1 day') AS pages_today`, [p.id]);
-            if (usage.documents >= LIMITS.documentsPerProfile) throw new HttpError(409, 'too_many_documents', `At most ${LIMITS.documentsPerProfile} entries per profile.`);
-            if (Number(usage.bytes) + bytes > LIMITS.bytesPerProfile) throw new HttpError(409, 'storage_full', 'This profile has no space left (200 MB). Delete older entries first.');
-            if (usage.pages_today + pages.length > LIMITS.pagesPerDay) throw new HttpError(429, 'too_many_pages_today', `At most ${LIMITS.pagesPerDay} pages a day. Please continue tomorrow.`);
+            checkQuota(await usageOf(app.pg, p.id), bytes, pages.length);
 
             const stored = [];
             try {
                 for (const page of pages) stored.push({...page, ...await app.documents.save(page.buffer)});
                 const doc = await transaction(app.pg, async db => {
+                    // Counted again under one lock per profile, so uploads sent at once cannot pass the limits together.
+                    if (!await tryLock(db, 'health-file:' + p.id)) throw new HttpError(429, 'busy', 'Another request is still running. Please try again.');
+                    checkQuota(await usageOf(db, p.id), bytes, pages.length);
                     const {rows: [d]} = await db.query(
                         `INSERT INTO clinical_documents (patient_id, source, category, title, document_date, created_by)
                          VALUES ($1, 'upload', $2, $3, $4, $5) RETURNING *`, [p.id, category, title, documentDate, request.user.id]);

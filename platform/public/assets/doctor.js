@@ -1,7 +1,8 @@
 // Doctor profile: practice details, licence documents, and sending for review.
 document.addEventListener('DOMContentLoaded', async () => {
     const FIELD_NAMES = {specialty: ['specialty', 'الاختصاص'], governorate: ['governorate', 'المحافظة'], area: ['area', 'المنطقة'],
-        clinic_name: ['clinic name', 'اسم العيادة'], clinic_address: ['address', 'العنوان'], licence_number: ['licence number', 'رقم الترخيص']};
+        clinic_name: ['clinic name', 'اسم العيادة'], clinic_address: ['address', 'العنوان'], clinic_phone: ['clinic phone', 'هاتف العيادة'],
+        licence_number: ['licence number', 'رقم الترخيص']};
     const {$, tr, api, showError, busy} = Shc;
     const FIELDS = ['specialty', 'governorate', 'area', 'clinic_name', 'clinic_address', 'clinic_phone', 'licence_number', 'bio'];
     const LABELS = {specialty: ['Specialty', 'الاختصاص'], governorate: ['Governorate', 'المحافظة'], area: ['City or area', 'المدينة أو المنطقة'],

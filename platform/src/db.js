@@ -11,6 +11,14 @@ export function createPool(connectionString) {
 }
 
 // Runs fn inside a transaction and returns its result.
+// For "count, check the limit, then insert" inside a transaction: one request per key at a time, so parallel requests
+// cannot all pass the count. A request that finds the key busy gets false at once instead of waiting, which would hold
+// one of the few database connections. The lock ends with the transaction.
+export async function tryLock(db, key) {
+    const {rows: [lock]} = await db.query('SELECT pg_try_advisory_xact_lock(hashtext($1)) AS ok', [key]);
+    return lock.ok;
+}
+
 export async function transaction(pool, fn) {
     const client = await pool.connect();
     try {

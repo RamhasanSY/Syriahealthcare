@@ -38,6 +38,44 @@ describe('PDF check, hardened after the security review', () => {
         const many = pdfWithStreams(...Array.from({length: 450}, () => 'q'));
         assert.equal(pdfProblem(many), 'too_complex');
     });
+
+    test('compressed data with a wrong checksum is refused at once, not unpacked again for every stream', () => {
+        const big = deflateSync(Buffer.alloc(20 * 1024 * 1024));
+        big[big.length - 1] ^= 1;  // the checksum no longer matches
+        const streams = Array.from({length: 200}, (_, i) => [Buffer.from(`${i + 2} 0 obj << /Filter /FlateDecode >>\nstream\n`), big, Buffer.from('\nendstream\nendobj\n')]);
+        const file = Buffer.concat([Buffer.from('%PDF-1.5\n'), ...streams.flat(), Buffer.from('%%EOF\n')]);
+        const started = Date.now();
+        assert.equal(pdfProblem(file), 'unusual');
+        assert.ok(Date.now() - started < 3000, `took ${Date.now() - started} ms`);
+        // A stream that is merely cut short is read as far as it goes.
+        const cut = deflateSync(Buffer.from('<< /S /JavaScript >>' + ' '.repeat(5000)));
+        const shortFile = Buffer.concat([Buffer.from('%PDF-1.5\n1 0 obj << /Filter /FlateDecode >>\nstream\n'), cut.subarray(0, cut.length - 10), Buffer.from('\nendstream\n%%EOF\n')]);
+        assert.equal(pdfProblem(shortFile), 'JavaScript');
+    });
+
+    test('script hidden by a filter chain, a PNG predictor or parameters in another object is found or refused', () => {
+        const script = '<< /Type /Catalog /OpenAction << /S /JavaScript /JS (app.alert(1)) >> >>';
+        const twice = deflateSync(deflateSync(Buffer.from(script)));
+        assert.equal(pdfProblem(Buffer.concat([Buffer.from('%PDF-1.5\n1 0 obj << /Filter [/FlateDecode /FlateDecode] >>\nstream\n'), twice,
+            Buffer.from('\nendstream\n%%EOF\n')])), 'unusual');
+        assert.equal(pdfProblem(Buffer.from('%PDF-1.5\n1 0 obj << /Filter 2 0 R >>\nstream\nx\nendstream\n2 0 obj [/FlateDecode] endobj\n%%EOF\n')), 'unusual');
+        // PNG "Up" predictor, 4 columns: every row is stored as its difference to the row above.
+        const columns = 4, raw = Buffer.from(script.padEnd(Math.ceil(script.length / columns) * columns));
+        const rows = [];
+        for (let i = 0; i < raw.length; i += columns) {
+            const row = raw.subarray(i, i + columns), above = i ? raw.subarray(i - columns, i) : Buffer.alloc(columns);
+            rows.push(Buffer.from([2]), Buffer.from(row.map((x, j) => (x - above[j]) & 255)));
+        }
+        const predicted = deflateSync(Buffer.concat(rows));
+        assert.doesNotMatch(Buffer.concat(rows).toString('latin1'), /JavaScript/, 'the predictor really hides the name');
+        const file = Buffer.concat([Buffer.from(`%PDF-1.5\n1 0 obj << /Type /ObjStm /Filter /FlateDecode /DecodeParms << /Predictor 12 /Columns ${columns} >> >>\nstream\n`),
+            predicted, Buffer.from('\nendstream\n%%EOF\n')]);
+        assert.equal(pdfProblem(file), 'JavaScript');
+        // A normal cross-reference stream with a predictor still passes.
+        const xref = deflateSync(Buffer.from([2, 1, 0, 16, 2, 0, 0, 5]));
+        assert.equal(pdfProblem(Buffer.concat([Buffer.from('%PDF-1.5\n9 0 obj << /Type /XRef /Filter /FlateDecode /DecodeParms << /Columns 3 /Predictor 12 >> >>\nstream\n'),
+            xref, Buffer.from('\nendstream\n%%EOF\n')])), null);
+    });
 });
 
 describe('photos: nothing after the picture survives', () => {

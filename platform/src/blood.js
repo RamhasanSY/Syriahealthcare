@@ -34,7 +34,11 @@ const requestView = r => ({id: r.id, facility_id: r.facility_id, facility_name: 
 const donorView = d => d && ({blood_type: d.blood_type, governorate: d.governorate, phone: d.phone, notify: d.notify,
     last_donation_date: isoDate(d.last_donation_date), next_possible: d.last_donation_date ? addDays(isoDate(d.last_donation_date), LIMITS.restDays) : null});
 
-const REQUEST_SQL = `SELECT r.*, p.facility_name, p.kind, p.area, p.address FROM blood_requests r JOIN facility_profiles p ON p.user_id = r.facility_id`;
+const REQUEST_SQL = `SELECT r.*, p.facility_name, p.kind, p.area, p.address FROM blood_requests r JOIN facility_profiles p ON p.user_id = r.facility_id
+    JOIN users fu ON fu.id = r.facility_id`;
+// Calls the public sees and donors can answer: only from facilities that are approved and not switched off (a suspended
+// facility or one that asked to delete its account must not keep collecting donors' phone numbers).
+const LISTED = "p.status = 'approved' AND fu.disabled_at IS NULL";
 
 // Tells matching donors about a new call. Returns how many were told. Never throws.
 export async function notifyDonors(app, request) {
@@ -91,7 +95,7 @@ export default async function bloodRoutes(app) {
     app.get('/api/blood-requests', {config: {cache: 'public, max-age=60'}, schema: {querystring: {type: 'object', additionalProperties: false, properties: {
         governorate: {type: 'string', maxLength: 40}, blood_type: {enum: BLOOD_TYPES}
     }}}}, async request => {
-        const where = ["r.status = 'open'", 'r.needed_by >= $1', "p.status = 'approved'"], args = [today()];
+        const where = ["r.status = 'open'", 'r.needed_by >= $1', LISTED], args = [today()];
         if (request.query.governorate && Object.hasOwn(governorates, request.query.governorate)) where.push(`r.governorate = $${args.push(request.query.governorate)}`);
         // "I am A+": the calls an A+ donor can help with.
         if (request.query.blood_type) where.push(`r.blood_types && $${args.push(CAN_GIVE[request.query.blood_type])}`);
@@ -204,7 +208,7 @@ export default async function bloodRoutes(app) {
             const {rows: [d]} = await app.pg.query('SELECT * FROM blood_donors WHERE user_id = $1', [request.user.id]);
             if (!d) throw new HttpError(409, 'donor_required', 'Register as a donor first.');
             const {rows: [r]} = await app.pg.query(
-                "SELECT * FROM blood_requests WHERE id = $1 AND status = 'open' AND needed_by >= $2", [request.params.id, today()]);
+                `${REQUEST_SQL} WHERE r.id = $1 AND r.status = 'open' AND r.needed_by >= $2 AND ${LISTED}`, [request.params.id, today()]);
             if (!r) throw new HttpError(404, 'not_found', 'This call is closed.');
             if (!CAN_GIVE[d.blood_type].some(t => r.blood_types.includes(t))) throw new HttpError(409, 'blood_type_mismatch', 'Your blood group does not match this call.');
             const {rows: [{n}]} = await app.pg.query(

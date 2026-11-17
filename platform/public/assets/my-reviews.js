@@ -59,9 +59,13 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const links = el('div', {className: 'appt-links'});
                 const answer = el('button', {type: 'button', className: 'link-btn', textContent: r.reply ? tr('Change answer', 'تعديل الرد') : tr('Answer', 'رد')});
                 answer.onclick = () => { open = {id: r.id, kind: 'reply'}; render(); };
-                const report = el('button', {type: 'button', className: 'link-btn', textContent: tr('Report', 'إبلاغ')});
-                report.onclick = () => { open = {id: r.id, kind: 'report'}; render(); };
-                links.append(answer, report);
+                links.append(answer);
+                // A review can be reported once; after the administrators kept it, it stays.
+                if (!r.reported) {
+                    const report = el('button', {type: 'button', className: 'link-btn', textContent: tr('Report', 'إبلاغ')});
+                    report.onclick = () => { open = {id: r.id, kind: 'report'}; render(); };
+                    links.append(report);
+                }
                 li.append(links);
             }
             return li;

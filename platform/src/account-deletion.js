@@ -11,7 +11,7 @@
 // results a lab issued live on in patients' files and licence documents may have to be kept for a while.
 //
 // Deleting needs a sign-in from the last 15 minutes, so a phone left signed in for weeks cannot wipe an account.
-import {HttpError, requireRole, SESSION_COOKIE} from './auth.js';
+import {clearSessionCookie, HttpError, requireRole} from './auth.js';
 import {notifyWaitlist} from './appointment-comfort.js';
 import {audit, transaction} from './db.js';
 import {sendEmail} from './notify.js';
@@ -102,7 +102,7 @@ export default async function accountDeletionRoutes(app) {
         const user = request.user;
         if (user.role === 'patient') {
             const done = await deletePatient(app, user.id, {ip: request.ip});
-            reply.clearCookie(SESSION_COOKIE, {path: '/'});
+            clearSessionCookie(app, reply);
             if (user.email) await sendEmail(app, user.email, deletedEmail(user));
             return {deleted: true, profiles: done.profiles, cancelled: done.cancelled};
         }
@@ -112,7 +112,7 @@ export default async function accountDeletionRoutes(app) {
             await db.query('DELETE FROM trusted_devices WHERE user_id = $1', [user.id]);
             await audit(db, {actorId: user.id, action: 'account.deletion_requested', targetId: user.id, ip: request.ip});
         });
-        reply.clearCookie(SESSION_COOKIE, {path: '/'});
+        clearSessionCookie(app, reply);
         await sendEmail(app, user.email, deletionRequestedEmail(user));
         const {rows: admins} = await app.pg.query("SELECT name, email, language FROM users WHERE role = 'admin' AND disabled_at IS NULL");
         for (const admin of admins) await sendEmail(app, admin.email, adminNoticeEmail(admin, user, app.config.appOrigin));

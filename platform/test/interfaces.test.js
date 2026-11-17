@@ -222,6 +222,38 @@ describe('FHIR transaction from lab software', () => {
         assert.match(again.outcome.issue[0].diagnostics, /[2-9A-HJ-NP-Z]{4}-[2-9A-HJ-NP-Z]{4}-[2-9A-HJ-NP-Z]{4}/, 'the slip code is not lost');
     });
 
+    test('a Bundle with the wrong types or a repeated value is refused before anything is decoded or stored', async () => {
+        const lab = await facility();
+        const accessToken = await token(await client(lab.id));
+        // An object posing as base64 would make Node allocate 1.5 GB.
+        const bomb = reportBundle({labNumber: 'LAB-BOMB'});
+        bomb.entry[2].resource.presentedForm[0].data = {length: 1_500_000_000};
+        const started = Date.now();
+        const refused = await sendBundle(bomb, accessToken);
+        assert.equal(refused.statusCode, 400);
+        assert.equal(refused.json().issue[0].details.text, 'invalid_attachment');
+        assert.ok(Date.now() - started < 2000);
+        // One Observation referenced thousands of times counts once; hundreds of different ones are refused.
+        const repeated = reportBundle({labNumber: 'LAB-REPEAT'});
+        repeated.entry[2].resource.result = Array.from({length: 5000}, () => ({reference: 'urn:uuid:22222222-2222-4222-8222-222222222222'}));
+        assert.equal((await sendBundle(repeated, accessToken)).statusCode, 200);
+        const {rows: [stored]} = await pool.query("SELECT jsonb_array_length(observations) AS n FROM lab_results WHERE external_id = 'LAB-REPEAT'");
+        assert.equal(stored.n, 1);
+        const many = reportBundle({labNumber: 'LAB-MANY'});
+        const values = Array.from({length: 201}, (_, i) => ({fullUrl: `urn:uuid:obs-${i}`, resource: {resourceType: 'Observation', status: 'final',
+            code: {text: `Value ${i}`}, valueString: 'ok'}}));
+        many.entry.push(...values);
+        many.entry[2].resource.result = values.map(v => ({reference: v.fullUrl}));
+        assert.equal((await sendBundle(many, accessToken)).statusCode, 400, 'more values than a Bundle may hold');
+        // Numbers and nulls where lists belong: a clear 400, not a server error.
+        assert.equal((await sendBundle({resourceType: 'Bundle', type: 'transaction', entry: 1}, accessToken)).statusCode, 400);
+        assert.equal((await sendBundle({resourceType: 'Bundle', type: 'transaction', entry: [null]}, accessToken)).statusCode, 400);
+        const odd = reportBundle({labNumber: 'LAB-ODD'});
+        odd.entry[0].resource.identifier = 5;
+        odd.entry[2].resource.category = 'LAB';
+        assert.notEqual((await sendBundle(odd, accessToken)).statusCode, 500);
+    });
+
     test('FHIR JSON must be UTF-8: other bytes are refused with a reason, a BOM is fine', async () => {
         const lab = await facility();
         const accessToken = await token(await client(lab.id));

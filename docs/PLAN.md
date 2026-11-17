@@ -35,6 +35,42 @@ Die Plattform läuft seit dem 07.11. auf app.syriahc.com, die Website auf syriah
 
 **Google Play:** braucht ein Google-Konto als Organisation (D-U-N-S-Nummer der Firma), danach baut Claude die App-Hülle. Siehe `docs/STUFE-3.md`, Teil 3i.
 
+### Sicherheitsaudit 16./17.11.2026
+
+Geprüft wurden der Code (Anmeldung, Zugriffsrechte, Dateien und Schnittstellen, Browser, Server und GitHub) und die Abhängigkeiten. Dazu kamen ein Angriffstest gegen eine lokale Kopie und eine Prüfung des Live-Servers von außen, ohne ihn zu belasten.
+
+- **Keine kritischen oder hohen Lücken.**
+- **Rechte-Test:** 12 Konten rufen jede Schnittstelle mit den IDs der anderen auf. Kein einziger Aufruf kam an fremde Daten (`platform/test/zz-authz-matrix.test.js`, läuft jetzt bei jedem Testlauf mit).
+- **Live-Server:** Header, TLS (nur 1.2 und 1.3), Ports (nur 22, 80, 443), Cookies, Herkunftsprüfung und CORS sind in Ordnung.
+
+**Behoben (PR „Sicherheitsaudit“):**
+
+| Punkt | Vorher | Jetzt |
+|---|---|---|
+| E-Mail-Anmeldung lahmlegen | 500 Codes für erfundene Adressen sperrten die Anmeldung für alle Patienten eine Stunde lang | Wer ein Konto hat, ist nie betroffen; neue Adressen: höchstens 20 pro Stunde und Netz |
+| Admin- und Arzt-Codes erraten | Bis zu 2.400 Versuche am Tag | Höchstens 10 Codes und 30 Versuche am Tag; parallele Anfragen zählen richtig |
+| Passwort-Sperre | Ein Angreifer konnte jedes Staff-Konto dauerhaft sperren | Gesperrt wird das Netz, aus dem geraten wird; das ganze Konto erst bei 50 Fehlversuchen pro Stunde aus mehreren Netzen |
+| Bestätigung für Gesundheitsdaten (Ärzte) | Galt die ganzen 7 Tage einer Sitzung | Gilt 12 Stunden; ein gemerktes Gerät bestätigt sich selbst neu |
+| Viele Buchungen gleichzeitig | Umging die Obergrenzen und blockierte Termine | Zählen und Buchen unter einer Sperre; ebenso bei Hausbesuchen, Warteliste, Kinderprofilen, Medikamenten und Uploads |
+| Bewertungen | Ein Arzt konnte schlechte Bewertungen immer wieder melden und so verstecken | Jede Bewertung kann nur einmal gemeldet werden |
+| Gesperrte Ärzte | Video, Kalenderdatei und Erinnerungen liefen weiter | Gesperrt |
+| Blutspende-Aufrufe | Blieben nach Sperre oder Löschung einer Einrichtung öffentlich | Ausgeblendet; Antworten werden abgelehnt |
+| Telefonnummer, Dienste, Notaufnahme | Freigegebene Profile konnten sie ohne Prüfung ändern | Warten auf einen Admin; unveränderte Felder landen nicht mehr in der Prüfung |
+| PDF-Prüfung | Ein PDF konnte den Server minutenlang beschäftigen; Skripte ließen sich über mehrfache Filter verstecken | Kaputte Daten werden sofort abgelehnt; Filterketten abgelehnt, „Predictor“ entschlüsselt |
+| FHIR-Schnittstelle | Ein 200-Byte-Bundle konnte 1,5 GB Speicher belegen; falsche Datentypen ergaben Serverfehler | Typ- und Größenprüfung vor dem Entpacken; klare Fehlermeldung |
+| Abmelden | Das Cookie blieb im Browser stehen (ohne Folgen, die Sitzung war gelöscht) | Wird gelöscht |
+| Kleinere Punkte | Name in der Code-E-Mail, Link-Prüfung bei Benachrichtigungen, Dateirechte der Website | Behoben |
+
+**Noch offen, braucht dich oder den Server:**
+
+1. **Sicherungen verschlüsseln** (mittel): Die nächtliche Sicherung liegt unverschlüsselt auf dem Server. Bevor sie den Server verlässt (Teil K), muss sie mit einem Schlüssel verschlüsselt werden, dessen geheimer Teil nur bei dir liegt.
+2. **Eigener Datenbank-Benutzer für die App** ohne Admin-Rechte (niedrig).
+3. **Container härten und Images festnageln** (`no-new-privileges`, Rechte abgeben, Image-Digests) (niedrig).
+4. **GitHub Actions auf feste Versionen** (Commit-SHA) statt Tags (niedrig).
+5. **SSH:** Anmeldung über einen eigenen Admin-Benutzer statt direkt als root (niedrig).
+6. **Caddy-Fehlerprotokoll** einmal lesend prüfen: Stehen dort Suchbegriffe aus Adressen?
+7. **Nach dem Server-Update** das Website-Skript neu installieren (`harden.sh`, Zeile 59), damit die neuen Dateirechte gelten.
+
 ---
 
 ## Ursprünglicher Plan

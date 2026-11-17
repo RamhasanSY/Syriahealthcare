@@ -150,7 +150,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         }) : [el('li', tr('No documents uploaded.', 'لا توجد وثائق.'), 'empty-row')]));
         // Held changes: field, value now, proposed value. Codes (specialty, governorate) are shown with their names.
         const pending = current.pending ? Object.entries(current.pending) : [];
-        const shown = (key, value) => key === 'specialty' ? label('specialties', value) : key === 'governorate' ? label('governorates', value) : (value || '—');
+        const kind = current.profile?.kind;
+        const shown = (key, value) => key === 'specialty' ? label('specialties', value) : key === 'governorate' ? label('governorates', value)
+            : key === 'services' ? (value || []).map(s => catalog?.facilityServices?.[kind]?.[s] ? tr(...catalog.facilityServices[kind][s]) : s).join(tr(', ', '، ')) || '—'
+            : typeof value === 'boolean' ? (value ? tr('Yes', 'نعم') : tr('No', 'لا')) : (value || '—');
         $('changesBox').hidden = !pending.length;
         $('changesRows').replaceChildren(...pending.map(([key, change]) => {
             const field = G().fields.find(([k]) => k === key);

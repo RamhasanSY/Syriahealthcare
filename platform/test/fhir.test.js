@@ -123,6 +123,15 @@ describe('free slots', () => {
         assert.equal(one.json().start, api[0].starts_at);
     });
 
+    test('dates that do not exist and references that are no id give an empty answer, not a server error', async () => {
+        const doctor = await approvedDoctor(post);
+        const slots = await get(`/fhir/r4/Slot?schedule=Schedule/${doctor.id}&start=ge2026-13-01`);
+        assert.equal(slots.statusCode, 200);
+        const roles = await get('/fhir/r4/PractitionerRole?practitioner=Practitioner/not-a-uuid');
+        assert.equal(roles.statusCode, 200);
+        assert.equal(roles.json().total, 0);
+    });
+
     test('a status other than free gives no slots', async () => {
         const doctor = await approvedDoctor(post);
         const res = (await get(`/fhir/r4/Slot?schedule=Schedule/${doctor.id}&status=busy`)).json();

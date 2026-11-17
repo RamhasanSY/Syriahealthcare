@@ -1,8 +1,10 @@
 // Changes to approved profiles (stage 2a). Details that identify the person or the place (name, specialty, area, address,
-// licence) are held in `pending_changes` until an administrator accepts or rejects them. Other details apply at once.
+// licence, and the phone number the approval check calls) and promises patients rely on (services such as home
+// collection, an emergency department) are held in `pending_changes` until an administrator accepts or rejects them.
+// Other details apply at once.
 // An approved profile keeps its status and its public listing while changes wait, so a change never locks anyone out.
-export const DOCTOR_CRITICAL = ['specialty', 'governorate', 'area', 'clinic_name', 'clinic_address', 'licence_number'];
-export const FACILITY_CRITICAL = ['facility_name', 'governorate', 'area', 'address', 'licence_number'];
+export const DOCTOR_CRITICAL = ['specialty', 'governorate', 'area', 'clinic_name', 'clinic_address', 'clinic_phone', 'licence_number'];
+export const FACILITY_CRITICAL = ['facility_name', 'governorate', 'area', 'address', 'phone', 'licence_number', 'services', 'emergency'];
 
 // Splits a cleaned change set. A profile that is not approved yet has no critical fields: everything applies at once.
 export function splitChanges(changes, critical) {
@@ -11,9 +13,14 @@ export function splitChanges(changes, critical) {
     return {immediate, held};
 }
 
-// Writes the immediate fields and holds the rest. Returns the row and the names of the held fields.
-export async function saveChange(db, table, userId, changes, critical) {
+// Empty and missing are the same; lists (services) compare without regard to order.
+const comparable = value => JSON.stringify(Array.isArray(value) ? [...value].sort() : value === '' || value === undefined ? null : value);
+
+// Writes the immediate fields and holds the rest. Returns the row and the names of the held fields. The forms send every
+// field, so held fields whose value equals the current one are dropped: only real changes wait for an administrator.
+export async function saveChange(db, table, userId, changes, critical, current = {}) {
     const {immediate, held} = splitChanges(changes, critical);
+    for (const key of Object.keys(held)) if (comparable(held[key]) === comparable(current[key])) delete held[key];
     const values = [userId], assigns = [];
     for (const [key, value] of Object.entries(immediate)) assigns.push(`${key} = $${values.push(value)}`);
     if (Object.keys(held).length) {

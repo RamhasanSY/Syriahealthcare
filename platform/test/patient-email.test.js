@@ -161,6 +161,26 @@ describe('patient sign-in by email', () => {
     });
 });
 
+describe('codes for addresses without an account', () => {
+    const from = (address, email) => app.inject({method: 'POST', url: '/api/auth/email/request', payload: {email}, headers: {origin}, remoteAddress: address});
+
+    test('one network gets 20 an hour for new addresses; patients who have an account still get theirs', async () => {
+        await signInPatientByEmail(post, mail, EMAIL, 'Lina Haddad');
+        for (let i = 0; i < 20; i++) assert.equal((await from('203.0.113.5', `new${i}@example.org`)).statusCode, 202);
+        assert.equal((await from('203.0.113.5', 'new20@example.org')).json().error, 'too_many_codes');
+        assert.equal((await from('203.0.113.5', EMAIL)).statusCode, 202, 'an existing patient is not stopped');
+        assert.equal((await from('198.51.100.7', 'other@example.org')).statusCode, 202, 'another network is not stopped');
+    });
+
+    test('made-up addresses filling the hourly total never lock out patients who have an account', async () => {
+        await signInPatientByEmail(post, mail, EMAIL, 'Lina Haddad');
+        await pool.query(`INSERT INTO otp_codes (email, code_hash, expires_at, ip)
+            SELECT 'fake' || i || '@example.org', 'x', now() + interval '15 minutes', ('10.0.' || (i / 250) || '.' || (i % 250))::inet FROM generate_series(1, 500) i`);
+        assert.equal((await from('198.51.100.7', 'brand-new@example.org')).json().error, 'try_later');
+        assert.equal((await from('198.51.100.7', EMAIL)).statusCode, 202);
+    });
+});
+
 describe('rate limits', () => {
     test('count per IPv4 address and per IPv6 /64 network', async () => {
         const {rateLimitKey} = await import('../src/security.js');

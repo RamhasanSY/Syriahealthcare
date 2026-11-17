@@ -3,19 +3,31 @@ import {facilityKinds} from './catalog.js';
 import {audit, transaction} from './db.js';
 import {phoneSignInAvailable, sendCode} from './messaging.js';
 import {accountExistsEmail, emailCodeEmail, passwordChangedEmail, resetEmail, sendEmail, signupCodeEmail, staffAddressEmail, staffCodeEmail, confirmCodeEmail, welcomeEmail} from './notify.js';
-import {dummyPasswordHash, hashPassword, newOtp, newToken, normalizeEmail, normalizePhone, otpHash, passwordProblem, rateLimitKey, sameHash, sha256, verifyPassword} from './security.js';
+import {clientAddress, clientNetwork, dummyPasswordHash, hashPassword, newOtp, newToken, normalizeEmail, normalizePhone, otpHash, passwordProblem, rateLimitKey, sameHash, sha256, verifyPassword} from './security.js';
 
 // In production "__Host-shc_session": browsers accept it only from this exact host over HTTPS, so no other site on
 // syriahc.com could plant a session cookie. Locally (http) the plain name, which tests also use.
 export const SESSION_COOKIE = process.env.NODE_ENV === 'production' ? '__Host-shc_session' : 'shc_session';
 const OTP_MINUTES = 5, OTP_PER_PHONE = 3, OTP_WINDOW_MINUTES = 15, OTP_MAX_ATTEMPTS = 5;
-// Email is slower than SMS, so its codes last longer. Per address: 3 codes per 15 minutes and 10 per day; all code
-// emails together are capped per hour to protect the sending mailbox from being used to spam people.
-const EMAIL_CODE_MINUTES = 15, EMAIL_CODES_PER_DAY = 10, EMAIL_CODES_PER_HOUR_TOTAL = 500;
-const LOGIN_MAX_FAILURES = 5, LOGIN_WINDOW_MINUTES = 15;
+// Email is slower than SMS, so its codes last longer. Per address: 3 codes per 15 minutes and 10 per day.
+const EMAIL_CODE_MINUTES = 15, EMAIL_CODES_PER_DAY = 10;
+// Codes for addresses and numbers without an account (new sign-ups, or made-up ones) are capped per hour: 20 from one
+// network, and in all 500 emails (to protect the sending mailbox) or 200 phone messages (each one costs money).
+// People who already have an account never count against these totals, so nobody can lock patients out of signing in
+// by asking for codes for invented addresses.
+const NEW_CODES_PER_NETWORK_HOUR = 20, EMAIL_CODES_PER_HOUR_TOTAL = 500, PHONE_CODES_PER_HOUR_TOTAL = 200;
+// Wrong passwords: 5 in 15 minutes lock out the network they came from; 50 in an hour from all networks together lock
+// the account for everyone except a remembered device. One network alone (at most 20 an hour) therefore cannot lock
+// the owner out from somewhere else.
+const LOGIN_MAX_FAILURES = 5, LOGIN_WINDOW_MINUTES = 15, LOGIN_MAX_FAILURES_HOUR = 50;
 const RESET_MINUTES = 30, RESET_PER_HOUR = 3;
 // Administrators: second factor by email code after the password (10 minutes, 5 tries per code, 5 codes per 15 minutes).
-const STAFF_CODE_MINUTES = 10, STAFF_CODE_ATTEMPTS = 5, STAFF_CODES_PER_WINDOW = 5;
+// Admin and doctor codes together: at most 10 a day per account, and none once its codes were tried 30 times that day,
+// so someone who knows the password gets at most 30 guesses a day at a 6-digit code.
+const STAFF_CODE_MINUTES = 10, STAFF_CODE_ATTEMPTS = 5, STAFF_CODES_PER_WINDOW = 5, STAFF_CODES_PER_DAY = 10, STAFF_CODE_TRIES_PER_DAY = 30;
+// Doctors confirm again after 12 hours, so an unattended or stolen session does not keep health data open for its
+// whole 7 days. A remembered device confirms again by itself.
+export const STEP_UP_HOURS = 12;
 // Doctors and facilities confirm their email before the account exists: a code valid for 30 minutes, 3 forms per
 // address per 15 minutes and 10 per day, 5 tries in all.
 const SIGNUP_CODE_MINUTES = 30, SIGNUPS_PER_DAY = 10;
@@ -60,17 +72,28 @@ async function trustedDevice(app, request, user) {
     return Boolean(row);
 }
 
-// Loads the signed-in user (if any) on every request.
+// Loads the signed-in user (if any) on every request. A doctor's confirmation older than STEP_UP_HOURS counts as missing.
 export async function loadSession(request) {
     request.user = null;
     const token = request.cookies[SESSION_COOKIE];
     if (!token || token.length > 100) return;
-    const {rows} = await this.pg.query(
+    const {rows: [user]} = await this.pg.query(
         `UPDATE sessions s SET last_seen = now() FROM users u
          WHERE s.token_hash = $1 AND s.expires_at > now() AND u.id = s.user_id AND u.disabled_at IS NULL
-         RETURNING u.*, s.token_hash, s.second_factor_at`, [sha256(token)]);
-    if (rows[0]) request.user = rows[0];
+         RETURNING u.*, s.token_hash, CASE WHEN u.role = 'doctor' AND s.second_factor_at < now() - make_interval(hours => $2)
+             THEN NULL ELSE s.second_factor_at END AS second_factor_at`, [sha256(token), STEP_UP_HOURS]);
+    if (!user) return;
+    if (user.role === 'doctor' && !user.second_factor_at && await trustedDevice(this, request, user)) {
+        const {rows: [session]} = await this.pg.query('UPDATE sessions SET second_factor_at = now() WHERE token_hash = $1 RETURNING second_factor_at',
+            [user.token_hash]);
+        user.second_factor_at = session.second_factor_at;
+    }
+    request.user = user;
 }
+
+// Removed with the attributes it was set with: browsers ignore a "__Host-" cookie that comes without Secure.
+export const clearSessionCookie = (app, reply) =>
+    reply.clearCookie(SESSION_COOKIE, {path: '/', httpOnly: true, sameSite: 'lax', secure: app.config.production});
 
 export function requireRole(...roles) {
     const guard = async request => {
@@ -85,7 +108,58 @@ export function requireRole(...roles) {
 // the per-phone and per-account limits above do the real protection.
 const ipLimit = max => ({rateLimit: {max, timeWindow: '15 minutes', keyGenerator: request => rateLimitKey(request.ip)}});
 
+// Hourly caps on codes for an address or number without an account (see NEW_CODES_PER_NETWORK_HOUR). Rows whose
+// address has become an account no longer count, so finished sign-ups never use up the budget.
+async function newDestinationLimits(db, request, column, total) {
+    const {rows: [counts]} = await db.query(
+        `SELECT count(*)::int AS hour, count(*) FILTER (WHERE o.ip <<= $1::inet)::int AS here FROM otp_codes o
+         WHERE o.${column} IS NOT NULL AND o.created_at > now() - interval '1 hour'
+           AND NOT EXISTS (SELECT 1 FROM users u WHERE u.${column} = o.${column})`, [clientNetwork(request.ip)]);
+    if (counts.here >= NEW_CODES_PER_NETWORK_HOUR) {
+        throw new HttpError(429, 'too_many_codes', 'Too many codes requested. Please wait 15 minutes and try again.');
+    }
+    if (counts.hour >= total) {
+        request.log.error({channel: column}, 'Hourly limit of sign-in codes for new addresses reached');
+        throw new HttpError(503, 'try_later', 'Too many sign-in requests right now. Please try again in a few minutes.');
+    }
+}
+
 export default async function authRoutes(app) {
+    // A remembered device of the account (stage 2c) still gets in while the account is locked for everyone else.
+    async function rememberedDevice(request, email) {
+        const device = request.cookies?.[DEVICE_COOKIE];
+        if (!device || device.length > 100) return false;
+        const {rows: [row]} = await app.pg.query(
+            'SELECT 1 FROM trusted_devices t JOIN users u ON u.id = t.user_id WHERE t.token_hash = $1 AND u.email = $2 AND t.expires_at > now()',
+            [sha256(device), email]);
+        return Boolean(row);
+    }
+
+    // Admin sign-in codes ('staff') and doctor confirmation codes ('step-up'), with the limits above. One request per
+    // account at a time, so parallel requests cannot all pass the count.
+    async function newStaffCode(request, user, purpose) {
+        const challenge = newToken(), code = newOtp();
+        const row = await transaction(app.pg, async db => {
+            const {rows: [lock]} = await db.query('SELECT pg_try_advisory_xact_lock(hashtext($1)) AS ok', ['staff-code:' + user.id]);
+            if (!lock.ok) throw new HttpError(429, 'too_many_codes', 'Too many codes requested. Please wait 15 minutes and try again.');
+            const {rows: [counts]} = await db.query(
+                `SELECT count(*) FILTER (WHERE created_at > now() - make_interval(mins => $2))::int AS recent, count(*)::int AS today,
+                        COALESCE(sum(attempts), 0)::int AS tries
+                 FROM staff_login_codes WHERE user_id = $1 AND created_at > now() - interval '1 day'`, [user.id, OTP_WINDOW_MINUTES]);
+            if (counts.today >= STAFF_CODES_PER_DAY || counts.tries >= STAFF_CODE_TRIES_PER_DAY) {
+                request.log.error({userId: user.id, codes: counts.today, tries: counts.tries}, 'Daily limit of confirmation codes reached');
+                throw new HttpError(429, 'too_many_codes_today', 'Too many codes requested today. Please try again tomorrow.');
+            }
+            if (counts.recent >= STAFF_CODES_PER_WINDOW) throw new HttpError(429, 'too_many_codes', 'Too many codes requested. Please wait 15 minutes and try again.');
+            const {rows: [inserted]} = await db.query(
+                `INSERT INTO staff_login_codes (user_id, token_hash, code_hash, expires_at, ip)
+                 VALUES ($1, $2, $3, now() + make_interval(mins => $4), $5) RETURNING id`,
+                [user.id, sha256(challenge), otpHash(app.config.otpSecret, `${purpose}:${user.id}`, code), STAFF_CODE_MINUTES, request.ip]);
+            return inserted;
+        });
+        return {row, challenge, code};
+    }
+
     // Patients: request a sign-in code, by WhatsApp or Telegram where possible, otherwise by SMS.
     app.post('/api/auth/otp/request', {
         config: ipLimit(30),
@@ -96,17 +170,24 @@ export default async function authRoutes(app) {
         if (!phoneSignInAvailable(app)) throw new HttpError(503, 'phone_signin_unavailable', 'Sign-in by mobile number is not available yet. Please sign in with your email.');
         const phone = normalizePhone(request.body.phone);
         if (!phone) throw new HttpError(400, 'invalid_phone', 'Enter a valid mobile number, for example 0912 345 678.');
-        const {rows: [recent]} = await app.pg.query(
-            'SELECT count(*)::int AS n FROM otp_codes WHERE phone = $1 AND created_at > now() - make_interval(mins => $2)', [phone, OTP_WINDOW_MINUTES]);
-        if (recent.n >= OTP_PER_PHONE) throw new HttpError(429, 'too_many_codes', 'Too many codes requested. Please wait 15 minutes and try again.');
-        // At most 10 codes a day per number (each with 5 tries): guessing stays hopeless and nobody can run up message costs.
-        const {rows: [today]} = await app.pg.query(
-            "SELECT count(*)::int AS n FROM otp_codes WHERE phone = $1 AND created_at > now() - interval '1 day'", [phone]);
-        if (today.n >= 10) throw new HttpError(429, 'too_many_codes_today', 'Too many codes requested today. Please try again tomorrow.');
         const code = newOtp();
-        const {rows: [otp]} = await app.pg.query(
-            'INSERT INTO otp_codes (phone, code_hash, expires_at, ip) VALUES ($1, $2, now() + make_interval(mins => $3), $4) RETURNING id',
-            [phone, otpHash(app.config.otpSecret, phone, code), OTP_MINUTES, request.ip]);
+        // One request per number at a time, so parallel requests cannot all pass the count (as for email below).
+        const otp = await transaction(app.pg, async db => {
+            const {rows: [lock]} = await db.query('SELECT pg_try_advisory_xact_lock(hashtext($1)) AS ok', ['otp-phone:' + phone]);
+            if (!lock.ok) throw new HttpError(429, 'too_many_codes', 'Too many codes requested. Please wait 15 minutes and try again.');
+            const {rows: [counts]} = await db.query(
+                `SELECT count(*) FILTER (WHERE created_at > now() - make_interval(mins => $2))::int AS recent, count(*)::int AS today
+                 FROM otp_codes WHERE phone = $1 AND created_at > now() - interval '1 day'`, [phone, OTP_WINDOW_MINUTES]);
+            if (counts.recent >= OTP_PER_PHONE) throw new HttpError(429, 'too_many_codes', 'Too many codes requested. Please wait 15 minutes and try again.');
+            // At most 10 codes a day per number (each with 5 tries): guessing stays hopeless and nobody can run up message costs.
+            if (counts.today >= 10) throw new HttpError(429, 'too_many_codes_today', 'Too many codes requested today. Please try again tomorrow.');
+            const {rows: [known]} = await db.query('SELECT 1 FROM users WHERE phone = $1', [phone]);
+            if (!known) await newDestinationLimits(db, request, 'phone', PHONE_CODES_PER_HOUR_TOTAL);
+            const {rows: [row]} = await db.query(
+                'INSERT INTO otp_codes (phone, code_hash, expires_at, ip) VALUES ($1, $2, now() + make_interval(mins => $3), $4) RETURNING id',
+                [phone, otpHash(app.config.otpSecret, phone, code), OTP_MINUTES, clientAddress(request.ip)]);
+            return row;
+        });
         let channel;
         try {
             const {rows: [known]} = await app.pg.query('SELECT language FROM users WHERE phone = $1', [phone]);
@@ -188,27 +269,22 @@ export default async function authRoutes(app) {
             const {rows: [lock]} = await db.query('SELECT pg_try_advisory_xact_lock(hashtext($1)) AS ok', ['otp-email:' + email]);
             if (!lock.ok) throw new HttpError(429, 'too_many_codes', 'Too many codes requested. Please wait 15 minutes and try again.');
             const {rows: [counts]} = await db.query(
-                `SELECT count(*) FILTER (WHERE email = $1 AND created_at > now() - make_interval(mins => $2))::int AS recent,
-                        count(*) FILTER (WHERE email = $1)::int AS today,
-                        count(*) FILTER (WHERE created_at > now() - interval '1 hour')::int AS hour
-                 FROM otp_codes WHERE email IS NOT NULL AND created_at > now() - interval '1 day'`, [email, OTP_WINDOW_MINUTES]);
+                `SELECT count(*) FILTER (WHERE created_at > now() - make_interval(mins => $2))::int AS recent, count(*)::int AS today
+                 FROM otp_codes WHERE email = $1 AND created_at > now() - interval '1 day'`, [email, OTP_WINDOW_MINUTES]);
             if (counts.today >= EMAIL_CODES_PER_DAY) {
                 throw new HttpError(429, 'too_many_codes_today', 'Too many codes requested today. Please try again tomorrow.');
             }
             if (counts.recent >= OTP_PER_PHONE) {
                 throw new HttpError(429, 'too_many_codes', 'Too many codes requested. Please wait 15 minutes and try again.');
             }
-            if (counts.hour >= EMAIL_CODES_PER_HOUR_TOTAL) {
-                request.log.error('Hourly limit of sign-in emails reached');
-                throw new HttpError(503, 'try_later', 'Too many sign-in requests right now. Please try again in a few minutes.');
-            }
             const {rows: [account]} = await db.query('SELECT * FROM users WHERE email = $1', [email]);
+            if (!account) await newDestinationLimits(db, request, 'email', EMAIL_CODES_PER_HOUR_TOTAL);
             const staff = Boolean(account) && account.role !== 'patient';
             // Staff addresses get a row too, so the same limits stop anyone flooding their inbox. Its hash is of a random
             // value that is never sent and cannot match a 6-digit code, so verifying answers exactly as for any address.
             const {rows: [otp]} = await db.query(
                 `INSERT INTO otp_codes (email, code_hash, expires_at, ip) VALUES ($1, $2, now() + make_interval(mins => $3), $4) RETURNING id`,
-                [email, otpHash(app.config.otpSecret, 'email:' + email, staff ? newToken() : code), EMAIL_CODE_MINUTES, request.ip]);
+                [email, otpHash(app.config.otpSecret, 'email:' + email, staff ? newToken() : code), EMAIL_CODE_MINUTES, clientAddress(request.ip)]);
             return {account, staff, otp};
         });
         try {
@@ -315,7 +391,7 @@ export default async function authRoutes(app) {
         try {
             // Sent directly rather than through sendEmail(), which only logs failures: the person must know when no code is coming.
             await app.mail.send({to: email, ...(account ? accountExistsEmail(account, app.config.appOrigin)
-                : signupCodeEmail(language, name, code, SIGNUP_CODE_MINUTES))});
+                : signupCodeEmail(language, code, SIGNUP_CODE_MINUTES))});
         } catch (error) {
             request.log.error({err: error}, 'Sign-up email failed');
             await app.pg.query('UPDATE staff_signups SET consumed_at = now() WHERE id = $1', [signup.id]);
@@ -380,12 +456,15 @@ export default async function authRoutes(app) {
     }, async (request, reply) => {
         const email = normalizeEmail(request.body.email) || '';
         const {rows: [failures]} = await app.pg.query(
-            'SELECT count(*)::int AS n FROM login_failures WHERE email = $1 AND created_at > now() - make_interval(mins => $2)', [email, LOGIN_WINDOW_MINUTES]);
-        if (failures.n >= LOGIN_MAX_FAILURES) throw new HttpError(429, 'locked', 'Too many failed attempts. Please wait 15 minutes and try again.');
+            `SELECT count(*) FILTER (WHERE ip <<= $3::inet AND created_at > now() - make_interval(mins => $2))::int AS here, count(*)::int AS hour
+             FROM login_failures WHERE email = $1 AND created_at > now() - interval '1 hour'`, [email, LOGIN_WINDOW_MINUTES, clientNetwork(request.ip)]);
+        if (failures.here >= LOGIN_MAX_FAILURES || (failures.hour >= LOGIN_MAX_FAILURES_HOUR && !await rememberedDevice(request, email))) {
+            throw new HttpError(429, 'locked', 'Too many failed attempts. Please wait 15 minutes and try again.');
+        }
         const {rows: [user]} = await app.pg.query(`SELECT * FROM users WHERE email = $1 AND ${STAFF}`, [email]);
         const valid = await verifyPassword(request.body.password, user?.password_hash || dummyPasswordHash);
         if (!user || !valid || user.disabled_at) {
-            await app.pg.query('INSERT INTO login_failures (email, ip) VALUES ($1, $2)', [email, request.ip]);
+            await app.pg.query('INSERT INTO login_failures (email, ip) VALUES ($1, $2)', [email, clientAddress(request.ip)]);
             throw new HttpError(401, 'wrong_credentials', 'Email or password is not correct.');
         }
         await app.pg.query('DELETE FROM login_failures WHERE email = $1', [email]);
@@ -394,15 +473,7 @@ export default async function authRoutes(app) {
             return {user: publicUser(user)};
         }
         // Administrators: no session yet. A code goes to the account's email; the browser keeps the challenge token.
-        const {rows: [recent]} = await app.pg.query(
-            'SELECT count(*)::int AS n FROM staff_login_codes WHERE user_id = $1 AND created_at > now() - make_interval(mins => $2)',
-            [user.id, OTP_WINDOW_MINUTES]);
-        if (recent.n >= STAFF_CODES_PER_WINDOW) throw new HttpError(429, 'too_many_codes', 'Too many codes requested. Please wait 15 minutes and try again.');
-        const challenge = newToken(), code = newOtp();
-        const {rows: [row]} = await app.pg.query(
-            `INSERT INTO staff_login_codes (user_id, token_hash, code_hash, expires_at, ip)
-             VALUES ($1, $2, $3, now() + make_interval(mins => $4), $5) RETURNING id`,
-            [user.id, sha256(challenge), otpHash(app.config.otpSecret, 'staff:' + user.id, code), STAFF_CODE_MINUTES, request.ip]);
+        const {row, challenge, code} = await newStaffCode(request, user, 'staff');
         try {
             // Sent directly: the administrator must know at once when no code is coming.
             await app.mail.send({to: user.email, ...staffCodeEmail(user, code, STAFF_CODE_MINUTES)});
@@ -452,14 +523,7 @@ export default async function authRoutes(app) {
 
     app.post('/api/auth/step-up/request', {preHandler: requireRole('doctor'), config: ipLimit(30)}, async (request, reply) => {
         const user = request.user;
-        const {rows: [recent]} = await app.pg.query(
-            'SELECT count(*)::int AS n FROM staff_login_codes WHERE user_id = $1 AND created_at > now() - make_interval(mins => $2)', [user.id, OTP_WINDOW_MINUTES]);
-        if (recent.n >= STAFF_CODES_PER_WINDOW) throw new HttpError(429, 'too_many_codes', 'Too many codes requested. Please wait 15 minutes and try again.');
-        const challenge = newToken(), code = newOtp();
-        const {rows: [row]} = await app.pg.query(
-            `INSERT INTO staff_login_codes (user_id, token_hash, code_hash, expires_at, ip)
-             VALUES ($1, $2, $3, now() + make_interval(mins => $4), $5) RETURNING id`,
-            [user.id, sha256(challenge), otpHash(app.config.otpSecret, 'step-up:' + user.id, code), STAFF_CODE_MINUTES, request.ip]);
+        const {row, challenge, code} = await newStaffCode(request, user, 'step-up');
         try {
             await app.mail.send({to: user.email, ...confirmCodeEmail(user, code, STAFF_CODE_MINUTES)});
         } catch (error) {
@@ -566,7 +630,7 @@ export default async function authRoutes(app) {
 
     app.post('/api/auth/logout', async (request, reply) => {
         if (request.user) await app.pg.query('DELETE FROM sessions WHERE token_hash = $1', [request.user.token_hash]);
-        reply.clearCookie(SESSION_COOKIE, {path: '/'});
+        clearSessionCookie(app, reply);
         return {signedOut: true};
     });
 

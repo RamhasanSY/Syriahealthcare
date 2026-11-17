@@ -6,7 +6,7 @@
 // A dose is reminded once (the database refuses a second row for the same time); after a server pause of more than
 // 10 minutes the missed reminders are skipped instead of arriving late.
 import {HttpError, requireRole} from './auth.js';
-import {audit} from './db.js';
+import {audit, transaction, tryLock} from './db.js';
 import {notFound, ownProfiles, patientFor} from './access.js';
 import {pushToUser} from './push.js';
 import {addDays, localDate, localToUtc, weekdayOf} from './slots.js';
@@ -118,13 +118,17 @@ export default async function medicationRoutes(app) {
     app.post('/api/medications', {preHandler: patientOnly, schema: {body: {...body, required: ['profile_id', 'name', 'times']}}}, async (request, reply) => {
         const profile = await patientFor(app.pg, request.user, request.body.profile_id);
         if (!await hasConsent(app.pg, profile.id)) throw new HttpError(403, 'file_consent_required', 'Please agree to keeping a health file first.');
-        const {rows: [{n}]} = await app.pg.query('SELECT count(*)::int AS n FROM medications WHERE patient_id = $1', [profile.id]);
-        if (n >= LIMITS.perProfile) throw new HttpError(409, 'too_many_medicines', `At most ${LIMITS.perProfile} medicines per profile.`);
         const m = clean(request.body);
-        const {rows: [row]} = await app.pg.query(
-            `INSERT INTO medications (patient_id, created_by, name, dose, times, weekdays, start_date, end_date, notes, show_name, active)
-             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *`,
-            [profile.id, request.user.id, m.name, m.dose, m.times, m.weekdays, m.start_date, m.end_date, m.notes, m.show_name, m.active]);
+        const row = await transaction(app.pg, async db => {
+            if (!await tryLock(db, 'medications:' + profile.id)) throw new HttpError(429, 'busy', 'Another request is still running. Please try again.');
+            const {rows: [{n}]} = await db.query('SELECT count(*)::int AS n FROM medications WHERE patient_id = $1', [profile.id]);
+            if (n >= LIMITS.perProfile) throw new HttpError(409, 'too_many_medicines', `At most ${LIMITS.perProfile} medicines per profile.`);
+            const {rows: [inserted]} = await db.query(
+                `INSERT INTO medications (patient_id, created_by, name, dose, times, weekdays, start_date, end_date, notes, show_name, active)
+                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *`,
+                [profile.id, request.user.id, m.name, m.dose, m.times, m.weekdays, m.start_date, m.end_date, m.notes, m.show_name, m.active]);
+            return inserted;
+        });
         await audit(app.pg, {actorId: request.user.id, action: 'medication.added', targetId: row.id, details: {patient_id: profile.id}, ip: request.ip});
         reply.code(201);
         return {medication: medicationView(row)};

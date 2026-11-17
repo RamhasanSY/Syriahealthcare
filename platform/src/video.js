@@ -87,10 +87,13 @@ export default async function videoRoutes(app) {
     // The appointment, if this person may join its call; with their role in it.
     async function callFor(request) {
         const {rows: [a]} = await app.pg.query(
-            `SELECT a.*, d.name AS doctor_name, p.name AS patient_name FROM appointments a JOIN users d ON d.id = a.doctor_id JOIN users p ON p.id = a.patient_id
+            `SELECT a.*, d.name AS doctor_name, p.name AS patient_name, dp.status AS doctor_status
+             FROM appointments a JOIN users d ON d.id = a.doctor_id JOIN users p ON p.id = a.patient_id JOIN doctor_profiles dp ON dp.user_id = a.doctor_id
              WHERE a.id = $1 AND (a.patient_id = $2 OR a.doctor_id = $2) AND a.mode = 'video'`, [request.params.id, request.user.id]);
         if (!a) throw new HttpError(404, 'not_found', 'Video appointment not found.');
         const role = a.doctor_id === request.user.id ? 'doctor' : 'patient';
+        // A suspended doctor holds no more calls, also for appointments confirmed before the suspension.
+        if (a.doctor_status === 'suspended') throw new HttpError(403, 'suspended', 'This doctor is not available at the moment.');
         if (role === 'doctor' && !request.user.second_factor_at) {
             throw new HttpError(403, 'second_factor_required', 'Please confirm it is you with a code sent to your email.');
         }

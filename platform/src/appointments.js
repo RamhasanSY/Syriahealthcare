@@ -3,7 +3,7 @@ import {HttpError, requireRole} from './auth.js';
 import {ensureSelfProfile, patientFor} from './access.js';
 import {shareForAppointment} from './sharing.js';
 import {governorates, specialties} from './catalog.js';
-import {audit} from './db.js';
+import {audit, transaction, tryLock} from './db.js';
 import {slotsFor} from './schedule.js';
 import {localDate} from './slots.js';
 import {pushToUser} from './push.js';
@@ -75,31 +75,36 @@ export default async function appointmentRoutes(app) {
         // For whom: the own profile, or (with subject_id) a child's profile of this login (stage 2b).
         const subject = request.body.subject_id ? await patientFor(app.pg, request.user, request.body.subject_id) : await ensureSelfProfile(app.pg, request.user);
 
-        const {rows: [counts]} = await app.pg.query(
-            `SELECT count(*) FILTER (WHERE status IN ${ACTIVE} AND ends_at > now())::int AS active,
-                    count(*) FILTER (WHERE status IN ${ACTIVE} AND ends_at > now() AND doctor_id = $2)::int AS with_doctor,
-                    count(*) FILTER (WHERE created_at > now() - interval '1 hour')::int AS last_hour
-             FROM appointments WHERE patient_id = $1`, [patientId, doctorId]);
-        if (counts.last_hour >= MAX_REQUESTS_PER_HOUR) throw new HttpError(429, 'too_many_bookings', 'Too many bookings in a short time. Please try again later.');
-        if (counts.active >= MAX_ACTIVE) throw new HttpError(409, 'too_many_active', `You already have ${MAX_ACTIVE} upcoming appointments. Cancel one before booking another.`);
-        if (counts.with_doctor >= MAX_ACTIVE_PER_DOCTOR) throw new HttpError(409, 'too_many_with_doctor', 'You already have upcoming appointments with this doctor.');
+        // The limits are counted and the booking is written under one lock per patient, so many bookings sent at once
+        // cannot all pass the counts and block a doctor's free times.
+        const appointment = await transaction(app.pg, async db => {
+            if (!await tryLock(db, 'booking:' + patientId)) throw new HttpError(429, 'too_many_bookings', 'Too many bookings in a short time. Please try again later.');
+            const {rows: [counts]} = await db.query(
+                `SELECT count(*) FILTER (WHERE status IN ${ACTIVE} AND ends_at > now())::int AS active,
+                        count(*) FILTER (WHERE status IN ${ACTIVE} AND ends_at > now() AND doctor_id = $2)::int AS with_doctor,
+                        count(*) FILTER (WHERE created_at > now() - interval '1 hour')::int AS last_hour
+                 FROM appointments WHERE patient_id = $1`, [patientId, doctorId]);
+            if (counts.last_hour >= MAX_REQUESTS_PER_HOUR) throw new HttpError(429, 'too_many_bookings', 'Too many bookings in a short time. Please try again later.');
+            if (counts.active >= MAX_ACTIVE) throw new HttpError(409, 'too_many_active', `You already have ${MAX_ACTIVE} upcoming appointments. Cancel one before booking another.`);
+            if (counts.with_doctor >= MAX_ACTIVE_PER_DOCTOR) throw new HttpError(409, 'too_many_with_doctor', 'You already have upcoming appointments with this doctor.');
 
-        // The time must be one of the doctor's free slots right now (opening hours, notice, window, days off, bookings).
-        const available = await slotsFor(app.pg, doctorId, {from: localDate(start.getTime(), 'Asia/Damascus'), days: 1});
-        const slot = available.slots.find(s => s.starts_at === start.toISOString());
-        if (!slot) throw new HttpError(409, 'slot_taken', 'This time is no longer available. Please choose another.');
+            // The time must be one of the doctor's free slots right now (opening hours, notice, window, days off, bookings).
+            const available = await slotsFor(db, doctorId, {from: localDate(start.getTime(), 'Asia/Damascus'), days: 1});
+            const slot = available.slots.find(s => s.starts_at === start.toISOString());
+            if (!slot) throw new HttpError(409, 'slot_taken', 'This time is no longer available. Please choose another.');
 
-        let appointment;
-        try {
-            ({rows: [appointment]} = await app.pg.query(
-                `INSERT INTO appointments (doctor_id, patient_id, starts_at, ends_at, reason, subject_id, mode) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
-                [doctorId, patientId, slot.starts_at, slot.ends_at, request.body.reason?.trim() || null, subject.id, mode]));
-        } catch (error) {
-            // Someone else booked it a moment earlier, or the patient already has something at that time.
-            if (error.code === '23P01' && error.constraint === 'no_double_booking_patient') throw new HttpError(409, 'patient_busy', 'You already have an appointment at this time.');
-            if (error.code === '23P01') throw new HttpError(409, 'slot_taken', 'This time is no longer available. Please choose another.');
-            throw error;
-        }
+            try {
+                const {rows: [row]} = await db.query(
+                    `INSERT INTO appointments (doctor_id, patient_id, starts_at, ends_at, reason, subject_id, mode) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+                    [doctorId, patientId, slot.starts_at, slot.ends_at, request.body.reason?.trim() || null, subject.id, mode]);
+                return row;
+            } catch (error) {
+                // Someone else booked it a moment earlier, or the patient already has something at that time.
+                if (error.code === '23P01' && error.constraint === 'no_double_booking_patient') throw new HttpError(409, 'patient_busy', 'You already have an appointment at this time.');
+                if (error.code === '23P01') throw new HttpError(409, 'slot_taken', 'This time is no longer available. Please choose another.');
+                throw error;
+            }
+        });
         await audit(app.pg, {actorId: patientId, action: 'appointment.requested', targetId: appointment.id, details: {doctor_id: doctorId}, ip: request.ip});
         await app.pg.query('DELETE FROM waitlist_entries WHERE patient_id = $1 AND doctor_id = $2', [patientId, doctorId]);
         await pushToUser(app, doctorId, {title: ['New appointment request', 'طلب موعد جديد'], body: ['Open your appointments to confirm or decline.', 'افتح المواعيد للتأكيد أو الاعتذار.'],
