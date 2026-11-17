@@ -4,7 +4,7 @@ import {tmpdir} from 'node:os';
 import path from 'node:path';
 import {buildApp} from '../src/app.js';
 import {createPool} from '../src/db.js';
-import {migrate} from '../src/migrate.js';
+import {migrate, prepareAppRole} from '../src/migrate.js';
 import {createMail} from '../src/mail.js';
 import {createSms} from '../src/sms.js';
 import {createTelegramGateway} from '../src/telegram.js';
@@ -15,7 +15,13 @@ import {hashPassword, newToken, sha256} from '../src/security.js';
 export const origin = 'http://127.0.0.1:3000';
 // The body of an approval with every check of the admin review checklist ticked.
 export const reviewed = {checks: Object.keys(reviewChecks)};
-export const pool = createPool(process.env.TEST_DATABASE_URL || 'postgres://postgres@127.0.0.1:54329/shc_test');
+const databaseUrl = process.env.TEST_DATABASE_URL || 'postgres://postgres@127.0.0.1:54329/shc_test';
+export const pool = createPool(databaseUrl);
+// TEST_APP_ROLE=1: the app runs as a database user that may only read and change rows, as in production; the tests keep
+// the owner (pool) for setting up their data. Shows that no route needs more than that.
+export const APP_ROLE = 'shc_test_app';
+const appUrl = Object.assign(new URL(databaseUrl), {username: APP_ROLE, password: 'test-app-role-password-1234'}).href;
+const appPool = process.env.TEST_APP_ROLE ? createPool(appUrl) : pool;
 const documentDir = await mkdtemp(path.join(tmpdir(), 'shc-docs-'));
 export const config = {
     production: false, appOrigin: origin, otpSecret: 'test-secret-test-secret-test-secret', smsProvider: 'test', mailProvider: 'test',
@@ -31,6 +37,7 @@ export async function setup({whatsapp: withWhatsApp = false, telegram: withTeleg
     if (!migrated) {
         await pool.query('DROP SCHEMA public CASCADE; CREATE SCHEMA public');
         await migrate(pool);
+        if (appPool !== pool) await prepareAppRole(pool, APP_ROLE, 'test-app-role-password-1234');
         migrated = true;
     }
     await pool.query('TRUNCATE users, otp_codes, staff_signups, sessions, login_failures, audit_log, patients RESTART IDENTITY CASCADE');
@@ -38,13 +45,14 @@ export async function setup({whatsapp: withWhatsApp = false, telegram: withTeleg
     outbox = mail;
     const whatsapp = withWhatsApp ? createWhatsApp({whatsapp: {provider: 'test'}}) : null;
     const telegram = withTelegram ? createTelegramGateway({telegram: {provider: 'test'}}) : null;
-    const app = await buildApp({config, pool, sms, whatsapp, telegram, mail, logger: false});
+    const app = await buildApp({config, pool: appPool, sms, whatsapp, telegram, mail, logger: false});
     const post = (url, payload, headers = {}) => app.inject({method: 'POST', url, payload, headers: {origin, ...headers}});
     return {app, sms, whatsapp, telegram, mail, post, push: app.push};
 }
 
 export async function teardown(app) {
     await app?.close();
+    if (appPool !== pool) await appPool.end();
     await pool.end();
     await rm(documentDir, {recursive: true, force: true});
 }

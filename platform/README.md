@@ -247,9 +247,34 @@ Open http://127.0.0.1:3000. The demo data has three approved doctors, an approve
 6. Create the first admin: `docker compose exec app node src/create-admin.js admin@company.com "Name"`.
 7. Check that https://app.syriahc.com/api/health returns `{"ok":true}` and https://syriahc.com shows the website.
 
-Backups: a compressed database dump and an archive of the encrypted documents are written to `platform/backups/` every night, and the last 14 days are kept. **Keep `DOCUMENT_KEY` safe and separate from the backups: without it, the document backups cannot be opened, and with it anyone holding the backups can read the licences.** Copy these files off the server regularly (to another machine or storage), because a backup on the same disk does not survive a disk failure.
+### Backups
 
-Updates: the website updates itself (see step 4; `journalctl -u update-website` shows what it did). The platform does not: run `git pull && docker compose up -d --build` in `platform/` after platform changes. Database changes in `migrations/` are applied automatically on start.
+Every night a compressed database dump and an archive of the encrypted documents are written to `platform/backups/`, and the last 14 days are kept. **Keep `DOCUMENT_KEY` safe and separate from the backups: without it, the document backups cannot be opened, and with it anyone holding the backups can read the licences.**
+
+A backup on the same disk does not survive a disk failure, so copies must leave the server. **Only copy the files in `platform/backups/offsite/`**: they are encrypted with [age](https://age-encryption.org) for the public key in `BACKUP_AGE_RECIPIENT`, and only the holder of the matching secret key can open them. The plain files stay on the server (root only) for a quick restore there.
+
+Make the key pair once, so that the secret key never touches the server's disk (no container log, no network). From your own computer, after the first `docker compose up -d --build`:
+```sh
+ssh root@SERVER 'docker run --rm -i --log-driver none --network none --entrypoint age-keygen platform-backup' > syriahc-backup-key.txt
+```
+The command prints the public key (`age1…`); put it into `.env` as `BACKUP_AGE_RECIPIENT` and run `docker compose up -d backup`. Keep `syriahc-backup-key.txt` in two safe places (for example a USB stick and a password manager). Without it the encrypted copies cannot be opened; if it is lost, make a new pair — the plain backups on the server are not affected.
+
+Restore an encrypted copy (on a machine with age, for example the server):
+```sh
+age -d -i syriahc-backup-key.txt shc-2026-11-18.dump.age > shc.dump
+docker compose exec -T db pg_restore -U shc -d shc --clean --if-exists < shc.dump
+```
+
+### Updates
+
+The website updates itself (see step 4; `journalctl -u update-website` shows what it did). The platform does not: run `git pull && docker compose up -d --build` in `platform/` after platform changes. Database changes in `migrations/` are applied by the short-lived `migrate` container before the app starts.
+
+### Containers
+
+- The app connects to the database as `shc_app`, which may only read and change rows (no tables, roles or server files). The `migrate` container sets it up with `APP_DB_PASSWORD` on every start; migrations and backups use the owner `shc`.
+- No container can gain rights after it started (`no-new-privileges`). The app runs with a read-only file system (only `/tmp` and the documents volume are writable) and without Linux capabilities; Caddy keeps only the right to open ports 80 and 443.
+- The database, `migrate` and the backup sit on an internal network without internet access, which Caddy cannot reach.
+- Images are pinned by digest; Dependabot proposes updates monthly (`.github/dependabot.yml`).
 
 ## Before going live
 - Create a mailbox for sending (e.g. `noreply@syriahc.com` at STRATO, its own mailbox rather than an alias, with Catchall off) and put its SMTP details in `.env`. The server does not start without them. Check it with `npm run test-mail -- you@example.com` (asks for the password, hidden), or on the server with `docker compose exec app node src/test-mail.js you@example.com`.

@@ -61,15 +61,15 @@ Geprüft wurden der Code (Anmeldung, Zugriffsrechte, Dateien und Schnittstellen,
 | Abmelden | Das Cookie blieb im Browser stehen (ohne Folgen, die Sitzung war gelöscht) | Wird gelöscht |
 | Kleinere Punkte | Name in der Code-E-Mail, Link-Prüfung bei Benachrichtigungen, Dateirechte der Website | Behoben |
 
-**Noch offen, braucht dich oder den Server:**
+**Folgepunkte (PR „Audit-Folgepunkte“, 17.11.):**
 
-1. **Sicherungen verschlüsseln** (mittel): Die nächtliche Sicherung liegt unverschlüsselt auf dem Server. Bevor sie den Server verlässt (Teil K), muss sie mit einem Schlüssel verschlüsselt werden, dessen geheimer Teil nur bei dir liegt.
-2. **Eigener Datenbank-Benutzer für die App** ohne Admin-Rechte (niedrig).
-3. **Container härten und Images festnageln** (`no-new-privileges`, Rechte abgeben, Image-Digests) (niedrig).
-4. **GitHub Actions auf feste Versionen** (Commit-SHA) statt Tags (niedrig).
-5. **SSH:** Anmeldung über einen eigenen Admin-Benutzer statt direkt als root (niedrig).
-6. **Caddy-Fehlerprotokoll** einmal lesend prüfen: Stehen dort Suchbegriffe aus Adressen?
-7. **Nach dem Server-Update** das Website-Skript neu installieren (`harden.sh`, Zeile 59), damit die neuen Dateirechte gelten.
+1. **Sicherungen verschlüsseln** (mittel): Jede Nacht entsteht zusätzlich eine mit age verschlüsselte Kopie in `backups/offsite/`. Nur diese Dateien dürfen den Server verlassen (Teil K). Den geheimen Schlüssel hat nur der Betreiber, nie der Server. Die unverschlüsselten Sicherungen bleiben wie bisher auf dem Server.
+2. **Eigener Datenbank-Benutzer `shc_app`:** Die App darf nur noch Zeilen lesen und ändern. Migrationen laufen vorher in einem eigenen kurzen Container mit dem Besitzer `shc`.
+3. **Container gehärtet:** `no-new-privileges` für alle Container. Die App läuft mit schreibgeschütztem Dateisystem und ohne Linux-Rechte; Caddy darf nur noch Port 80 und 443 öffnen. Datenbank und Sicherung hängen in einem internen Netz ohne Internet, das Caddy nicht erreicht. Images sind per Digest festgelegt.
+4. **GitHub Actions** sind auf Commit-SHAs festgelegt. Dependabot schlägt einmal im Monat neue Versionen für Actions und Images vor.
+5. **SSH bleibt bewusst so:** nur root mit Schlüssel, Passwörter aus, fail2ban an. Ein eigener Admin-Benutzer brächte bei reiner Schlüssel-Anmeldung kaum Schutz dazu, aber die Gefahr, sich auszusperren.
+6. **Caddy-Fehlerprotokoll:** geprüft am 17.11., keine Einträge.
+7. **Website-Skript:** am 17.11. neu installiert; alle Dateien der Website gehören jetzt root.
 
 ---
 
