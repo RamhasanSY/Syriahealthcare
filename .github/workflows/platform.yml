@@ -94,7 +94,7 @@ jobs:
           # The health check queries the database; its pooled connection stays open for 10 seconds.
           docker compose exec -T app wget -qO- http://127.0.0.1:3000/api/health
           test "$(docker compose exec -T db psql -U shc -d shc -tAc "SELECT count(*) FROM pg_stat_activity WHERE usename = 'shc_app'")" -gt 0
-          test "$(docker compose exec -T db psql -U shc -d shc -tAc "SELECT count(*) FROM pg_stat_activity WHERE usename = 'shc' AND application_name <> 'psql'")" -eq 0
+          test "$(docker compose exec -T db psql -U shc -d shc -tAc "SELECT count(*) FROM pg_stat_activity WHERE usename = 'shc' AND backend_type = 'client backend' AND application_name <> 'psql'")" -eq 0
       - name: The app cannot write its own files and has no capabilities; Caddy cannot reach the database
         run: |
           if docker compose exec -T app touch /app/src/x; then echo "the app could change its code"; exit 1; fi
