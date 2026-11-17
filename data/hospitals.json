@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-17T01:53:23+00:00",
+  "updated": "2026-11-17T16:02:59+00:00",
   "source": "OpenStreetMap contributors (ODbL)",
   "items": [
     {
@@ -4621,6 +4621,17 @@
       "emergency": true,
       "osm": true,
       "source_url": "https://www.openstreetmap.org/node/1824754403"
+    },
+    {
+      "name": "مشفى الشيخ محمد ابن زايد الميداني Mohammed Ben Zayed field hospital",
+      "name_ar": "مشفى الشيخ محمد ابن زايد الميداني Mohammed Ben Zayed field hospital",
+      "city": "Rif Dimashq",
+      "city_ar": "ريف دمشق",
+      "address": "",
+      "phone": "",
+      "emergency": false,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/14385766201"
     },
     {
       "name": "مشفى الصفا",

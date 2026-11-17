@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-17T01:54:13+00:00",
+  "updated": "2026-11-17T16:03:50+00:00",
   "source": "OpenStreetMap contributors (ODbL)",
   "items": [
     {
@@ -13985,6 +13985,16 @@
       "source_url": "https://www.openstreetmap.org/node/4881976122"
     },
     {
+      "name": "Khloud Al-Azab Pharmacy",
+      "name_ar": "صيدلية خلود العزب",
+      "city": "Rif Dimashq",
+      "city_ar": "ريف دمشق",
+      "lat": 33.46237,
+      "lon": 36.23281,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/14387098565"
+    },
+    {
       "name": "Marhaf Kiki Pharmacy",
       "city": "Rif Dimashq",
       "city_ar": "ريف دمشق",
@@ -15419,6 +15429,15 @@
       "lon": 36.34402,
       "osm": true,
       "source_url": "https://www.openstreetmap.org/node/5685864925"
+    },
+    {
+      "name": "صيدلية عبد الرحمن الشايب",
+      "city": "Rif Dimashq",
+      "city_ar": "ريف دمشق",
+      "lat": 33.46301,
+      "lon": 36.23296,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/14385887406"
     },
     {
       "name": "صيدلية عبير درويش",
