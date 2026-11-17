@@ -69,3 +69,8 @@ export function rateLimitKey(ip) {
     const groups = tail === undefined ? left : [...left, ...Array(Math.max(0, 8 - left.length - right.length)).fill('0'), ...right];
     return groups.slice(0, 4).map(group => (parseInt(group, 16) || 0).toString(16)).join(':') + '::/64';
 }
+
+// The address as stored with codes and failed sign-ins. IPv4 clients seen through an IPv6 socket ("::ffff:1.2.3.4") are
+// stored as plain IPv4, so that "ip <<= clientNetwork(...)" in SQL finds every row from the same network as rateLimitKey().
+export const clientAddress = ip => String(ip || '').replace(/^::ffff:(?=\d+\.)/i, '').split('%')[0] || null;
+export const clientNetwork = ip => rateLimitKey(ip) || null;

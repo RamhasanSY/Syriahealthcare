@@ -25,6 +25,9 @@ export function localDate(instant, timeZone) {
     return new Intl.DateTimeFormat('en-CA', {timeZone, year: 'numeric', month: '2-digit', day: '2-digit'}).format(instant);
 }
 
+// "2026-02-30" matches the pattern but is no day: such values must be refused before date arithmetic or SQL sees them.
+export const isCalendarDate = d => typeof d === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(d) && !Number.isNaN(Date.parse(d + 'T00:00:00Z'))
+    && new Date(d + 'T00:00:00Z').toISOString().startsWith(d);
 export const addDays = (date, n) => new Date(Date.parse(date + 'T00:00:00Z') + n * DAY).toISOString().slice(0, 10);
 export const weekdayOf = date => new Date(date + 'T00:00:00Z').getUTCDay();
 const minutes = time => {

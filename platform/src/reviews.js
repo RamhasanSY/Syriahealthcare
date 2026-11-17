@@ -75,7 +75,7 @@ export default async function reviewRoutes(app) {
     app.get('/api/doctor/reviews', {preHandler: doctorOnly}, async request => {
         const {rows} = await app.pg.query(`${SELECT} WHERE r.doctor_id = $1 AND r.status = 'approved' ORDER BY r.created_at DESC LIMIT 200`, [request.user.id]);
         const summary = (await ratingSummaries(app.pg, [request.user.id])).get(request.user.id) || {count: 0, average: null};
-        return {summary, reviews: rows.map(publicView)};
+        return {summary, reviews: rows.map(r => ({...publicView(r), reported: Boolean(r.reported_at)}))};
     });
 
     app.post('/api/doctor/reviews/:id/reply', {preHandler: doctorOnly, schema: {...idParam, body: {type: 'object', required: ['reply'], additionalProperties: false,
@@ -90,14 +90,22 @@ export default async function reviewRoutes(app) {
     });
 
     // A doctor who thinks a review breaks the rules sends it back to the administrators (it is hidden meanwhile).
+    // Once only: a review the administrators kept after a report cannot be hidden again by reporting it again.
     app.post('/api/doctor/reviews/:id/report', {preHandler: doctorOnly, schema: {...idParam, body: {type: 'object', required: ['reason'], additionalProperties: false,
         properties: {reason: {type: 'string', maxLength: 300}}}}}, async request => {
         const reason = request.body.reason.trim();
         if (reason.length < 5) throw new HttpError(400, 'note_required', 'Please write a short reason.');
+        const {rows: [profile]} = await app.pg.query('SELECT status FROM doctor_profiles WHERE user_id = $1', [request.user.id]);
+        if (profile?.status !== 'approved') throw new HttpError(403, 'doctor_not_approved', 'Your profile must be approved first.');
         const {rows: [r]} = await app.pg.query(
             `UPDATE doctor_reviews SET status = 'pending', report_reason = $3, reported_at = now()
-             WHERE id = $1 AND doctor_id = $2 AND status = 'approved' RETURNING id`, [request.params.id, request.user.id, reason]);
-        if (!r) throw new HttpError(404, 'not_found', 'Review not found.');
+             WHERE id = $1 AND doctor_id = $2 AND status = 'approved' AND reported_at IS NULL RETURNING id`, [request.params.id, request.user.id, reason]);
+        if (!r) {
+            const {rows: [done]} = await app.pg.query('SELECT 1 FROM doctor_reviews WHERE id = $1 AND doctor_id = $2 AND reported_at IS NOT NULL',
+                [request.params.id, request.user.id]);
+            if (done) throw new HttpError(409, 'already_reported', 'This review was already checked by the administrators after a report.');
+            throw new HttpError(404, 'not_found', 'Review not found.');
+        }
         await audit(app.pg, {actorId: request.user.id, action: 'review.reported', targetId: r.id, details: {reason}, ip: request.ip});
         return {reported: true};
     });

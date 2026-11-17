@@ -53,16 +53,18 @@ If this was not you, ignore this email.`)
 
 // Doctors and facilities: the code that confirms the address before the account exists (src/auth.js, register).
 // The code is in the subject too, so it shows in the phone's notification.
-export const signupCodeEmail = (language, name, code, minutes) => ({
+// No name in the greeting: the form can be sent for any address, and its name field must not let a stranger put
+// their own words into an email from our domain.
+export const signupCodeEmail = (language, code, minutes) => ({
     subject: language === 'en' ? `Your SyriaHC account code: ${code}` : `رمز إنشاء حسابك في صحة تك: ${code}`,
     text: both(language,
-        `مرحباً ${name}،
+        `مرحباً،
 
 لإكمال إنشاء حسابك في صحة تك أدخل هذا الرمز: ${code}
 
 الرمز صالح لمدة ${minutes} دقيقة. لا تعطِ هذا الرمز لأي شخص.
 إن لم تنشئ حساباً في صحة تك فتجاهل هذه الرسالة: لا يُنشأ أي حساب من دون الرمز.`,
-        `Hello ${name},
+        `Hello,
 
 To finish creating your SyriaHC account, enter this code: ${code}
 

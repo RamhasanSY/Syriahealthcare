@@ -1,7 +1,7 @@
 // Runs against a real PostgreSQL database: TEST_DATABASE_URL (default: local test server on port 54329).
 import {after, beforeEach, describe, test} from 'node:test';
 import assert from 'node:assert/strict';
-import {cookieOf, pool, setup, signInPatientByEmail, teardown, registerStaff} from './helpers.js';
+import {cookieOf, origin, pool, setup, signInPatientByEmail, teardown, registerStaff} from './helpers.js';
 import {hashPassword, normalizePhone} from '../src/security.js';
 
 let app, sms, mail, post;
@@ -185,6 +185,18 @@ describe('doctor and admin sign-in, continued', () => {
         await pool.query("INSERT INTO users (role, name, email, password_hash) VALUES ('admin', 'Admin', 'admin@example.org', $1)", [await hashPassword('the right password')]);
         for (let i = 0; i < 5; i++) assert.equal((await post('/api/auth/login', {email: 'admin@example.org', password: 'wrong password!'})).statusCode, 401);
         assert.equal((await post('/api/auth/login', {email: 'admin@example.org', password: 'the right password'})).statusCode, 429);
+    });
+
+    test('wrong passwords from one network do not lock the owner out elsewhere; 50 an hour from all networks do', async () => {
+        await pool.query("INSERT INTO users (role, name, email, password_hash) VALUES ('doctor', 'Dr', 'dr@example.org', $1)", [await hashPassword('the right password')]);
+        const login = (address, password) => app.inject({method: 'POST', url: '/api/auth/login', payload: {email: 'dr@example.org', password},
+            headers: {origin}, remoteAddress: address});
+        for (let i = 0; i < 5; i++) assert.equal((await login('203.0.113.5', 'wrong password!')).statusCode, 401);
+        assert.equal((await login('203.0.113.5', 'the right password')).statusCode, 429, 'locked for the guessing network');
+        assert.equal((await login('2001:db8:1:2::7', 'wrong password!')).statusCode, 401);
+        assert.equal((await login('2001:db8:1:2::8', 'the right password')).statusCode, 200, 'the owner elsewhere gets in');
+        await pool.query(`INSERT INTO login_failures (email, ip) SELECT 'dr@example.org', ('10.1.' || i || '.1')::inet FROM generate_series(1, 50) i`);
+        assert.equal((await login('198.51.100.7', 'the right password')).statusCode, 429, 'a spread attack locks everyone');
     });
 
     test('unknown email gets the same answer as a wrong password', async () => {

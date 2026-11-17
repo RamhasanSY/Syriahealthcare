@@ -43,5 +43,6 @@ if [ -n "$(find "$OUT" ! -type f ! -type d -print -quit)" ] || [ ! -f "$OUT/dist
     exit 1
 fi
 mkdir -p "$WWW"
-rsync -a --no-links --delete "$OUT/dist/" "$WWW/"
+# Owned by root and not writable by others: the build ran as "nobody", which must not be able to change the live site.
+rsync -rt --no-links --delete --chown=root:root --chmod=D755,F644 "$OUT/dist/" "$WWW/"
 echo "Website published: $(git -C "$SRC" log -1 --format='%h %s')"

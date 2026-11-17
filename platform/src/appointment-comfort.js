@@ -6,7 +6,7 @@
 // The waiting list: a patient asks to be told; when someone cancels or a doctor declines, everyone waiting for that doctor
 // hears about it (at most once every 6 hours). Whoever books first gets the time.
 import {HttpError, requireRole} from './auth.js';
-import {audit} from './db.js';
+import {audit, transaction, tryLock} from './db.js';
 import {sendAppointmentUpdate, whatsappReaches} from './messaging.js';
 import {enqueueEmail} from './outbox.js';
 import {pushToUser} from './push.js';
@@ -39,7 +39,8 @@ export async function sendAppointmentReminders(app) {
         try {
             const {rows: [info]} = await app.pg.query(
                 `SELECT p.name, p.phone, p.email, p.language, d.name AS doctor_name, dp.clinic_name, dp.clinic_address
-                 FROM users p, users d, doctor_profiles dp WHERE p.id = $1 AND d.id = $2 AND dp.user_id = $2 AND p.disabled_at IS NULL`,
+                 FROM users p, users d, doctor_profiles dp WHERE p.id = $1 AND d.id = $2 AND dp.user_id = $2 AND p.disabled_at IS NULL
+                    AND dp.status = 'approved' AND d.disabled_at IS NULL`,
                 [a.patient_id, a.doctor_id]);
             if (!info) continue;
             const video = a.mode === 'video' ? `${app.config.appOrigin}/video?id=${a.id}` : null;
@@ -135,10 +136,12 @@ export default async function appointmentComfortRoutes(app) {
 
     app.get('/api/appointments/:id/calendar.ics', {preHandler: requireRole('patient', 'doctor'), schema: uuidParam}, async (request, reply) => {
         const {rows: [a]} = await app.pg.query(
-            `SELECT a.*, d.name AS doctor_name, p.name AS patient_name, dp.clinic_name, dp.clinic_address, dp.clinic_phone
+            `SELECT a.*, d.name AS doctor_name, p.name AS patient_name, dp.clinic_name, dp.clinic_address, dp.clinic_phone, dp.status AS doctor_status
              FROM appointments a JOIN users d ON d.id = a.doctor_id JOIN users p ON p.id = a.patient_id JOIN doctor_profiles dp ON dp.user_id = a.doctor_id
              WHERE a.id = $1 AND (a.patient_id = $2 OR a.doctor_id = $2) AND a.status IN ${ACTIVE}`, [request.params.id, request.user.id]);
         if (!a) throw new HttpError(404, 'not_found', 'Appointment not found.');
+        // As on the dashboard: a suspended doctor no longer sees patients (the file carries the patient's name).
+        if (a.doctor_id === request.user.id && a.doctor_status === 'suspended') throw new HttpError(403, 'suspended', 'Your profile is suspended. Please contact support.');
         reply.header('Content-Type', 'text/calendar; charset=utf-8');
         reply.header('Content-Disposition', 'attachment; filename="syriahc-appointment.ics"');
         return calendarFile(a, {forDoctor: a.doctor_id === request.user.id, origin: app.config.appOrigin});
@@ -158,6 +161,11 @@ export default async function appointmentComfortRoutes(app) {
             }
             const start = new Date(request.body.starts_at);
             if (Number.isNaN(start.getTime()) || start.getTime() === current.starts_at.getTime()) throw new HttpError(400, 'invalid_time', 'Choose a time from the list.');
+            // New times only with a doctor who is listed, as for a new booking.
+            const {rows: [listed]} = await app.pg.query(
+                "SELECT 1 FROM doctor_profiles p JOIN users u ON u.id = p.user_id WHERE p.user_id = $1 AND p.status = 'approved' AND u.disabled_at IS NULL",
+                [current.doctor_id]);
+            if (!listed) throw new HttpError(409, 'cannot_reschedule', 'This appointment can no longer be moved.');
             const available = await slotsFor(app.pg, current.doctor_id, {from: localDate(start.getTime(), TZ), days: 1});
             const slot = available.slots.find(s => s.starts_at === start.toISOString());
             if (!slot) throw new HttpError(409, 'slot_taken', 'This time is no longer available. Please choose another.');
@@ -192,13 +200,17 @@ export default async function appointmentComfortRoutes(app) {
                 `SELECT u.id FROM users u JOIN doctor_profiles p ON p.user_id = u.id WHERE u.id = $1 AND p.status = 'approved' AND u.disabled_at IS NULL`,
                 [request.body.doctor_id]);
             if (!doctor) throw new HttpError(404, 'not_found', 'Doctor not found.');
-            const {rows: [{n}]} = await app.pg.query(
-                'SELECT count(*)::int AS n FROM waitlist_entries WHERE patient_id = $1 AND doctor_id <> $2 AND expires_at > now()', [request.user.id, doctor.id]);
-            if (n >= LIMITS.waitlistDoctors) throw new HttpError(409, 'too_many_waitlist', `You can wait for at most ${LIMITS.waitlistDoctors} doctors at a time.`);
-            const {rows: [entry]} = await app.pg.query(
-                `INSERT INTO waitlist_entries (patient_id, doctor_id, expires_at) VALUES ($1, $2, now() + make_interval(days => $3))
-                 ON CONFLICT (patient_id, doctor_id) DO UPDATE SET expires_at = EXCLUDED.expires_at, notified_at = NULL
-                 RETURNING id, doctor_id, created_at, expires_at`, [request.user.id, doctor.id, LIMITS.waitlistDays]);
+            const entry = await transaction(app.pg, async db => {
+                if (!await tryLock(db, 'waitlist:' + request.user.id)) throw new HttpError(429, 'busy', 'Another request is still running. Please try again.');
+                const {rows: [{n}]} = await db.query(
+                    'SELECT count(*)::int AS n FROM waitlist_entries WHERE patient_id = $1 AND doctor_id <> $2 AND expires_at > now()', [request.user.id, doctor.id]);
+                if (n >= LIMITS.waitlistDoctors) throw new HttpError(409, 'too_many_waitlist', `You can wait for at most ${LIMITS.waitlistDoctors} doctors at a time.`);
+                const {rows: [row]} = await db.query(
+                    `INSERT INTO waitlist_entries (patient_id, doctor_id, expires_at) VALUES ($1, $2, now() + make_interval(days => $3))
+                     ON CONFLICT (patient_id, doctor_id) DO UPDATE SET expires_at = EXCLUDED.expires_at, notified_at = NULL
+                     RETURNING id, doctor_id, created_at, expires_at`, [request.user.id, doctor.id, LIMITS.waitlistDays]);
+                return row;
+            });
             reply.code(201);
             return {entry};
         });

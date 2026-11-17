@@ -1,7 +1,8 @@
 // Facility profile (lab, imaging centre, hospital, clinic, pharmacy, blood bank): public details, operating licence, and sending for review.
 document.addEventListener('DOMContentLoaded', async () => {
     const FIELD_NAMES = {facility_name: ['name', 'الاسم'], governorate: ['governorate', 'المحافظة'], area: ['area', 'المنطقة'],
-        address: ['address', 'العنوان'], licence_number: ['licence number', 'رقم الترخيص']};
+        address: ['address', 'العنوان'], phone: ['phone', 'الهاتف'], licence_number: ['licence number', 'رقم الترخيص'], services: ['services', 'الخدمات'],
+        emergency: ['emergency department', 'قسم الإسعاف']};
     const {$, tr, api, showError, busy} = Shc;
     const TEXT = ['facility_name', 'area', 'address', 'phone', 'licence_number', 'opening_hours', 'description'];
     const LABELS = {facility_name: ['Name', 'الاسم'], governorate: ['Governorate', 'المحافظة'], area: ['City or area', 'المدينة أو المنطقة'],

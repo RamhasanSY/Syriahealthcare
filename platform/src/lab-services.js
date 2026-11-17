@@ -4,7 +4,7 @@
 import {HttpError, requireRole} from './auth.js';
 import {ensureSelfProfile, patientFor} from './access.js';
 import {facilityServices} from './catalog.js';
-import {audit} from './db.js';
+import {audit, transaction, tryLock} from './db.js';
 import {sendEmail} from './notify.js';
 import {normalizePhone} from './security.js';
 import {pushToUser} from './push.js';
@@ -162,13 +162,18 @@ export default async function labServiceRoutes(app) {
         const phone = normalizePhone(request.body.phone);
         if (!phone) throw new HttpError(400, 'invalid_phone', 'Enter a valid mobile number, for example 0912 345 678.');
         const subject = request.body.subject_id ? await patientFor(app.pg, request.user, request.body.subject_id) : await ensureSelfProfile(app.pg, request.user);
-        const {rows: [{n}]} = await app.pg.query(
-            `SELECT count(*)::int AS n FROM home_visits WHERE patient_id = $1 AND status IN ('requested', 'confirmed') AND visit_date >= $2`, [request.user.id, today()]);
-        if (n >= LIMITS.activeVisits) throw new HttpError(409, 'too_many_visits', `You already have ${LIMITS.activeVisits} open home visits. Cancel one first.`);
-        const {rows: [visit]} = await app.pg.query(
-            `INSERT INTO home_visits (facility_id, patient_id, subject_id, visit_date, time_window, address, phone, tests)
-             VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`,
-            [lab.user_id, request.user.id, subject?.id || null, day, request.body.time_window, address, phone, request.body.tests?.trim() || null]);
+        // Counted and written under one lock per patient, so requests sent at once cannot all pass the limit.
+        const visit = await transaction(app.pg, async db => {
+            if (!await tryLock(db, 'home-visit:' + request.user.id)) throw new HttpError(429, 'busy', 'Another request is still running. Please try again.');
+            const {rows: [{n}]} = await db.query(
+                `SELECT count(*)::int AS n FROM home_visits WHERE patient_id = $1 AND status IN ('requested', 'confirmed') AND visit_date >= $2`, [request.user.id, today()]);
+            if (n >= LIMITS.activeVisits) throw new HttpError(409, 'too_many_visits', `You already have ${LIMITS.activeVisits} open home visits. Cancel one first.`);
+            const {rows: [row]} = await db.query(
+                `INSERT INTO home_visits (facility_id, patient_id, subject_id, visit_date, time_window, address, phone, tests)
+                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`,
+                [lab.user_id, request.user.id, subject?.id || null, day, request.body.time_window, address, phone, request.body.tests?.trim() || null]);
+            return row;
+        });
         await audit(app.pg, {actorId: request.user.id, action: 'home_visit.requested', targetId: visit.id, details: {facility_id: lab.user_id}, ip: request.ip});
         await sendEmail(app, lab.email, {
             subject: 'New home sample collection request — SyriaHC | طلب سحب عينات من المنزل',

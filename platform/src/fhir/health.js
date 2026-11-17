@@ -12,6 +12,7 @@ import {PATIENT_NUMBER_SYSTEM} from '../patient-number.js';
 import {prune} from './map.js';
 import {documentSources} from '../catalog.js';
 import {codeSystemUrl, coding} from './terminology.js';
+import {isCalendarDate} from '../slots.js';
 import {HEALTH_RESOURCES} from './registry.js';
 
 const LOINC = 'http://loinc.org';
@@ -195,7 +196,7 @@ export default function healthFhirRoutes(app, {base, send, outcome}) {
         const range = {};
         for (const v of [].concat(values || [])) {
             const m = /^(ge|le|eq)?(\d{4}-\d{2}-\d{2})$/.exec(v);
-            if (!m) return null;
+            if (!m || !isCalendarDate(m[2])) return null;
             if (m[1] !== 'le') range.from = m[2];
             if (m[1] !== 'ge') range.to = m[2];
         }

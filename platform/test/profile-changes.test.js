@@ -21,10 +21,10 @@ async function approvedLab(email = 'lab@example.org') {
 }
 
 describe('splitting a change', () => {
-    test('identifying details are held, the rest applies at once', () => {
+    test('identifying details and the phone are held, the rest applies at once', () => {
         const {immediate, held} = splitChanges({clinic_address: 'New', bio: 'Hello', clinic_phone: '+963111111111'}, DOCTOR_CRITICAL);
-        assert.deepEqual(held, {clinic_address: 'New'});
-        assert.deepEqual(immediate, {bio: 'Hello', clinic_phone: '+963111111111'});
+        assert.deepEqual(held, {clinic_address: 'New', clinic_phone: '+963111111111'});
+        assert.deepEqual(immediate, {bio: 'Hello'});
     });
 
     test('before approval nothing is held', () => {
@@ -45,6 +45,19 @@ describe('doctor changes after approval', () => {
         assert.deepEqual(res.json().pending, ['clinic_address']);
         const slots = await app.inject({url: `/api/doctors/${doctor.id}/slots`});
         assert.equal(slots.statusCode, 200, 'patients can still book');
+    });
+
+    test('the form sends every field: unchanged details are not held, a new phone number is', async () => {
+        const doctor = await approvedDoctor(post);
+        const {profile} = (await app.inject({url: '/api/doctor/profile', headers: {cookie: doctor.cookie}})).json();
+        const form = Object.fromEntries(['specialty', 'governorate', 'area', 'clinic_name', 'clinic_address', 'clinic_phone', 'licence_number']
+            .map(key => [key, profile[key] ?? '']));
+        const same = await post('/api/doctor/profile', {...form, bio: 'Only the bio is new'}, {cookie: doctor.cookie});
+        assert.deepEqual(same.json().pending, []);
+        assert.equal(same.json().profile.bio, 'Only the bio is new');
+        const phone = await post('/api/doctor/profile', {...form, clinic_phone: '0113334455'}, {cookie: doctor.cookie});
+        assert.deepEqual(phone.json().pending, ['clinic_phone']);
+        assert.equal(phone.json().profile.clinic_phone, profile.clinic_phone, 'the listed number stays until an administrator accepts');
     });
 
     test('admins are told about held changes', async () => {
@@ -128,19 +141,24 @@ describe('doctor changes after approval', () => {
 });
 
 describe('facility changes after approval', () => {
-    test('the name waits for review, the phone applies at once, accept publishes the name', async () => {
+    test('the name, the phone and an emergency claim wait for review, the description applies at once; accept publishes them', async () => {
         const admin = await signIn(post, 'admin', 'admin@example.org');
         const lab = await approvedLab();
-        const res = await post('/api/facility/profile', {facility_name: 'Al Shifa Medical Lab', phone: '0212223344'}, {cookie: lab.cookie});
+        const before = (await app.inject({url: '/api/facility/profile', headers: {cookie: lab.cookie}})).json().profile;
+        const res = await post('/api/facility/profile', {facility_name: 'Al Shifa Medical Lab', phone: '0212223344', description: 'Open early'}, {cookie: lab.cookie});
         assert.equal(res.json().profile.status, 'approved');
         assert.equal(res.json().profile.facility_name, 'Al Shifa Laboratory');
-        assert.deepEqual(res.json().pending, ['facility_name']);
+        assert.equal(res.json().profile.phone, before.phone, 'the number the approval check called stays until reviewed');
+        assert.equal(res.json().profile.description, 'Open early');
+        assert.deepEqual(res.json().pending.sort(), ['facility_name', 'phone']);
         assert.equal((await app.inject({url: '/api/facilities'})).json().facilities[0].facility_name, 'Al Shifa Laboratory');
 
         const view = (await get(`/api/admin/facilities/${lab.id}`, admin)).json();
         assert.deepEqual(view.pending.facility_name, {current: 'Al Shifa Laboratory', proposed: 'Al Shifa Medical Lab'});
         await post(`/api/admin/facilities/${lab.id}/changes/accept`, {}, {cookie: admin});
-        assert.equal((await app.inject({url: '/api/facilities'})).json().facilities[0].facility_name, 'Al Shifa Medical Lab');
+        const listed = (await app.inject({url: '/api/facilities'})).json().facilities[0];
+        assert.equal(listed.facility_name, 'Al Shifa Medical Lab');
+        assert.equal(listed.phone, '+963212223344');
     });
 
     test('a lab with a held change can still upload results', async () => {

@@ -66,6 +66,20 @@ describe('admin sign-in with a second factor', () => {
         assert.equal((await login()).json().error, 'too_many_codes');
     });
 
+    test('at most ten codes a day, none after 30 tries that day, and parallel requests cannot pass the count', async () => {
+        const answers = await Promise.all(Array.from({length: 12}, () => login()));
+        assert.ok(answers.every(res => [202, 429].includes(res.statusCode)));
+        const {rows: [{n}]} = await pool.query('SELECT count(*)::int AS n FROM staff_login_codes');
+        assert.ok(n <= 5, `${n} codes`);
+        await pool.query("UPDATE staff_login_codes SET created_at = now() - interval '20 minutes'");
+        while ((await pool.query('SELECT count(*)::int AS n FROM staff_login_codes')).rows[0].n < 10) assert.equal((await login()).statusCode, 202);
+        await pool.query("UPDATE staff_login_codes SET created_at = now() - interval '20 minutes'");
+        assert.equal((await login()).json().error, 'too_many_codes_today');
+        await pool.query("DELETE FROM staff_login_codes WHERE created_at > now() - interval '30 minutes' AND id NOT IN (SELECT id FROM staff_login_codes ORDER BY id LIMIT 3)");
+        await pool.query('UPDATE staff_login_codes SET attempts = 10');
+        assert.equal((await login()).json().error, 'too_many_codes_today', '30 tries used up');
+    });
+
     test('a wrong password still sends no code', async () => {
         const before = mail.sent.length;
         assert.equal((await login('wrong password!')).statusCode, 401);

@@ -103,7 +103,7 @@ export default async function facilityRoutes(app) {
             if (!keys.length) return {row: current, held: []};
             // An approved listing keeps its status: identifying details wait for an administrator (see profile-changes.js).
             const {row, held} = await saveChange(db, 'facility_profiles', request.user.id, changes,
-                current.status === 'approved' ? FACILITY_CRITICAL : []);
+                current.status === 'approved' ? FACILITY_CRITICAL : [], current);
             if (held.length) await audit(db, {actorId: request.user.id, action: 'facility.change_pending', targetId: request.user.id, details: {fields: held}, ip: request.ip});
             return {row, held};
         });
@@ -134,7 +134,7 @@ export default async function facilityRoutes(app) {
     app.post('/api/admin/facilities/:id/changes/accept', changeSchema, decideChange(true));
     app.post('/api/admin/facilities/:id/changes/reject', changeSchema, decideChange(false));
 
-    app.post('/api/facility/documents', facilityOnly, async (request, reply) => {
+    app.post('/api/facility/documents', {...facilityOnly, config: {rateLimit: {max: 20, timeWindow: '15 minutes'}}}, async (request, reply) => {
         const profile = await loadProfile(app.pg, request.user.id);
         if (!DOCS_OPEN.includes(profile.status)) throw new HttpError(403, 'documents_locked', 'Documents can only be changed before approval. Please contact support.');
         reply.code(201);
