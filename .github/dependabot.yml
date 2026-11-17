@@ -1,0 +1,20 @@
+# Actions in workflows and the platform's container images are pinned to exact versions (commit SHAs, image digests).
+# Dependabot proposes newer ones once a month as pull requests; image updates take effect on the server only after the
+# next "git pull && docker compose up -d --build".
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      actions:
+        patterns: ["*"]
+  - package-ecosystem: docker
+    directory: /platform
+    schedule:
+      interval: monthly
+  - package-ecosystem: docker-compose
+    directory: /platform
+    schedule:
+      interval: monthly
