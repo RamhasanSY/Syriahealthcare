@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-17T16:03:50+00:00",
+  "updated": "2026-11-18T15:45:02+00:00",
   "source": "OpenStreetMap contributors (ODbL)",
   "items": [
     {
@@ -501,6 +501,16 @@
       "lon": 36.75933,
       "osm": true,
       "source_url": "https://www.openstreetmap.org/node/3748173836"
+    },
+    {
+      "name": "Alsaleem Dental clinic",
+      "city": "Homs",
+      "city_ar": "حمص",
+      "hours": "Mo-Su 10:45-17:00, 18:00-21:00",
+      "lat": 34.72008,
+      "lon": 36.71496,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/14387579601"
     },
     {
       "name": "Smile dental Clinc",
