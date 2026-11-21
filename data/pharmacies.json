@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-20T00:39:48+00:00",
+  "updated": "2026-11-21T00:01:40+00:00",
   "source": "OpenStreetMap contributors (ODbL)",
   "items": [
     {
@@ -16082,6 +16082,16 @@
       "source_url": "https://www.openstreetmap.org/node/4463760289"
     },
     {
+      "name": "Hiba Sulaiman's Pharmacy",
+      "name_ar": "صيدلية هبة سليمان",
+      "city": "Tartus",
+      "city_ar": "طرطوس",
+      "lat": 34.85642,
+      "lon": 35.90109,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/10184050117"
+    },
+    {
       "name": "LINA Pharmacy",
       "name_ar": "صيدلية لينا هاني عابدين",
       "city": "Tartus",
@@ -16092,6 +16102,16 @@
       "lon": 35.94992,
       "osm": true,
       "source_url": "https://www.openstreetmap.org/node/13452507501"
+    },
+    {
+      "name": "Muhammad Saleh's Pharmacy",
+      "name_ar": "صيدلية محمد صالح",
+      "city": "Tartus",
+      "city_ar": "طرطوس",
+      "lat": 34.85554,
+      "lon": 35.90069,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/10058261066"
     },
     {
       "name": "Nawal pharmacy",
@@ -16142,6 +16162,16 @@
       "lon": 35.89157,
       "osm": true,
       "source_url": "https://www.openstreetmap.org/node/10057942202"
+    },
+    {
+      "name": "Shaza Pharmacy",
+      "name_ar": "صيدلية شذا",
+      "city": "Tartus",
+      "city_ar": "طرطوس",
+      "lat": 34.8675,
+      "lon": 35.9253,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/10120692520"
     },
     {
       "name": "Waeel Esmaeel pharmacy",
@@ -16810,15 +16840,6 @@
       "source_url": "https://www.openstreetmap.org/node/10118508017"
     },
     {
-      "name": "صيدلية شذا",
-      "city": "Tartus",
-      "city_ar": "طرطوس",
-      "lat": 34.8675,
-      "lon": 35.9253,
-      "osm": true,
-      "source_url": "https://www.openstreetmap.org/node/10120692520"
-    },
-    {
       "name": "صيدلية عبد الله",
       "city": "Tartus",
       "city_ar": "طرطوس",
@@ -17093,15 +17114,6 @@
       "source_url": "https://www.openstreetmap.org/node/10056082253"
     },
     {
-      "name": "صيدلية محمد صالح",
-      "city": "Tartus",
-      "city_ar": "طرطوس",
-      "lat": 34.85554,
-      "lon": 35.90069,
-      "osm": true,
-      "source_url": "https://www.openstreetmap.org/node/10058261066"
-    },
-    {
       "name": "صيدلية محمد مصطفى",
       "city": "Tartus",
       "city_ar": "طرطوس",
@@ -17217,15 +17229,6 @@
       "lon": 35.90429,
       "osm": true,
       "source_url": "https://www.openstreetmap.org/node/10058195053"
-    },
-    {
-      "name": "صيدلية هبة سليمان",
-      "city": "Tartus",
-      "city_ar": "طرطوس",
-      "lat": 34.85642,
-      "lon": 35.90109,
-      "osm": true,
-      "source_url": "https://www.openstreetmap.org/node/10184050117"
     },
     {
       "name": "صيدلية هديل يونس",
