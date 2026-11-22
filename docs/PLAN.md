@@ -16,7 +16,7 @@ Die Plattform läuft seit dem 07.11. auf app.syriahc.com, die Website auf syriah
 | H. Test mit echten Praxen und Laboren | **Offen.** Ein Labor ist freigegeben (مخبر آلاء) | du |
 | I. SMS, WhatsApp, Telegram | Code fertig. **Offen:** Konten bei einem SMS-Anbieter oder dem Telegram Gateway. Meta liefert WhatsApp nicht nach Syrien. Bis dahin melden sich Patienten per E-Mail-Code an | du |
 | J. Zweiter Faktor | ✅ Admins (Code per E-Mail), Ärzte vor geteilten Gesundheitsdaten | – |
-| K. Betrieb | Nächtliche Sicherung und Uptime-Prüfung laufen. **Offen:** Kopie der Sicherung außerhalb des Servers (Speicher bestellen), Wiederherstellung einmal üben | du + Claude |
+| K. Betrieb | Nächtliche Sicherung und Uptime-Prüfung laufen. **Seit 22.11.:** jede Nacht zusätzlich eine verschlüsselte Kopie in `backups/offsite/`; der Schlüssel liegt nur beim Betreiber. **Offen:** Speicher außerhalb des Servers bestellen und die Kopien dorthin bringen, Wiederherstellung einmal üben | du + Claude |
 | L. Lovable-Dateien | ✅ **Gelöscht (16.11.)** aus dem lokalen Ordner; sie waren nie im Repository | – |
 | Neu: Anmeldung von Ärzten und Einrichtungen | ✅ **Live (16.11.):** Die E-Mail wird mit einem Code bestätigt, bevor das Konto entsteht. Die Seite verrät nicht mehr, ob eine E-Mail schon ein Konto hat | – |
 | Neu: Konto selbst löschen | **Gebaut (16.11.):** in „Mein Konto" und auf `/delete-account` (Pflicht für Google Play). Patienten sofort; Ärzte und Einrichtungen werden abgeschaltet, endgültig mit `npm run delete-account` | – |
@@ -31,7 +31,7 @@ Die Plattform läuft seit dem 07.11. auf app.syriahc.com, die Website auf syriah
 | Schalter | Schaltet frei | Voraussetzung |
 |---|---|---|
 | `HEALTH_FILE=on` | Gesundheitsakte, Teilen mit Ärzten, Spenderregister, Medikamenten-Erinnerungen | geprüfte Datenschutzerklärung (B) |
-| `PUSH_PUBLIC_KEY`, `PUSH_PRIVATE_KEY` | Benachrichtigungen auf Handy und Computer | nur einmal Schlüssel erzeugen; braucht dein ausdrückliches OK für die Änderung an `.env` auf dem Server |
+| `PUSH_PUBLIC_KEY`, `PUSH_PRIVATE_KEY` | Benachrichtigungen auf Handy und Computer | ✅ **gesetzt (16.11.)**; nie neu erzeugen, sonst gehen alle Anmeldungen für Benachrichtigungen verloren |
 
 **Google Play:** braucht ein Google-Konto als Organisation (D-U-N-S-Nummer der Firma), danach baut Claude die App-Hülle. Siehe `docs/STUFE-3.md`, Teil 3i.
 
@@ -61,9 +61,9 @@ Geprüft wurden der Code (Anmeldung, Zugriffsrechte, Dateien und Schnittstellen,
 | Abmelden | Das Cookie blieb im Browser stehen (ohne Folgen, die Sitzung war gelöscht) | Wird gelöscht |
 | Kleinere Punkte | Name in der Code-E-Mail, Link-Prüfung bei Benachrichtigungen, Dateirechte der Website | Behoben |
 
-**Folgepunkte (PR „Audit-Folgepunkte“, 17.11.):**
+**Folgepunkte (PR #41, live seit 22.11.):**
 
-1. **Sicherungen verschlüsseln** (mittel): Jede Nacht entsteht zusätzlich eine mit age verschlüsselte Kopie in `backups/offsite/`. Nur diese Dateien dürfen den Server verlassen (Teil K). Den geheimen Schlüssel hat nur der Betreiber, nie der Server. Die unverschlüsselten Sicherungen bleiben wie bisher auf dem Server.
+1. **Sicherungen verschlüsseln** (mittel): Jede Nacht entsteht zusätzlich eine mit age verschlüsselte Kopie in `backups/offsite/`. Nur diese Dateien dürfen den Server verlassen (Teil K). Den geheimen Schlüssel hat nur der Betreiber, nie der Server. Die unverschlüsselten Sicherungen bleiben wie bisher auf dem Server. Am 22.11. geprüft: Eine auf dem Server verschlüsselte Sicherung ließ sich mit dem Schlüssel des Betreibers öffnen und war Byte für Byte gleich.
 2. **Eigener Datenbank-Benutzer `shc_app`:** Die App darf nur noch Zeilen lesen und ändern. Migrationen laufen vorher in einem eigenen kurzen Container mit dem Besitzer `shc`.
 3. **Container gehärtet:** `no-new-privileges` für alle Container. Die App läuft mit schreibgeschütztem Dateisystem und ohne Linux-Rechte; Caddy darf nur noch Port 80 und 443 öffnen. Datenbank und Sicherung hängen in einem internen Netz ohne Internet, das Caddy nicht erreicht. Images sind per Digest festgelegt.
 4. **GitHub Actions** sind auf Commit-SHAs festgelegt. Dependabot schlägt einmal im Monat neue Versionen für Actions und Images vor.

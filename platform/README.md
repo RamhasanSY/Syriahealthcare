@@ -259,11 +259,14 @@ ssh root@SERVER 'docker run --rm -i --log-driver none --network none --entrypoin
 ```
 The command prints the public key (`age1…`); put it into `.env` as `BACKUP_AGE_RECIPIENT` and run `docker compose up -d backup`. Keep `syriahc-backup-key.txt` in two safe places (for example a USB stick and a password manager). Without it the encrypted copies cannot be opened; if it is lost, make a new pair — the plain backups on the server are not affected.
 
-Restore an encrypted copy (on a machine with age, for example the server):
+Restore an encrypted copy, for example on a new server after `docker compose up -d --build`. The server has no `age` of its own, so the backup image opens the file. Put the key file and the copy into `platform/`, bring the key only for the restore, and delete it, `shc.dump` and the copy afterwards:
 ```sh
-age -d -i syriahc-backup-key.txt shc-2026-11-18.dump.age > shc.dump
+umask 077
+docker run --rm --network none -v "$PWD:/k:ro" --entrypoint age platform-backup -d -i /k/syriahc-backup-key.txt /k/shc-2026-11-18.dump.age > shc.dump
 docker compose exec -T db pg_restore -U shc -d shc --clean --if-exists < shc.dump
+docker compose run --rm migrate && docker compose restart app   # gives shc_app its rights on the restored tables
 ```
+The documents archive (`documents-….tar.gz.age`) opens the same way; it also needs the old `DOCUMENT_KEY`.
 
 ### Updates
 
