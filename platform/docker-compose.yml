@@ -1,6 +1,9 @@
 # Production stack: PostgreSQL, the platform, HTTPS (Caddy, which also serves the public website) and nightly database backups.
 # Start with: docker compose up -d --build      (settings come from .env — copy .env.example first)
 
+# Images are pinned by digest: an update upstream changes nothing here until the digest is changed on purpose (Dependabot
+# proposes new ones every month, .github/dependabot.yml).
+
 # Container logs are capped (3 files of 10 MB per service), so they can never fill the disk.
 x-logging: &logging
   driver: json-file
@@ -8,11 +11,21 @@ x-logging: &logging
     max-size: "10m"
     max-file: "3"
 
+# Two networks: the database and its helpers sit on "backend", which has no way out to the internet and which Caddy
+# cannot reach; Caddy and the app share "frontend" (the app also sends email and notifications from there).
+networks:
+  backend:
+    internal: true
+  frontend:
+
 services:
   db:
     logging: *logging
-    image: postgres:16-alpine
+    image: postgres:16-alpine@sha256:aa6cb33cf4c19c765cefcf48d96176258800870a9a1e930ad126200f9d825139
     restart: unless-stopped
+    # No container may gain rights after it started (setuid programs and the like).
+    security_opt: ["no-new-privileges:true"]
+    networks: [backend]
     environment:
       POSTGRES_DB: shc
       POSTGRES_USER: shc
@@ -25,6 +38,25 @@ services:
       retries: 10
     # Not published to the internet: only the app container can reach it.
 
+  # Before every start of the app: database changes (migrations/) are applied by the database owner, and the app's own
+  # user is set up, which may only read and change rows (src/migrate.js). Then this container stops.
+  migrate:
+    logging: *logging
+    build: .
+    command: ["node", "src/migrate.js"]
+    restart: "no"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://shc:${POSTGRES_PASSWORD}@db:5432/shc
+      APP_DB_USER: shc_app
+      APP_DB_PASSWORD: ${APP_DB_PASSWORD:?Set APP_DB_PASSWORD in .env}
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    networks: [backend]
+
   app:
     logging: *logging
     build: .
@@ -32,12 +64,16 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
     environment:
       NODE_ENV: production
       HOST: 0.0.0.0
       PORT: 3000
       TRUST_PROXY: "true"
-      DATABASE_URL: postgres://shc:${POSTGRES_PASSWORD}@db:5432/shc
+      # The app's own database user: rows only, no tables, roles or server files. Migrations ran in "migrate".
+      DATABASE_URL: postgres://shc_app:${APP_DB_PASSWORD:?Set APP_DB_PASSWORD in .env}@db:5432/shc
+      MIGRATIONS: external
       APP_ORIGIN: https://${APP_DOMAIN:?Set APP_DOMAIN in .env}
       OTP_SECRET: ${OTP_SECRET:?Set OTP_SECRET in .env}
       DOCUMENT_KEY: ${DOCUMENT_KEY:?Set DOCUMENT_KEY in .env}
@@ -69,12 +105,23 @@ services:
       STUN_URLS: ${STUN_URLS:-}
     volumes:
       - documents:/data/documents
+    # Nothing but the documents volume and /tmp can be written, and the app has no Linux capabilities at all.
+    read_only: true
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    networks: [backend, frontend]
 
   caddy:
     logging: *logging
-    image: caddy:2-alpine
+    image: caddy:2-alpine@sha256:78bd35025c7ba85961dd149ae670315129954e77abe2383ac47c89106b35ade9
     restart: unless-stopped
     depends_on: [app]
+    # Only the right to open ports 80 and 443.
+    cap_drop: [ALL]
+    cap_add: [NET_BIND_SERVICE]
+    security_opt: ["no-new-privileges:true"]
+    networks: [frontend]
     ports:
       - "80:80"
       - "443:443"
@@ -94,27 +141,47 @@ services:
 
   backup:
     logging: *logging
-    image: postgres:16-alpine
+    # PostgreSQL's tools plus age, which encrypts the copies meant for outside the server (backup.Dockerfile).
+    build:
+      context: .
+      dockerfile: backup.Dockerfile
     restart: unless-stopped
     depends_on:
       db:
         condition: service_healthy
     environment:
       PGPASSWORD: ${POSTGRES_PASSWORD}
+      # Public key (age1...) of the backup key pair; its secret half is kept by the operator, never on this server.
+      BACKUP_AGE_RECIPIENT: ${BACKUP_AGE_RECIPIENT:-}
     volumes:
       - ./backups:/backups
       - documents:/documents:ro
-    # Every night at about 02:00 server time: a compressed database dump and an archive of the
-    # (already encrypted) licence documents, keeping the last 14 days.
+    # Keeps its capabilities: the documents belong to the app's user and are readable by their owner only.
+    security_opt: ["no-new-privileges:true"]
+    networks: [backend]
+    # Every night at about 02:00 server time: a compressed database dump and an archive of the (already encrypted)
+    # documents, keeping the last 14 days. With BACKUP_AGE_RECIPIENT, also encrypted copies of both in backups/offsite/:
+    # only those may leave the server, and only the holder of the secret key can open them (README, "Backups").
     entrypoint: ["/bin/sh", "-c"]
     command:
       - |
         umask 077  # backups are readable by root only
+        mkdir -p /backups/offsite
         while true; do
           sleep $$(( (26 - $$(date +%H)) % 24 * 3600 ))
-          pg_dump -h db -U shc -d shc -Fc -f /backups/shc-$$(date +%Y-%m-%d).dump && echo "database backup ok"
-          tar -czf /backups/documents-$$(date +%Y-%m-%d).tar.gz -C /documents . && echo "documents backup ok"
-          find /backups \( -name 'shc-*.dump' -o -name 'documents-*.tar.gz' \) -mtime +14 -delete
+          day=$$(date +%Y-%m-%d)
+          pg_dump -h db -U shc -d shc -Fc -f /backups/shc-$$day.dump && echo "database backup ok"
+          tar -czf /backups/documents-$$day.tar.gz -C /documents . && echo "documents backup ok"
+          if [ -n "$$BACKUP_AGE_RECIPIENT" ]; then
+            for name in shc-$$day.dump documents-$$day.tar.gz; do
+              [ -s /backups/$$name ] || continue
+              age -r "$$BACKUP_AGE_RECIPIENT" -o /backups/offsite/$$name.age.part /backups/$$name \
+                && mv /backups/offsite/$$name.age.part /backups/offsite/$$name.age && echo "$$name encrypted for off-site copy"
+            done
+          else
+            echo "BACKUP_AGE_RECIPIENT is not set: no encrypted copies for outside the server"
+          fi
+          find /backups \( -name 'shc-*.dump' -o -name 'documents-*.tar.gz' -o -name '*.age' -o -name '*.age.part' \) -mtime +14 -delete
           sleep 3600
         done
 

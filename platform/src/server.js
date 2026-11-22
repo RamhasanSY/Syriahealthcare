@@ -5,7 +5,9 @@ import {migrate} from './migrate.js';
 import {startJobs} from './jobs.js';
 
 const pool = createPool(config.databaseUrl);
-await migrate(pool);
+// In production the "migrate" container has already run them with the database owner (MIGRATIONS=external), and the app
+// itself connects as a user that may only read and change rows.
+if (process.env.MIGRATIONS !== 'external') await migrate(pool);
 const app = await buildApp({config, pool});
 
 // Email queue, clean-up and disk check (src/jobs.js).
