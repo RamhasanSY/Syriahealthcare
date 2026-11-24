@@ -1,8 +1,40 @@
 {
-  "updated": "2026-11-24T03:58:33+00:00",
-  "checked_at": "2026-11-24T03:58:33+00:00",
+  "updated": "2026-11-24T17:48:17+00:00",
+  "checked_at": "2026-11-24T17:48:17+00:00",
   "status": "partial",
   "items": [
+    {
+      "title": "مجلس الشعب ووزارة الصحة يبحثان خطط تأهيل المشافي وتطوير الخدمات الطبية",
+      "title_ar": "مجلس الشعب ووزارة الصحة يبحثان خطط تأهيل المشافي وتطوير الخدمات الطبية",
+      "language": "ar",
+      "url": "https://sana.sy/services/2643915/",
+      "published": "2026-11-24",
+      "source": "Syrian Arab News Agency (SANA) — Health",
+      "source_id": "sana-health",
+      "verification_version": 2,
+      "verified_at": "2026-11-24T17:48:04+00:00",
+      "topic": "workforce",
+      "evidence": {
+        "geography": "دمشق",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "اجتماع في دمشق لتنسيق جهود الاستجابة لمرض شلل الأطفال في سوريا",
+      "title_ar": "اجتماع في دمشق لتنسيق جهود الاستجابة لمرض شلل الأطفال في سوريا",
+      "language": "ar",
+      "url": "https://sana.sy/health/2643616/",
+      "published": "2026-11-24",
+      "source": "Syrian Arab News Agency (SANA) — Health",
+      "source_id": "sana-health",
+      "verification_version": 2,
+      "verified_at": "2026-11-24T17:48:04+00:00",
+      "topic": "public-health",
+      "evidence": {
+        "geography": "دمشق",
+        "type": "publisher-headline"
+      }
+    },
     {
       "title": "صحة دير الزور تفتتح نقطتين لمكافحة مرض الليشمانيا في قريتي الخريطة وعياش",
       "title_ar": "صحة دير الزور تفتتح نقطتين لمكافحة مرض الليشمانيا في قريتي الخريطة وعياش",
@@ -12,7 +44,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-11-24T03:58:14+00:00",
+      "verified_at": "2026-11-24T17:48:04+00:00",
       "topic": "workforce",
       "evidence": {
         "geography": "دير الزور",
@@ -28,7 +60,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-11-24T03:58:14+00:00",
+      "verified_at": "2026-11-24T17:48:04+00:00",
       "topic": "policy",
       "evidence": {
         "geography": "دمشق",
@@ -44,10 +76,42 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-11-24T03:58:14+00:00",
+      "verified_at": "2026-11-24T17:48:04+00:00",
       "topic": "policy",
       "evidence": {
         "geography": "دمشق",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "في مستشفى حماة الوطني.. 34 جهازاً تنوب عن الكلى وتُبقي الأمل حيّاً.",
+      "title_ar": "في مستشفى حماة الوطني.. 34 جهازاً تنوب عن الكلى وتُبقي الأمل حيّاً.",
+      "language": "ar",
+      "url": "https://moh.gov.sy/news/%D9%81%D9%8A-%D9%85%D8%B3%D8%AA%D8%B4%D9%81%D9%89-%D8%AD%D9%85%D8%A7%D8%A9-%D8%A7%D9%84%D9%88%D8%B7%D9%86%D9%8A..-34-%D8%AC%D9%87%D8%A7%D8%B2%D8%A7%D9%8B-%D8%AA%D9%86%D9%88%D8%A8-%D8%B9%D9%86-%D8%A7%D9%84%D9%83%D9%84%D9%89-%D9%88%D8%AA%D9%8F%D8%A8%D9%82%D9%8A-%D8%A7%D9%84%D8%A3%D9%85%D9%84-%D8%AD%D9%8A%D9%91%D8%A7%D9%8B.",
+      "published": "2026-11-22",
+      "source": "Syrian Ministry of Health",
+      "source_id": "sy-moh-news",
+      "verification_version": 2,
+      "verified_at": "2026-11-24T17:48:03+00:00",
+      "topic": "hospitals",
+      "evidence": {
+        "geography": "حماة",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "لقاح شلل الأطفال في سورية.. إجابات عن أبرز التساؤلات حول الجرعات",
+      "title_ar": "لقاح شلل الأطفال في سورية.. إجابات عن أبرز التساؤلات حول الجرعات",
+      "language": "ar",
+      "url": "https://moh.gov.sy/news/%D9%84%D9%82%D8%A7%D8%AD-%D8%B4%D9%84%D9%84-%D8%A7%D9%84%D8%A3%D8%B7%D9%81%D8%A7%D9%84-%D9%81%D9%8A-%D8%B3%D9%88%D8%B1%D9%8A%D8%A9..-%D8%A5%D8%AC%D8%A7%D8%A8%D8%A7%D8%AA-%D8%B9%D9%86-%D8%A3%D8%A8%D8%B1%D8%B2-%D8%A7%D9%84%D8%AA%D8%B3%D8%A7%D8%A4%D9%84%D8%A7%D8%AA-%D8%AD%D9%88%D9%84-%D8%A7%D9%84%D8%AC%D8%B1%D8%B9%D8%A7%D8%AA",
+      "published": "2026-11-22",
+      "source": "Syrian Ministry of Health",
+      "source_id": "sy-moh-news",
+      "verification_version": 2,
+      "verified_at": "2026-11-24T17:48:03+00:00",
+      "topic": "public-health",
+      "evidence": {
+        "geography": "سورية",
         "type": "publisher-headline"
       }
     },
@@ -60,7 +124,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-11-24T03:58:12+00:00",
+      "verified_at": "2026-11-24T17:48:03+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "سورية",
@@ -76,7 +140,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-11-24T03:58:12+00:00",
+      "verified_at": "2026-11-24T17:48:03+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "سورية",
@@ -92,7 +156,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-11-24T03:58:14+00:00",
+      "verified_at": "2026-11-24T17:48:04+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "سوريا",
@@ -108,7 +172,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-11-24T03:58:14+00:00",
+      "verified_at": "2026-11-24T17:48:04+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "دير الزور",
@@ -124,7 +188,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-11-24T03:58:14+00:00",
+      "verified_at": "2026-11-24T17:48:04+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "سوريا",
@@ -140,7 +204,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-11-24T03:58:14+00:00",
+      "verified_at": "2026-11-24T17:48:04+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "درعا",
@@ -156,7 +220,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-11-24T03:58:12+00:00",
+      "verified_at": "2026-11-24T17:48:03+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "دير الزور",
@@ -172,7 +236,7 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-11-24T03:58:12+00:00",
+      "verified_at": "2026-11-24T17:48:03+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "إدلب",
@@ -188,7 +252,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-11-24T03:58:14+00:00",
+      "verified_at": "2026-11-24T17:48:04+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "دير الزور",
@@ -204,7 +268,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-11-24T03:58:14+00:00",
+      "verified_at": "2026-11-24T17:48:04+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "دير الزور",
@@ -220,7 +284,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-11-24T03:58:14+00:00",
+      "verified_at": "2026-11-24T17:48:04+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "حماة",
@@ -236,7 +300,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-11-24T03:58:14+00:00",
+      "verified_at": "2026-11-24T17:48:04+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "دمشق",
@@ -252,7 +316,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-11-24T03:58:14+00:00",
+      "verified_at": "2026-11-24T17:48:04+00:00",
       "topic": "workforce",
       "evidence": {
         "geography": "سورية",
@@ -268,10 +332,90 @@
       "source": "Syrian Ministry of Health",
       "source_id": "sy-moh-news",
       "verification_version": 2,
-      "verified_at": "2026-11-24T03:58:12+00:00",
+      "verified_at": "2026-11-24T17:48:03+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "دير الزور",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "مشفى ابن رشد بدمشق يستقبل 40 حالة شهرياً لعلاج الإدمان ضمن برامج متكاملة للتأهيل",
+      "title_ar": "مشفى ابن رشد بدمشق يستقبل 40 حالة شهرياً لعلاج الإدمان ضمن برامج متكاملة للتأهيل",
+      "language": "ar",
+      "url": "https://sana.sy/health/2637802/",
+      "published": "2026-11-17",
+      "source": "Syrian Arab News Agency (SANA) — Health",
+      "source_id": "sana-health",
+      "verification_version": 2,
+      "verified_at": "2026-11-24T17:48:04+00:00",
+      "topic": "hospitals",
+      "evidence": {
+        "geography": "دمشق",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "وزير الصحة: العمل على بناء نظام صحي قوي يضمن خدمات مستدامة للمواطنين في سوريا",
+      "title_ar": "وزير الصحة: العمل على بناء نظام صحي قوي يضمن خدمات مستدامة للمواطنين في سوريا",
+      "language": "ar",
+      "url": "https://sana.sy/health/2637735/",
+      "published": "2026-11-17",
+      "source": "Syrian Arab News Agency (SANA) — Health",
+      "source_id": "sana-health",
+      "verification_version": 2,
+      "verified_at": "2026-11-24T17:48:04+00:00",
+      "topic": "policy",
+      "evidence": {
+        "geography": "سوريا",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "بعثة “سامز” تبدأ إجراء عمليات جراحية في مشفى البر بحمص",
+      "title_ar": "بعثة “سامز” تبدأ إجراء عمليات جراحية في مشفى البر بحمص",
+      "language": "ar",
+      "url": "https://sana.sy/health/2637645/",
+      "published": "2026-11-17",
+      "source": "Syrian Arab News Agency (SANA) — Health",
+      "source_id": "sana-health",
+      "verification_version": 2,
+      "verified_at": "2026-11-24T17:48:04+00:00",
+      "topic": "hospitals",
+      "evidence": {
+        "geography": "حمص",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "مشفى القلب الجامعي بحلب يعزز خدماته بافتتاح وحدة حديثة للقثطرة القلبية",
+      "title_ar": "مشفى القلب الجامعي بحلب يعزز خدماته بافتتاح وحدة حديثة للقثطرة القلبية",
+      "language": "ar",
+      "url": "https://sana.sy/health/2637600/",
+      "published": "2026-11-17",
+      "source": "Syrian Arab News Agency (SANA) — Health",
+      "source_id": "sana-health",
+      "verification_version": 2,
+      "verified_at": "2026-11-24T17:48:04+00:00",
+      "topic": "hospitals",
+      "evidence": {
+        "geography": "حلب",
+        "type": "publisher-headline"
+      }
+    },
+    {
+      "title": "حالات بأعراض متشابهة بعدة محافظات.. والصحة تؤكد أن لا مؤشرات على وجود مرض معدٍ",
+      "title_ar": "حالات بأعراض متشابهة بعدة محافظات.. والصحة تؤكد أن لا مؤشرات على وجود مرض معدٍ",
+      "language": "ar",
+      "url": "https://sana.sy/health/2637378/",
+      "published": "2026-11-17",
+      "source": "Syrian Arab News Agency (SANA) — Health",
+      "source_id": "sana-health",
+      "verification_version": 2,
+      "verified_at": "2026-11-24T17:48:04+00:00",
+      "topic": "public-health",
+      "evidence": {
+        "geography": "دمشق",
         "type": "publisher-headline"
       }
     },
@@ -292,79 +436,63 @@
       }
     },
     {
-      "title": "مشفى ابن رشد بدمشق يستقبل 40 حالة شهرياً لعلاج الإدمان ضمن برامج متكاملة للتأهيل",
-      "title_ar": "مشفى ابن رشد بدمشق يستقبل 40 حالة شهرياً لعلاج الإدمان ضمن برامج متكاملة للتأهيل",
+      "title": "الصحة تنظم تدريباً حول إدارة الإصابات الجماعية والكوارث في دير الزور",
+      "title_ar": "الصحة تنظم تدريباً حول إدارة الإصابات الجماعية والكوارث في دير الزور",
       "language": "ar",
-      "url": "https://sana.sy/health/2637802/",
-      "published": "2026-11-17",
+      "url": "https://sana.sy/governorates/dayer-al-zoor/2636927/",
+      "published": "2026-11-16",
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-11-24T03:58:14+00:00",
-      "topic": "hospitals",
+      "verified_at": "2026-11-24T17:48:04+00:00",
+      "topic": "workforce",
       "evidence": {
-        "geography": "دمشق",
+        "geography": "دير الزور",
         "type": "publisher-headline"
       }
     },
     {
-      "title": "وزير الصحة: العمل على بناء نظام صحي قوي يضمن خدمات مستدامة للمواطنين في سوريا",
-      "title_ar": "وزير الصحة: العمل على بناء نظام صحي قوي يضمن خدمات مستدامة للمواطنين في سوريا",
+      "title": "بدء الأعمال الإنشائية لمشفى الأورام التخصصي في دير الزور",
+      "title_ar": "بدء الأعمال الإنشائية لمشفى الأورام التخصصي في دير الزور",
       "language": "ar",
-      "url": "https://sana.sy/health/2637735/",
-      "published": "2026-11-17",
+      "url": "https://sana.sy/health/2636797/",
+      "published": "2026-11-16",
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-11-24T03:58:14+00:00",
-      "topic": "policy",
+      "verified_at": "2026-11-24T17:48:04+00:00",
+      "topic": "hospitals",
       "evidence": {
-        "geography": "سوريا",
+        "geography": "دير الزور",
         "type": "publisher-headline"
       }
     },
     {
-      "title": "بعثة “سامز” تبدأ إجراء عمليات جراحية في مشفى البر بحمص",
-      "title_ar": "بعثة “سامز” تبدأ إجراء عمليات جراحية في مشفى البر بحمص",
+      "title": "إطلاق حملة إحصاء لرعاية الفئات الأكثر هشاشة عبر 53 مركزاً بحلب وريفها",
+      "title_ar": "إطلاق حملة إحصاء لرعاية الفئات الأكثر هشاشة عبر 53 مركزاً بحلب وريفها",
       "language": "ar",
-      "url": "https://sana.sy/health/2637645/",
-      "published": "2026-11-17",
+      "url": "https://sana.sy/health/2636673/",
+      "published": "2026-11-16",
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-11-24T03:58:14+00:00",
-      "topic": "hospitals",
-      "evidence": {
-        "geography": "حمص",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "مشفى القلب الجامعي بحلب يعزز خدماته بافتتاح وحدة حديثة للقثطرة القلبية",
-      "title_ar": "مشفى القلب الجامعي بحلب يعزز خدماته بافتتاح وحدة حديثة للقثطرة القلبية",
-      "language": "ar",
-      "url": "https://sana.sy/health/2637600/",
-      "published": "2026-11-17",
-      "source": "Syrian Arab News Agency (SANA) — Health",
-      "source_id": "sana-health",
-      "verification_version": 2,
-      "verified_at": "2026-11-24T03:58:14+00:00",
-      "topic": "hospitals",
+      "verified_at": "2026-11-24T17:48:04+00:00",
+      "topic": "public-health",
       "evidence": {
         "geography": "حلب",
         "type": "publisher-headline"
       }
     },
     {
-      "title": "حالات بأعراض متشابهة بعدة محافظات.. والصحة تؤكد أن لا مؤشرات على وجود مرض معدٍ",
-      "title_ar": "حالات بأعراض متشابهة بعدة محافظات.. والصحة تؤكد أن لا مؤشرات على وجود مرض معدٍ",
+      "title": "لجنة الصحة بمجلس الشعب: استراتيجية تشاركية في مناقشة قانون المشافي الخاصة",
+      "title_ar": "لجنة الصحة بمجلس الشعب: استراتيجية تشاركية في مناقشة قانون المشافي الخاصة",
       "language": "ar",
-      "url": "https://sana.sy/health/2637378/",
-      "published": "2026-11-17",
+      "url": "https://sana.sy/health/2636678/",
+      "published": "2026-11-16",
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-11-24T03:58:14+00:00",
+      "verified_at": "2026-11-24T17:48:04+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "دمشق",
@@ -384,70 +512,6 @@
       "topic": "hospitals",
       "evidence": {
         "geography": "دير الزور",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "الصحة تنظم تدريباً حول إدارة الإصابات الجماعية والكوارث في دير الزور",
-      "title_ar": "الصحة تنظم تدريباً حول إدارة الإصابات الجماعية والكوارث في دير الزور",
-      "language": "ar",
-      "url": "https://sana.sy/governorates/dayer-al-zoor/2636927/",
-      "published": "2026-11-16",
-      "source": "Syrian Arab News Agency (SANA) — Health",
-      "source_id": "sana-health",
-      "verification_version": 2,
-      "verified_at": "2026-11-24T03:58:14+00:00",
-      "topic": "workforce",
-      "evidence": {
-        "geography": "دير الزور",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "بدء الأعمال الإنشائية لمشفى الأورام التخصصي في دير الزور",
-      "title_ar": "بدء الأعمال الإنشائية لمشفى الأورام التخصصي في دير الزور",
-      "language": "ar",
-      "url": "https://sana.sy/health/2636797/",
-      "published": "2026-11-16",
-      "source": "Syrian Arab News Agency (SANA) — Health",
-      "source_id": "sana-health",
-      "verification_version": 2,
-      "verified_at": "2026-11-24T03:58:14+00:00",
-      "topic": "hospitals",
-      "evidence": {
-        "geography": "دير الزور",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "إطلاق حملة إحصاء لرعاية الفئات الأكثر هشاشة عبر 53 مركزاً بحلب وريفها",
-      "title_ar": "إطلاق حملة إحصاء لرعاية الفئات الأكثر هشاشة عبر 53 مركزاً بحلب وريفها",
-      "language": "ar",
-      "url": "https://sana.sy/health/2636673/",
-      "published": "2026-11-16",
-      "source": "Syrian Arab News Agency (SANA) — Health",
-      "source_id": "sana-health",
-      "verification_version": 2,
-      "verified_at": "2026-11-24T03:58:14+00:00",
-      "topic": "public-health",
-      "evidence": {
-        "geography": "حلب",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "لجنة الصحة بمجلس الشعب: استراتيجية تشاركية في مناقشة قانون المشافي الخاصة",
-      "title_ar": "لجنة الصحة بمجلس الشعب: استراتيجية تشاركية في مناقشة قانون المشافي الخاصة",
-      "language": "ar",
-      "url": "https://sana.sy/health/2636678/",
-      "published": "2026-11-16",
-      "source": "Syrian Arab News Agency (SANA) — Health",
-      "source_id": "sana-health",
-      "verification_version": 2,
-      "verified_at": "2026-11-24T03:58:14+00:00",
-      "topic": "public-health",
-      "evidence": {
-        "geography": "دمشق",
         "type": "publisher-headline"
       }
     },
@@ -476,7 +540,7 @@
       "source": "WHO — Syria office",
       "source_id": "who-syria-news",
       "verification_version": 2,
-      "verified_at": "2026-11-24T03:58:13+00:00",
+      "verified_at": "2026-11-24T17:48:03+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "Syria",
@@ -492,7 +556,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-11-24T03:58:14+00:00",
+      "verified_at": "2026-11-24T17:48:04+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "الرقة",
@@ -508,7 +572,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-11-24T03:58:14+00:00",
+      "verified_at": "2026-11-24T17:48:04+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "دمشق",
@@ -524,7 +588,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-11-24T03:58:14+00:00",
+      "verified_at": "2026-11-24T17:48:04+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "دير الزور",
@@ -572,7 +636,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-11-24T03:58:14+00:00",
+      "verified_at": "2026-11-24T17:48:04+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "دمشق",
@@ -588,7 +652,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-11-24T03:58:14+00:00",
+      "verified_at": "2026-11-24T17:48:04+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "حمص",
@@ -604,7 +668,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-11-24T03:58:14+00:00",
+      "verified_at": "2026-11-24T17:48:04+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "دير الزور",
@@ -620,7 +684,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-11-24T03:58:14+00:00",
+      "verified_at": "2026-11-24T17:48:04+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "حلب",
@@ -636,7 +700,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-11-24T03:58:14+00:00",
+      "verified_at": "2026-11-24T17:48:04+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "دمشق",
@@ -652,7 +716,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-11-24T03:58:14+00:00",
+      "verified_at": "2026-11-24T17:48:04+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "دمشق",
@@ -668,7 +732,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-11-24T03:58:14+00:00",
+      "verified_at": "2026-11-24T17:48:04+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "دمشق",
@@ -684,7 +748,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-11-24T03:58:14+00:00",
+      "verified_at": "2026-11-24T17:48:04+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "دمشق",
@@ -700,7 +764,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-11-24T03:58:14+00:00",
+      "verified_at": "2026-11-24T17:48:04+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "حمص",
@@ -796,7 +860,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-11-24T03:58:14+00:00",
+      "verified_at": "2026-11-24T17:48:04+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "دمشق",
@@ -844,7 +908,7 @@
       "source": "WHO — Syria office",
       "source_id": "who-syria-news",
       "verification_version": 2,
-      "verified_at": "2026-11-24T03:58:13+00:00",
+      "verified_at": "2026-11-24T17:48:03+00:00",
       "topic": "public-health",
       "evidence": {
         "geography": "Syrian",
@@ -860,7 +924,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-11-24T03:58:14+00:00",
+      "verified_at": "2026-11-24T17:48:04+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "حمص",
@@ -876,7 +940,7 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-11-24T03:58:14+00:00",
+      "verified_at": "2026-11-24T17:48:04+00:00",
       "topic": "workforce",
       "evidence": {
         "geography": "دمشق",
@@ -892,74 +956,10 @@
       "source": "Syrian Arab News Agency (SANA) — Health",
       "source_id": "sana-health",
       "verification_version": 2,
-      "verified_at": "2026-11-24T03:58:14+00:00",
+      "verified_at": "2026-11-24T17:48:04+00:00",
       "topic": "hospitals",
       "evidence": {
         "geography": "حلب",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "500 مراجع يومياً يتلقون خدمات مجانية بالعيادات الخارجية في مشفى الوطني بالرقة",
-      "title_ar": "500 مراجع يومياً يتلقون خدمات مجانية بالعيادات الخارجية في مشفى الوطني بالرقة",
-      "language": "ar",
-      "url": "https://sana.sy/governorates/2631227/",
-      "published": "2026-11-10",
-      "source": "Syrian Arab News Agency (SANA) — Health",
-      "source_id": "sana-health",
-      "verification_version": 2,
-      "verified_at": "2026-11-24T03:58:14+00:00",
-      "topic": "hospitals",
-      "evidence": {
-        "geography": "الرقة",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "وزارة الصحة تطلق أعمال اللجنة الوطنية المعنية بمهنة القبالة لتعزيز جودة الرعاية الصحية للأمهات والمواليد",
-      "title_ar": "وزارة الصحة تطلق أعمال اللجنة الوطنية المعنية بمهنة القبالة لتعزيز جودة الرعاية الصحية للأمهات والمواليد",
-      "language": "ar",
-      "url": "https://moh.gov.sy/news/%D9%88%D8%B2%D8%A7%D8%B1%D8%A9-%D8%A7%D9%84%D8%B5%D8%AD%D8%A9-%D8%AA%D8%B7%D9%84%D9%82-%D8%A3%D8%B9%D9%85%D8%A7%D9%84-%D8%A7%D9%84%D9%84%D8%AC%D9%86%D8%A9-%D8%A7%D9%84%D9%88%D8%B7%D9%86%D9%8A%D8%A9-%D8%A7%D9%84%D9%85%D8%B9%D9%86%D9%8A%D8%A9-%D8%A8%D9%85%D9%87%D9%86%D8%A9-%D8%A7%D9%84%D9%82%D8%A8%D8%A7%D9%84%D8%A9-%D9%84%D8%AA%D8%B9%D8%B2%D9%8A%D8%B2-%D8%AC%D9%88%D8%AF%D8%A9-%D8%A7%D9%84%D8%B1%D8%B9%D8%A7%D9%8A%D8%A9-%D8%A7%D9%84%D8%B5%D8%AD%D9%8A%D8%A9-%D9%84%D9%84%D8%A3%D9%85%D9%87%D8%A7%D8%AA-%D9%88%D8%A7%D9%84%D9%85%D9%88",
-      "published": "2026-11-10",
-      "source": "Syrian Ministry of Health",
-      "source_id": "sy-moh-news",
-      "verification_version": 2,
-      "verified_at": "2026-11-17T01:52:26+00:00",
-      "topic": "workforce",
-      "evidence": {
-        "geography": "سورية",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "مستشفى حلب لأمراض وجراحة القلب يتسلم مشروع جراحة قلب الأطفال",
-      "title_ar": "مستشفى حلب لأمراض وجراحة القلب يتسلم مشروع جراحة قلب الأطفال",
-      "language": "ar",
-      "url": "https://moh.gov.sy/news/%D9%85%D8%B4%D8%B1%D9%88%D8%B9-%D8%AC%D8%B1%D8%A7%D8%AD%D8%A9-%D9%82%D9%84%D8%A8-%D8%A7%D9%84%D8%A3%D8%B7%D9%81%D8%A7%D9%84-%D9%81%D9%8A-%D8%AD%D9%84%D8%A8",
-      "published": "2026-11-10",
-      "source": "Syrian Ministry of Health",
-      "source_id": "sy-moh-news",
-      "verification_version": 2,
-      "verified_at": "2026-11-17T01:52:26+00:00",
-      "topic": "hospitals",
-      "evidence": {
-        "geography": "حلب",
-        "type": "publisher-headline"
-      }
-    },
-    {
-      "title": "صحة دير الزور تبحث مع المنظمات الشريكة تعزيز جهود مكافحة شلل الأطفال",
-      "title_ar": "صحة دير الزور تبحث مع المنظمات الشريكة تعزيز جهود مكافحة شلل الأطفال",
-      "language": "ar",
-      "url": "https://sana.sy/health/2630896/",
-      "published": "2026-11-09",
-      "source": "Syrian Arab News Agency (SANA) — Health",
-      "source_id": "sana-health",
-      "verification_version": 2,
-      "verified_at": "2026-11-24T03:58:14+00:00",
-      "topic": "policy",
-      "evidence": {
-        "geography": "دير الزور",
         "type": "publisher-headline"
       }
     }
