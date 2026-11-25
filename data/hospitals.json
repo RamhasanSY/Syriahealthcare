@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-25T02:32:38+00:00",
+  "updated": "2026-11-25T17:16:26+00:00",
   "source": "OpenStreetMap contributors (ODbL)",
   "items": [
     {
@@ -2709,6 +2709,17 @@
       "source_url": "https://www.openstreetmap.org/node/5220894825"
     },
     {
+      "name": "مشفى السلام",
+      "name_ar": "مشفى السلام",
+      "city": "Deir ez-Zor",
+      "city_ar": "دير الزور",
+      "address": "شارع الجيش",
+      "phone": "",
+      "emergency": false,
+      "osm": true,
+      "source_url": "https://www.openstreetmap.org/node/14416187401"
+    },
+    {
       "name": "مشفى هجين العام",
       "name_ar": "مشفى هجين العام",
       "city": "Deir ez-Zor",
@@ -3312,17 +3323,6 @@
       "emergency": false,
       "osm": true,
       "source_url": "https://www.openstreetmap.org/node/10050398121"
-    },
-    {
-      "name": "مشفى العبون",
-      "name_ar": "مشفى العبون",
-      "city": "Homs",
-      "city_ar": "حمص",
-      "address": "",
-      "phone": "",
-      "emergency": false,
-      "osm": true,
-      "source_url": "https://www.openstreetmap.org/node/9101563817"
     },
     {
       "name": "مشفى الكندي",
